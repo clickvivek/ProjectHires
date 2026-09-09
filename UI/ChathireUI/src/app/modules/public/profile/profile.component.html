@@ -1,0 +1,128 @@
+
+<div class="profile-wrapper">
+  <div class="container">
+    <div class="row">
+      <div class="col-sm-12">
+
+        <loader *ngIf="!isLoaded"></loader>
+
+        <ng-container *ngIf="isLoaded">
+
+          <ng-container *ngIf="isProfileAvailable">
+            
+            <div class="card profile-card shadow">
+  
+              <div *ngIf="user" class="card-body">
+                <div class="profile-content">
+                  <div class="profile-inner">
+                    <profile-pic [isPublic]="true" [user]="user"></profile-pic>
+                  </div>
+                  <div class="right">
+                    <div class="top d-flex">
+                      <div>
+                        <h6 class="ft-head fw-medium">{{ user?.fname }} {{ user?.lname }}</h6>
+                        <p class="d-inline-block px-2 py-1 mt-1 text-sm text-dark-600 text-sm bg-tertiary-400 fw-medium">{{ user?.userTypeId == 2 ? "Bench Sales" : "Recruiter"}}</p>
+                      </div>
+                    </div>
+                    <div class="middle mt-3 d-flex align-items-center">
+                      <a href="javascript:void(0)" [externalLink]="user.linkedin" class="icon me-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" viewBox="0 0 30 30">
+                          <path d="M24,4H6C4.895,4,4,4.895,4,6v18c0,1.105,0.895,2,2,2h18c1.105,0,2-0.895,2-2V6C26,4.895,25.105,4,24,4z M10.954,22h-2.95 v-9.492h2.95V22z M9.449,11.151c-0.951,0-1.72-0.771-1.72-1.72c0-0.949,0.77-1.719,1.72-1.719c0.948,0,1.719,0.771,1.719,1.719 C11.168,10.38,10.397,11.151,9.449,11.151z M22.004,22h-2.948v-4.616c0-1.101-0.02-2.517-1.533-2.517 c-1.535,0-1.771,1.199-1.771,2.437V22h-2.948v-9.492h2.83v1.297h0.04c0.394-0.746,1.356-1.533,2.791-1.533 c2.987,0,3.539,1.966,3.539,4.522V22z"></path>
+                      </svg>
+                      </a>
+                      <div class="chat-btn text-smr pointer fw-medium" [chatUser]="chatUser" [isProfile]="true">
+                        <svg width="16" height="16" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M23.8373 6.16265C21.7863 4.09828 19.0793 2.81417 16.1831 2.5317C13.2868 2.24924 10.3827 2.98612 7.97151 4.61531C5.56031 6.24451 3.79308 8.66391 2.97449 11.4564C2.1559 14.2489 2.33725 17.2395 3.48728 19.9127C3.60714 20.1611 3.64647 20.4408 3.59978 20.7127L2.49978 26.0001C2.4574 26.2029 2.46606 26.4129 2.52497 26.6115C2.58388 26.81 2.6912 26.9908 2.83728 27.1376C2.95704 27.2565 3.09962 27.3499 3.25645 27.4122C3.41327 27.4745 3.58109 27.5044 3.74978 27.5002H3.99978L9.34978 26.4251C9.62169 26.3925 9.89743 26.4312 10.1498 26.5377C12.8229 27.6877 15.8135 27.869 18.606 27.0504C21.3985 26.2319 23.8179 24.4646 25.4471 22.0534C27.0763 19.6422 27.8132 16.7381 27.5307 13.8419C27.2483 10.9456 25.9642 8.23863 23.8998 6.18765L23.8373 6.16265ZM9.99978 16.2502C9.75255 16.2502 9.51088 16.1768 9.30532 16.0395C9.09976 15.9021 8.93954 15.7069 8.84493 15.4785C8.75032 15.2501 8.72557 14.9988 8.7738 14.7563C8.82203 14.5138 8.94108 14.2911 9.1159 14.1163C9.29071 13.9415 9.51344 13.8224 9.75592 13.7742C9.99839 13.7259 10.2497 13.7507 10.4781 13.8453C10.7065 13.9399 10.9018 14.1001 11.0391 14.3057C11.1765 14.5112 11.2498 14.7529 11.2498 15.0002C11.2498 15.3317 11.1181 15.6496 10.8837 15.884C10.6492 16.1185 10.3313 16.2502 9.99978 16.2502ZM14.9998 16.2502C14.7526 16.2502 14.5109 16.1768 14.3053 16.0395C14.0998 15.9021 13.9395 15.7069 13.8449 15.4785C13.7503 15.2501 13.7256 14.9988 13.7738 14.7563C13.822 14.5138 13.9411 14.2911 14.1159 14.1163C14.2907 13.9415 14.5134 13.8224 14.7559 13.7742C14.9984 13.7259 15.2497 13.7507 15.4781 13.8453C15.7065 13.9399 15.9018 14.1001 16.0391 14.3057C16.1765 14.5112 16.2498 14.7529 16.2498 15.0002C16.2498 15.3317 16.1181 15.6496 15.8837 15.884C15.6492 16.1185 15.3313 16.2502 14.9998 16.2502ZM19.9998 16.2502C19.7526 16.2502 19.5109 16.1768 19.3053 16.0395C19.0998 15.9021 18.9395 15.7069 18.8449 15.4785C18.7503 15.2501 18.7256 14.9988 18.7738 14.7563C18.822 14.5138 18.9411 14.2911 19.1159 14.1163C19.2907 13.9415 19.5134 13.8224 19.7559 13.7742C19.9984 13.7259 20.2497 13.7507 20.4781 13.8453C20.7065 13.9399 20.9018 14.1001 21.0391 14.3057C21.1765 14.5112 21.2498 14.7529 21.2498 15.0002C21.2498 15.3317 21.1181 15.6496 20.8837 15.884C20.6492 16.1185 20.3313 16.2502 19.9998 16.2502Z"></path></svg>
+                        <span class="ms-1">Chat</span>
+                      </div>
+                    </div>
+                    <div class="bottom mt-4">
+                      <div class="row">
+                        <div class="col-sm-12 col-lg-4">
+                          <div class="desp">
+                            <p class="fw-medium text-dark-600">Company Name</p>
+                            <p class="text-dark-500">
+                              {{ company?.name }}
+                            </p>
+                          </div>
+                        </div>
+                        <div class="col-sm-12 col-lg-4">
+                          <div class="desp">
+                            <p class="fw-medium text-dark-600">Company URL</p>
+                            <p class="text-dark-500">
+                              {{ company?.email }}
+                            </p>
+                          </div>
+                        </div>
+                        <div class="col-sm-12 col-lg-4">
+                          <div class="desp">
+                            <div class="input-box">
+                              <label for="profileUrl" class="mb-1">Profile Link</label>
+                              <div class="input-group">
+                                <input type="text" class="form-control text-dark-500" name="profileUrl" value="{{profileUrl}}" readonly />
+                                <span class="input-group-text material-symbols-outlined pointer" id="basic-addon1" (click)="copyURL(profileUrl)">content_copy</span>
+                              </div>
+                            </div>
+                            <!-- <p class="fw-medium text-dark-600">Profile Link</p>
+                            <p class="fw-medium text-dark-400 ellipsis">
+                              {{profileUrl}}
+                            </p> -->
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+    
+            <div class="panel bottom-panel rounded shadow mt-4" *ngIf="isJobAvailable">
+              <ul class="nav nav-tabs" role="tablist">
+                <li class="nav-item">
+                  <a
+                    class="nav-link active"
+                    href="#profile-recruiters"
+                    role="tab"
+                    data-bs-toggle="tab"
+                    >I am recruiting</a
+                  >
+                </li>
+                <li class="nav-item">
+                  <a
+                    class="nav-link"
+                    href="#profile-benchsales"
+                    role="tab"
+                    data-bs-toggle="tab"
+                    >My available resources</a
+                  >
+                </li>
+              </ul>
+              <div class="tab-content">
+                <div
+                  role="tabpanel"
+                  class="tab-pane fade show active"
+                  id="profile-recruiters"
+                >
+                <profile-job-posting-history [consultancyUserId]="consultancyUserId" [profileId]="profileId" (outParams)="handleJobs($event)"></profile-job-posting-history>
+                </div>
+                <div role="tabpanel" class="tab-pane fade" id="profile-benchsales">
+                  <profile-available-resources [consultancyUserId]="consultancyUserId" [profileId]="profileId" (outParams)="handleJobs($event)"></profile-available-resources>
+                </div>
+              </div>
+            </div>
+
+          </ng-container>
+
+          <div class="card" *ngIf="!isProfileAvailable">
+            <div class="card-body">
+              <h6 class="text-danger p-2">Profile does not exist</h6>
+            </div>
+          </div>
+
+        </ng-container>
+        
+
+      </div>
+    </div>
+  </div>
+</div>
+

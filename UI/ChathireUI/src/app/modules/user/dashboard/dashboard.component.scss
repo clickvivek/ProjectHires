@@ -1,0 +1,19 @@
+@import "src/@hires/scss/utilities/all";
+@import "src/@hires/scss/helpers/typography";
+
+.dashboard-wrapper {
+  .user-panel {
+    .card-body {
+      padding: 16px 24px;
+      .notify {
+        top: 10px;
+      }
+    }
+  }
+  
+  form {
+    .form-group {
+      margin-bottom: 0;
+    }
+  }
+}

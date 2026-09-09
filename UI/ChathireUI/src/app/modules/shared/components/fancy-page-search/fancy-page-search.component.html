@@ -1,0 +1,22 @@
+<div class="fancy-page-search-wrapper">
+    <form>
+        <div class="input-box mb-0">
+            <div class="form-group mb-0">
+                <div class="input-group">
+                    <span class="input-group-text"
+                    ><i class="fa fa-search"></i
+                ></span>
+                <input
+                    type="text"
+                    class="form-control"
+                    id="searchData"
+                    name="searchData"
+                    [placeholder]="placeholder"
+                    [(ngModel)]="searchData"
+                    (input)="onSearchData()"
+                />
+                </div>
+            </div>
+        </div>
+    </form>
+</div>

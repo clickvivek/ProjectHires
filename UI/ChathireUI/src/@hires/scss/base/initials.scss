@@ -1,0 +1,702 @@
+@import "../utilities/all";
+
+html {
+  font-size: $font-normal;
+  box-sizing: border-box;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+article,
+aside,
+figure,
+footer,
+header,
+hgroup,
+section {
+  display: block;
+}
+
+body,
+button,
+input,
+optgroup,
+select,
+textarea {
+  @extend .ft-default;
+}
+
+small {
+  font-size: $font-small;
+}
+
+span {
+  font-style: inherit;
+  font-weight: inherit;
+}
+
+// Block
+fieldset {
+  border: none;
+}
+
+a {
+  @extend .ft-default;
+  text-decoration: none;
+  &:hover {
+    text-decoration: none;
+    color: $primary;
+  }
+}
+
+section {
+  position: static;
+}
+
+.page-title {
+  margin: 0 0 40px 0;
+}
+
+.clear {
+  clear: both;
+}
+
+.pointer {
+  cursor: pointer;
+}
+
+.no-pointer {
+  pointer-events: none;
+}
+
+.cur-auto {
+  cursor: auto;
+}
+
+.underline {
+  text-decoration: underline
+}
+
+p {
+  @extend .ft-default;
+  @include ft-calc($font-normal);
+}
+
+.stop-pagescroll {
+  height: 100%;
+  overflow-y: hidden;
+}
+
+//overwrite
+.container,
+.container-fluid,
+.container-lg,
+.container-md,
+.container-sm,
+.container-xl,
+.container-xxl {
+  padding-left: 15px;
+  padding-right: 15px;
+}
+
+.ov {
+  overflow: auto;
+}
+
+.ov-h {
+  overflow: hidden;
+}
+
+.ellipsis {
+    display: inline-block;
+    text-wrap: nowrap;
+    text-overflow: ellipsis;
+    width: 80%;
+    overflow: hidden;
+}
+
+.list-inline {
+  line-height: 19px;
+}
+
+body {
+  color: pick-color(dark, 900);
+  letter-spacing: 0.2px;
+  &:not(.home) {
+    header {
+      .navbar {
+        @include box-shadow(0 0 2px rgba(black, 0.2));
+      }
+    }
+  }
+}
+
+.main-container {
+  margin: 70px 0 0 0;
+  width: 100%;
+  background: pick-color(dark, 100);
+  min-height: calc(100vh - 70px);
+  overflow: auto;
+  display: flex;
+  flex-direction: column;
+  @include hires-breakpoint("lt-lg") {
+    margin: 60px 0 0 0;
+    min-height: calc(100vh - 60px);
+  }
+  .content-wrapper {
+    padding-top: 40px;
+    padding-bottom: 40px;
+    flex: 1 0 auto;
+    .content {
+      margin: 20px 0 0 0;
+    }
+  }
+  .footer-wrapper {
+    flex-shrink: 0;
+    background-color: white;
+  }
+  &.home {
+    margin: 0;
+    background: white;
+    @include hires-breakpoint("lt-lg") {
+      margin: 20px 0 0 0;
+    }
+    .content-wrapper {
+      padding: 0;
+    }
+  }
+}
+
+.btn {
+  @extend .ft-head;
+  letter-spacing: 0.4px;
+  min-width: 120px;
+  &:not([class*="btn-outline"]) {
+    color: white;
+  }
+  &:focus,
+  &:hover,
+  &:active {
+    color: white !important;
+  }
+  &.disabled {
+    background-color: pick-color(dark, 300);
+    border: 1px solid pick-color(dark, 300);
+    color: pick-color(dark, 500);
+  }
+
+  /* loader */
+  &.loader-btn {
+    position: relative;
+
+    &:after {
+      content: "";
+      display: block;
+      width: 1.5em;
+      height: 1.5em;
+      position: absolute;
+      left: calc(50% - 0.75em);
+      top: calc(50% - 0.75em);
+      border: 0.15em solid transparent;
+      border-right-color: white;
+      border-left-color: white;
+      border-radius: 50%;
+      animation: button-anim 0.7s linear infinite;
+      opacity: 0;
+    }
+
+    &.loading {
+      color: transparent;
+
+      &:after {
+        opacity: 1;
+      }
+    }
+  }
+}
+
+@keyframes button-anim {
+  from {
+    transform: rotate(0);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.table {
+  th {
+    @extend .fw-semibold;
+    @extend .ft-head;
+  }
+  th,
+  td {
+    @extend .text-regular;
+    color: pick-color(dark, 500);
+    padding: 12px 14px;
+    .overflow {
+      width: 140px;
+      padding: 0;
+      overflow: hidden;
+      position: relative;
+      display: inline-block;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+  }
+}
+
+.card {
+  border: none;
+  @include box-shadow(0 0 3px 1px rgba(pick-color(dark, 300), 0.5));
+  @include hires-breakpoint("lt-lg") {
+    margin: 0 0 30px 0;
+  }
+  .card-body {
+    padding: 15px;
+  }
+}
+
+.list-group {
+  &.no-border {
+    .list-group-item {
+      border: none !important;
+    }
+  }
+}
+
+.material-symbols-outlined {
+  font-family: "Material Symbols Outlined";
+  font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 24;
+  font-size: 20px;
+  line-height: 1;
+  letter-spacing: normal;
+  text-transform: none;
+  white-space: nowrap;
+  word-wrap: normal;
+  direction: ltr;
+  -webkit-font-feature-settings: "liga";
+  -webkit-font-smoothing: antialiased;
+}
+
+.scroller {
+  height: 200px;
+  overflow: auto;
+  width: 100%;
+
+  .mCSB_inside {
+    > .mCSB_container {
+      margin-right: 0 !important;
+    }
+  }
+
+  .mCSB_scrollTools {
+    right: 0 !important;
+    margin: 5px 0;
+    opacity: 0.75 !important;
+
+    .mCSB_dragger {
+      //overflow: visible;
+      .mCSB_dragger_bar {
+        background: $primary;
+        width: 6px;
+        @include border-radius(0);
+      }
+    }
+
+    .mCSB_draggerRail {
+      width: 2px;
+      background: pick-color(dark, 500);
+      @include border-radius(0);
+    }
+  }
+}
+
+.dropdown-wrapper {
+  .search-dropdown {
+    .mCSB_inside {
+      > .mCSB_container {
+        margin-right: 0 !important;
+      }
+    }
+
+    .mCSB_scrollTools {
+      right: 0 !important;
+      margin: 5px 0;
+
+      .mCSB_dragger {
+        .mCSB_dragger_bar {
+          background: pick-color(dark, 500);
+          width: 4px;
+        }
+      }
+
+      .mCSB_draggerRail {
+        width: 4px;
+        background: pick-color(dark, 500);
+      }
+    }
+  }
+}
+
+.toast-container {
+  width: 100%;
+}
+
+.home {
+  .search-jobs-field-wrapper,
+  .search-hotlist-field-wrapper {
+    display: block;
+
+    .search-box {
+      li {
+        @include hires-breakpoint("lt-md") {
+          width: 100%;
+        }
+
+        @include hires-breakpoint("md") {
+          width: 220px;
+        }
+
+        &.go {
+          width: auto;
+
+          @include hires-breakpoint("lt-md") {
+            width: 100%;
+          }
+        }
+      }
+    }
+  }
+}
+
+.panel {
+  padding: 0;
+  background-color: white;
+  .nav-tabs {
+    border-bottom: 1px solid pick-color(dark, 300) !important;
+    .nav-item {
+      .nav-link {
+        border: none;
+        padding: 14px 24px 12px 24px;
+        color: pick-color(dark, 900);
+        @include ft-calc($font-base);
+        &.active {
+          border-bottom: 3px solid $primary;
+          color: $primary;
+        }
+      }
+    }
+  }
+}
+
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 62px;
+  height: 32px;
+
+  input {
+    display: none;
+
+    &:checked + .slider:before {
+      @include transform(translateX(33px));
+      background-color: pick-color(dark, 300);
+    }
+
+    &:checked + .slider:after {
+      @include transform(translateX(0px));
+      padding-left: 25px;
+    }
+
+    &:checked + .slider {
+      background-color: transparent;
+      @include transition(all 0.4s ease-in-out 0.4s);
+    }
+  }
+
+  .slider {
+    position: absolute;
+    cursor: pointer;
+    overflow: hidden;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: pick-color(danger, 700);
+    display: inline-block;
+    z-index: 0;
+    span {
+      @extend .ft-head;
+      @include ft-calc($font-tiny);
+      color: white;
+      position: relative;
+      top: 3px;
+      left: 24px;
+      @include transition(all 0.4s ease-in-out);
+    }
+
+    @include transition(all 0.4s ease-in-out);
+
+    &:before {
+      position: absolute;
+      z-index: 2;
+      content: "OFF";
+      height: 22px;
+      width: 22px;
+      left: 3px;
+      top: 5px;
+      background-color: pick-color(dark, 300);
+      @include transition(all 0.4s ease-in-out);
+      text-indent: 28px;
+      line-height: 22px;
+    }
+
+    &:after {
+      position: absolute;
+      left: 0;
+      z-index: 1;
+      content: "ON";
+      width: 62px;
+      height: 32px;
+      @include border-radius(100px);
+      background-color: $primary;
+      @include transform(translateX(-65px));
+      @include transition(all 0.4s ease-in-out);
+      text-indent: -18px;
+      line-height: 32px;
+    }
+
+    &:before,
+    &:after {
+      @extend .ft-head;
+      @include ft-calc($font-tiny);
+      color: white;
+    }
+
+    &.slider.round {
+      @include border-radius(100px);
+    }
+
+    &.slider.round:before {
+      @include border-radius(50%);
+    }
+  }
+}
+
+.switch-classic {
+  position: relative;
+  display: inline-block;
+  height: 18px;
+  width: 34px;
+  border-radius: 100px;
+  overflow: hidden;
+  input {
+    display: none;
+    &:checked + .slider:before {
+      @include transform(translateX(16px));
+    }
+    &:checked + .slider:after {
+      @include transform(translateX(0px));
+    }
+    &:checked + .slider {
+      background-color: $primary;
+      @include transition(all 0.4s ease-in-out);
+    }
+  }
+  .slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: pick-color(dark, 300);
+    @include transition(all 0.4s ease-in-out);
+    &:before, &:after {
+      position: absolute;
+      content: "";
+      height: 14px;
+      width: 14px;
+      @include border-radius(100px);
+      @include transition(all 0.4s ease-in-out);
+    } 
+    &:before {
+      left: 2px;
+      top: 2px;
+      background-color: white;
+    }
+  }
+  &.small {
+    height: 14px;
+    width: 26px;
+    input {
+      &:checked + .slider:before {
+        @include transform(translateX(12px));
+      }
+      &:checked + .slider:after {
+        @include transform(translateX(0px));
+      }
+    }
+    .slider {
+      &:before, &:after {
+       height: 10px;
+       width: 10px;
+      }
+      &:before {
+        left: 2px;
+        top: 2px;
+      }
+    }
+  }
+}
+
+//talk
+
+.talk-container {
+  position: fixed;
+  z-index: 99999;
+  bottom: 0;
+  right: 10px;
+  display: flex;
+  align-items: flex-end;
+  flex-wrap: nowrap;
+  justify-content: flex-end;
+}
+
+.__talkjs_launcher {
+  background-color: pick-color(primary, 500) !important;
+}
+
+
+
+.iti {
+  display: block;
+  #intlPhone {
+    width: 100%;
+    &:focus-visible {
+      outline: none;
+      border-color: pick-color(dark, 300);
+    }
+  }
+}
+
+/* feather icons */
+.dropdown-menu {
+  .f-icon {
+    position: relative;
+    margin-right: 6px;
+  }
+
+  .small {
+    top: -2px;
+    width: 16px;
+    height: 16px;
+  }
+}
+
+/* others */
+.cdk-overlay-container {
+  .cdk-global-overlay-wrapper {
+    align-items: flex-start !important;
+    top: 122px !important;
+
+    @include hires-breakpoint("lt-lg") {
+      top: 60px !important;
+    }
+  }
+
+  .cdk-overlay-dark-backdrop {
+    background: rgba(pick-color(dark, 900), 0.75);
+
+    @include hires-breakpoint("gt-md") {
+      background: rgba(pick-color(dark, 900), 0.6);
+    }
+  }
+
+  &.cdk-profile-overlay-container {
+    .cdk-overlay-dark-backdrop {
+      background: rgba(pick-color(dark, 900), 0.6);
+    }
+  }
+
+  &.cdk-cds-overlay-container {
+    .cdk-overlay-dark-backdrop {
+      @include hires-breakpoint("gt-md") {
+        background: rgba(pick-color(dark, 900), 0.75);
+      }
+    }
+  }
+}
+
+.mat-calendar {
+  .mat-calendar-body-selected {
+    background-color: $primary;
+  }
+}
+
+/* google places */
+
+.pac-container {
+  @include border-radius(4px);
+  @include box-shadow(0 3px 13px 0 rgba(pick-color(dark, 500), 0.4));
+}
+
+.pac-item {
+  cursor: default;
+  padding: 5px 10px;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+  line-height: 30px;
+  text-align: left;
+  border-top: 1px solid pick-color(dark, 300);
+  @include ft-calc($font-small);
+}
+
+.pac-item:hover {
+  background-color: pick-color(dark, 500);
+}
+
+.pac-item-selected,
+.pac-item-selected:hover {
+  background-color: pick-color(dark, 500);
+}
+
+.pac-item-query {
+  @include ft-calc($font-small);
+}
+
+//placeholder
+.text-placeholder {
+  animation-duration: 1s;
+  animation-fill-mode: forwards;
+  animation-iteration-count: infinite;
+  animation-name: placeHolderShimmer;
+  animation-timing-function: linear;
+  background: pick-color(dark, 100);
+  background: linear-gradient(to right, pick-color(dark, 200) 12%, darken(pick-color(dark, 200), 5%) 24%, pick-color(dark, 200) 40%);
+  background-size: 900px 104px;
+  height: 24px;
+  position: relative;
+  &.multiline {
+    height: 12px;
+    &:not(:last-child) {
+      margin-bottom: 6px;
+    }
+  }
+}
+
+@keyframes placeHolderShimmer{
+  0%{
+      background-position: -900px 0
+  }
+  100%{
+      background-position: 900px 0
+  }
+}

@@ -1,0 +1,116 @@
+@import "src/@hires/scss/utilities/all";
+
+$color: pick-color(secondary, 600);
+$size: 60px;
+$speed: 500ms;
+
+.loader-wrapper {
+  margin: 50px 0;
+  .loader-area {
+    position: relative;
+    display: flex;
+    padding: 50px 0;
+    .pre-loader {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      width: $size;
+      height: $size;
+      margin: auto;
+  
+      &:before,
+      &:after {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        border-width: calc($size/12);
+        border-style: solid;
+        border-color: $color;
+        border-radius: 100%;
+      }
+  
+      &:before {
+        opacity: 0.5;
+      }
+  
+      &:after {
+        border-color: $color transparent transparent;
+        animation: spin $speed linear infinite;
+      }
+    }
+  }
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes blob-bottom {
+  25%,
+  50%,
+  75% {
+    top: 50%;
+    left: 100%;
+  }
+
+  100% {
+    top: 0;
+    left: 50%;
+  }
+}
+
+@keyframes blob-left {
+  25% {
+    top: 50%;
+    left: 0;
+  }
+
+  50%,
+  100% {
+    top: 100%;
+    left: 50%;
+  }
+}
+
+@keyframes blob-top {
+  50% {
+    top: 0;
+    left: 50%;
+  }
+
+  75%,
+  100% {
+    top: 50%;
+    left: 0;
+  }
+}
+
+@keyframes blob-spinner-mover {
+  0%,
+  100% {
+    top: 0;
+    left: 50%;
+  }
+
+  25% {
+    top: 50%;
+    left: 100%;
+  }
+
+  50% {
+    top: 100%;
+    left: 50%;
+  }
+
+  75% {
+    top: 50%;
+    left: 0;
+  }
+}

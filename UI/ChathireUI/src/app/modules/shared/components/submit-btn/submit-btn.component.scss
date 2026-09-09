@@ -1,0 +1,73 @@
+@import "src/@hires/scss/utilities/all";
+@import "src/@hires/scss/helpers/typography";
+
+.submit-area {
+    .submit-btn {
+        position: relative;
+        @extend .text-base;
+        text-transform: capitalize;
+        padding: 0 20px;
+        height: 46px;
+        .text {
+            position: relative;
+            top: 1px;
+        }
+        /* .progress-loader {
+            position: absolute;
+            width: 100%;
+            height: 6px;
+            border-top-left-radius: 2px;
+            border-top-right-radius: 2px;
+            top: -0.5px;
+            left: 0;
+            .inner {
+                position: absolute;
+                width: 50%;
+                height: 100%;
+                border-top-left-radius: 2px;
+                border-top-right-radius: 2px;
+                top: 0;
+                left: 0;
+                animation: inner-progress 1.5s linear infinite;
+            }
+        } */
+        &.loader {
+            
+            border-color: transparent;
+            color: rgba(pick-color(dark, 600), 0.6) !important;
+            overflow: hidden;
+            pointer-events: none;
+            @extend %loader-progress-colors;
+            .progress {
+                border: 0;
+                position: absolute;
+                height: calc(100% + 2px);
+                width: 25%;
+                left: 0;
+                top: -1px;
+                border-radius: 0;
+                animation: inner-progress 1.2s linear infinite;
+                @extend %loader-progress-colors;
+            }
+        }
+    }
+}
+
+@keyframes inner-progress {
+    0% { left: 0%; width: 25%; }
+    50% { left: 50%; width: 60%; }
+    75% { left: 80%; width: 45%; }
+    100% { left: 100%; width: 25%; }
+}
+
+%loader-progress-colors {
+    &[type='primary'] {
+        background-color: rgba(pick-color(primary, 500), $alpha: 0.4);
+    }
+    &[type='secondary'] {
+        background-color: rgba(pick-color(secondary, 500), $alpha: 0.4);
+    }
+    &[type='tertiary'] {
+        background-color: rgba(pick-color(tertiary, 500), $alpha: 0.4);
+    }
+}

@@ -1,0 +1,276 @@
+<div class="dashboard-wrapper">
+  <div class="container">
+    <div class="row">
+      <div class="col-sm-12">
+        
+        
+
+          <div class="card shadow user-panel mb-3">
+            <div class="card-body d-flex" *ngIf="isConsultancyId()">
+              <div>
+                <h6 class="ft-head mb-1 fw-medium">Hello, {{ user?.fname }}</h6>
+                <p class="d-inline-block px-2 py-1 mt-1 text-sm text-dark-600 text-sm bg-tertiary-400 fw-medium">{{ user?.userTypeId == 2 ? "Bench Sales" : "Recruiter"}}</p>
+              </div>
+              <div class="ms-auto">
+                <div class="notify position-relative">
+                  <span class="material-symbols-outlined">mail</span>
+                  <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-primary">
+                    {{uneadCount}}
+                    <span class="visually-hidden">unread messages</span>
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <ng-container *ngIf="isLoggedIn() && !isConsultancyId()">
+
+            <div class="card shadow user-panel">
+                <div class="card-body py-4">
+                  <p class="text-primary-500 text-base mb-2">
+                    You are almost ready to start Hiring or post your jobs. Provide
+                    your information below
+                  </p>
+                  <div class="row">
+                    <div class="col-md-12 col-lg-8">
+                      <form #addUserForm="ngForm" (ngSubmit)="addUser()">
+                        <div class="form-box">
+                          <div class="input-box">
+                            <div class="form-group">
+                              <label for="candidateName"
+                                >First Name <span class="req">*</span></label
+                              >
+                              <input
+                                type="text"
+                                class="form-control"
+                                placeholder="First name"
+                                [(ngModel)]="formData.fname"
+                                name="fname"
+                                required
+                                autocomplete="off"
+                              />
+                              <div
+                                class="mt-2"
+                                *ngIf="
+                                  addUserForm.submitted &&
+                                  addUserForm.controls['fname'].invalid
+                                "
+                              >
+                                <div
+                                  class="input-field-message"
+                                  *ngIf="addUserForm.controls['fname'].errors?.['required']"
+                                >
+                                  First name is required
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                          <div class="input-box">
+                            <div class="form-group">
+                              <label for="candidateName"
+                                >Last Name <span class="req">*</span></label
+                              >
+                              <input
+                                type="text"
+                                class="form-control"
+                                placeholder="Last name"
+                                [(ngModel)]="formData.lname"
+                                name="lname"
+                                required
+                                autocomplete="off"
+                              />
+                              <div
+                                class="mt-2"
+                                *ngIf="
+                                  addUserForm.submitted &&
+                                  addUserForm.controls['lname'].invalid
+                                "
+                              >
+                                <div
+                                  class="input-field-message"
+                                  *ngIf="addUserForm.controls['lname'].errors?.['required']"
+                                >
+                                  Last name is required
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+
+                          <div class="input-box">
+                            <div class="form-group">
+                              <label for="profileId"
+                                >Profile ID</label
+                              >
+                            <div class="d-flex align-items-center">
+                              <span>{{publicProfileUrlPrefix}}</span>
+                                <input
+                                type="text"
+                                class="form-control"
+                                placeholder="name"
+                                [(ngModel)]="formData.publicProfileUserName"
+                                name="profileId"
+                                autocomplete="off"
+                                [disabled]="isProfileIdSubmitted"
+                                (ngModelChange)="handleProfileId()"
+                              />
+                          
+                            </div>
+                            <div class="d-flex align-items-center mt-2">
+                              <div class="btn btn-sm btn-secondary {{isCheckAvailability ? '' : 'disabled'}}" (click)="checkProfileId()">Check Availability</div>
+                              <div class="btn btn-dark btn-sm ms-2 {{isCheckAvailability ? '' : 'disabled'}}" (click)="clearProfileId()">Cancel</div>
+                              <div class="ms-2 text-sm" *ngIf="isProfileIdAvailable && formData.publicProfileUserName != ''" [ngClass]="isProfileIdAvailable == 'true' ? 'text-primary' : 'text-danger-500'">
+                                Profile ID {{isProfileIdAvailable == 'false' ? 'not' : ''}} available
+                              </div>
+                            </div>
+                              <div
+                                class="mt-2"
+                                *ngIf="
+                                  addUserForm.submitted &&
+                                  addUserForm.controls['profileId'].invalid
+                                "
+                              >
+                                <div
+                                  class="input-field-message"
+                                  *ngIf="addUserForm.controls['profileId'].errors?.['required']"
+                                >
+                                  Profile ID is required
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                          
+                          <div class="input-box search-box mb-2">
+                            <app-search-field
+                              fieldName="consultancyId"
+                              fieldText="Company Name"
+                              fieldType="name"
+                              fieldPlaceholder="Enter"
+                              [fieldRequired]="true"
+                              [fieldList]="selectCompanyList"
+                              (queryChange)="onCompanyQuery($event)"
+                              (inputChange)="onCompanyChange($event)"
+                            >
+                            </app-search-field>
+                            <div
+                              class="mb-3"
+                              *ngIf="
+                                addUserForm.submitted &&
+                                addUserForm.controls['consultancyId'].invalid
+                              "
+                            >
+                              <div
+                                class="input-field-message"
+                                *ngIf="addUserForm.controls['consultancyId'].errors?.['required']"
+                              >
+                                Company name is required
+                              </div>
+                            </div>
+                          </div>
+                          
+                          <div class="input-box search-box mb-2">
+                            <app-search-field
+                              fieldName="cityId"
+                              fieldText="City & State"
+                              fieldType="city1,stateName,countryName"
+                              fieldPlaceholder="Enter"
+                              [fieldRequired]="true"
+                              [fieldList]="selectLocationList"
+                              (queryChange)="onLocationQuery($event)"
+                              (inputChange)="onLocationChange($event)"
+                            >
+                            </app-search-field>
+                            <div
+                              class="mb-3"
+                              *ngIf="
+                                addUserForm.submitted &&
+                                addUserForm.controls['cityId'].invalid
+                              "
+                            >
+                              <div
+                                class="input-field-message"
+                                *ngIf="addUserForm.controls['cityId'].errors?.['required']"
+                              >
+                                City name is required
+                              </div>
+                            </div>
+                          </div>
+
+
+                          <div class="input-box">
+                            <div class="form-group">
+                              <label for="countryHire"
+                                >Country you are hiring:
+                                <span class="fw-semibold">US</span></label
+                              >
+                            </div>
+                          </div>
+                          <div class="input-box">
+                            <div class="form-group">
+                              <label for="linkedInProfile"
+                                >LinkedIn (Optional)</label
+                              >
+                              <input
+                                type="text"
+                                class="form-control"
+                                placeholder="Link"
+                                [(ngModel)]="formData.linkedIn"
+                                name="linkedInProfile"
+                              />
+                            </div>
+                          </div>
+                          <div class="input-box">
+                            <div class="form-group">
+                              <label for="alternateEmail"
+                                >Alternate Email (Optional)</label
+                              >
+                              <input
+                                type="email"
+                                class="form-control"
+                                id="alternateEmail"
+                                name="alternateEmail"
+                                placeholder="Email"
+                                [(ngModel)]="formData.alternateEmail"
+                                pattern="[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,4}$"
+                                email
+                              />
+                              <div
+                                class="mt-2"
+                                *ngIf="
+                                  addUserForm.submitted &&
+                                  addUserForm.controls['alternateEmail'].invalid
+                                "
+                              >
+                                <div class="input-field-message">Invalid Email</div>
+                              </div>
+                            </div>
+                          </div>
+                          <div class="input-box">
+                            <app-intl-tel-input
+                              [phoneNumber]="formData.phone"
+                              (phoneNumberChange)="formData.phone = $event"
+                              [edit]="true"
+                            ></app-intl-tel-input>
+                          </div>
+                          <div class="submit-box text-start">
+                            <button type="submit" class="btn btn-primary">
+                              Submit
+                            </button>
+                          </div>
+                        </div>
+                      </form>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+            </ng-container>
+
+      </div>
+    </div>
+
+    <ng-container *ngIf="isLoggedIn() && isConsultancyId()">
+     <dashboard-highlights></dashboard-highlights>
+    </ng-container>
+    
+  </div>
+</div>

@@ -1,0 +1,24 @@
+@import "src/@hires/scss/utilities/all";
+@import "src/@hires/scss/helpers/typography";
+
+.posting-history-list-wrapper {
+    .list-group-item {
+        padding: 14px 24px 14px 24px;
+        border: none;
+        @include border-radius(4px);
+        background-color: white;
+        margin: 0 0 20px 0;
+        .top {
+            display: flex;
+            align-items: center;
+            @include hires-breakpoint("lt-md") {
+                margin: 0 0 4px 0;
+            }
+        }
+        .desp {
+            &:not(:last-child) {
+                margin: 0 12px 2px 0;
+            }
+        }
+    }
+}

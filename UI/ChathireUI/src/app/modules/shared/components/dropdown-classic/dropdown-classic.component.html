@@ -1,0 +1,15 @@
+<div class="dropdown-classic-wrapper">
+    <div class="dropdown-btn fw-medium" (click)="isExpanded=!isExpanded">
+        <span class="text-sm">{{selectedItem[fieldType]}}</span>
+        <span class="material-symbols-outlined text-h6 ms-1">{{isExpanded ? 'expand_less' : 'expand_more'}}</span>
+    </div>
+    <div class="dropdown-list shadow" *ngIf="isExpanded">
+        <li class="list-group-item text-sm" 
+        *ngFor=" let item of fieldList" 
+        (click)="handleSelectedItem(item)"
+        [ngClass]="isSelectedItem(item)"
+        >
+        {{item[fieldType]}}
+        </li>
+    </div>
+</div>

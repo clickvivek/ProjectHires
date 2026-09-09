@@ -1,0 +1,30 @@
+//vendors
+@import "node_modules/quill/dist/quill.snow.css";
+@import "node_modules/ngx-toastr/toastr.css";
+@import "node_modules/@fortawesome/fontawesome-free/css/all.min.css";
+@import "node_modules/intl-tel-input/build/css/intlTelInput.css";
+
+//overrides
+@import "./theme/all";
+
+@import "node_modules/bootstrap/scss/bootstrap";
+
+//fonts
+@import "./fonts/all";
+
+//reset
+@import "./base/all";
+
+//helpers
+@import "./helpers/all";
+
+//forms
+@import "./form";
+
+//material
+@import "./material";
+
+//components
+@import "./components/adv-filter";
+@import "./components/myhotlist";
+@import "./components/resume-viewer";

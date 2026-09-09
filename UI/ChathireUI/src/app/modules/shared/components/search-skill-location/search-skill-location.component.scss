@@ -1,0 +1,103 @@
+@import "src/@hires/scss/utilities/all";
+@import "src/@hires/scss/helpers/typography";
+
+.search-skill-location-wrapper {
+  .search-box {
+    .search-area {
+      display: flex;
+      justify-content: center;
+      @include hires-breakpoint("lt-md") {
+        display: block;
+        margin: 0 0 30px 0;
+      }
+      .item {
+        flex: 1;
+        min-width: 0;
+        text-align: left;
+        &.location {
+          flex: 1.2;
+        }
+        @include hires-breakpoint("lt-md") {
+          width: 100%;
+          min-width: auto;
+          &.location {
+            width: 100%;
+          }
+          margin: 0 0 12px 0;
+        }
+        &:not(:last-child) {
+          margin-right: 15px;
+        }
+        .form-group {
+          margin-bottom: 0;
+        }
+        &.go-btn {
+          flex: 0 0 auto;
+          min-width: auto;
+          width: auto;
+          padding: 0 16px;
+          height: 40px;
+          @include hires-breakpoint("lt-md") {
+            width: 100%;
+            text-align: center;
+            span {
+              top: 0;
+            }
+          }
+        }
+        input {
+          padding: 0 16px 0 32px;
+          height: 40px;
+          font-size: 14px;
+          &:focus {
+            border-color: pick-color(secondary, 400);
+            
+          }
+        }
+        .icon {
+          position: absolute;
+          top: 10px;
+          left: 10px;
+          color: pick-color(secondary, 400);
+          @extend .text-h5;
+        }
+      }
+      .submit-btn {
+        background: $primary;
+        color: white;
+        @include box-shadow(0px 2px 8px rgba(0, 0, 0, 0.1));
+        @include border-radius(4px);
+        border: none;
+        @include hires-breakpoint("lt-md") {
+          height: 48px;
+        }
+        @include hires-breakpoint("lt-md") {
+          width: 100%;
+          border: 1px solid $primary;
+          margin: 0;
+          span {
+            position: relative;
+            top: 2px;
+          }
+          &:hover {
+            border: 1px solid $primary;
+          }
+        }
+      }
+    }
+    .search-btn-box {
+      margin: 20px 0 0 0;
+      text-align: center;
+      .submit-btn {
+        @include hires-breakpoint("lt-md") {
+          width: 100%;
+        }
+      }
+    }
+    &.home {
+      .search-area {
+        justify-content: left;
+      }
+    }
+  }
+}

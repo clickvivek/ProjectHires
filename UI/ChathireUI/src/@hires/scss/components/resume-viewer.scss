@@ -1,0 +1,46 @@
+@import "../utilities/all";
+
+.resume-box {
+  display: flex;
+  cursor: pointer;
+  padding: 4px 8px;
+  background-color: pick-color(tertiary, 100);
+  border: 1px solid pick-color(tertiary, 500);
+  color: pick-color(tertiary, 900);
+  @include border-radius(4px);
+  .icon {
+    font-size: inherit;
+  }
+}
+
+.resume-overlay {
+  position: fixed;
+  width: 100vw;
+  height: 100vh;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  background-color: rgba(31, 41, 55, 0.7);
+  z-index: 1000;
+}
+
+.resume-viewer-wrapper {
+  position: fixed;
+  z-index: 1001;
+  top: 0;
+  right: 0;
+  width: calc(100vw - 25%);
+  height: 100vh;
+  background-color: white;
+  @include hires-breakpoint("lt-md") {
+    width: 100vw;
+  }
+  .viewer-content {
+    padding: 24px;
+  }
+  .img-box {
+    width: 500px;
+    margin: 30px auto 0 auto;
+    text-align: center;
+  }
+}

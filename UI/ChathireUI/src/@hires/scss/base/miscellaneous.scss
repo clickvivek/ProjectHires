@@ -1,0 +1,241 @@
+@import "../utilities/all";
+
+.auth-wrapper {
+  margin-top: -40px;
+  margin-bottom: -40px;
+  .submit-box {
+    margin: 30px 0;
+    .submit-btn {
+      text-transform: uppercase !important;
+    }
+  }
+}
+
+.adv-filter-wrapper {
+    .pagination-wrapper {
+      border-top: 1px solid pick-color(dark, 300);
+      .pagination {
+        margin: 0;
+        display: flex !important;
+        align-items: center;
+        justify-content: center;
+        @include border-radius(0);
+        padding: 30px 0;
+        .left {
+          display: none !important;
+        }
+        .page-numbers {
+          margin-left: 0 !important;
+          li a {
+            padding: 8px 14px;
+          }
+        }
+      }
+    }
+}
+
+.confirm-apply-wrapper {
+    .pagination-wrapper {
+        .pagination {
+        border: 1px solid pick-color(dark, 300);
+        }
+    }
+}
+
+$chat-btn-color: pick-color(dark, 500);
+
+.chat-btn {
+    border: 1px solid $chat-btn-color;
+    color: $chat-btn-color !important;
+    &:hover {
+      background-color: pick-color(dark, 200);
+      color: $chat-btn-color !important;
+      border: 1px solid $chat-btn-color;
+    }
+    svg {
+      path {
+        fill: $chat-btn-color;
+      }
+   }
+   &.disabled {
+    opacity: 0.35;
+   }
+}
+
+/* search jobs and hotlist */
+.search-jobs-field-wrapper,
+.search-hotlist-field-wrapper {
+  .search-box {
+    display: flex;
+    @include hires-breakpoint("lt-md") {
+      display: block;
+      margin: 0 0 30px 0;
+    }
+    .item {
+      width: 270px;
+      @include hires-breakpoint("lt-md") {
+        width: 100%;
+        margin: 0 0 12px 0;
+      }
+      &:not(:last-child) {
+        margin-right: 15px;
+      }
+      .form-group {
+        margin-bottom: 0;
+      }
+      &.go {
+        width: auto;
+        @include hires-breakpoint("lt-md") {
+          width: 100%;
+          margin: 20px 0 0 0;
+        }
+      }
+      input {
+        padding: 0 20px 0 30px;
+        &:focus {
+          border-color: pick-color(secondary, 400);
+        }
+      }
+      .icon {
+        position: absolute;
+        top: 13px;
+        left: 12px;
+        color: pick-color(secondary, 400);
+        @include ft-calc($font-base);
+      }
+      .submit-btn {
+        background: $primary;
+        width: 50px;
+        height: 100%;
+        padding: 0 !important;
+        @include box-shadow(0px 2px 8px rgba(0, 0, 0, 0.1));
+        @include hires-breakpoint("lt-md") {
+          height: 48px;
+        }
+        @include hires-breakpoint("lt-md") {
+          width: 100%;
+          border: 1px solid $primary;
+          margin: 0;
+          span {
+            position: relative;
+            top: 2px;
+          }
+          &:hover {
+            border: 1px solid $primary;
+          }
+        }
+      }
+    }
+  }
+}
+
+.search-jobs {
+  .material {
+    @include hires-breakpoint("gt-md") {
+      min-width: 680px !important;
+      max-width: 680px !important;
+    }
+  }
+}
+
+/* toast container */
+
+.toast-container {
+  @extend .ft-head;
+
+  &.toast-top-center {
+    margin: 20px 0 0 0;
+  }
+
+  .ngx-toastr {
+    width: 500px !important;
+    box-shadow: none;
+    padding: 25px 25px 25px 60px;
+    @include border-radius(4px);
+
+    .toast-message {
+      @include ft-calc($font-normal);
+    }
+
+    &:hover {
+      box-shadow: none;
+    }
+
+    &.toast-success {
+      background-color: $primary;
+    }
+
+    &.toast-error {
+      background-color: $danger;
+    }
+  }
+}
+
+.profile-job-posting-history-wrapper, .profile-available-resources-wrapper {
+  .title-box {
+    padding: 14px;
+    input {
+      height: 42px;
+    }
+  }
+}
+
+.messages-wrapper {
+  .messages-box {
+      overflow: auto;
+      iframe {
+          min-height: 500px;
+          .Inbox {
+            .center-stage {
+              max-width: 100%;
+              .chat-container {
+                @include hires-breakpoint("lt-md") {
+                  .ChatBox {
+                    max-width: 100%;
+                  }
+                }
+              }
+            }
+          }
+      }
+  }
+}
+
+.posting-edit-details-wrapper {
+  padding: 30px 24px;
+  form {
+      .submit-box {
+          display: flex;
+          justify-content: center;
+      }
+  }
+}
+
+.success-message {
+  .title {
+    .tick {
+      margin: 0 16px 0 0;
+      @include circles(38px, $primary);
+    }
+  }
+  .actions {
+    margin: 30px 0 0 0;
+    .action-item {
+      &:not(:last-child) {
+        margin: 0 20px 0 0;
+        border-right: 1px solid pick-color(dark, 400);
+        padding-right: 20px;
+      }
+    }
+    @include hires-breakpoint("lt-md") {
+      display: block !important;
+      .action-item {
+        &:not(:last-child) {
+          border: none;
+          margin: 0 0 10px 0;
+        }   
+      }
+          
+    }
+  }
+}

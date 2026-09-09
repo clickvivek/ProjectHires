@@ -1,0 +1,10 @@
+<div class="slider-classic-wrapper d-flex align-items-center">
+    <span class="text me-2 text-dark-600" *ngIf="activeText && inActiveText">{{ data ? activeText : inActiveText }}</span>
+    <label class="switch-classic small">
+        <input
+        type="checkbox"
+        [(ngModel)]="data"
+        />
+        <span class="slider round"></span>
+    </label>
+</div>

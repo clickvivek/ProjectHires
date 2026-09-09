@@ -1,0 +1,107 @@
+@import "variables";
+
+@mixin border-radius($radius) {
+  -webkit-border-radius: $radius !important;
+  -moz-border-radius: $radius !important;
+  border-radius: $radius !important;
+}
+
+@mixin border-bottom-left-radius($radius) {
+  -webkit-border-bottom-left-radius: $radius !important;
+  -moz-border-bottom-left-radius: $radius !important;
+  border-bottom-left-radius: $radius !important;
+}
+
+@mixin opacity($value) {
+  opacity: $value;
+  -moz-opacity: $value;
+  -webkit-opacity: $value;
+}
+
+@mixin box-shadow($rules...) {
+  box-shadow: $rules;
+  -moz-box-shadow: $rules;
+  -webkit-box-shadow: $rules;
+}
+
+@mixin text-shadow($rules) {
+  text-shadow: $rules;
+  -moz-text-shadow: $rules;
+  -webkit-text-shadow: $rules;
+}
+
+@mixin transform($rules) {
+  -webkit-transform: $rules !important;
+  -moz-transform: $rules !important;
+  transform: $rules !important;
+}
+
+@mixin transition($rules...) {
+  -webkit-transition: $rules;
+  -moz-transition: $rules;
+  transition: $rules;
+}
+
+@mixin visibility($rules) {
+  visibility: $rules;
+}
+
+@mixin no-mp() {
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+@mixin circles($r, $bg: null, $tc: null) {
+  width: $r;
+  height: $r;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: $bg;
+  color: $tc;
+  @include border-radius($r);
+}
+
+@mixin font-face($filepath, $weight) {
+  @font-face {
+    font-family: "Metropolis";
+    src: url("#{$filepath}.otf") format("truetype");
+    font-weight: $weight;
+  }
+}
+
+@mixin ft-calc($pixels) {
+  font-size: $pixels;
+}
+
+@mixin hires-breakpoint($breakpoint) {
+  $mediaQuery: map-get($hires-breakpoints, $breakpoint);
+
+  @if ($mediaQuery !=null) {
+    @media #{$mediaQuery} {
+      @content;
+    }
+  } @else {
+    @media #{$breakpoint} {
+      @content;
+    }
+  }
+}
+
+@mixin placeholder {
+  &::-webkit-input-placeholder {
+    @content;
+  }
+
+  &:-moz-placeholder {
+    @content;
+  }
+
+  &::-moz-placeholder {
+    @content;
+  }
+
+  &:-ms-input-placeholder {
+    @content;
+  }
+}

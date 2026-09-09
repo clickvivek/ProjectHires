@@ -1,0 +1,15 @@
+export * from './candidate-profile.service';
+import { CandidateProfileService } from './candidate-profile.service';
+export * from './common.service';
+import { CommonService } from './common.service';
+export * from './consultancy.service';
+import { ConsultancyService } from './consultancy.service';
+export * from './file.service';
+import { FileService } from './file.service';
+export * from './job-opening.service';
+import { JobOpeningService } from './job-opening.service';
+export * from './token.service';
+import { TokenService } from './token.service';
+export * from './user.service';
+import { UserService } from './user.service';
+export const APIS = [CandidateProfileService, CommonService, ConsultancyService, FileService, JobOpeningService, TokenService, UserService];

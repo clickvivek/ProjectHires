@@ -1,0 +1,20 @@
+@import "src/@hires/scss/utilities/all";
+@import "src/@hires/scss/helpers/typography";
+
+.choose-from-hotlist-wrapper {
+    margin: 20px 0 0 0;
+    .list-container {
+        height: 310px;
+        .form-check {
+            display: inline-flex;
+            .form-check-label {
+                padding: 0;
+            }
+          }
+        .item {
+            &:not(:last-child) {
+                margin: 0 0 10px 0;
+            }
+        }
+    }
+}

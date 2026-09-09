@@ -1,0 +1,25 @@
+@import '../utilities/all';
+
+.shadow {
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06) !important;
+}
+
+.rounded {
+    @include border-radius(6px);
+}
+
+.rounded-md {
+    @include border-radius(8px);
+}
+
+.rounded-lg {
+    @include border-radius(10px);
+}
+
+.rounded-xl {
+    @include border-radius(15px);
+}
+
+.op-50 {
+    opacity: 0.5;
+}

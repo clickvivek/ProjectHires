@@ -1,0 +1,5 @@
+<div class="form-group d-flex flex-column">
+    <label for="intlPhone">Phone (Optional)</label>
+    <input type="tel" class="{{isInvalid ? 'text-danger': ''}}" id="intlPhone" (focus)="onFocus()" (blur)="onBlur()"
+        (keypress)="onInputKeyPress($event)" [(ngModel)]="phoneNumber" (ngModelChange)="onPhoneNumberChange()" [disabled]="!edit" #telInput>
+</div>

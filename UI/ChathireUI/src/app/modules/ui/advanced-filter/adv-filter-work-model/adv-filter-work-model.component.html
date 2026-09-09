@@ -1,0 +1,55 @@
+<div class="filter-item">
+  <div class="filter-area" [ngClass]="isFilterExists ? 'is-filter' : ''">
+    <p class="text-regular fw-medium">Onsite/Remote</p>
+    <div class="filter-count text-smr" *ngIf="isFilterExists">
+      {{ getFilterCount() }}
+    </div>
+    <i class="fa-solid fa-angle-down arrow"></i>
+  </div>
+  <div class="dropdown-wrapper dropdown-filter-box">
+    <ng-scrollbar
+      #scrollable
+      track="all"
+      pointerEventsMethod="scrollbar"
+      [autoHeightDisabled]="false"
+    >
+      <form>
+        <div class="form-group">
+          <div class="list-group dropdown">
+            <ng-container *ngFor="let item of workModelList">
+              <li class="list-group-item">
+                <div class="form-check">
+                  <input
+                    class="form-check-input filled"
+                    type="checkbox"
+                    [id]="item.name"
+                    [name]="item.name"
+                    [(ngModel)]="item.checked"
+                    (change)="onInputChange(item.id, item.checked)"
+                  />
+                  <label class="form-check-label" [for]="item.name">
+                    {{ item.name }}
+                  </label>
+                </div>
+              </li>
+            </ng-container>
+          </div>
+        </div>
+      </form>
+    </ng-scrollbar>
+    <div class="results-box">
+      <a
+        href="javascript:void(0)"
+        class="filter-cancel fw-medium"
+        (click)="reset()"
+        >Reset</a
+      >
+      <a
+        href="javascript:void(0)"
+        class="result fw-medium"
+        (click)="applySearch()"
+        >Apply</a
+      >
+    </div>
+  </div>
+</div>

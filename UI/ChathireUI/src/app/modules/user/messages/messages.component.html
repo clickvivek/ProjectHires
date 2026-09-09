@@ -1,0 +1,24 @@
+
+<div class="messages-wrapper">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12 col-lg-9">
+                <div class="messages-box" id="inboxContainer" [user]="user" [chatUser]="chatUser" #inboxContainer>
+                    <h6 class="title mb-3">You have {{uneadCount}} unread conversations </h6>
+                    <div class="message-area">
+                        <loader></loader>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-12 col-lg-3">
+                <div class="placeholder-box">
+                    <img class="d-none d-lg-block" src="https://placehold.co/300x600/png" alt="">
+                    <div class="d-lg-none text-center">
+                        <img src="https://placehold.co/360x360/png" alt="">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+

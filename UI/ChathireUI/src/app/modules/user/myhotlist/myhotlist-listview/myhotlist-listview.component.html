@@ -1,0 +1,173 @@
+<div class="hotlist-box list-box">
+  <ng-container *ngFor="let item of list">
+    <li class="list-group-item shadow">
+      <div class="content-area">
+        <div class="row">
+          <div class="col-9 col-md-8 top">
+            <div class="left">
+              <div class="mb-1 d-md-flex align-items-center">
+                <h6
+                  class="text-secondary-600 text-uppercase text-normal fw-medium me-3 name"
+                >
+                  {{ item.candidateName }}
+                </h6>
+                <p
+                  class="text-dark-600 text-capitalize"
+                >
+                  {{ item.title }}
+                </p>
+              </div>
+
+              <div class="d-md-flex additional align-items-center">
+                <div class="item d-flex align-items-center">
+                  <span
+                    class="material-symbols-outlined text-base text-dark-500 me-2"
+                    >trip</span
+                  >
+                  <p class="text-sm fw-medium">{{ item.totalExp }} years</p>
+                </div>
+                <div class="item d-flex align-items-center">
+                  <span
+                    class="material-symbols-outlined text-base text-dark-500 me-2"
+                    >airplane_ticket</span
+                  >
+                  <p class="text-sm fw-medium">
+                    {{ getVisa(item.visaId) }}
+                  </p>
+                </div>
+                <div class="item d-flex align-items-center">
+                  <span
+                    class="material-symbols-outlined text-base text-dark-500 me-1"
+                    >location_on</span
+                  >
+                  <p class="text-sm fw-medium">
+                    {{ item.city?.city1 }}, {{ item.city?.stateCode }}
+                  </p>
+                </div>
+                <div class="item d-flex align-items-center">
+                  <span
+                    class="material-symbols-outlined text-base text-dark-500 me-1"
+                    >attach_money</span
+                  >
+                  <p class="text-sm fw-medium">
+                    {{ item.fromAmt }} - {{ item.toAmt }}
+                  </p>
+                </div>
+              </div>
+
+              <div class="others d-md-flex">
+                <p class="me-3 text-sm text-dark-400 left">Availability</p>
+                <p class="text-sm">
+                  {{ getAvailability(item.availability) }}
+                </p>
+              </div>
+              <div class="others d-md-flex">
+                <p class="me-3 text-sm text-dark-400 left">Relocation</p>
+                <p class="text-sm">
+                  {{ getRelocation(item) }}
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-3 col-md-4 d-flex flex-column justify-md-content-end">
+            <label class="switch flex-shrink-0">
+              <input
+                type="checkbox"
+                [(ngModel)]="item.status"
+                value="{{ item.statusId }}"
+                (click)="onStatusChange($event, item)"
+              />
+              <span class="slider round"></span>
+            </label>
+            <div class="d-flex d-md-none options">
+              <div
+                class="pointer me-2 d-flex text-primary-500"
+                (click)="editCandidate(item.id)"
+              >
+                <span class="material-symbols-outlined text-base">edit</span>
+              </div>
+
+              <div
+                class="pointer d-flex text-danger-500"
+                (click)="deleteCandidate(item)"
+              >
+                <span class="material-symbols-outlined text-base">delete</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-sm-12 col-md-8">
+            <div
+              class="skills mt-4"
+              *ngIf="isSkills(item.candidateProfileSkills)"
+            >
+              <span
+                class="item text-primary-800 bg-primary-50 text-smr fw-medium"
+                *ngFor="let skillItem of item.candidateProfileSkills"
+                >{{ skillItem.name }}</span
+              >
+            </div>
+            <div
+              class="skills mt-4"
+              *ngIf="!isSkills(item.candidateProfileSkills)"
+            >
+              <span class="item text-danger-800 bg-danger-50 text-smr fw-medium"
+                >No Skills Available</span
+              >
+            </div>
+          </div>
+
+          <div class="col-5 col-md-4 d-none d-md-flex justify-content-end">
+            <div class="d-flex options mt-2">
+              <div
+                data-bs-toggle="dropdown"
+                aria-expanded="false"
+                class="btn btn-secondary btn-sm px-3 d-inline-flex align-items-center"
+              >
+                Update<span class="material-symbols-outlined ms-1">
+                  expand_more
+                </span>
+              </div>
+              <div class="dropdown-menu" aria-labelledby="optionsBtn">
+                <div
+                  class="px-3 py-2 d-flex align-items-center pointer"
+                  (click)="editCandidate(item.id)"
+                >
+                  <span class="material-symbols-outlined text-base text-dark-600 me-1"
+                    >edit</span
+                  >
+                  <h6 class="ms-1 text-sm text-dark-600">Edit</h6>
+                </div>
+                <div
+                  class="px-3 py-2 d-flex align-items-center pointer"
+                  (click)="deleteCandidate(item)"
+                >
+                  <span class="material-symbols-outlined text-base text-danger me-1"
+                    >delete</span
+                  >
+                  <h6 class="ms-1 text-sm text-danger">Delete</h6>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="row" *ngIf="item?.candidateDocuments.length != 0 || item?.candidateDocuments.length != 0">
+          <div class="col-sm-12">
+            <div class="bottom-box my-2 d-flex">
+              <view-resume
+                [doc]="item?.candidateDocuments[0]?.doc"
+              ></view-resume>
+              <download-resume
+                [doc]="item?.candidateDocuments[0]?.doc"
+              ></download-resume>
+            </div>
+          </div>
+        </div>
+      </div>
+    </li>
+  </ng-container>
+</div>

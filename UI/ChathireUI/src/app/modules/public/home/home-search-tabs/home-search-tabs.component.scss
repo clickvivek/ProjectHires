@@ -1,0 +1,47 @@
+@import "src/@hires/scss/utilities/all";
+@import "src/@hires/scss/helpers/typography";
+
+.search-mini {
+    .nav-tabs {
+      @include hires-breakpoint("xs") {
+        margin: 30px 0 !important;
+      }
+
+      @include hires-breakpoint("sm") {
+        margin: 20px 0 20px 0 !important;
+      }
+
+      @include hires-breakpoint("md") {
+        margin: 20px 0 20px 0 !important;
+      }
+
+      @include hires-breakpoint("lg") {
+        margin: 20px 0 20px 0 !important;
+      }
+
+      @include hires-breakpoint("xl") {
+        margin: 30px 0 20px 0 !important;
+      }
+
+      border: none;
+
+      .nav-link {
+        text-transform: uppercase;
+        @include ft-calc($font-base);
+        padding: 0 20px 4px 20px;
+        border: none;
+        color: $primary;
+        &.active {
+          border-bottom: 2px solid $primary;
+        }
+      }
+    }
+
+    .tab-content {
+      height: 100px;
+
+      @include hires-breakpoint("lt-lg") {
+        height: auto;
+      }
+    }
+  }

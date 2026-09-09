@@ -1,0 +1,28 @@
+<div class="info-box">
+    <div
+      class="type ft-head fw-medium mb-2 text-orange-600 text-xs pb-3 mb-3 lh-18"
+    >
+      {{ item.jobTypeName }}
+    </div>
+    <div class="d-flex">
+      <div class="img-box flex-shrink-0">
+        <img src="{{ getProfilePic(item.profilePic) }}" />
+      </div>
+      <div class="desp ms-3">
+        <p
+          class="text-normal ft-head fw-medium"
+        >
+          {{ item.consultancyUserFName }}
+          {{ item.consultancyUserLName }}
+          <span class="ms-1 status-indicator {{isUserOnline ? 'active' : ''}}"></span>
+        </p>
+        <p class="fw-medium text-sm text-dark-500">
+          {{ item.consultancyName }}
+        </p>
+        <p
+          class="contact-btn bg-secondary-400 text-sm fw-medium btn chat-btn" [ngClass]="isChatDisabled() ? 'disabled' : ''" [chatUser]="chatUser">
+          Message Me
+        </p>
+      </div>
+    </div>
+</div>

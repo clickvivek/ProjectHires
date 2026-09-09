@@ -1,0 +1,21 @@
+
+<mat-sidenav-container>
+    <mat-sidenav [(opened)]="isOpened" position="end" [sidenav]="isOpened" (closed)="onSidenavClose()">
+        <div class="inbox-job-details-wrapper">
+            <div class="top">
+                <div class="d-flex align-items-center">
+                    <p class="text-secondary-800 fw-medium me-3">
+                        {{selectedJob?.name}}
+                    </p>
+                    <p class="text-dark-600 fw-medium">
+                        {{ selectedJob?.jobOpeningLocation | jobLocation }}
+                    </p>
+                </div>
+                <div class="text-dark-400 text-sm">
+                    posted on {{getDate(selectedJob?.postDate)}}
+                </div>
+                <p class="desp" [innerHTML]="getDescription(selectedJob?.description)"></p>
+            </div>
+        </div>
+    </mat-sidenav>
+</mat-sidenav-container>

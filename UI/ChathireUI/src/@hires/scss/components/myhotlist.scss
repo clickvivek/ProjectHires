@@ -1,0 +1,133 @@
+@import "../utilities/all";
+
+.my-hotlist-wrapper {
+  .title-box {
+    display: flex;
+    align-items: center;
+    .add-candidate-btn {
+      @include border-radius(4px);
+      background-color: white;
+      color: $primary;
+      padding: 8px 20px !important;
+      @include ft-calc($font-normal);
+      border: 1px solid transparent;
+      &:hover {
+        @include transition(all 0.15s ease);
+        color: $primary !important;
+      }
+      .icon {
+        position: relative;
+        top: 3px;
+        @include ft-calc($font-h4);
+        color: $primary;
+      }
+      @include hires-breakpoint("xs") {
+        float: none !important;
+        margin: 20px 0 0 0;
+      }
+    }
+    @include hires-breakpoint("lt-md") {
+      display: block;
+      .btn-wrapper {
+        text-align: center;
+        .add-candidate-btn {
+          margin: 20px 0 0 0;
+        }
+      }
+    }
+  }
+
+  .options-wrapper {
+    display: flex;
+    margin: 20px 0 0 0;
+    .search-results {
+      width: 100%;
+      @include hires-breakpoint("gt-md") {
+        width: 300px;
+      }
+      form {
+        .input-group-text {
+          cursor: auto;
+          background-color: pick-color(dark, 300);
+        }
+      }
+    }
+    .search-results,
+    .view-btn {
+      margin: 0 20px 0 0;
+    }
+  }
+
+  .hotlist-box {
+    margin: 20px 0 0 0;
+    &.list-box {
+      .list-group-item {
+        padding: 20px 20px 10px 20px;
+        border: none;
+        @include border-radius(4px);
+        background-color: white;
+        &:not(:last-child) {
+          margin: 0 0 20px 0;
+        }
+        .content-area {
+          .name {
+            @include hires-breakpoint("xs") {
+              margin: 0 0 4px 0;
+            }
+          }
+          .switch {
+            margin-left: auto;
+          }
+          .skills {
+            .item {
+              padding: 4px 10px;
+              display: inline-block;
+              margin: 0 8px 10px 0;
+              &:last-child {
+                margin-right: 0;
+              }
+            }
+          }
+        }
+      }
+      .additional {
+        margin: 0 0 20px 0;
+        @include hires-breakpoint("sm") {
+          margin: 14px 0 20px 0;
+        }
+        @include hires-breakpoint("xs") {
+          margin: 20px 0;
+        }
+        .item {
+          &:not(:last-child) {
+            margin: 0 14px 0 0;
+            @include hires-breakpoint("lt-md") {
+              margin: 0 0 10px 0;
+            }
+          }
+        }
+      }
+      .others {
+        &:not(:last-child) {
+          margin: 0 0 6px 0;
+          @include hires-breakpoint("lt-md") {
+            margin: 0 0 16px 0;
+          }
+        }
+        .left {
+          width: 80px;
+          flex-shrink: 0;
+          @include hires-breakpoint("lt-md") {
+            margin: 0 0 4px 0;
+          }
+        }
+      }
+      .options {
+        height: fit-content;
+        @include hires-breakpoint("lt-md") {
+          margin: 40px 0 0 auto;
+        }
+      }
+    }
+  }
+}

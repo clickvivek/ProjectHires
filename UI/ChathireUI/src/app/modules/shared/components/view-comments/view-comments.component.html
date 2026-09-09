@@ -1,0 +1,14 @@
+<div class="view-comments-box">
+    <div class="inner d-flex align-items-center" (click)="handleComments()">
+        <span class="material-symbols-outlined icon text-base me-1">
+          chat
+        </span>
+        <span class="text-sm">add comments</span>
+      </div>
+</div>
+
+<mat-sidenav-container *ngIf="isInitiate">
+    <mat-sidenav [(opened)]="isOpened" position="end" [sidenav]="isOpened">
+        Hello
+    </mat-sidenav>
+</mat-sidenav-container>

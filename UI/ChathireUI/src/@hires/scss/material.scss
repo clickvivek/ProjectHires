@@ -1,0 +1,90 @@
+@import "./utilities/all";
+
+.material {
+  max-width: 100vw !important;
+  background-color: white;
+  position: relative !important;
+  @include border-radius(4px);
+  /* dialog */
+  .mat-dialog-container {
+    background: transparent;
+    @include border-radius(0);
+    @include box-shadow(none);
+    padding: 0;
+
+    //max-height: calc(100vh - 150px);
+    @include hires-breakpoint("md") {
+      width: 630px;
+    }
+
+    @include hires-breakpoint("gt-md") {
+      width: calc(100vw - (100vw * 0.35));
+    }
+
+    @include hires-breakpoint("xl") {
+      width: 832px;
+    }
+
+    @include hires-breakpoint("lt-md") {
+      width: calc(100vw - (100vw * 0.15));
+    }
+
+    .close-icon {
+      float: right;
+      padding: 0;
+      min-width: auto;
+      line-height: inherit;
+      position: absolute;
+      right: -15px;
+      top: -15px;
+      @include circles(30px, pick-color(dark, 500), white);
+      overflow: hidden;
+
+      i {
+        @include ft-calc($font-base);
+        margin: -3px 0 0 0;
+        cursor: pointer;
+      }
+
+      &:focus {
+        outline: none;
+      }
+    }
+  }
+
+  &.medium {
+    .mat-dialog-container {
+      @include hires-breakpoint("gt-sm") {
+        width: 630px;
+      }
+    }
+  }
+}
+
+.mat-drawer-container {
+  background: transparent !important;
+  .mat-drawer-backdrop {
+    position: fixed;
+  }
+  .mat-drawer {
+    position: fixed;
+    min-width: 800px;
+    max-width: 800px;
+    z-index: 4;
+    @include hires-breakpoint("lt-lg") {
+      min-width: calc(100vw - 10%);
+      max-width: calc(100vw - 10%);
+    }
+    @include hires-breakpoint("lt-md") {
+      min-width: 100vw;
+      max-width: 100vw;
+    }
+  }
+}
+
+.mat-sidenav {
+  overflow: hidden;
+  .navbar {
+    z-index: 1 !important;
+  }
+}

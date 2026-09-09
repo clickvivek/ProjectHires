@@ -1,0 +1,33 @@
+<div class="resume-box me-3 align-items-center" (click)="handleResume()">
+    <span class="material-symbols-outlined icon text-base me-1">
+      visibility
+    </span>
+    <span class="text-sm">view resume</span>
+  </div>
+  
+  <mat-sidenav-container>
+    <mat-sidenav [(opened)]="isViewer" position="end">
+      <div class="resume-viewer-wrapper">
+        <div class="right mt-3 me-3 d-flex justify-content-end">
+          <div
+            class="material-symbols-outlined text-h4 d-inline-block pointer"
+            (click)="closeViewer()"
+          >
+            close
+          </div>
+        </div>
+        <div class="viewer-content" *ngIf="isViewer">
+          <ngx-doc-viewer *ngIf="isDoc()"
+            [url]="fileUrl"
+            [viewer]="fileType != 'pdf' ? 'office' : 'google'"
+            style="width: 100%; height: 80vh"
+          ></ngx-doc-viewer>
+          <ng-container *ngIf="!isDoc()">
+            <div class="img-box">
+              <img class="view-resume-img" [src]="fileUrl" />
+            </div>
+          </ng-container>
+        </div>
+      </div>
+    </mat-sidenav>
+  </mat-sidenav-container>

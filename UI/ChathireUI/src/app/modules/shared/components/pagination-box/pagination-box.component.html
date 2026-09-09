@@ -1,0 +1,51 @@
+<div class="pagination-wrapper">
+  <div class="pagination shadow d-flex">
+    <div class="left d-none d-md-flex flex-shrink-0">
+      <!-- Showing&nbsp;&nbsp; -->
+      <div class="page-select-wrapper">
+        <div class="page-item-select" (click)="showPageList()">
+          {{ ItemStartIndex + 1 }} to {{ ItemEndIndex }}
+        </div>
+      </div>
+      &nbsp;of&nbsp;{{ totalItems }} results
+    </div>
+
+    <div class="ms-auto page-numbers d-flex align-items-center">
+      <div class="item" *ngIf="itemPageIndex != 1">
+        <a
+          href="javascript:void(0)"
+          class="prev"
+          (click)="gotoPageNum(itemPageIndex - 1)"
+        >
+          <i class="fa fa-angle-left" aria-hidden="true"></i>
+        </a>
+      </div>
+
+      <ng-container
+        *ngFor="let num of pageItemArray; first as isFirst; last as isLast"
+      >
+        <div *ngIf="num != 0" class="item">
+          <a
+            href="javascript:void(0)"
+            [ngClass]="isPageNumActive(num)"
+            (click)="gotoPageNum(num)"
+            >{{ num }}</a
+          >
+        </div>
+        <div *ngIf="num == 0" class="item">
+          <a href="javascript:void(0)" class="holder">...</a>
+        </div>
+      </ng-container>
+
+      <div class="item" *ngIf="itemPageIndex != totalPages">
+        <a
+          href="javascript:void(0)"
+          class="next"
+          (click)="gotoPageNum(itemPageIndex + 1)"
+        >
+          <i class="fa fa-angle-right" aria-hidden="true"></i>
+        </a>
+      </div>
+    </div>
+  </div>
+</div>

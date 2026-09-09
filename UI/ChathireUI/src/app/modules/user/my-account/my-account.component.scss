@@ -1,0 +1,10 @@
+@import "src/@hires/scss/utilities/all";
+@import "src/@hires/scss/helpers/typography";
+
+.my-account-wrapper {
+  .panel {
+    .tab-content {
+      padding: 24px;
+    }
+  }
+}

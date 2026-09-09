@@ -1,0 +1,41 @@
+<div class="form-group">
+    <label for="{{fieldName}}">{{fieldText}}<span *ngIf="isFieldRequired()" class="ms-2 font-medium">*</span></label>
+    <div class="select-wrapper" (click)="showFieldItems()">
+        <input type="text" class="form-control select" 
+        #multiInputElem
+        placeholder="{{fieldPlaceholder}}" 
+        name="{{fieldName}}" 
+        [(ngModel)]="fieldModel"
+        autocomplete="off" 
+        [required]="checkRequired()"
+        (blur)="clearModel()"
+        [ngStyle]="{ 'padding-left.px': leftPadding, 'padding-top.px': topPadding }" 
+        readonly />
+        <span class="select-arrow" [ngClass]="isExpanded ? 'up' : 'down'"></span>
+        <div class="dropdown-wrapper show" [ngClass]="isExpanded ? 'show' : 'd-none'">
+            <div class="list-group dropdown">
+                <ng-container *ngFor="let item of fieldList">
+                    <li class="list-group-item check-list" (click)="handleSelectedItem(item)">
+                        <div class="form-check">
+                            <input
+                                type="checkbox"
+                                class="form-check-input filled"
+                                id="selectedCheck{{item[fieldType]}}"
+                                name="selectedCheck{{item[fieldType]}}"
+                                 />
+                            <label for="selectedCheck{{item[fieldType]}}">{{item[fieldType]}}</label>
+                        </div>
+                    </li>
+                </ng-container>
+            </div>
+        </div>
+        <div class="badge-list" #badgeListElem>
+            <ul class="list-inline">
+                <li class="list-inline-item" *ngFor="let badge of selectedItem">
+                    <span>{{badge[fieldType]}}</span>
+                    <i class="fa fa-times pointer" aria-hidden="true" (click)="removeBadge(badge)"></i>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>

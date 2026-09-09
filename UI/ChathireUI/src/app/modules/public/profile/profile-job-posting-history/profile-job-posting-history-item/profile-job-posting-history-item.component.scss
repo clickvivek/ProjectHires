@@ -1,0 +1,22 @@
+@import "src/@hires/scss/utilities/all";
+@import "src/@hires/scss/helpers/typography";
+
+.profile-job-posting-history-item-wrapper {
+    .list-group-item {
+        border: none;
+        padding: 15px 20px;
+        border-bottom: 1px solid pick-color(dark, 300);
+        &:hover {
+          background-color: pick-color(dark, 50);
+        }
+        .icon {
+          @include ft-calc($font-normal);
+          color: pick-color(secondary, 400);
+          margin: 0 2px 0 0;
+        }
+        &:hover,
+        &.selected {
+          background-color: pick-color(primary, 50)
+        }
+      }
+}

@@ -1,0 +1,73 @@
+@import "src/@hires/scss/utilities/all";
+@import "src/@hires/scss/helpers/typography";
+
+.pagination-wrapper {
+  .pagination {
+    display: inline-block;
+    width: 100%;
+    @extend .ft-head;
+    @include ft-calc($font-small);
+    margin: 20px 0 0 0;
+    background-color: white;
+    @include border-radius(4px);
+    overflow: hidden;
+    .left {
+      color: pick-color(dark, 500);
+      padding: 12px 16px;
+      position: relative;
+      top: 2px;
+      .num {
+        color: pick-color(dark, 500);
+      }
+      @include hires-breakpoint("lt-md") {
+        padding: 0 0 20px 0;
+      }
+    }
+    .page-numbers {
+      @include hires-breakpoint("lt-md") {
+        width: 100%;
+        display: flex;
+        justify-content: center;
+      }
+      a {
+        color: pick-color(dark, 500);
+      }
+      .item {
+        margin-right: 0;
+        a {
+          display: block;
+          padding: 12px 18px;
+          @include transition(all 0.15s ease);
+          border-right: 1px solid pick-color(dark, 300);
+          &:hover,
+          &.active {
+            color: white;
+            background-color: pick-color(dark, 400);
+            @include transition(all 0.15s ease);
+            border-right: 1px solid pick-color(dark, 300);
+          }
+          &.prev,
+          &.next {
+            color: pick-color(dark, 500);
+            padding: 6px 18px;
+            border: none;
+            @include ft-calc($font-base);
+            &:hover {
+              color: pick-color(dark, 500);
+              background-color: transparent;
+            }
+          }
+        }
+        &:last-child {
+          a {
+            border-right: none;
+            &:hover,
+            &.active {
+              border-right: none;
+            }
+          }
+        }
+      }
+    }
+  }
+}

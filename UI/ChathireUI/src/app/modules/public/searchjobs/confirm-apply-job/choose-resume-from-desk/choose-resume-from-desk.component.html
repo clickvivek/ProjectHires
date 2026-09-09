@@ -1,0 +1,152 @@
+<div class="choose-resume-from-desk-wrapper">
+  
+    <p class="ft-head fw-medium text-normal">Resume</p>
+    <p class="mb-3 text-sm text-dark-500">Include an updated resume</p>
+
+    <form
+      #applyJobsForm="ngForm"
+      name="applyJobsForm"
+      (ngSubmit)="applyJob()"
+      novalidate
+    >
+
+      <div class="resume-lists" *ngIf="selectedResume">
+        <div class="item">
+            <div class="type text-sm">
+              {{ getFileType(resumeDocumentType) }}
+            </div>
+            <div class="name text-sm fw-medium">{{ resumeFileName }}</div>
+            <div
+              class="material-symbols-outlined delete text-h6 pointer"
+              (click)="deleteResume()"
+            >
+              close
+            </div>
+          </div>
+      </div>
+
+      <div class="upload-area">
+        <input
+          type="file"
+          id="fileInput"
+          name="file"
+          accept=".pdf, .doc, .docx"
+          (change)="onFileSelected($event)"
+          #resumeFileInput
+        />
+        <label for="fileInput" class="custom-file-upload">
+          Upload resume
+        </label>
+        <p class="text-sm fw-medium text-dark-500 mt-2">
+          DOC, DOCX, PDF (2 MB)
+        </p>
+
+        <div class="input-field-message" *ngIf="applyJobsForm.submitted && !selectedResume">
+          resume required
+        </div>
+
+    </div>
+
+      <div class="input-box">
+        <div class="form-group">
+          <label for="name"
+            >Candidate Name <span class="req">*</span></label
+          >
+          <input
+            type="text"
+            class="form-control"
+            placeholder="Title"
+            [(ngModel)]="formData.name"
+            name="name"
+            required
+            autocomplete="off"
+          />
+          <div
+            class="mt-2"
+            *ngIf="
+              applyJobsForm.submitted &&
+              applyJobsForm.controls['name'].invalid
+            "
+          >
+            <div
+              class="input-field-message"
+              *ngIf="applyJobsForm.controls['name'].errors?.['required']"
+            >
+            Candidate name required
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="input-box">
+        <div class="form-group">
+          <label for="totalExp">Total years of Exp <span class="req">*</span></label>
+          <input
+            type="text"
+            #postJobExperience
+            class="form-control"
+            placeholder="Enter"
+            [(ngModel)]="formData.totalExp"
+            name="totalExp"
+            required
+            autocomplete="off"
+          />
+          <div
+            class="mt-2"
+            *ngIf="
+            applyJobsForm.submitted &&
+            applyJobsForm.controls['totalExp'].invalid
+            "
+          >
+            <div
+              class="input-field-message"
+              *ngIf="applyJobsForm.controls['totalExp'].errors?.['required']"
+            >
+            Total Experience is required
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="input-box search-box">
+        <app-multi-search-field
+          fieldName="stateId"
+          fieldText="Current Location (state)"
+          fieldType="city1"
+          fieldPlaceholder="Select state"
+          [fieldRequired]="true"
+          [fieldList]="selectLocationList"
+          fieldItemMinLimit="1"
+          fieldItemMaxLimit="1"
+          [editValue]="formData.candidatePrefLocations"
+          (queryChange)="onReLocationQuery($event)"
+          (inputChange)="onSelectedLocations($event)"
+        >
+        </app-multi-search-field>
+        <div
+          class="mb-3"
+          *ngIf="
+          applyJobsForm?.submitted &&
+          applyJobsForm.controls['stateId'].invalid
+          "
+        >
+          <div
+            class="input-field-message"
+            *ngIf="applyJobsForm.controls['stateId'].errors?.['required']"
+          >
+            Relocation is required
+          </div>
+        </div>
+      </div>
+
+      <div class="text-end mt-4">
+        <div class="btn btn-secondary me-3" (click)="clearData()">Back</div>
+        <button type="submit" class="btn btn-primary">
+          Apply
+        </button>
+    </div>
+
+    </form>
+
+
+</div>

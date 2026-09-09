@@ -1,0 +1,49 @@
+@import "src/@hires/scss/utilities/all";
+@import "src/@hires/scss/helpers/typography";
+
+.dropdown-classic-wrapper {
+    position: relative;
+    .dropdown-btn {
+        display: inline-flex;
+        cursor: pointer;
+        align-items: center;
+        padding: 4px 6px;
+        @include border-radius(4px);
+        &:hover {
+            background-color: pick-color(dark, 200);
+        }
+    }
+    .dropdown-list {
+        position: absolute;
+        top: 30px;
+        min-width: 180px;
+        @include border-radius(4px);
+        background-color: white;
+        padding: 10px 0;
+        z-index: 1;
+        .list-group-item {
+            padding: 6px 10px;
+            color: pick-color(dark, 700);
+            margin: 0 10px;
+            cursor: pointer;
+            @include border-radius(4px);
+            &:hover {
+                background-color: pick-color(dark, 100);
+            }
+            &.selected {
+                position: relative;
+                &:after {
+                    position: absolute;
+                    z-index: 1;
+                    content: "\e876";
+                    top: 4px;
+                    right: 8px;
+                    font-family: "Material Symbols Outlined";
+                    color: pick-color(dark, 500);
+                    @include ft-calc($font-base);
+
+                  }
+            }
+        }
+    }
+}

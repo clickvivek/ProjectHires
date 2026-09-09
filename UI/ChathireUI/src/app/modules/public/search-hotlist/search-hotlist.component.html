@@ -1,0 +1,171 @@
+<div class="search-hotlist-wrapper">
+  <div class="container">
+    <div class="row">
+      
+      <div class="col-md-8 offset-md-2 col-lg-10 offset-lg-1 text-center">
+        <h5 class="mb-4">Search resumes and contact the Employer / Candidate</h5>
+        <div class="mb-4">
+          <search-skill-location
+            [skill]="skill"
+            [location]="location"
+            [cityId]="cityId"
+            [stateId]="stateId"
+            type="hotlist"
+          ></search-skill-location>
+        </div>
+      </div>
+
+      <div class="col-md-12">
+
+        <loader *ngIf="!isLoaded"></loader>
+
+        <ng-container *ngIf="isLoaded">
+
+          <div class="mt-2 alert alert-danger" *ngIf="isError">
+            {{ error }}
+          </div>
+
+          <ng-container *ngIf="isDataAvailable">
+
+            <div class="options-box">
+              <h6>{{ totalItems }} resume(s) found</h6>
+            </div>
+
+            <div class="list-container">
+
+              <adv-filter-card>
+                <adv-filter-visa
+                  (inputChange)="onVisaFilter($event)"
+                ></adv-filter-visa>
+                <adv-filter-experience-level
+                  (inputChange)="onExpFilter($event)"
+                ></adv-filter-experience-level>
+                <adv-filter-reset></adv-filter-reset>
+              </adv-filter-card>
+
+              <div class="content" *ngIf="filteredHotListData.length > 0">
+
+                <li class="list-group-item shadow" *ngFor=" let item of filteredHotListData | slice : ItemStartIndex : ItemEndIndex">
+                  <div class="content-area">
+                    <div class="row">
+                      <div class="col-sm-12 col-lg-8 top">
+                        <div class="left">
+                          <div class="mb-1 d-md-flex align-items-center">
+                            <h6
+                              class="text-secondary-600 text-uppercase text-normal fw-medium me-3"
+                            >
+                              {{ item.candidateName }}
+                            </h6>
+                            <p
+                              class="ft-head text-dark-500 fw-medium text-capitalizel"
+                            >
+                              {{ item.title }}
+                            </p>
+                          </div>
+
+                          <div class="d-md-flex additional align-items-center">
+                            <div class="item d-flex align-items-center">
+                              <span
+                                class="material-symbols-outlined text-base text-dark-500 me-2"
+                                >trip</span
+                              >
+                              <p class="text-sm fw-medium">
+                                {{ item.totalExp }} years
+                              </p>
+                            </div>
+                            <div class="item d-flex align-items-center">
+                              <span
+                                class="material-symbols-outlined text-base text-dark-500 me-2"
+                                >airplane_ticket</span
+                              >
+                              <p class="text-sm fw-medium">
+                                {{ getVisa(item.visaId) }}
+                              </p>
+                            </div>
+                            <div class="item d-flex align-items-center">
+                              <span
+                                class="material-symbols-outlined text-base text-dark-500 me-1"
+                                >location_on</span
+                              >
+                              <p class="text-sm fw-medium">
+                                {{ item.currentLocationCity }},
+                                {{ item.currentLocationState }}
+                              </p>
+                            </div>
+                            <div></div>
+                          </div>
+
+                          <div class="others d-md-flex">
+                            <p class="me-3 text-sm text-dark-500 left">
+                              Availability
+                            </p>
+                            <p class="fw-medium text-sm">
+                              {{ item.candidateAvailability }}
+                            </p>
+                          </div>
+                          <div class="d-md-flex others">
+                            <p class="me-3 text-sm text-dark-500 left">
+                              Preferred location
+                            </p>
+                            <p class="fw-medium text-sm">
+                              <span *ngIf="item.remoteOnly != 'True'">{{ getRelocation(item.locations) }}</span>
+                              <span *ngIf="item.remoteOnly == 'True'">Remote only</span>
+                            </p>
+                          </div>
+
+                          <div class="skills mt-4" *ngIf="isSkills(item.skills)">
+                            <span
+                              class="item text-primary-800 bg-primary-50 text-smr fw-medium"
+                              *ngFor="let skill of item.skills"
+                              >{{ skill }}</span
+                            >
+                          </div>
+                          <div class="skills mt-4" *ngIf="!isSkills(item.skills)">
+                            <span
+                              class="item text-danger-800 bg-danger-50 text-smr fw-medium"
+                              >No Skills Available</span
+                            >
+                          </div>
+                          <div class="bottom-box my-2 d-flex">
+                            <view-resume
+                              *ngIf="item?.resume"
+                              [doc]="item.resume"
+                            ></view-resume>
+                            <download-resume
+                              *ngIf="item?.resume"
+                              [doc]="item.resume"
+                            ></download-resume>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div class="col-sm-12 col-lg-4">
+                        <search-hotlist-chat [item]="item"></search-hotlist-chat>
+                      </div>
+                    </div>
+                  </div>
+                </li>
+
+                <app-pagination-box
+                  [totalItems]="totalItems"
+                  [ItemStartIndex]="ItemStartIndex"
+                  [ItemEndIndex]="ItemEndIndex"
+                  [itemLimit]="itemLimit"
+                  (outputParams)="getIndexParams($event)"
+                >
+                </app-pagination-box>
+
+              </div>
+
+            </div>
+
+          </ng-container>
+
+        </ng-container>
+
+      </div>
+
+
+    </div>
+  </div>
+</div>

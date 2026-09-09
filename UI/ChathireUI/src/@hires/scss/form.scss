@@ -1,0 +1,586 @@
+/* form */
+@import "./utilities/all";
+
+form {
+  .input-box {
+    margin: 0 0 15px 0;
+    width: 100%;
+    @include hires-breakpoint("xs") {
+      margin: 0 0 8px 0;
+    }
+  }
+  .input-field-message {
+    @extend .ft-default;
+    @include ft-calc($font-small);
+    color: pick-color(danger, 600);
+  }
+  .submit-box {
+    margin: 20px 0 30px 0;
+    clear: both;
+    text-align: center;
+    width: 100%;
+    .btn {
+      @extend .ft-head;
+    }
+  }
+
+  .date-box {
+    .mat-form-field-infix {
+      border-top: none;
+    }
+    .mat-datepicker-toggle-default-icon {
+      width: 20px !important;
+      height: 20px;
+      position: absolute;
+      right: 22px;
+      bottom: 8px;
+      color: pick-color(dark, 500);
+    }
+    .mat-datepicker-toggle {
+      button {
+        &:focus {
+          outline: none !important;
+        }
+      }
+    }
+    .mat-form-field-underline,
+    .mat-form-field-label,
+    .mat-button-focus-overlay,
+    .mat-button-ripple-round {
+      display: none !important;
+    }
+  }
+
+  .form-box {
+    margin: 15px 0 0 0;
+    h5 {
+      @include ft-calc($font-h6);
+      border-bottom: 1px solid pick-color(dark, 300);
+      padding: 0 0 8px 0 !important;
+      margin: 0 0 20px 0 !important;
+      letter-spacing: 0.6px;
+      color: pick-color(dark, 800);
+    }
+  }
+
+  .form-group {
+    position: relative;
+    margin-bottom: 10px;
+    label {
+      margin: 0 0 5px 0;
+      @extend .ft-default;
+    }
+
+    input {
+      height: 46px;
+      padding: 5px 10px;
+      @extend .ft-default;
+      @include border-radius(4px);
+      border: 1px solid pick-color(dark, 300);
+
+      @include placeholder {
+        color: pick-color(dark, 400);
+        font-style: italic;
+        @include ft-calc($font-regular);
+      }
+
+      &:focus {
+        @include box-shadow(none);
+        border-color: pick-color(dark, 300);
+      }
+
+      &:disabled {
+        background-color: pick-color(dark, 200);
+      }
+
+      &.ng-dirty.ng-invalid,
+      &.error {
+        border-color: pick-color(danger, 600) !important;
+
+        & + .input-group-text {
+          border-color: pick-color(danger, 600) !important;
+        }
+      }
+
+      &:-webkit-autofill {
+        -webkit-box-shadow: 0 0 0px 1000px white inset;
+        -webkit-text-fill-color: pick-color(dark, 900);
+      }
+
+      &[readonly] {
+        background-color: white;
+        color: pick-color(dark, 500);
+
+        &:-webkit-autofill {
+          -webkit-box-shadow: 0 0 0px 1000px white inset;
+          -webkit-text-fill-color: white;
+        }
+      }
+
+      &.ng-dirty.ng-invalid,
+      &.error {
+        border-color: pick-color(danger, 600) !important;
+
+        & + .input-group-text {
+          border-color: pick-color(danger, 600) !important;
+        }
+      }
+
+      + .dropdown-menu {
+        border: 1px solid pick-color(dark, 300);
+        @include border-radius(10px);
+
+        .dropdown-item {
+          @include ft-calc($font-normal);
+          color: pick-color(dark, 800);
+
+          &:hover,
+          &.active {
+            background: pick-color(dark, 100);
+          }
+        }
+      }
+
+      &[type="radio"] {
+        position: absolute;
+        display: none;
+      }
+
+      &[type="radio"] + label {
+        @extend .ft-default;
+        color: pick-color(dark, 800);
+        padding: 0 20px 0 0;
+        @include ft-calc($font-regular);
+      }
+
+      &[type="radio"] + label:before {
+        content: "";
+        border: 1px solid pick-color(dark, 500);
+        background: pick-color(dark, 100);
+        @include border-radius(100%);
+        display: inline-block;
+        width: 16px;
+        height: 16px;
+        position: relative;
+        top: 7px;
+        margin-right: 8px;
+        vertical-align: top;
+        cursor: pointer;
+        text-align: center;
+      }
+
+      &[type="radio"]:checked + label:before {
+        background-color: white;
+        border: none;
+        @include box-shadow(inset 0 0 0 5px $primary);
+      }
+
+      &.select {
+        cursor: pointer;
+
+        &[readonly] {
+          background-color: white;
+          color: pick-color(dark, 500);
+          &:-webkit-autofill {
+            -webkit-box-shadow: 0 0 0px 1000px white inset;
+            -webkit-text-fill-color: white;
+          }
+        }
+
+        &:focus {
+          @include box-shadow(none);
+          background-color: white;
+          border: 1px solid pick-color(dark, 300);
+        }
+
+        & + .select-arrow {
+          &:after {
+            position: absolute;
+            top: 38px;
+            right: 4px;
+            font-family: $fta;
+            @include ft-calc($font-h6);
+            color: $primary;
+            content: "";
+            padding: 0 0.5em;
+            display: inline-block;
+          }
+
+          &.down {
+            &:after {
+              content: "\f107";
+            }
+          }
+
+          &.up {
+            &:after {
+              content: "\f106";
+            }
+          }
+        }
+
+        &.multi {
+          text-indent: -1000px;
+          min-height: 42px;
+
+          @include placeholder {
+            text-indent: 0px;
+          }
+        }
+      }
+
+      &.search {
+        & + .search-control {
+          position: absolute;
+          top: 38px;
+          right: 15px;
+          @include ft-calc($font-normal);
+          color: $primary;
+        }
+      }
+
+      &.multi-search,
+      &.select {
+        min-height: 46px;
+        height: auto;
+      }
+
+      &.datepicker + span {
+        color: pick-color(dark, 500);
+        @include ft-calc($font-small);
+        font-style: italic;
+        position: absolute;
+        left: 10px;
+        top: 16px;
+        pointer-events: none;
+      }
+    }
+
+    .form-check {
+      position: relative;
+      padding: 0;
+      margin: 0 0 8px 0;
+
+      .form-check-input[type="radio"] {
+        border: solid pick-color(dark, 500);
+      }
+
+      .form-check-input[type="checkbox"] {
+        padding: 0;
+        height: initial;
+        width: initial;
+        margin-bottom: 0;
+        display: none;
+        cursor: pointer;
+        position: static;
+      }
+
+      .form-check-input[type="checkbox"]:checked + label:after {
+        content: "";
+        display: block;
+        position: absolute;
+        top: 5px;
+        left: 6px;
+        width: 6px;
+        height: 10px;
+        border: solid pick-color(dark, 500);
+        border-width: 0 2px 2px 0;
+        transform: rotate(45deg);
+      }
+
+      .form-check-input.filled[type="checkbox"]:checked + label:before {
+        background-color: $primary;
+        border: 2px solid $primary;
+      }
+
+      .form-check-input.filled[type="checkbox"]:checked + label:after {
+        border-color: white;
+      }
+
+      label {
+        position: relative;
+        cursor: pointer;
+
+        &:before {
+          content: "";
+          background: none repeat scroll 0 0 transparent;
+          border: 2px solid pick-color(dark, 500);
+          @include border-radius(4px);
+          width: 18px;
+          height: 18px;
+          display: inline-block;
+          position: relative;
+          vertical-align: middle;
+          cursor: pointer;
+          margin: -1px 9px 0 0;
+        }
+      }
+
+      .form-check-input[type="radio"] {
+       & + label {
+        &:before {
+          margin: -4px 4px 0 0;
+        }
+       }
+      }
+
+    }
+
+    textarea {
+      @extend .ft-default;
+      @include border-radius(4px);
+      border: 1px solid pick-color(dark, 500);
+      @include ft-calc($font-small);
+      @include box-shadow(0px 1px 4px rgba(0, 0, 0, 0.1));
+      height: 200px;
+      resize: none;
+
+      @include placeholder {
+        color: pick-color(dark, 500);
+        @include ft-calc($font-small);
+        font-style: italic;
+      }
+
+      &:focus {
+        @include box-shadow(none);
+        border-color: pick-color(dark, 300);
+      }
+
+      &:-webkit-autofill {
+        -webkit-box-shadow: 0 0 0px 1000px white inset;
+        -webkit-text-fill-color: pick-color(dark, 900);
+      }
+
+      &.ng-dirty.ng-invalid,
+      &.error {
+        border-color: pick-color(danger, 600);
+      }
+    }
+
+    .input-group {
+      input {
+        border-right: none;
+        border-top-right-radius: 0 !important;
+        //border-bottom-right-radius: 0 !important;
+      }
+
+      .input-group-text {
+        cursor: pointer;
+        @include border-radius(4px);
+        border-top-left-radius: 0 !important;
+        border-bottom-left-radius: 0 !important;
+        padding: 0 16px;
+        background: transparent;
+        border: 1px solid pick-color(dark, 300);
+        border-left: none;
+
+        i {
+          font-size: 16px;
+          color: pick-color(dark, 500);
+        }
+      }
+    }
+  }
+}
+
+.search-box,
+.select-box {
+  .input-field-message {
+    margin: -6px 0 0 0;
+  }
+
+  .dropdown-wrapper {
+    display: none;
+    position: absolute;
+    z-index: 3;
+    width: 100%;
+    margin: 4px 0 0 0;
+    height: 350px;
+    ng-scrollbar {
+      border-bottom: 1px solid pick-color(dark, 300);
+      border-bottom-left-radius: 4px;
+      overflow: hidden;
+      border-bottom-right-radius: 4px;
+    }
+    &.show {
+      display: block;
+    }
+    @include hires-breakpoint("lt-lg") {
+      width: 100%;
+    }
+    .dropdown {
+      width: 100%;
+      max-height: 240px;
+      overflow: auto;
+      @include border-radius(4px);
+      @include box-shadow(0 3px 13px 0 rgba(pick-color(dark, 500), 0.4));
+      li {
+        position: relative;
+        cursor: pointer;
+        background-color: white;
+        padding: 10px;
+        @include ft-calc($font-small);
+        width: 100%;
+        text-align: left;
+        border-bottom: 1px solid pick-color(dark, 300);
+        &:last-child {
+          border-bottom: none;
+        }
+        &.selected {
+          &:before {
+            position: absolute;
+            top: 10px;
+            right: 12px;
+            font-family: $fta;
+            content: "\f00c";
+            color: $primary;
+            margin: 0 6px 0 0;
+          }
+        }
+        &:hover {
+          background-color: pick-color(dark, 100);
+        }
+        &.check-list {
+          padding: 0;
+          .form-check {
+            display: flex;
+            align-items: center;
+            margin: 0;
+            label {
+              width: 100%;
+              margin: 0;
+              padding: 10px;
+            }
+            .form-check-input[type=checkbox]:checked + label:after {
+              top: 16px;
+              left: 16px;
+            }
+          }
+        } 
+      }
+    }
+  }
+
+  .badge-list {
+    position: absolute;
+    top: 35px;
+    left: 4px;
+    pointer-events: none;
+    height: inherit;
+    width: calc(100% - 60px);
+
+    ul {
+      display: inline-block;
+
+      li {
+        background-color: #fff;
+        @include border-radius(2px);
+        border: 1px solid pick-color(dark, 300);
+        padding: 6px 8px 6px 10px;
+        @include ft-calc($font-tiny);
+        color: pick-color(dark, 500);
+        margin: 0 4px 4px 0 !important;
+        pointer-events: auto;
+
+        span {
+          padding-right: 8px !important;
+        }
+
+        i {
+          cursor: pointer;
+        }
+      }
+    }
+
+    &.hide {
+      display: none;
+    }
+  }
+}
+
+.select-box {
+  .dropdown {
+    max-height: 200px;
+    overflow: scroll !important;
+  }
+}
+
+.radio-box {
+  label {
+    margin: 0 0 5px 0;
+    @include ft-calc($font-normal);
+    color: pick-color(dark, 800);
+    @extend .ft-default;
+    width: 100%;
+  }
+
+  .form-group {
+    width: auto !important;
+    margin: 10px 0 0 0;
+
+    @include hires-breakpoint("xs") {
+      margin: 4px 0 8px 0;
+    }
+  }
+}
+
+.upload-box {
+  .fileUpload {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .fileUpload input.upload {
+    position: absolute;
+    top: 0;
+    right: 0;
+    margin: 0;
+    padding: 0;
+    @include ft-calc($font-h6);
+    cursor: pointer;
+    @include opacity(0);
+  }
+
+  .btn-browse {
+    @include border-radius(0 4px 4px 0);
+    @include ft-calc($font-small);
+    background-color: $primary;
+    color: white;
+    height: 42px;
+
+    span {
+      position: relative;
+      top: 5px;
+    }
+
+    &:hover,
+    &:focus {
+      background-color: darken($primary, 5%);
+    }
+  }
+
+  .f-input {
+    height: 42px;
+    background-color: white;
+    border: 1px solid pick-color(dark, 500);
+    width: calc(100% - 100px);
+    max-width: 400px;
+    padding: 0 14px;
+    @include border-radius(4px 0 0 4px);
+    @include box-shadow(none);
+  }
+}
+
+.quill-editor {
+  width: 100%;
+  .ql-toolbar {
+    @include border-radius(4px 4px 0 0);
+  }
+  .ql-container {
+    @extend .ft-default;
+    @include border-radius(0 0 4px 4px);
+    border-top: none !important;
+    @include ft-calc($font-small);
+    height: 200px;
+  }
+}

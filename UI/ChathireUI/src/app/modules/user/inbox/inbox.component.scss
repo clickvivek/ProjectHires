@@ -1,0 +1,84 @@
+@import "src/@hires/scss/utilities/all";
+@import "src/@hires/scss/helpers/typography";
+
+.inbox-wrapper {
+    .active-box {
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+        height: 100%;
+        @include hires-breakpoint("lt-md") {
+           margin: 4px 0 0 0;
+           justify-content: start;
+        }
+    }
+    .options-box {
+        margin: 24px 0 0 0;
+        .options-area {
+            display: flex;
+            align-items: center;
+            @include hires-breakpoint("lt-md") {
+                margin: 16px 0 0 0;
+            }
+            .option {
+                .label {
+                    color: pick-color(dark, 700);
+                    @extend .ft-head;
+                }
+                &:not(:last-child) {
+                    margin: 0 20px 0 0;
+                }
+            }
+            
+        }
+    }
+    .inbox-container {
+        margin: 20px 0 0 0;
+        .list-group-item {
+          padding: 14px 24px 14px 24px;
+          border: none;
+          @include border-radius(4px);
+          background-color: white;
+          &:not(:last-child) {
+            margin: 0 0 20px 0;
+          }
+          .top {
+            display: flex;
+            align-items: center;
+            @include hires-breakpoint("lt-md") {
+                margin: 0 0 4px 0;
+            }
+          }
+        .desp {
+            &:not(:last-child) {
+                margin: 0 12px 0 0;
+            }
+        }
+          .bottom {
+            margin: 10px 0 0 0;
+            @include hires-breakpoint("lt-md") {
+                margin: 20px 0 0 0;
+            }
+            .box {
+                cursor: pointer;
+                width: 100%;
+                border: 1px solid pick-color(dark, 200);
+                background-color: pick-color(dark, 50);
+                border-radius: 4px;
+                padding: 10px;
+                height: 100%;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                &:hover {
+                    background-color: pick-color(dark, 200);
+                }
+                @include hires-breakpoint("lt-lg") {
+                    height: auto;
+                    margin: 0 0 10px 0;
+                }
+            }
+          }
+        }
+    }
+}

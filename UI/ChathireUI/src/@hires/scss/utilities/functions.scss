@@ -1,0 +1,39 @@
+@import "./variables";
+
+// Shades Generator
+@function generate-mat-color($color) {
+  $light: #ffffff;
+  $dark: darken($color, 10%);
+
+  $updated-map: (
+    50: mix($light, $color, 88%),
+    100: mix($light, $color, 70%),
+    200: mix($light, $color, 50%),
+    300: mix($light, $color, 30%),
+    400: mix($light, $color, 15%),
+    500: $color,
+    600: mix($dark, $color, 13%),
+    700: mix($dark, $color, 30%),
+    800: mix($dark, $color, 46%),
+    900: mix($dark, $color, 75%),
+  );
+  @return $updated-map;
+}
+
+@function update-map-key($map, $newKey) {
+  $updated-map: ();
+  @each $key, $value in $map {
+    $updated-map: map-merge($updated-map, (#{$newKey}-#{$key}: $value));
+  }
+  @return $updated-map;
+}
+
+@function myFunction($param1, $param2) {
+  // Your function logic here
+  @return $param1 + $param2;
+}
+
+@function pick-color($color, $value) {
+  $updated-map: map-get($hires-colors, $color);
+  @return map-get($updated-map, $value);
+}

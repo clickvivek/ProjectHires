@@ -1,0 +1,53 @@
+<div class="filter-item">
+  <div class="filter-area" [ngClass]="isFilterExists ? 'is-filter' : ''">
+    <p class="text-regular fw-medium">Date Posted</p>
+    <i class="fa-solid fa-angle-down arrow"></i>
+  </div>
+  <div class="dropdown-wrapper dropdown-filter-box">
+    <ng-scrollbar
+      #scrollable
+      track="all"
+      pointerEventsMethod="scrollbar"
+      [autoHeightDisabled]="false"
+    >
+      <form>
+        <div class="form-group">
+          <div class="list-group dropdown">
+            <ng-container *ngFor="let item of filterDatePostedData">
+              <li class="list-group-item">
+                <div class="form-check">
+                  <input
+                    class="form-check-input"
+                    type="radio"
+                    [id]="item.fid"
+                    [name]="item.cid"
+                    [value]="item.fid"
+                    [(ngModel)]="selectedDateParam"
+                    (change)="onDatePostedChange(item.fid)"
+                  />
+                  <label class="form-check-label" [for]="item.fid">
+                    {{ item.name }}
+                  </label>
+                </div>
+              </li>
+            </ng-container>
+          </div>
+        </div>
+      </form>
+    </ng-scrollbar>
+    <div class="results-box">
+      <a
+        href="javascript:void(0)"
+        class="filter-cancel fw-medium"
+        (click)="reset()"
+        >Reset</a
+      >
+      <a
+        href="javascript:void(0)"
+        class="result fw-medium"
+        (click)="applySearch()"
+        >Apply</a
+      >
+    </div>
+  </div>
+</div>

@@ -1,0 +1,8 @@
+
+<mat-sidenav-container>
+    <mat-sidenav [(opened)]="isOpened" position="end" [sidenav]="isOpened" (closed)="onSidenavClose()">
+        <div class="posting-edit-details-wrapper">
+            <post-job-details (outputparams)="handleClose($event)"></post-job-details>
+        </div>
+    </mat-sidenav>
+</mat-sidenav-container>

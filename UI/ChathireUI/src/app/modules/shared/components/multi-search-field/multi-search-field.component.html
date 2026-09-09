@@ -1,0 +1,30 @@
+<div class="form-group">
+	<label for="{{fieldName}}">{{fieldText}}<span *ngIf="isFieldRequired()" class="ms-2 font-medium">*</span></label>
+	<input type="text"
+		class="form-control search multi-search"
+    #multiInputElem
+		placeholder="{{fieldPlaceholder}}"
+		name="{{fieldName}}"
+		[(ngModel)]="fieldModel"
+		(ngModelChange)="handleModelChange()"
+    [required]="fieldRequired && selectedItem.length == 0"
+    (blur)="clearModel()"
+    [ngStyle]="{ 'padding-left.px': leftPadding, 'padding-top.px': topPadding, 'text-indent.px': handleTextIndent() }"
+		autocomplete="off">
+  <span class="search-control"><i class="fa fa-search" aria-hidden="true"></i></span>
+	<div class="dropdown-wrapper show" *ngIf="isExpanded">
+		<div class="list-group dropdown">
+			<ng-container *ngFor="let item of fieldList">
+				<li class="list-group-item" (click)="handleSelectedItem(item)">{{getItemData(item)}}</li>
+			</ng-container>
+		</div>
+	</div>
+  <div class="badge-list" #badgeListElem>
+    <ul class="list-inline">
+      <li class="list-inline-item" *ngFor="let badge of selectedItem">
+        <span>{{getSelectedItemData(badge,fieldType)}}</span>
+        <i class="fa fa-times pointer" aria-hidden="true" (click)="removeBadge(badge)"></i>
+      </li>
+    </ul>
+  </div>
+</div>

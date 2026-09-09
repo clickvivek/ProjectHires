@@ -1,0 +1,388 @@
+@import "src/@hires/scss/utilities/all";
+@import "src/@hires/scss/helpers/typography";
+
+header {
+  .navbar {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    z-index: 1000;
+    height: 70px;
+    background-color: white;
+    @include hires-breakpoint("lt-lg") {
+      @include box-shadow(0 0 4px pick-color(dark, 300));
+      &:before {
+        content: "";
+        position: absolute;
+        width: 0;
+        @include opacity(0);
+        height: 100vh;
+        background: rgba(black, 0.6);
+        left: 0;
+        top: 0;
+        @include transition(opacity 0.15s ease);
+      }
+    }
+    &.awake {
+      @include transition(all 0.15s ease);
+      @include box-shadow(0 0 4px pick-color(dark, 300));
+      z-index: 4;
+    }
+    .navbar-brand {
+      display: flex;
+      align-items: center;
+      flex-shrink: 0;
+      .logo {
+        width: 100%;
+        object-fit: cover;
+        height: 26px;
+      }
+      .logo-text {
+        text-indent: -999px;
+      }
+    }
+    .navbar-toggle {
+      display: none;
+      @include hires-breakpoint("lt-lg") {
+        display: flex;
+        margin-left: auto;
+        align-items: center;
+        background: transparent;
+        border: 0;
+        .navbar-toggler-icon {
+          width: 22px;
+          height: 25px;
+          position: relative;
+          cursor: pointer;
+          background-image: none;
+          span {
+            position: absolute;
+            right: 0;
+            background: pick-color(dark, 900);
+            width: 100%;
+            @include transform(translateX(0));
+            height: 2px;
+
+            &:nth-child(1) {
+              top: 7px;
+              @include transition(all 0.15s ease);
+            }
+
+            &:nth-child(2) {
+              top: 13px;
+              @include opacity(1);
+              @include transition(all 0.15s ease);
+            }
+
+            &:nth-child(3) {
+              top: 19px;
+              @include transition(all 0.15s ease);
+            }
+          }
+
+          &:hover {
+            span {
+              background: $primary;
+            }
+          }
+        }
+      }
+    }
+    .nav-right {
+      .navbar-nav {
+        @include hires-breakpoint("lt-lg") {
+          display: none;
+        }
+        .nav-item {
+          position: relative;
+          margin-right: 30px;
+          @include hires-breakpoint("lg") {
+            margin-right: 24px;
+          }
+          &.user {
+            margin-right: 0
+          }
+          .nav-link {
+            @extend .ft-head;
+            @extend .text-sm;
+            @extend .fw-medium;
+            padding: 0;
+            line-height: 40px;
+            color: pick-color(dark, 900);
+            &:hover,
+            &.active {
+              color: $primary;
+            }
+            @include hires-breakpoint("lg") {
+              font-size: 13px;
+            }
+            @include hires-breakpoint("lt-lg") {
+              font-size: 16px;
+              padding: 0;
+              &:hover,
+              &.active {
+                color: $primary;
+              }
+            }
+          }
+          &.special {
+            .nav-link {
+              color: white;
+              display: block;
+              background: $primary;
+              @include border-radius(3px);
+              padding: 0 16px;
+              @include hires-breakpoint("lt-lg") {
+                background: transparent;
+                color: inherit;
+                padding: 0;
+              }
+              span {
+                @include hires-breakpoint("lt-lg") {
+                  color: white;
+                  background: $primary;
+                  @include ft-calc($font-tiny);
+                  padding: 4px 15px;
+                  position: relative;
+                  top: -2px;
+                  left: 4px;
+                  border: 1px solid $primary;
+                  @include border-radius(4px);
+                }
+                
+              }
+            }
+          }
+          &.dropdown {
+            .nav-link {
+                display: inline-block;
+                @include hires-breakpoint("lt-lg") {
+                  &:after {
+                    position: absolute;
+                    z-index: 1;
+                    content: "\e5cf";
+                    font-family: "Material Symbols Outlined";
+                    top: 8px;
+                    margin: 0 0 0 6px;
+                    font-size: 20px;
+                  }
+                }
+                .icon {
+                  position: relative;
+                  top: 6px;
+                  left: 3px;
+                  @include hires-breakpoint("lt-lg") {
+                    display: none;
+                  } 
+                  
+                }
+            }
+            .dropdown-menu {
+              top: 40px !important;
+              min-width: 180px !important;
+              right: -10px !important;
+              left: auto !important;
+              border: 0;
+              padding: 0;
+              @include border-radius(4px);
+              @include box-shadow(0 0 4px 0 rgba(pick-color(dark, 900), 0.3));
+              &:before {
+                content: "";
+                border: 10px solid transparent;
+                border-left-color: white;
+                border-top-color: white;
+                position: absolute;
+                @include border-radius(3px);
+                @include box-shadow(
+                  -4px -4px 6px -3px rgba(pick-color(dark, 900), 0.17)
+                );
+                @include transform(rotate(45deg));
+                top: -8px;
+                right: 15px;
+                z-index: 1002;
+              }
+              .dropdown-item {
+                @extend .ft-head;
+                @extend .text-sm;
+                padding: 10px 14px;
+                @include transition(all 0.2s ease);
+                margin: 0 auto;
+                display: flex;
+                align-items: center;
+                &:not(:last-child) {
+                  border-bottom: 1px solid pick-color(dark, 300);
+                }
+                &:hover,
+                &.active {
+                  background: transparent;
+                  color: $primary;
+                  @include transition(all 0.2s ease);
+                }
+                .icon {
+                  @extend .text-h6;
+                }
+              }
+              @include hires-breakpoint("lt-lg") {
+                visibility: hidden;
+                max-height: 0;
+                box-shadow: none;
+                @include transition(max-height 0.2s ease);
+                &.show {
+                  visibility: visible;
+                  max-height: 2000px;
+                  @include transition(max-height 0.2s ease);
+                  &:before {
+                    content: none;
+                  }
+                  .dropdown-item {
+                    padding: 10px 0;
+                    border-bottom: 0;
+                    padding: 0 0 0 20px;
+                    margin: 0 0 20px 0;
+                    font-size: 16px;
+                  }
+                }
+              }
+              @include hires-breakpoint("lg") {
+                .dropdown-item {
+                  font-size: 13px;
+                }
+              }
+            }
+            &.user {
+              a {
+                height: 100%;
+                color: pick-color(dark, 900);
+                @include hires-breakpoint("lt-lg") {
+                  margin: 0 0 20px 16px;
+                  position: relative;
+                  display: inline-flex !important;
+                  &:after {
+                    position: absolute;
+                    z-index: 1;
+                    content: "\e5cf";
+                    top: 8px;
+                    margin: 0 0 0 8px;
+                    font-family: "Material Symbols Outlined";
+                    font-size: 22px;
+                    right: -26px;
+                  }
+                }
+              }
+              
+              figure {
+                margin: 0;
+                @include border-radius(50%);
+                overflow: hidden;
+                img {
+                  width: 34px;
+                  @include hires-breakpoint("lt-lg") {
+                    width: 50px;
+                  }
+                }
+              }
+              .profile-info {
+                .name {
+                  max-width: 200px;
+                  overflow: hidden;
+                  display: inline-block;
+                  text-decoration: none;
+                  text-overflow: ellipsis;
+                  white-space: nowrap;
+                  @extend .ft-head;
+                  @extend .text-sm;
+                  position: relative;
+                  top: 3px;
+                  @include hires-breakpoint("lt-lg") {
+                    @include ft-calc($font-normal);
+                  }
+                  @include hires-breakpoint("lg") {
+                    font-size: 13px;
+                  }
+                }
+                .role {
+                  color: pick-color(dark, 400);
+                  @include ft-calc($font-small);
+                  @include hires-breakpoint("lt-lg") {
+                    @include ft-calc($font-normal);
+                  }
+                  display: block;
+                }
+              }
+            }
+          }
+        }
+      }
+      
+    }
+    &.expanded {
+      &:before {
+        width: 100%;
+        @include opacity(1);
+        @include transition(opacity 0.15s ease);
+      }
+      .navbar-toggle {
+        position: fixed;
+        z-index: 10000;
+        top: 20px;
+        right: 16px;
+        .navbar-toggler-icon {
+          span {
+            &:nth-child(1) {
+              top: 14px;
+              @include transform(rotate(45deg));
+              @include transition(all 0.15s ease);
+            }
+            &:nth-child(2) {
+              @include opacity(0);
+              @include transition(all 0.15s ease);
+            }
+            &:nth-child(3) {
+              top: 14px;
+              @include transform(rotate(-45deg));
+              @include transition(all 0.15s ease);
+            }
+          }
+        }
+      }
+      .nav-right {
+        @include hires-breakpoint("lt-lg") {
+          position: absolute;
+          margin: 0;
+          top: 0;
+          z-index: 1000;
+          width: calc(100vw - 40%);
+          left: 40%;
+          overflow: auto;
+          background-color: white;
+          height: 100vh;
+        }
+        @include hires-breakpoint("xs") {
+          width: 100%;
+          left: 0;
+        }
+        .navbar-nav {
+          display: flex;
+          align-items: center;
+          @include hires-breakpoint("lt-lg") {
+            margin: 30px 0 0 !important;
+            flex-direction: column;
+          }
+          .nav-item {
+            @include hires-breakpoint("lt-lg") {
+              width: 100%;
+              margin: 0;
+              &:not(:last-child) {
+                border-bottom: 1px solid pick-color(dark, 300);
+              }
+              .nav-link {
+                padding: 8px 20px;
+                display: inline-block;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

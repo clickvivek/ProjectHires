@@ -1,0 +1,50 @@
+<div class="confirm-apply-wrapper">
+  <div class="d-flex bg-secondary align-items-center border-bottom px-4 py-3">
+    <h6 class="ft-head text-white">Apply to this job</h6>
+    <div
+      class="material-symbols-outlined ms-auto text-white"
+      mat-button
+      [mat-dialog-close]="false"
+    >
+      close
+    </div>
+  </div>
+
+  <div class="content">
+    
+    <div class="desp-area">
+      <p class="text-base fw-medium mb-1">{{ job.jobOpeningName }}</p>
+      <div class="info">
+        <div class="text-dark-500 sub-title">
+          {{ job.companyName }}
+        </div>
+        <div class="text-dark-500 sub-title">
+          {{ job.locations[0] }}, {{ job.locations[1] }}
+        </div>
+      </div>
+      
+      <ng-container *ngIf="optionSelected == ''">
+        <div class="options-box">
+          <p class="ft-head fw-medium text-base mb-2">
+            Choose one of the option below
+          </p>
+          <div class="lists">
+            <div class="item" (click)="handleOption('hotlist')">
+              I want to choose my candidate from hotlist
+            </div>
+            <div class="item" (click)="handleOption('upload')">
+              I want to choose resume from my computer
+            </div>
+          </div>
+        </div>
+      </ng-container>
+
+      <choose-from-hotlist *ngIf="optionSelected == 'hotlist'" (outParams)="onOptionTypeChange($event)"></choose-from-hotlist>
+
+      <choose-resume-from-desk *ngIf="optionSelected == 'upload'" (outParams)="onOptionTypeChange($event)"></choose-resume-from-desk>
+
+    </div>
+
+  </div>
+
+</div>

@@ -1,0 +1,61 @@
+@import "src/@hires/scss/utilities/all";
+@import "src/@hires/scss/helpers/typography";
+
+.profile-wrapper {  
+  .profile-card {
+    .card-body {
+      padding: 25px;
+      .profile-content {
+        display: flex;
+        align-items: center;
+        .middle {
+          .icon {
+            cursor: pointer;
+            svg {
+              width: 36px;
+              path {
+                fill: #0077b5;
+              }
+            }
+          }
+          .chat-btn {
+           padding: 3px 20px;
+           @include border-radius(4px)
+          }
+        }
+        .right {
+          margin: 0 0 0 30px;
+          flex-grow: 1;
+          .bottom {
+            .desp {
+              margin: 0 14px 0 0;
+              input {
+                height: 42px;
+              }
+            }
+          }
+        }
+      }
+    }
+    @include hires-breakpoint("lt-lg") {
+      margin: 60px 0 0 0;
+      .card-body {
+        padding-bottom: 10px;
+        .right {
+          margin: 70px 0 0 0 !important;
+          .bottom {
+            .desp {
+                margin: 0 0 14px 0 !important;
+            }
+          }
+        }
+      }
+      .profile-inner {
+        position: absolute;
+        left: calc(50% - 65px);
+        top: -60px;
+      }
+    }
+  }
+}
+

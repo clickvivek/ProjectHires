@@ -1,0 +1,303 @@
+@import "../utilities/all";
+
+.adv-filter-container {
+  margin: 20px 0 0 0;
+  .container {
+    background-color: white;
+  }
+  @include hires-breakpoint("lt-lg") {
+    position: fixed;
+    z-index: 1000;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    display: none;
+    &.show {
+      display: block;
+    }
+  }
+  .filter-card {
+    background-color: white;
+    padding: 16px 18px;
+    @include border-radius(4px);
+    @include hires-breakpoint("lt-lg") {
+      position: fixed;
+      z-index: 1000;
+      top: 0;
+      left: 0;
+      height: 100vh;
+      overflow: scroll;
+    }
+    @include hires-breakpoint("md") {
+      width: 360px;
+    }
+    @include hires-breakpoint("sm") {
+      width: 360px;
+    }
+    @include hires-breakpoint("xs") {
+      width: 100%;
+    }
+    .title {
+      display: flex;
+      align-items: center;
+      margin: 0 0 20px 0;
+      @include hires-breakpoint("gt-md") {
+        display: none !important;
+      }
+    }
+    .filter-content {
+      display: flex;
+      align-items: center;
+      position: relative;
+      @extend .text-sm;
+      .filter-icon {
+        cursor: pointer;
+        margin: 0 16px 0 0;
+      }
+      .filter-item {
+        .filter-area {
+          display: flex;
+          align-items: center;
+          padding: 10px 12px;
+          background-color: pick-color(dark, 50);
+          border: 1px solid pick-color(dark, 300);
+          margin: 0 16px 0 0;
+          @include border-radius(4px);
+          cursor: pointer;
+          p {
+            color: inherit;
+          }
+          .arrow {
+            margin-left: 8px;
+          }
+          &:hover {
+            background-color: pick-color(dark, 300);
+          }
+          &.is-filter {
+            background-color: $secondary;
+            border: 1px solid $secondary;
+            p,
+            .arrow {
+              color: white;
+            }
+            .filter-count {
+              @include circles(20px);
+              background-color: white;
+              margin: 0 0 0 6px;
+            }
+          }
+        }
+        &.reset-item {
+          color: pick-color(danger, 600);
+          margin: 0;
+          .filter-area {
+            padding: 12px 0;
+            background-color: transparent;
+            border: none;
+            .arrow {
+              margin: 0 6px 0 0;
+            }
+            &.show-results-area {
+              @include hires-breakpoint("gt-md") {
+                display: none;
+              }
+            }
+          }
+        }
+        form {
+          .form-check-input.filled[type="checkbox"]:checked + label:before {
+            background-color: $secondary;
+            border: 2px solid $secondary;
+          }
+          .form-check-input[type="radio"]:checked + label:before {
+            background-color: white;
+            border: none;
+            @include box-shadow(inset 0 0 0 5px $secondary);
+          }
+        }
+      }
+      .dropdown-wrapper {
+        display: none;
+        position: absolute;
+        z-index: 3;
+        margin: 8px 0 0 0;
+        width: 300px;
+        top: 46px;
+        background-color: white;
+        @include border-radius(4px);
+        @include box-shadow(0 3px 13px 0 rgba(pick-color(dark, 500), 0.4));
+        &.show {
+          display: block;
+        }
+        .dropdown {
+          padding: 12px 4px 0 4px;
+          height: 200px;
+          .list-group-item {
+            border: 0;
+            @extend .text-sm;
+            @extend .fw-medium;
+          }
+        }
+        .form-group {
+          margin: 0;
+          .form-check {
+            margin: 0;
+            .form-check-label {
+              margin: 0;
+              padding: 0;
+            }
+          }
+        }
+        .results-box {
+          margin: 10px 0 0 0;
+          border-top: 1px solid pick-color(dark, 300);
+          padding: 14px 20px;
+          display: flex;
+          justify-content: flex-end;
+          align-items: center;
+          .filter-cancel {
+            color: pick-color(dark, 500);
+            margin: 0 14px 0 0;
+            &:hover {
+              color: pick-color(dark, 500);
+            }
+          }
+          .result {
+            background-color: $secondary;
+            padding: 8px 16px;
+            color: white;
+            @include border-radius(4px);
+          }
+        }
+      }
+      @include hires-breakpoint("lt-lg") {
+        display: block;
+        .filter-item {
+          border-bottom: 1px solid pick-color(dark, 300);
+          .filter-area {
+            padding: 16px 0;
+            display: flex;
+            background-color: transparent;
+            border: none;
+            width: 100%;
+            justify-content: center;
+            &:hover {
+              &:not(.is-filter) {
+                background-color: transparent;
+              }
+            }
+            .arrow {
+              margin-left: auto;
+            }
+            &.is-filter {
+              background: transparent;
+              border: none;
+              p,
+              .arrow {
+                color: $secondary;
+              }
+              .filter-count {
+                background-color: $secondary;
+                color: white;
+                @include circles(30px);
+              }
+            }
+          }
+          &.reset-item {
+            display: flex;
+            border: 0;
+            margin: 40px 0 0 0;
+            .filter-area {
+              order: 2;
+              .arrow {
+                display: none;
+              }
+              &.reset-area {
+                border: 1px solid $warning;
+              }
+              &.show-results-area {
+                order: 1;
+                background-color: $primary;
+                color: white;
+                &:hover {
+                  background-color: pick-color(primary, 600);
+                }
+              }
+            }
+          }
+          .dropdown-wrapper {
+            position: static;
+            width: 100%;
+            box-shadow: none;
+            margin: 0;
+            .dropdown {
+              height: auto;
+              padding: 0;
+              margin: 0 0 14px 0px;
+              .list-group-item {
+                padding: 8px 0;
+              }
+            }
+            .results-box {
+              justify-content: center;
+              .filter-cancel {
+                order: 2;
+                margin: 0 0 0 20px;
+              }
+              .result {
+                order: 1;
+              }
+            }
+          }
+        }
+      }
+      @include hires-breakpoint("lt-md") {
+        .filter-item {
+          &.reset-item {
+            flex-direction: column;
+            .filter-area {
+              order: 2;
+              &.show-results-area {
+                order: 1;
+                margin: 0 0 20px 0;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+  .overlay {
+    position: fixed;
+    width: 100vw;
+    height: 100vh;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    background-color: rgba(31, 41, 55, 0.6);
+    z-index: 999;
+    @include hires-breakpoint("gt-md") {
+      display: none;
+    }
+  }
+  &.fixed {
+    .container {
+      background-color: transparent;
+    }
+    @include hires-breakpoint("gt-md") {
+      position: fixed;
+      left: 0;
+      top: 50px;
+      z-index: 1;
+      width: 100%;
+      background-color: white;
+      border-bottom: 1px solid pick-color(dark, 200);
+      @include box-shadow(0 0 4px pick-color(dark, 300));
+      .filter-card {
+        @include border-radius(0);
+        padding: 16px 0;
+      }
+    }
+  }
+}

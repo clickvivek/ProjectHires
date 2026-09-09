@@ -1,0 +1,132 @@
+<div class="dashboard-highlights-wrapper">
+    <div class="row">
+        
+        <div class="col-sm-12">
+          
+          <div class="data-box">
+            <p class="fw-medium text-base mb-2">Recruitment</p>
+            <ul class="lists card-list">
+              <li class="list-inline-item">
+                <div class="card shadow">
+                  <div class="card-body">
+                    <div class="icon">
+                      <img src="assets/images/job-post-icon.svg" width="35" />
+                    </div>
+                    <p class="text-dark-500 fw-medium mb-2">
+                      Job Requirement Posted
+                    </p>
+                    <h3 class="mt-0 text-start">12</h3>
+                  </div>
+                </div>
+              </li>
+              <li class="list-inline-item">
+                <div class="card shadow">
+                  <div class="card-body">
+                    <div class="icon">
+                      <img src="assets/images/expired-icon.svg" width="35" />
+                    </div>
+                    <p class="text-dark-500 fw-medium mb-2">
+                      Expired Postings
+                    </p>
+                    <h3 class="mt-0 text-start">6</h3>
+                  </div>
+                </div>
+              </li>
+              <li class="list-inline-item">
+                <div class="card shadow">
+                  <div class="card-body">
+                    <div class="icon">
+                      <img src="assets/images/resume-icon.svg" width="35" />
+                    </div>
+                    <p class="text-dark-500 fw-medium mb-2">
+                      Resumes Received
+                    </p>
+                    <h3 class="mt-0 text-start">65</h3>
+                  </div>
+                </div>
+              </li>
+            </ul>
+          </div>
+
+          <div class="data-box">
+            <p class="text-base fw-medium mb-2">Bench Sales</p>
+            <ul class="list-inline card-list">
+              <li class="list-inline-item">
+                <div class="card shadow">
+                  <div class="card-body">
+                    <div class="icon">
+                      <img src="assets/images/candidate-icon.svg" width="35" />
+                    </div>
+                    <p class="text-dark-500 fw-medium mb-2">
+                      Total Hotlist Candidates
+                    </p>
+                    <h3 class="mt-0 text-start">5</h3>
+                  </div>
+                </div>
+              </li>
+              <li class="list-inline-item">
+                <div class="card shadow">
+                  <div class="card-body">
+                    <div class="icon">
+                      <img src="assets/images/resume-icon.svg" width="35" />
+                    </div>
+                    <p class="text-dark-500 fw-medium mb-2">
+                      Resume submitted
+                    </p>
+                    <h3 class="mt-0 text-start">481</h3>
+                  </div>
+                </div>
+              </li>
+            </ul>
+          </div>
+
+        </div>
+
+        <div class="col-sm-12">
+          <div class="data-box">
+            <div class="card shadow data-list">
+              <p class="text-base fw-medium border-bottom p-3">Candidates Lists</p>
+              <ul class="list-group">
+                <ng-container *ngFor="let candidate of candidateList">
+                  <li class="list-group-item">
+                    <div class="row">
+                      <div class="col-sm-12 col-md-4">
+                        <div class="item">
+                          <h5 class="text-normal text-secondary-800 fw-medium mb-1">
+                            {{ candidate.name }}
+                          </h5>
+                          <p class="text-normal text-dark-500">
+                            {{ candidate.title }}
+                          </p>
+                        </div>
+                      </div>
+                      <div class="col-sm-12 col-md-4">
+                        <div class="item">
+                          <h5 class="text-normal text-secondary-800 fw-medium mb-1">
+                            Applied Jobs
+                          </h5>
+                          <span class="text-normal text-dark-500">{{
+                            candidate.appliedJobs
+                          }}</span>
+                        </div>
+                      </div>
+                      <div class="col-sm-12 col-md-4">
+                        <div class="item">
+                          <h5 class="text-normal text-secondary-800 fw-medium mb-1">
+                            New Matching Jobs
+                          </h5>
+                          <span class="text-normal text-dark-500">{{
+                            candidate.newMatchingJobs
+                          }}</span>
+                        </div>
+                      </div>
+                    </div>
+                  </li>
+                </ng-container>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+      </div>
+</div>

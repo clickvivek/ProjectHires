@@ -1,0 +1,32 @@
+<div class="form-group">
+  <label for="{{ fieldName }}"
+    >{{ fieldText
+    }}<span *ngIf="isFieldRequired()" class="ms-2 font-medium">*</span></label
+  >
+  <div class="select-wrapper" (click)="showFieldItems()">
+    <input
+      type="text"
+      class="form-control select"
+      placeholder="{{ fieldPlaceholder }}"
+      name="{{ fieldName }}"
+      [(ngModel)]="fieldModel"
+      autocomplete="off"
+      [required]="fieldRequired"
+      readonly
+    />
+    <span class="select-arrow" [ngClass]="isExpanded ? 'up' : 'down'"></span>
+    <div class="dropdown-wrapper show" *ngIf="isExpanded">
+      <div class="list-group dropdown">
+        <ng-container *ngFor="let item of fieldList">
+          <li
+            class="list-group-item"
+            (click)="getSelectedItem(item)"
+            [ngClass]="isSelectedItem(item, fieldModel)"
+          >
+            {{ item[fieldType] }}
+          </li>
+        </ng-container>
+      </div>
+    </div>
+  </div>
+</div>

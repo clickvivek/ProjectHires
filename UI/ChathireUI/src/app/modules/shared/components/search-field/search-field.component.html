@@ -1,0 +1,23 @@
+<div class="form-group">
+	<label for="{{fieldName}}">{{fieldText}}<span *ngIf="isFieldRequired()" class="ms-2 font-medium">*</span></label>
+	<input type="text"
+		class="form-control search"
+		placeholder="{{fieldPlaceholder}}"
+		name="{{fieldName}}"
+		[(ngModel)]="fieldModel"
+		(ngModelChange)="handleModelChange()"
+    	[required]="fieldRequired"
+		[disabled]="fieldDisabled"
+		autocomplete="off">
+	<span class="search-control" (click)="clearList()" *ngIf="!fieldDisabled">
+    <i class="fa fa-search" aria-hidden="true" *ngIf="!selectedItem"></i>
+    <i class="fa fa-times pointer" aria-hidden="true" *ngIf="selectedItem"></i>
+  </span>
+	<div class="dropdown-wrapper show" *ngIf="isExpanded">
+		<div class="list-group dropdown">
+			<ng-container *ngFor="let item of fieldList">
+				<li class="list-group-item" (click)="getSelectedItem(item)">{{getItemData(item)}}</li>
+			</ng-container>
+		</div>
+	</div>
+</div>

@@ -1,0 +1,25 @@
+@import "src/@hires/scss/utilities/all";
+@import "src/@hires/scss/helpers/typography";
+
+.profile-available-resources-item-wrapper {
+    .list-group-item {
+        border: none;
+        border-top: 1px solid pick-color(dark, 300);
+        padding: 15px 20px;
+        .icon {
+          @include ft-calc($font-normal);
+          color: pick-color(secondary, 400);
+          margin: 0 2px 0 0;
+        }
+        .additional {
+          .item {
+            &:not(:last-child) {
+              margin: 0 14px 0 0;
+              @include hires-breakpoint("lt-md") {
+                margin: 0 0 10px 0;
+              }
+            }
+          }
+        }
+      }
+}

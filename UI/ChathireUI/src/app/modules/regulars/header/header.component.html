@@ -1,0 +1,230 @@
+<header>
+  <nav class="navbar navbar-expand-lg" AwakeClass [ngClass]="{ expanded: isMenuExpanded }">
+    <div [ngClass]="isMobile ? 'container-fluid' : 'container'">
+      <a
+          class="navbar-brand"
+          [routerLink]="isLoggedIn() ? '/dashboard' : '/home'"
+          routerLinkActive="active"
+          [routerLinkActiveOptions]="{ exact: true }"
+        ><h1 class="logo-text">ChatHire</h1>
+          <img class="logo" src="assets/images/logo.jpg" />
+        </a>
+      <button class="navbar-toggle">
+        <div class="navbar-toggler-icon" (click)="showMenuMini()">
+          <span class="top"></span>
+          <span class="middle"></span>
+          <span class="bottom"></span>
+        </div>
+      </button>
+      <div class="navbar-collapse nav-right justify-content-end" id="navbarSupportedContent">
+
+        <ng-container *ngIf="isNotProfile()">
+
+          <ng-container *ngIf="!isLoggedIn()">
+            <ul class="navbar-nav">
+              <li class="nav-item">
+                <a class="nav-link" routerLink="/home" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">Home</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" routerLink="/search-jobs" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">Find Jobs</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" routerLink="/search-hotlist" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">Find Talent</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" routerLink="/home" fragment="how-it-works">How It Works</a>
+              </li>
+              <li class="nav-item special ms-lg-3">
+                <a class="nav-link btn btn-primary px-4 py-2 text-white fw-bold shadow-sm" style="line-height: 24px; border-radius: 6px;" routerLink="/postjobs" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">Post a Job — <span class="text-uppercase" style="background:transparent; border:none; padding:0; font-size:inherit;">free</span></a>
+              </li>
+              <li class="nav-item ms-lg-2">
+                <a class="nav-link" routerLink="/login" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">Log In</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link fw-bold text-primary" routerLink="/signup" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">Sign Up</a>
+              </li>
+            </ul>
+          </ng-container>
+
+          <ng-container *ngIf="isLoggedIn() && !isConsultancyId()">
+            <a class="fw-medium" href="javascript:void(0)" (click)="logout()"
+              >Logout</a
+            >
+          </ng-container>
+
+          <ng-container *ngIf="isLoggedIn() && isConsultancyId()">
+            
+            <ul class="navbar-nav">
+              <li class="nav-item">
+                <a
+                  href="javascript:void"
+                  class="nav-link"
+                  routerLink="/dashboard"
+                  routerLinkActive="active"
+                  [routerLinkActiveOptions]="{ exact: true }"
+                  >Dashboard</a
+                >
+              </li>
+              <li class="nav-item">
+                <a
+                  href="javascript:void"
+                  class="nav-link"
+                  routerLink="/search-jobs"
+                  routerLinkActive="active"
+                  >Search Jobs</a
+                >
+              </li>
+              <li class="nav-item dropdown">
+                <a
+                  class="nav-link"
+                  href="#"
+                  data-bs-toggle="dropdown"
+                  id="recruiterDropdown"
+                  aria-haspopup="true"
+                  aria-expanded="false"
+                  >Recruiter<span class="material-symbols-outlined icon me-2"
+                  >expand_more</span></a
+                >
+                <div class="dropdown-menu" aria-labelledby="recruiterDropdown">
+                  <a
+                    class="dropdown-item"
+                    routerLink="/postjobs"
+                    routerLinkActive="active"
+                    [routerLinkActiveOptions]="{ exact: true }"
+                    ><span class="material-symbols-outlined icon me-2">
+                      work </span
+                    >Post Jobs</a
+                  >
+                  <a
+                    class="dropdown-item"
+                    routerLink="/inbox"
+                    routerLinkActive="active"
+                    [routerLinkActiveOptions]="{ exact: true }"
+                    ><span class="material-symbols-outlined icon me-2">
+                      mail </span
+                    >Inbox Resumes</a
+                  >
+                  <a
+                    class="dropdown-item"
+                    routerLink="/search-hotlist"
+                    routerLinkActive="active"
+                    ><span class="material-symbols-outlined icon me-2">
+                      featured_play_list </span
+                    >Search Resumes / Hotlist</a
+                  >
+                  <a
+                    class="dropdown-item"
+                    routerLink="/posting-history"
+                    routerLinkActive="active"
+                    ><span class="material-symbols-outlined icon me-2">
+                      history_edu </span
+                    >Posting History</a
+                  >
+                </div>
+              </li>
+              <li class="nav-item dropdown">
+                <a
+                  class="nav-link"
+                  href="#"
+                  data-bs-toggle="dropdown"
+                  id="benchSalesDropdown"
+                  aria-haspopup="true"
+                  aria-expanded="false"
+                  >Bench Sales<span class="material-symbols-outlined icon me-2"
+                  >expand_more</span></a
+                >
+                <div class="dropdown-menu" aria-labelledby="benchSalesDropdown">
+                  <a
+                    class="dropdown-item"
+                    routerLink="/myhotlist"
+                    routerLinkActive="active"
+                    [routerLinkActiveOptions]="{ exact: true }"
+                    ><span class="material-symbols-outlined icon me-2">
+                      featured_play_list </span
+                    >My Hotlist</a
+                  >
+                  <a
+                    class="dropdown-item"
+                    routerLink="/addcandidate"
+                    routerLinkActive="active"
+                    [routerLinkActiveOptions]="{ exact: true }"
+                    ><span class="material-symbols-outlined icon me-2">
+                      add_circle </span
+                    >Add Candidate</a
+                  >
+                </div>
+              </li>
+              <li class="nav-item">
+                <a href="javascript:void" class="nav-link" routerLink="/profile/{{profileId}}"
+                target="_blank">Public Profile</a>
+              </li>
+              <li class="nav-item">
+                <a href="javascript:void" class="nav-link" routerLink="/chat"
+                routerLinkActive="active"
+                [routerLinkActiveOptions]="{ exact: true }">Chat<span *ngIf="uneadCount">({{uneadCount}})</span></a>
+              </li>
+              <li class="nav-item user dropdown order-lg-last order-first">
+                  <a
+                    href="#"
+                    class="d-flex align-items-center"
+                    role="button"
+                    data-bs-toggle="dropdown"
+                    id="userProfileDropDown"
+                    aria-haspopup="true"
+                    aria-expanded="false"
+                  >
+                    <figure class="profile-picture">
+                      <img src="{{ profilePicUrl }}" id="userProfile" />
+                    </figure>
+                    <div class="profile-info">
+                      <h4 class="name fw-medium ms-2 me-1">
+                        {{ user?.fname }} {{ user?.lname }}
+                      </h4>
+                    </div>
+                  </a>
+                  <div class="dropdown-menu" aria-labelledby="userProfileDropDown">
+                    <a
+                      class="dropdown-item"
+                      routerLink="/myaccount"
+                      routerLinkActive="active"
+                      [routerLinkActiveOptions]="{ exact: true }"
+                      ><span class="material-symbols-outlined icon me-2">
+                        settings</span
+                      >Settings</a
+                    >
+                    <a class="dropdown-item" href="javascript:void(0)"
+                      ><span class="material-symbols-outlined icon me-2">
+                        payments</span
+                      >Billing</a
+                    >
+                    <a class="dropdown-item" href="javascript:void(0)"
+                      ><span class="material-symbols-outlined icon me-2">
+                        support_agent</span
+                      >Support</a
+                    >
+                    <a class="dropdown-item" href="javascript:void(0)"
+                      ><span class="material-symbols-outlined icon me-2">
+                        help</span
+                      >Help & FAQs</a
+                    >
+                    <a
+                      class="dropdown-item"
+                      href="javascript:void(0)"
+                      (click)="logout()"
+                      ><span class="material-symbols-outlined icon me-2">
+                        logout</span
+                      >Logout</a
+                    >
+                  </div>
+              </li>
+            </ul>
+
+          </ng-container>
+
+        </ng-container>
+
+        
+      </div>
+    </div>
+  </nav>
+</header>

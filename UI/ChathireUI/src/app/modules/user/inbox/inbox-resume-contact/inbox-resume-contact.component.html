@@ -1,0 +1,47 @@
+<div class="inbox-resume-contact-wrapper">
+    
+    <loader *ngIf="!isLoaded"></loader>
+
+    <ng-container *ngIf="isLoaded">
+        
+        <div class="top d-flex align-items-center">
+            <span class="icon material-symbols-outlined text-h3 text-secondary-800 me-1 pointer" (click)="closeContact()">chevron_left</span>
+            <p class="text-base">Contact</p>
+        </div>
+
+        <div class="resume-container">
+            <div class="mt-4">
+                <p class="fw-medium">{{resume?.candidateProfile?.candidateName}}</p>
+                <p class="text-sm fw-medium text-primary-600" [profileMapColor]="resume.candidateProfileMappingStatusId" >{{resume?.candidateProfileMappingStatusName}}</p>
+            </div>
+            <div class="contact-box">
+                <div class="item">
+                    <span class="fw-medium text-dark-500">Bench Sales Contact:</span>
+                    <span class="ms-2 fw-regular">{{contact.user?.fname}} {{contact.user?.lname}}</span>
+                </div>
+                <div class="item">
+                    <span class="fw-medium text-dark-500">Company Name:</span>
+                    <span class="ms-2 fw-regular">{{contact.consultancy?.name}}</span>
+                </div>
+                <div class="item">
+                    <span class="fw-medium text-dark-500">Email ID:</span>
+                    <span class="ms-2 fw-regular">{{contact.user?.email}}</span>
+                </div>
+                <div class="item">
+                    <span class="fw-medium text-dark-500">Phone Number:</span>
+                    <span class="ms-2 fw-regular">{{contact.user?.phone}}</span>
+                </div>
+            </div>
+            <div class="mt-2 text-center">
+                <div class="btn btn-primary d-inline-flex align-items-center">
+                    <span class="material-symbols-outlined text-base mt-1 me-2"
+                      >chat</span
+                    >
+                    Chat
+                  </div>
+            </div>
+        </div>
+
+    </ng-container>
+
+</div>

@@ -1,0 +1,35 @@
+<div class="profile-job-posting-history-wrapper adv-filter-wrapper">
+
+  <loader *ngIf="!isJobLoaded"></loader>
+
+  <ng-container *ngIf="isJobLoaded && isJobAvailable">
+
+    <div class="title-box">
+      <fancy-page-search (outputData)="handleSearch($event)" placeholder="Search by job, location" ></fancy-page-search>
+    </div>
+
+    
+    <div class="lists-box">
+      <div class="left-area">
+        <div class="left-box">
+          <profile-job-posting-history-item  *ngFor="let job of filteredDataList; let last = last" [job]="job" [selectedJob]="selectedJob" [last]="last" (outParam)="handleSelectedJob($event)"></profile-job-posting-history-item>
+          <app-pagination-box
+            [totalItems]="totalItems"
+            [ItemStartIndex]="ItemStartIndex"
+            [ItemEndIndex]="ItemEndIndex"
+            [itemLimit]="itemLimit"
+            (outputParams)="getIndexParams($event)"
+          >
+          </app-pagination-box>
+        </div>
+      </div>
+      <div *ngIf="isJobSheet" class="right-area">
+        <app-job-detail-sheet
+                  [selectedJob]="selectedJob"
+                  (outParam)="handleJobSheet($event)"
+                  ></app-job-detail-sheet>
+      </div>
+    </div>
+  </ng-container>
+
+</div>

@@ -1,0 +1,129 @@
+<div class="search-skill-location-wrapper">
+  <form
+    #searchSkillLocationForm="ngForm"
+    (ngSubmit)="submitSkillLocationForm()"
+    novalidate
+  >
+    <div class="search-box {{page == 'home' ? 'home' : '' }}">
+
+      <div class="search-area">
+        
+        <div class="item skill">
+          <div class="form-group rel">
+            <input
+              #searchSkill
+              type="text"
+              class="form-control search-list"
+              name="selectedSkill"
+              placeholder="Job title, skill or keyword"
+              [(ngModel)]="skill"
+              (ngModelChange)="handleSearchSkill()"
+              required
+              autocomplete="off"
+            />
+            <span class="material-symbols-outlined icon"> search </span>
+          
+
+            <div class="dropdown-wrapper">
+                <ng-scrollbar
+              #scrollable
+              track="all"
+              pointerEventsMethod="scrollbar"
+              [autoHeightDisabled]="false"
+              >
+                <div class="list-group dropdown">
+                  <ng-container
+                    class="list-group"
+                    *ngFor="let item of skillList | simpleSearch : skill : 'name'"
+                  >
+                    <li
+                      class="list-group-item"
+                      (click)="getSkill(item.name, item.id)"
+                    >
+                      {{ item.name }}
+                    </li>
+                  </ng-container>
+                </div>
+              </ng-scrollbar>
+              </div>
+
+           
+
+          </div>
+          <div class="input-field-message text-normal text-left mt-2" *ngIf="searchSkillLocationForm.submitted && searchSkillLocationForm.controls['selectedSkill'].invalid && searchSkillLocationForm.controls['selectedSkill'].errors?.['required']">
+            Enter a skillset
+          </div>
+        </div>
+  
+        <div class="item location">
+          <div class="form-group rel">
+            <input
+              #searchLocation
+              type="text"
+              class="form-control location-search"
+              name="searchJobLocation"
+              placeholder="Location or Remote"
+              [(ngModel)]="location"
+              (ngModelChange)="handleSearchLocation()"
+              autocomplete="off"
+            />
+            <span class="material-symbols-outlined icon"> location_on </span>
+            <div class="dropdown-wrapper">
+              
+              <ng-scrollbar
+              #scrollable
+              track="all"
+              pointerEventsMethod="scrollbar"
+              [autoHeightDisabled]="false"
+              >
+
+                <div class="list-group dropdown">
+                  <ng-container
+                    class="list-group"
+                    *ngFor="
+                      let item of locationList | simpleSearch : location : 'city1,zip'
+                    "
+                  >
+                    <li
+                      class="list-group-item"
+                      (click)="
+                        getLocation(
+                          item.city1,
+                          item.stateName,
+                          item.countryName,
+                          item.id,
+                          item.idState
+                        )
+                      "
+                    >
+                      <span *ngIf="item.zip">{{ item.zip }} - </span>{{ item.city1 }}, {{ item.stateName }}, {{ item.countryName }}
+                    </li>
+                  </ng-container>
+                </div>
+
+              </ng-scrollbar>
+
+            </div>
+          </div>
+        </div>
+
+        <button type="submit"  class="item go-btn submit-btn fw-bold px-4 text-white text-uppercase" *ngIf="page == 'home'" style="border-radius: 6px;">
+          <span class="d-md-none text-base">Search {{type == 'jobs' ? 'Jobs' : 'Talent'}}</span>
+          <span class="d-none d-md-block">SEARCH {{type == 'jobs' ? 'JOBS' : 'TALENT'}}</span>
+        </button>
+
+      </div>
+
+      <div class="search-btn-box" *ngIf="page != 'home'">
+        <button type="submit" class="btn btn-primary submit-btn">
+          Search {{type == 'jobs' ? 'Jobs' : 'Resumes / Hotlist'}}
+         </button>
+      </div>
+
+     
+      
+    </div>
+
+
+  </form>
+</div>

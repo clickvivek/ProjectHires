@@ -1,0 +1,15 @@
+
+<div class="submit-area">
+    <button type="submit" data-type="{{buttonType}}" class="btn submit-btn btn-{{buttonType}} {{isEdit ? '' : 'btn-lg'}} {{isSubmit ? 'loader' : ''}} ">
+        <div class="text" *ngIf="!isEdit">
+            {{isSubmit ? defaultActionText : defaultText}}
+        </div>
+        <div class="text" *ngIf="isEdit">
+            {{isSubmit ? editActionText : editText}}
+        </div>
+        <!-- <div *ngIf="isSubmit" class="progress-loader bg-{{buttonType}}-200">
+            <div class="inner bg-{{buttonType}}-700"></div>
+        </div> -->
+        <button *ngIf="isSubmit" class="progress" data-type="{{buttonType}}"></button>
+    </button>
+</div>

@@ -1,0 +1,159 @@
+<div class="job-details-wrapper">
+  
+  <div class="d-block d-md-none material-symbols-outlined pointer text-h5 mt-2 mb-4" (click)="handleJobSheet()">
+    arrow_back
+  </div>
+
+  <div class="job-head">
+    
+    <div class="left">
+      <h6 class="fw-medium mb-2">{{ selectedJob.jobOpeningName }}</h6>
+      <div class="info">
+        <div class="text-dark-500 sub-title">
+          {{ selectedJob.companyName }}
+        </div>
+        <div class="text-dark-500 text-sm sub-title">
+          {{ selectedJob.locations[0] }}, {{ selectedJob.locations[1] }}
+        </div>
+      </div>
+      <div class="text-secondary-500 fw-medium text-sm mt-1">
+        Posted {{ getPostedDays(selectedJob.postedDate) }} ago
+      </div>
+    </div>
+
+    <div class="apply-box">
+      <div class="inner">
+        <div
+          class="btn btn-secondary text-normal apply-btn"
+          (click)="handleApplyJobConfirmModal()"
+        >
+          Apply
+      </div>
+      <a href="javascript:void(0)" class="ext-link-btn" target="_blank" routerLink="/jobs" [queryParams]="{id: generateJobId(selectedJob.jobOpeningId)}" queryParamsHandling="merge">
+        <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="100" height="100" viewBox="0 0 24 24">
+          <path d="M 5 3 C 3.9069372 3 3 3.9069372 3 5 L 3 19 C 3 20.093063 3.9069372 21 5 21 L 19 21 C 20.093063 21 21 20.093063 21 19 L 21 12 L 19 12 L 19 19 L 5 19 L 5 5 L 12 5 L 12 3 L 5 3 z M 14 3 L 14 5 L 17.585938 5 L 8.2929688 14.292969 L 9.7070312 15.707031 L 19 6.4140625 L 19 10 L 21 10 L 21 3 L 14 3 z"></path>
+        </svg>
+      </a>
+      <div class="share dropdown">
+        <button
+          type="button"
+          id="otherShareBtn"
+          data-bs-toggle="dropdown"
+          aria-expanded="false"
+        >
+          <img src="assets/images/share-arrow-icon.png" alt="" />
+        </button>
+        <div class="dropdown-menu" aria-labelledby="otherShareBtn">
+          <div class="dropdown-content">
+            <div class="title fw-medium">Share on LinkedIn</div>
+            <div class="list">
+              <a class="dropdown-item" href="javascript:void(0)"
+                ><span class="material-symbols-outlined text-base me-2">edit</span>Repost to feed</a
+              >
+              <a class="dropdown-item" href="javascript:void(0)"
+                ><span class="material-symbols-outlined text-base me-2">send</span>Send in
+                message</a
+              >
+              <a class="dropdown-item" href="javascript:void(0)" (click)="copyURL()"
+                ><span class="material-symbols-outlined me-2 copy">content_copy</span>Copy URL</a
+              >
+            </div>
+          </div>
+          <!-- <div class="dropdown-content">
+            <div class="title fw-medium">Other options</div>
+            <div class="list">
+              <a class="dropdown-item" href="#"
+                ><i class="fa-brands fa-x-twitter me-2"></i>Twitter</a
+              >
+              <a class="dropdown-item" href="#"
+                ><i class="fa-brands fa-facebook-f me-2"></i>Facebook</a
+              >
+            </div>
+          </div> -->
+        </div>
+      </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="others">
+    <div class="visa-box">
+      <ng-container *ngFor="let item of selectedJob?.jobTypes">
+        <span
+          class="item text-primary-900 bg-primary-50 text-smr fw-medium"
+          >{{ item }}</span
+        >
+      </ng-container>
+    </div>
+  </div>
+
+  <div class="list-wrapper job-list-wrapper mt-2">
+    <span class="material-symbols-outlined text-base me-2">trip</span>
+    <div class="lists">
+      <div
+        class="item text-sm"
+        *ngFor="let item of selectedJob?.employmentTypes"
+      >
+        {{ item }}
+      </div>
+    </div>
+  </div>
+
+  <div class="list-wrapper skill-list-wrapper mt-2">
+    <span class="material-symbols-outlined text-base me-2"
+      >airplane_ticket</span
+    >
+    <div class="lists">
+      <div class="item text-sm" *ngFor="let item of selectedJob?.visas">
+        {{ item }}
+      </div>
+    </div>
+  </div>
+
+  <div class="list-wrapper visa-list-wrapper mt-2">
+    <span class="material-symbols-outlined text-base me-2">location_on</span>
+    <div class="lists">
+      <div class="item text-sm" *ngFor="let item of selectedJob?.skills">
+        {{ item }}
+      </div>
+    </div>
+  </div>
+
+  <div class="btn btn-primary btn-sm apply-btn text-normal mt-4 d-lg-none" (click)="handleApplyJobConfirmModal()">
+    Apply
+  </div>
+
+  <div class="recruiter-box">
+    <p class="text-base mb-2 fw-medium">Chat with a recruiter</p>
+    <div class="info-wrapper">
+      <div class="info">
+        <div class="holder">
+          <img src="{{ getProfilePic(selectedJob.profilePic) }}" alt="" />
+        </div>
+        <div class="desp">
+          <p class="fw-semibold text-secondary-500">
+            {{ selectedJob.userFName }} {{ selectedJob.userLName }}
+            <span class="ms-1 status-indicator {{isUserOnline ? 'active' : ''}}"></span>
+          </p>
+          <p class="text-dark-600">IT recruiter</p>
+        </div>
+      </div>
+      <div class="right">
+        <div class="btn chat-btn fw-medium" [ngClass]="isChatDisabled() ? 'disabled' : '' "  [chatUser]="chatUser">
+          <svg width="20" height="20" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M23.8373 6.16265C21.7863 4.09828 19.0793 2.81417 16.1831 2.5317C13.2868 2.24924 10.3827 2.98612 7.97151 4.61531C5.56031 6.24451 3.79308 8.66391 2.97449 11.4564C2.1559 14.2489 2.33725 17.2395 3.48728 19.9127C3.60714 20.1611 3.64647 20.4408 3.59978 20.7127L2.49978 26.0001C2.4574 26.2029 2.46606 26.4129 2.52497 26.6115C2.58388 26.81 2.6912 26.9908 2.83728 27.1376C2.95704 27.2565 3.09962 27.3499 3.25645 27.4122C3.41327 27.4745 3.58109 27.5044 3.74978 27.5002H3.99978L9.34978 26.4251C9.62169 26.3925 9.89743 26.4312 10.1498 26.5377C12.8229 27.6877 15.8135 27.869 18.606 27.0504C21.3985 26.2319 23.8179 24.4646 25.4471 22.0534C27.0763 19.6422 27.8132 16.7381 27.5307 13.8419C27.2483 10.9456 25.9642 8.23863 23.8998 6.18765L23.8373 6.16265ZM9.99978 16.2502C9.75255 16.2502 9.51088 16.1768 9.30532 16.0395C9.09976 15.9021 8.93954 15.7069 8.84493 15.4785C8.75032 15.2501 8.72557 14.9988 8.7738 14.7563C8.82203 14.5138 8.94108 14.2911 9.1159 14.1163C9.29071 13.9415 9.51344 13.8224 9.75592 13.7742C9.99839 13.7259 10.2497 13.7507 10.4781 13.8453C10.7065 13.9399 10.9018 14.1001 11.0391 14.3057C11.1765 14.5112 11.2498 14.7529 11.2498 15.0002C11.2498 15.3317 11.1181 15.6496 10.8837 15.884C10.6492 16.1185 10.3313 16.2502 9.99978 16.2502ZM14.9998 16.2502C14.7526 16.2502 14.5109 16.1768 14.3053 16.0395C14.0998 15.9021 13.9395 15.7069 13.8449 15.4785C13.7503 15.2501 13.7256 14.9988 13.7738 14.7563C13.822 14.5138 13.9411 14.2911 14.1159 14.1163C14.2907 13.9415 14.5134 13.8224 14.7559 13.7742C14.9984 13.7259 15.2497 13.7507 15.4781 13.8453C15.7065 13.9399 15.9018 14.1001 16.0391 14.3057C16.1765 14.5112 16.2498 14.7529 16.2498 15.0002C16.2498 15.3317 16.1181 15.6496 15.8837 15.884C15.6492 16.1185 15.3313 16.2502 14.9998 16.2502ZM19.9998 16.2502C19.7526 16.2502 19.5109 16.1768 19.3053 16.0395C19.0998 15.9021 18.9395 15.7069 18.8449 15.4785C18.7503 15.2501 18.7256 14.9988 18.7738 14.7563C18.822 14.5138 18.9411 14.2911 19.1159 14.1163C19.2907 13.9415 19.5134 13.8224 19.7559 13.7742C19.9984 13.7259 20.2497 13.7507 20.4781 13.8453C20.7065 13.9399 20.9018 14.1001 21.0391 14.3057C21.1765 14.5112 21.2498 14.7529 21.2498 15.0002C21.2498 15.3317 21.1181 15.6496 20.8837 15.884C20.6492 16.1185 20.3313 16.2502 19.9998 16.2502Z"></path></svg>
+          <span class="ms-1">Chat</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="job-details-container">
+    <p class="text-base mb-2 fw-medium">About the job</p>
+    <div
+      class="desp"
+      [innerHTML]="selectedJob.jobDescription | keepHtml"
+    ></div>
+  </div>
+
+</div>

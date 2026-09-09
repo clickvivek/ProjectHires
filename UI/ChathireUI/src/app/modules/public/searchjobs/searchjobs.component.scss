@@ -1,0 +1,145 @@
+@import "src/@hires/scss/utilities/all";
+
+.search-job-wrapper {
+  .options-box {
+    margin: 24px 0 0 0;
+  }
+  .list-container {
+    margin: 20px 0 0 0;
+    .content {
+      display: flex;
+      border-top: 1px solid pick-color(dark, 300);
+      overflow: hidden;
+      @include hires-breakpoint("gt-md") {
+        margin: 0 !important;
+      }
+      .left-area {
+        @include hires-breakpoint("lt-md") {
+          width: 100%;
+        }
+        .left-box {
+          display: flex;
+          flex-direction: column;
+          width: 300px;
+          border-right: 1px solid pick-color(dark, 300);
+          flex-shrink: 0;
+          @include hires-breakpoint("lt-md") {
+            width: 100%;
+          }
+          .section {
+            background-color: white;
+            flex-grow: 1;
+            li {
+              @include border-radius(0);
+              border-bottom: 1px solid pick-color(dark, 300);
+              background-color: white;
+              padding: 12px 20px;
+              margin: 0;
+              cursor: pointer;
+              &:last-child {
+                border-bottom: none;
+              }
+              &:hover,
+              &.selected {
+                background-color: darken(
+                  $color: pick-color(primary, 50),
+                  $amount: 3
+                );
+              }
+            }
+            .item {
+              display: flex;
+              .holder {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                width: 60px;
+                height: 60px;
+                border: 1px solid pick-color(dark, 300);
+                overflow: hidden;
+                margin-right: 16px;
+                flex-shrink: 0;
+                img {
+                  width: 100%;
+                  height: 100%;
+                  object-fit: cover;
+                }
+              }
+            }
+            .details-tab {
+              background-color: white;
+              border-bottom: 1px solid pick-color(dark, 300);
+              > p {
+                display: none;
+              }
+              table {
+                width: 100%;
+                td p {
+                  @include ft-calc($font-small);
+                }
+              }
+            }
+            .pagination-wrapper {
+              border-top: 1px solid pick-color(dark, 300);
+              .pagination {
+                margin: 0;
+                display: flex !important;
+                align-items: center;
+                justify-content: center;
+                @include border-radius(0);
+                padding: 30px 0;
+                .left {
+                  display: none !important;
+                }
+                .page-numbers {
+                  margin-left: 0 !important;
+                  li a {
+                    padding: 8px 14px;
+                  }
+                }
+              }
+            }
+          }
+          .pagination-wrapper {
+            border-top: 1px solid pick-color(dark, 300);
+            .pagination {
+              margin: 0;
+              display: flex !important;
+              align-items: center;
+              justify-content: center;
+              @include border-radius(0);
+              padding: 30px 0;
+              .left {
+                display: none !important;
+              }
+              .page-numbers {
+                margin-left: 0 !important;
+                li a {
+                  padding: 8px 14px;
+                }
+              }
+            }
+          }
+        }
+      }
+      .right-area {
+        flex-grow: 1;
+        background-color: white;
+        @include hires-breakpoint("lt-md") {
+          position: fixed;
+          top: 0;
+          width: 100%;
+          left: 0;
+          z-index: 1000;
+          height: 100% !important;
+          overflow: scroll;
+        }
+      }
+      .left-box,
+      .right-area {
+        height: 700px;
+        overflow: scroll;
+      }
+    }
+  }
+}

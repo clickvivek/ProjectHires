@@ -1,0 +1,62 @@
+@import "src/@hires/scss/utilities/all";
+@import "src/@hires/scss/helpers/typography";
+
+.inbox-resume-details-wrapper {
+    padding: 0 24px;
+    height: 100%;
+    .top {
+        display: flex;
+        justify-content: space-between;
+        margin: 30px 0 0 0;
+    }
+    .resumes-box {
+        margin: 30px 0 0 0;
+        .list-group-item {
+            padding: 14px 24px 14px 24px;
+            @include border-radius(4px);
+            background-color: pick-color(dark, 50);
+            border: 1px solid pick-color(dark, 300);
+            &:not(:last-child) {
+                margin: 0 0 20px 0;
+            }
+            .resume-content {
+                display: flex;
+                justify-content: space-between;
+                .dropdown-area {
+                    margin-left: -5px;
+                }
+            }
+            .bottom {
+                display: flex;
+                margin: 16px 0 0 0;
+                .item {
+                    display: flex;
+                    align-items: center;
+                    cursor: pointer;
+                    &:not(:last-child) {
+                        margin: 0 16px 0 0;
+                    }
+                    .view-box {
+                        cursor: pointer;
+                        padding: 4px 8px;
+                        @include border-radius(4px);
+                        .icon {
+                          font-size: inherit;
+                        }
+                        &.comments-box {
+                            background-color: pick-color(secondary, 50);
+                            border: 1px solid pick-color(secondary, 200);
+                            color: pick-color(secondary, 800);
+                        }
+                        &.contact-box {
+                            background-color: pick-color(primary, 50);
+                            border: 1px solid pick-color(primary, 400);
+                            color: pick-color(primary, 800);
+                        }
+                      }
+                      
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,104 @@
+<div class="choose-from-hotlist-wrapper">
+
+    <loader *ngIf="!isLoaded"></loader>
+
+    <ng-container *ngIf="isLoaded">
+
+        <div class="select-hotlist-box data-box">
+            <p class="ft-head fw-medium text-base mb-2">
+                Select one of the hotlist
+            </p>
+            <div class="search-results mb-3">
+                <form>
+                  <div class="input-box mb-0">
+                    <div class="form-group mb-0">
+                      <div class="input-group">
+                        <input
+                          type="text"
+                          class="form-control"
+                          id="searchData"
+                          name="searchData"
+                          placeholder="Search by name, title, preferred locations"
+                          [(ngModel)]="searchData"
+                          (input)="onSearchData()"
+                        />
+                        <span class="input-group-text"
+                          ><i class="fa fa-search"></i
+                        ></span>
+                      </div>
+                    </div>
+                  </div>
+                </form>
+              </div>
+        </div>
+
+
+        <ng-scrollbar
+        #scrollable
+        track="all"
+        pointerEventsMethod="scrollbar"
+        [autoHeightDisabled]="false"
+        >
+            <div class="list-container">
+                <div
+                    class="item"
+                    *ngFor="
+                    let item of filteredHotList | slice : ItemStartIndex : ItemEndIndex">
+                        <form>
+                            <div class="form-group mb-0">
+                                <div class="form-check mb-0">
+                                    <input
+                                        class="form-check-input"
+                                        type="radio"
+                                        name="options"
+                                        [id]="item.id"
+                                        [value]="item.id"
+                                        [(ngModel)]="selectedHotlistType"
+                                        [disabled]="isNotResume(item.candidateDocuments)"
+                                        (click)="handleCandidate(item)"
+                                    />
+                                    <label class="form-check-label d-flex" [for]="item.id">
+                                        <div class="item d-flex">
+                                            <p class="fw-medium text-sm me-2 text-secondary-500">
+                                                {{ item.candidateName }}
+                                            </p>
+                                            <p class="text-sm text-dark-600 fw-medium">
+                                                {{ item.title }}
+                                            </p>
+                                        </div>
+                                    </label>
+                                    <p class="d-flex ms-2" *ngIf="isNotResume(item.candidateDocuments)">
+                                        <span class="text-sm text-danger">(Resume not attached)</span>
+                                        <span class="ms-1 pointer text-dark-500 material-symbols-outlined" customTooltip [tooltipTitle]='"Attach the resume in \"bench sales -> Hotlist\" to enable this option. You can quickly submit resume by selecting a hotlist"' [tooltipPlacement]="'bottom'">contact_support</span>
+                                    </p>
+                                </div>
+                            </div>
+                            <p class="text-sm text-dark-600 ms-4">
+                                Preferred Location: 
+                                <span class="text-dark-500 fw-medium" *ngIf="!item.remoteOnly">{{ getRelocation(item) }}</span>
+                                <span class="text-dark-500 fw-medium" *ngIf="item.remoteOnly">Remote only</span>
+                                <span class="text-dark-500 fw-medium" *ngIf="!item.remoteOnly && isNoLocation(item)">Any location</span>
+                            </p>
+                        </form>
+                    </div>
+
+            </div>
+        </ng-scrollbar>
+        <app-pagination-box
+            [totalItems]="totalItems"
+            [ItemStartIndex]="ItemStartIndex"
+            [ItemEndIndex]="ItemEndIndex"
+            [itemLimit]="itemLimit"
+            (outputParams)="getIndexParams($event)">
+        </app-pagination-box>
+
+        <div class="text-end mt-4">
+            <div class="btn btn-secondary me-3" (click)="clearData()">Back</div>
+            <div class="btn" [ngClass]=" selectedHotlistType == '' ? 'disabled' : 'btn-primary'" (click)="applyJob()">
+              Apply
+            </div>
+        </div>
+
+    </ng-container>
+
+</div>

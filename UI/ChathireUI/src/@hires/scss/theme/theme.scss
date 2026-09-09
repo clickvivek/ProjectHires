@@ -1,0 +1,77 @@
+@import "../utilities/all";
+
+//bootstrap
+@import "node_modules/bootstrap/scss/functions";
+@import "node_modules/bootstrap/scss/mixins";
+@import "node_modules/bootstrap/scss/variables";
+@import "node_modules/bootstrap/scss/variables-dark";
+@import "node_modules/bootstrap/scss/maps";
+@import "node_modules/bootstrap/scss/utilities";
+
+$theme-colors: (
+  "primary": $primary,
+  "secondary": $secondary,
+  "info": $info,
+  "warning": $warning,
+  "danger": $danger,
+  "dark": $dark,
+);
+
+$custom-colors: (
+  "tertiary": $tertiary,
+);
+
+$theme-colors: map-merge($custom-colors, $theme-colors);
+
+//for creating .text-{color}, .bg-{color}, .border-{color} utility colors
+$utility-colors: map-merge-multiple(
+  update-map-key(map-get($hires-colors, primary), primary),
+  update-map-key(map-get($hires-colors, secondary), secondary),
+  update-map-key(map-get($hires-colors, tertiary), tertiary),
+  update-map-key(map-get($hires-colors, warning), warning),
+  update-map-key(map-get($hires-colors, danger), danger),
+  update-map-key(map-get($hires-colors, dark), dark)
+);
+
+//update-map-key(generate-mat-color($secondary), secondary),
+
+$utilities: map-merge(
+  $utilities,
+  (
+    "color":
+      map-merge(
+        map-get($utilities, "color"),
+        (
+          values:
+            map-merge(
+              map-get(map-get($utilities, "color"), "values"),
+              ($utility-colors)
+            ),
+        )
+      ),
+    "background-color":
+      map-merge(
+        map-get($utilities, "background-color"),
+        (
+          values:
+            map-merge(
+              map-get(map-get($utilities, "background-color"), "values"),
+              ($utility-colors)
+            ),
+        )
+      ),
+    "border-color":
+      map-merge(
+        map-get($utilities, "border-color"),
+        (
+          values:
+            map-merge(
+              map-get(map-get($utilities, "border-color"), "values"),
+              ($utility-colors)
+            ),
+        )
+      ),
+  )
+);
+
+@import "node_modules/bootstrap/scss/utilities/api";

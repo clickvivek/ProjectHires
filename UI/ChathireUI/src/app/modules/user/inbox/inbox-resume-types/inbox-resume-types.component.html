@@ -1,0 +1,108 @@
+
+<mat-sidenav-container>
+    <mat-sidenav [(opened)]="isOpened" position="end" [sidenav]="isOpened" (closed)="onSidenavClose()">
+        <div class="inbox-resume-details-wrapper">
+            
+            <ng-container *ngIf="!resume">
+
+                <div class="top">
+                    <div class="left">
+                        <div class="d-flex left align-items-center">
+                            <p class="text-secondary-800 desp fw-medium me-3">
+                                {{selectedJob?.name}}
+                            </p>
+                            <p class="text-dark-600 desp fw-medium">
+                                                            {{ selectedJob?.jobOpeningLocation | jobLocation }}
+                                                          </p>
+                        </div>
+                        <div class="text-dark-400 text-sm">
+                            posted on {{getDate(selectedJob?.postDate)}}
+                        </div>
+                    </div>
+                    <div class="right ms-auto pointer d-flex align-items-center" (click)="showAll()">
+                        <p class="text-secondary-800 text-sm">{{ isExpanded ? 'Show Less' : 'Show All' }} </p>
+                        <span class="material-symbols-outlined text-h4 text-secondary-800 ms-1">{{ isExpanded ? 'expand_less' : 'expand_more' }}</span>
+                    </div>
+                    
+                </div>
+
+                <ng-container>
+
+                    <loader *ngIf="!isLoaded"></loader>
+
+                    <div class="resumes-box" *ngIf="isLoaded">
+                        <ng-container  *ngFor="
+                        let job of jobDetails | slice : itemStartIndex : itemEndIndex">
+                            <div class="list-group-item">
+                                <div class="resume-content">
+                                    <div class="left">
+                                        <span class="fw-medium">{{job?.candidateName}}</span>
+                                        <span *ngIf="job.totalYearsOfExp">, {{job?.totalYearsOfExp}} years</span>
+                                        <span *ngIf="job.currentLocationCity">,
+                                            {{job?.currentLocationCity?.stateCode}}
+                                        </span>
+                                        <div class="dropdown-area">
+                                            <dropdown-classic 
+                                                fieldName="candidateProfileMappingStatusId"
+                                                [fieldList]="statusTypeDataList" 
+                                                fieldType="candidateProfileMappingStatusName"
+                                                [fieldRefId]="job.id"
+                                                [editValue]="job.candidateProfileMappingStatusId" 
+                                                [profileMapColor]="job.candidateProfileMappingStatusId"
+                                                (changeData)="handleChangeStatus($event)"
+                                            ></dropdown-classic>
+                                        </div>
+                                    </div>
+                                    <div class="right">
+                
+                                    </div>
+                                </div>
+                                <div class="bottom">
+                                    <div class="item" *ngIf="job?.doc">
+                                        <download-resume
+                                        [doc]="job?.doc"
+                                    ></download-resume>
+                                    </div>
+                                    <div class="item">
+                                        <div class="view-box comments-box">
+                                            <div class="inner d-flex align-items-center" (click)="handleCommentDrawer(job)">
+                                                <span class="material-symbols-outlined icon text-base me-1">
+                                                  chat
+                                                </span>
+                                                <span class="text-sm">add comments</span>
+                                              </div>
+                                        </div>
+                                    </div>
+                                    <div class="item">
+                                        <div class="view-box contact-box">
+                                            <div class="inner d-flex align-items-center" (click)="handleContactDrawer(job)">
+                                                <span class="material-symbols-outlined icon text-base me-1">
+                                                    contact_phone
+                                                </span>
+                                                <span class="text-sm">contact</span>
+                                              </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </ng-container>
+    
+                        <ng-container *ngIf="jobDetails?.length == 0">
+                            <p>No data found</p>
+                        </ng-container>
+    
+                    </div> 
+
+
+                </ng-container>
+            
+
+            </ng-container>
+
+            <inbox-resume-comments [resume]="resume" *ngIf="isComment" (hideComment)="onCloseDrawer($event)"></inbox-resume-comments>
+            <inbox-resume-contact [resume]="resume" *ngIf="isContact" (hideContact)="onCloseDrawer($event)"></inbox-resume-contact>
+           
+        </div>
+    </mat-sidenav>
+</mat-sidenav-container>
+

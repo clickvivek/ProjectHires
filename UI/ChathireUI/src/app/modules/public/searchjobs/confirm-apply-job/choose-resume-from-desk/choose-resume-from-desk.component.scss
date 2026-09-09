@@ -1,0 +1,48 @@
+
+@import "src/@hires/scss/utilities/all";
+@import "src/@hires/scss/helpers/typography";
+
+.choose-resume-from-desk-wrapper {
+    margin: 20px 0 0 0;
+    .resume-lists {
+        .item {
+            display: flex;
+            border: 1px solid pick-color(dark, 300);
+            border-radius: 4px;
+            .type {
+              background-color: $danger;
+              text-transform: uppercase;
+              color: white;
+              padding: 18px 10px;
+            }
+            .name {
+              padding: 8px;
+              flex-grow: 1;
+            }
+            .delete {
+              margin: 0 14px 0 0;
+              display: flex;
+              align-items: center;
+            }
+        }
+    }
+    .upload-area {
+        margin: 20px 0;
+        input[type="file"] {
+          display: none;
+        }
+        .custom-file-upload {
+          border: 2px solid $secondary;
+          color: $secondary;
+          border-radius: 20px;
+          padding: 6px 20px;
+          cursor: pointer;
+          display: inline-block;
+          @extend .text-regular;
+          @extend .fw-medium;
+          &:hover {
+            background-color: pick-color(secondary, 50);
+          }
+        }
+    }
+}

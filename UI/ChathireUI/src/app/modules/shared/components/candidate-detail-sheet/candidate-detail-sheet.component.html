@@ -1,0 +1,20 @@
+<div class="candidate-details-wrapper">
+	<button class="close-icon"  mat-button mat-dialog-close *ngIf="isModal()"><i class="fa fa-times" aria-hidden="true" (click)="dialogClose()"></i></button>
+	<div class="candidate-head">
+		<div class="float-left">
+			<h4>{{selectedCandidateDetails.candidateName}}</h4>
+			<h5> <i class="fa fa-map-marker icon mr-2" aria-hidden="true"></i> {{selectedCandidateDetails.city}}, {{selectedCandidateDetails.state}}</h5>
+		</div>
+		<div class="float-right text-right">
+			<ul class="list-inline social">
+				<li class="list-inline-item">
+					<a href="javascript:void(0)"><i class="fa fa-share-alt mr-2" aria-hidden="true"></i><span class="d-none d-md-inline-block">Share</span></a>
+				</li>
+				<li class="list-inline-item">
+					<a href="javascript:void(0)"><i class="fa fa-envelope-o mr-2" aria-hidden="true"></i><span class="d-none d-md-inline-block">Email</span></a>
+				</li>
+			</ul>
+		</div>
+	</div>
+	<div class="candidate-details-container" [innerHTML]="selectedCandidateDetails.resume | keepHtml"></div>
+</div>

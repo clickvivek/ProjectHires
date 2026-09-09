@@ -1,0 +1,205 @@
+<div class="container-fluid signup-wrapper auth-wrapper p-0">
+  <div class="row g-0 signin-box align-items-stretch" style="min-height: calc(100vh - 75px);">
+    <!-- Left Section: Features (Desktop Only) -->
+    <div class="col-lg-5 col-xl-4 d-none d-lg-flex flex-column justify-content-center p-5 text-white" style="background: linear-gradient(135deg, #006b52 0%, #20c997 100%);">
+      <div class="px-xl-4">
+        <h4 class="fw-bold mb-3 text-white" style="font-size: 1.75rem;">Welcome to ChatHire</h4>
+        <p class="mb-5 text-white-50" style="font-size: 1.05rem;">Make your C2C hiring smart and seamless. Connect with thousands of Recruiters and Bench sales executives.</p>
+        
+        <div class="d-flex align-items-start mb-4">
+          <div class="rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 48px; height: 48px; background: rgba(255,255,255,0.15);">
+            <span class="material-symbols-outlined text-white" style="font-size: 1.5rem;">speed</span>
+          </div>
+          <div>
+            <h5 class="text-white mb-1">Fast & Efficient</h5>
+            <p class="text-white-50 mb-0" style="font-size: 0.95rem;">Hire top talent in record time with our streamlined platform.</p>
+          </div>
+        </div>
+        
+        <div class="d-flex align-items-start mb-4">
+          <div class="rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 48px; height: 48px; background: rgba(255,255,255,0.15);">
+            <span class="material-symbols-outlined text-white" style="font-size: 1.5rem;">groups</span>
+          </div>
+          <div>
+            <h5 class="text-white mb-1">Vast Network</h5>
+            <p class="text-white-50 mb-0" style="font-size: 0.95rem;">Access a massive pool of pre-vetted professionals.</p>
+          </div>
+        </div>
+
+        <div class="d-flex align-items-start">
+          <div class="rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 48px; height: 48px; background: rgba(255,255,255,0.15);">
+            <span class="material-symbols-outlined text-white" style="font-size: 1.5rem;">forum</span>
+          </div>
+          <div>
+            <h5 class="text-white mb-1">Direct Communication</h5>
+            <p class="text-white-50 mb-0" style="font-size: 0.95rem;">Chat instantly and securely with candidates and C2C Employers.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right Section: Signup Form -->
+    <div class="col-12 col-lg-7 col-xl-8 d-flex flex-column justify-content-center py-5 bg-light">
+      <div class="row w-100 mx-auto">
+        <div class="col-sm-12 col-md-8 offset-md-2 col-lg-8 offset-lg-2 col-xl-6 offset-xl-3">
+          <div class="sign-in card shadow-sm rounded border-0">
+            <div class="card-body p-5">
+                <h4 class="mb-5 text-center">Sign Up - ChatHire</h4>
+
+                <form #signupForm="ngForm" (ngSubmit)="signup()">
+                  <div
+                    class="mt-2 mb-4 alert alert-danger d-flex align-items-center"
+                    *ngIf="error"
+                  >
+                    {{ error }}
+                  </div>
+
+                  <div class="input-box">
+                    <div class="form-group">
+                      <label for="loginFormEmail">Email</label>
+                      <input
+                        type="email"
+                        class="form-control"
+                        id="email"
+                        name="email"
+                        placeholder="Email"
+                        [(ngModel)]="formData.email"
+                        pattern="[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,4}$"
+                        required
+                        email
+                      />
+                      <div
+                        class="mt-2"
+                        *ngIf="
+                          signupForm.submitted &&
+                          signupForm.controls['email'].invalid
+                        "
+                      >
+                        <div
+                          class="input-field-message"
+                          *ngIf="signupForm.controls['email'].errors?.['required']"
+                        >
+                          Email is required
+                        </div>
+                        <div
+                          class="input-field-message"
+                          *ngIf="signupForm.controls['email'].errors?.['email']"
+                        >
+                          Invalid email format
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="input-box">
+                    <div class="form-group">
+                      <label for="password">Password (6+ Characters)</label>
+                      <div class="input-group">
+                        <input
+                          [type]="showPassword ? 'text' : 'password'"
+                          class="form-control"
+                          id="password"
+                          name="password"
+                          placeholder="Password"
+                          [(ngModel)]="formData.password"
+                          required
+                          minlength="6"
+                        />
+                        <span
+                          class="material-symbols-outlined input-group-text text-h6 text-dark-500"
+                          id="basic-addon2"
+                          (click)="handleTogglePassword()"
+                        >
+                          {{ showPassword ? "visibility_off" : "visibility" }}
+                        </span>
+                      </div>
+                      <div
+                        class="mt-2"
+                        *ngIf="
+                          signupForm.submitted &&
+                          signupForm.controls['password'].invalid
+                        "
+                      >
+                        <div
+                          class="input-field-message"
+                          *ngIf="signupForm.controls['password'].errors?.['required']"
+                        >
+                          Password is required.
+                        </div>
+                        <div
+                          class="input-field-message"
+                          *ngIf="signupForm.controls['password'].errors?.['minlength']"
+                        >
+                          Password must be at least 6 characters long
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="input-box">
+                    <div class="form-group">
+                      <div class="form-check mb-0">
+                        <input
+                          type="checkbox"
+                          class="form-check-input"
+                          id="agreeTerms"
+                          name="agreeTerms"
+                          [(ngModel)]="formData.agreeTerms"
+                          required
+                        />
+                        <label class="form-check-label mb-0" for="agreeTerms"
+                          >I agree to the
+                          <a
+                            routerLink="/terms"
+                            routerLinkActive="active"
+                            [routerLinkActiveOptions]="{ exact: true }"
+                            >Terms & Conditions</a
+                          ></label
+                        >
+                      </div>
+                      <div
+                        class="mt-2"
+                        *ngIf="
+                          signupForm.submitted &&
+                          signupForm.controls['agreeTerms'].invalid
+                        "
+                      >
+                        <div
+                          class="input-field-message"
+                          *ngIf="signupForm.controls['agreeTerms'].errors?.['required']"
+                        >
+                          You must agree to the terms & conditions
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="submit-box">
+                    <submit-btn
+                      [isSubmit]="isFormSubmitted"
+                      defaultText="Sign Up"
+                      defaultActionText="Sign Up..."
+                      >
+                      </submit-btn>
+      
+                  </div>
+
+                  <div class="line-text text-center mt-3">
+                    Already have an account ?
+                    <a
+                      href="javascript:void(0)"
+                      class="ms-2"
+                      routerLink="/login"
+                      routerLinkActive="active"
+                      [routerLinkActiveOptions]="{ exact: true }"
+                      >Log in</a
+                    >
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+</div>

@@ -1,0 +1,424 @@
+{
+	"myHotList" : [
+		{
+			"id":1,
+			"name": "Vivek",
+			"city": "Newburgh",
+			"state": "NY",
+			"skills":"Angular, Java, Javascript, PHP",
+			"status":true,
+			"totalExp":12,
+			"visa":"H1B"
+		},
+		{
+			"id":2,
+			"name": "Bhupathi",
+			"city": "Los Angeles",
+			"state": "CA",
+			"skills":"Angular, Java, Javascript, PHP",
+			"status":false,
+			"totalExp":12,
+			"visa":"H1B"
+		},
+		{
+			"id":3,
+			"name": "Vijay",
+			"city": "Chicago",
+			"state": "Il",
+			"skills":"Angular, Java, Javascript, PHP",
+			"status":true,
+			"totalExp":8,
+			"visa":"H1B"
+		},
+		{
+			"id":4,
+			"name": "Ram",
+			"city": "San Francisco",
+			"state": "CA",
+			"skills":"Angular, Java, Javascript, PHP",
+			"status":true,
+			"totalExp":12,
+			"visa":"H1B"
+		},
+		{
+			"id":5,
+			"name": "Senthil",
+			"city": "San Diego",
+			"state": "CA",
+			"skills":"Angular, Javascript, React, VueJS",
+			"status":false,
+			"totalExp":12,
+			"visa":"H1B"
+		},
+		{
+			"id":6,
+			"name": "Mouli",
+			"city": "Barrington",
+			"state": "Il",
+			"skills":"Angular, Java, Javascript, PHP",
+			"status":true,
+			"totalExp":8,
+			"visa":"H1B"
+		},
+		{
+			"id":7,
+			"name": "Kumar",
+			"city": "East Hampton",
+			"state": "NY",
+			"skills":"Angular, Java, Javascript, PHP",
+			"status":false,
+			"totalExp":4,
+			"visa":"H1B"
+		},
+		{
+			"id":1,
+			"name": "Vivek",
+			"city": "Newburgh",
+			"state": "NY",
+			"skills":"Angular, Java, Javascript, PHP",
+			"status":true,
+			"totalExp":12,
+			"visa":"H1B"
+		},
+		{
+			"id":2,
+			"name": "Bhupathi",
+			"city": "Los Angeles",
+			"state": "CA",
+			"skills":"Angular, Java, Javascript, PHP",
+			"status":true,
+			"totalExp":12,
+			"visa":"H1B"
+		},
+		{
+			"id":3,
+			"name": "Vijay",
+			"city": "Chicago",
+			"state": "Il",
+			"skills":"Angular, Java, Javascript, PHP",
+			"status":true,
+			"totalExp":8,
+			"visa":"H1B"
+		},
+		{
+			"id":4,
+			"name": "Ram",
+			"city": "San Francisco",
+			"state": "CA",
+			"skills":"Angular, Java, Javascript, PHP",
+			"status":true,
+			"totalExp":12,
+			"visa":"H1B"
+		},
+		{
+			"id":5,
+			"name": "Senthil",
+			"city": "San Diego",
+			"state": "CA",
+			"skills":"Angular, Javascript, React, VueJS",
+			"status":false,
+			"totalExp":12,
+			"visa":"H1B"
+		},
+		{
+			"id":6,
+			"name": "Mouli",
+			"city": "Barrington",
+			"state": "Il",
+			"skills":"Angular, Java, Javascript, PHP",
+			"status":true,
+			"totalExp":8,
+			"visa":"H1B"
+		},
+		{
+			"id":7,
+			"name": "Kumar",
+			"city": "East Hampton",
+			"state": "NY",
+			"skills":"Angular, Java, Javascript, PHP",
+			"status":false,
+			"totalExp":4,
+			"visa":"H1B"
+		}
+	],
+	"domainList" : ["Retail","Banking and Financial services","Healthcare","Travel and Hospitality","Engineering and Construction","Insurance","Technology","Telecom"],
+	"billingList" : ["35-50","40-50","45-55","55-60","60-75","60-80","75-100","100+"],
+	"availabilityList" : ["Immediate","Available in 1 week","2 Weeks",">3 Weeks"],
+	"relocationList": ["Open","Tri State Area","PA NJ NY","States"],
+	"visaList": [
+		{
+			"id":1,
+			"name":"H1B"
+		},
+		{
+			"id":2,
+			"name":"OPT/CPT"
+		},
+		{
+			"id":3,
+			"name":"GCEAD"
+		},
+		{
+			"id":4,
+			"name":"GC"
+		},
+		{
+			"id":5,
+			"name":"USC"
+		},
+		{
+			"id":6,
+			"name":"L2EAD"
+		},
+		{
+			"id":7,
+			"name":"H4EAD"
+		},
+		{
+			"id":8,
+			"name":"ALL"
+		}
+	],
+	"myJobs" : [
+	    {
+	        "id": 700,
+	        "name": "SAP HANA consultant lead",
+	        "state": "NJ",
+	        "skills": "SAP",
+	        "city": "NewYork",
+	        "country": "USA",
+	        "employmentTypeId": null,
+	        "joiningdays": 15,
+	        "description": null,
+	        "totalExp": 10,
+	        "priorityId": null,
+	        "postedDate": "2019-08-15T00:00:00",
+	        "lastDate": null,
+	        "numberOfOpening": null,
+	        "active": true,
+	        "inserted": null,
+	        "updated": null,
+	        "consultancyId": 4,
+	        "rawHtml": "<p align=\"center\" style=\"margin-left:0px;margin-top:30px; margin-right:0px;margin-bottom:25px;\"><table width=\"1024\" cellspacing=\"0\" cellpadding=\"0\" border=\"0\">                                                  <tr>       <td colspan=\"2\" valign=\"middle\"><p style=\"margin-left:0px;margin-right:0px;margin-top:0px; margin-bottom:0px;\"> <font style=\"font-size:15px\" color=\"#3C3C3C\" face=\"Verdana\">                                            <br><u>From</u>:<br>                                   Devendra ,<br>                                   Amiga informatics<br>                                                   devendra@amigainformatics.com<br>       <span style=\"background-color: #FFFF00\"><b>Reply to:</b></span> devendra@amigainformatics.com<br><br></font></p>      </td></tr>                                                        <tr><td colspan=\"2\" valign=\"middle\"><br><p>Hi,</p><p><p>Please go through the job description as mention below if you are interested share your updated resume</p><p><p><p><strong> Position: SAP HANA consultant </strong></p><p><strong>Location: Lake Forest, IL</strong></p><p><strong> Client: Tenneco</strong></p><p><strong></strong></p><p><p><strong> Job Description:</strong></p><p><strong></strong></p><p>&middot; Hands-on SAP HANA modeling (including advanced analytics) experience to deliver new solutions/ improve existing solutions.</p><p>&middot; Strong SQL background with Procedures and Table functions;</p><p>&middot; Strong HANA security background which includes data level security and alignment with BOBJ security.</p><p>&middot; Skill in performance improvements in HANA modeling.</p><p>&middot; Webi development experience by utilizing HANA data &middot;</p><p>&middot; BI LaunchPad experience to create OLAP connections and Security on BOBJ</p><p>&middot; Analysis for office and Power BI experience is a plus</p><p>&middot; Knowledge and experience in BODS ( SAP Data Services)</p><p>&middot; Have the ability to articulate and define analytics solutions being used by Tenneco business teams</p><p>&middot; In addition to a strong business and analytics background, the position requires strong problem-solving, analytical abilities and consulting skills with the ability to communicate effectively at all levels of business and in a global and regional team environment.</p><p>&middot; Ability to work as a visualization expert to implement the best visualization stories for Tenneco business KPI&rsquo;s</p><p>&middot; Will involve leading or participating in business sessions to identify and document business use cases.</p><p>&middot; Review and contribute to solution knowledge base with specific areas of expertise, Develop and document enterprise knowledge in the form of technical documentation, and best practices</p><p><p><p><p><p><p><p><p><p><strong>Thanks &amp; Regards</strong></p><p><strong></strong></p><p><strong>Devendra Singh</strong></p><p><strong>IT Recruiter</strong></p><p><strong>Amiga Informatics </strong><a href=\"https://maps.google.com/?q=501,+S.+Broadway+Hicksville,+NY+11801&amp;entry=gmail&amp;source=g\" target=\"_blank\">501, S. Broadway Hicksville, NY 11801</a></p><p>Email : <a href=\"mailto:devendra@amigainformatics.com\">devendra@amigainformatics.com</a></p><p><strong>Direct No +1-516-802-9877 / Contact No +1-516-531-9060 Ext. 126</strong></p><p><strong>USA ||Canada ||Hong Kong ||India ||Dubai</strong></p><br></td>        </tr>      <tr>      <td width=\"800\" valign=\"top\" style=\"border-top: solid 1px #333399; \">      <p align=\"justify\" style=\"margin-left:0px;margin-right:0px;margin-top:0px; margin-bottom:0px;\"> <font style=\"font-size:12px\" color=\"#666666\" face=\"Verdana\"> <a href=\"http://www.prohires.com/#!products/c5n6\" style=\"text-decoration: none; color: red\" title=\"Click to view more details\"><u><b>Sign-Up</b></u> for your account with <b>PROHIRES POWERHOUSE Recruiting Portal</b> to broadcast requirements & hotlists.</a></font></p>      </td>            <td valign=\"top\" style=\"border-top: solid 1px #333399; \">            <p align=\"right\" style=\"margin-left:0px;margin-right:0px;margin-top:0px; margin-bottom:0px;\">  <font style=\"font-size:10px\" color=\"#3C3C3C\" face=\"Verdana\"></font></p>            </td>        </tr></table><br></p>",
+	        "cityid": 1,
+	        "stateid": 1,
+	        "visa": "H1B, OPT/CPT, GCEAD, GC, USC, L2EAD, H4EAD"
+	    },
+	    {
+	        "id": 701,
+	        "name": "Siebel CRM Developer",
+	        "state": "IL",
+	        "skills": "SAP",
+	        "city": "Chicago",
+	        "country": null,
+	        "employmentTypeId": null,
+	        "joiningdays": null,
+	        "description": null,
+	        "totalExp": 5,
+	        "priorityId": null,
+	        "postedDate": "2019-01-12T00:00:00",
+	        "lastDate": null,
+	        "numberOfOpening": null,
+	        "active": true,
+	        "inserted": null,
+	        "updated": null,
+	        "consultancyId": 6,
+	        "rawHtml": "<p align=\"center\" style=\"margin-left:0px;margin-top:30px; margin-right:0px;margin-bottom:25px;\"><table width=\"1024\" cellspacing=\"0\" cellpadding=\"0\" border=\"0\">                                                  <tr>       <td colspan=\"2\" valign=\"middle\"><p style=\"margin-left:0px;margin-right:0px;margin-top:0px; margin-bottom:0px;\"> <font style=\"font-size:15px\" color=\"#3C3C3C\" face=\"Verdana\">                                            <br><u>From</u>:<br>                                   Neeraj,<br>                                   IDC Technologies Inc.<br>                                                   neeraj.k@idctechnologies.com<br>       <span style=\"background-color: #FFFF00\"><b>Reply to:</b></span> neeraj.k@idctechnologies.com<br><br></font></p>      </td></tr>                                                        <tr><td colspan=\"2\" valign=\"middle\"><br><p>Hi,<br><br>Hope all is well.<br>I have the below requirements open with my client, if you feel comfortable with the requirement, then please reply back to me with your updated resume and contact details.</p><p><strong>Job Title  : Siebel CRM Developer</strong><br><strong>Location : Waltham, MA</strong><br><strong>Duration : 12 Months+</strong><br><strong><span style=\"font-size:12px\"><span style=\"font-family:arial,helvetica,sans-serif\">Only US Citizen &amp; Green card</span></span></strong></p><p><br><strong>Job Description:</strong></p><p><strong>Relevant Experience (in Yrs)</strong> 6 &ndash; 8 years of experience with Siebel CRM development</p><p><strong>Technical/Functional Skills  </strong></p><p><strong>Experience with:</strong></p><ul><li>Siebel configuration, Assignment Manager, EIM, Workflows, Business Services, eScript</li><li>Siebel Open UI</li><li>Using EAI, VBC, web services, MSMQ</li><li>One of the vertical application e.g. eService, eChannel, eSales, eMarketing</li><li>Siebel-CRM Server Administration, IIS, Java-scripting, HTML, CSS</li><li>Siebel Call Center.</li></ul><p><strong>Beneficial if have knowledge of following (not mandatory)</strong></p><ul><li>Siebel Out of the Box adapters, web services, VBC, EBC and JMS queues</li><li>Strong knowledge of the Siebel Data Model, Databases, MSSQL Server</li><li>Siebel Marketing experience</li></ul><p><strong>Roles &amp; Responsibilities </strong></p><p>Design the software system, describing the specifications in technical terms:</p><ul><li>Select algorithms, theories or technologies that will be used</li><li>Plan appropriate user interface</li><li>Identify and manage dependencies with other components</li><li>Code, compile and run unit tests according to Implement processes and Metrics (KPIs)</li><li>Ensure knowledge sharing within the team about the developments</li><li>Improve code quality up to the Last Build, to reach the defined quality metrics (component metrics, product metrics &hellip;)</li><li>Resolution of incidents reports (IRs) reported by the Technical Customer Support or by Product QA teams.</li><li>Keep abreast of the latest technological developments, understand the requirements of our development partners, know about competing products, look ahead for future products, technologies, languages, etc</li></ul><p><strong>Generic Managerial Skills</strong></p><ul><li>Strong functional use of Microsoft Office Excel, Word, PowerPoint, and knowledge of Access or SQL</li><li>Strong communication skills in two parts:<ul style=\"list-style-type:circle\"><li>very strong writing skills utilizing the rules of English grammar;</li><li>verbally clear, concise, and grammatically correct oral (speaking) communication skills in English.</li></ul></li><li>Beneficial to know any other language other than English such as (but not limited to), French, Spanish, Portuguese, German, Dutch, Italian, Russian, Korean, Japanese, Mandarin, Vietnamese, etc.</li></ul><p><strong>Education</strong> Conferred Master.</p><p><a name=\"_MailAutoSig\"><strong>Regards,</strong></a></p><p><strong>Neeraj Kumar</strong></p><p><strong>IDC Technologies, Inc.</strong></p><p><strong>Mailto: </strong><a href=\"mailto:neeraj.k@idctechnologies.com\"><strong>neeraj.k@idctechnologies.com</strong></a></p><p><strong>9 am to 6 pm EST</strong></p><p><strong>_____________________________________</strong></p><p>Empowering Technologies Services</p><p>Remote Services | IT Services | BPO |</p><p>IT Consulting | Staffing Solutions |</p><p>_____________________________________</p><p>The views and opinions included in this email belong to their author and do not necessarily mirror the views and opinions of the company. Our employees are obliged not to make any defamatory clauses, infringe, or authorize infringement of any legal right. Therefore, the company will not take any liability for such statements included in emails. This message is sent in compliance with the new email bill section 301. Under Bill S.1618 TITLE III passed by the 105th US Congress, this message cannot be considered SPAM as long as we include the way to be removed, Paragraph (a)(c) of S.1618, further transmissions to you by the sender of this email may be stopped at no cost to you by sending a response of &ldquo;REMOVE&rdquo; in the subject line of the email, we really will remove you with immediate effect.</p><p><p><br></td>        </tr>      <tr>      <td width=\"800\" valign=\"top\" style=\"border-top: solid 1px #333399; \">      <p align=\"justify\" style=\"margin-left:0px;margin-right:0px;margin-top:0px; margin-bottom:0px;\"> <font style=\"font-size:12px\" color=\"#666666\" face=\"Verdana\"> <a href=\"http://www.prohires.com/#!products/c5n6\" style=\"text-decoration: none; color: red\" title=\"Click to view more details\"><u><b>Sign-Up</b></u> for your account with <b>PROHIRES POWERHOUSE Recruiting Portal</b> to broadcast requirements & hotlists.</a></font></p>      </td>            <td valign=\"top\" style=\"border-top: solid 1px #333399; \">            <p align=\"right\" style=\"margin-left:0px;margin-right:0px;margin-top:0px; margin-bottom:0px;\">  <font style=\"font-size:10px\" color=\"#3C3C3C\" face=\"Verdana\"></font></p>            </td>        </tr></table><br></p>",
+	        "cityid": 3,
+	        "stateid": 4,
+	        "visa": "H1B, OPT/CPT"
+	    },
+	    {
+	        "id": 702,
+	        "name": "SAP JAVA consultant",
+	        "state": "NJ",
+	        "skills": "SAP",
+	        "city": "NewYork",
+	        "country": null,
+	        "employmentTypeId": null,
+	        "joiningdays": null,
+	        "description": null,
+	        "totalExp": 12,
+	        "priorityId": null,
+	        "postedDate": "2019-01-03T00:00:00",
+	        "lastDate": null,
+	        "numberOfOpening": null,
+	        "active": true,
+	        "inserted": null,
+	        "updated": null,
+	        "consultancyId": 4,
+	        "rawHtml": "<p align=\"center\" style=\"margin-left:0px;margin-top:30px; margin-right:0px;margin-bottom:25px;\"><table width=\"1024\" cellspacing=\"0\" cellpadding=\"0\" border=\"0\">                                                  <tr>       <td colspan=\"2\" valign=\"middle\"><p style=\"margin-left:0px;margin-right:0px;margin-top:0px; margin-bottom:0px;\"> <font style=\"font-size:15px\" color=\"#3C3C3C\" face=\"Verdana\">                                            <br><u>From</u>:<br>                                   Devendra ,<br>                                   Amiga informatics<br>                                                   devendra@amigainformatics.com<br>       <span style=\"background-color: #FFFF00\"><b>Reply to:</b></span> devendra@amigainformatics.com<br><br></font></p>      </td></tr>                                                        <tr><td colspan=\"2\" valign=\"middle\"><br><p>Hi,</p><p><p>Please go through the job description as mention below if you are interested share your updated resume</p><p><p><p><strong> Position: SAP HANA consultant </strong></p><p><strong>Location: Lake Forest, IL</strong></p><p><strong> Client: Tenneco</strong></p><p><strong></strong></p><p><p><strong> Job Description:</strong></p><p><strong></strong></p><p>&middot; Hands-on SAP HANA modeling (including advanced analytics) experience to deliver new solutions/ improve existing solutions.</p><p>&middot; Strong SQL background with Procedures and Table functions;</p><p>&middot; Strong HANA security background which includes data level security and alignment with BOBJ security.</p><p>&middot; Skill in performance improvements in HANA modeling.</p><p>&middot; Webi development experience by utilizing HANA data &middot;</p><p>&middot; BI LaunchPad experience to create OLAP connections and Security on BOBJ</p><p>&middot; Analysis for office and Power BI experience is a plus</p><p>&middot; Knowledge and experience in BODS ( SAP Data Services)</p><p>&middot; Have the ability to articulate and define analytics solutions being used by Tenneco business teams</p><p>&middot; In addition to a strong business and analytics background, the position requires strong problem-solving, analytical abilities and consulting skills with the ability to communicate effectively at all levels of business and in a global and regional team environment.</p><p>&middot; Ability to work as a visualization expert to implement the best visualization stories for Tenneco business KPI&rsquo;s</p><p>&middot; Will involve leading or participating in business sessions to identify and document business use cases.</p><p>&middot; Review and contribute to solution knowledge base with specific areas of expertise, Develop and document enterprise knowledge in the form of technical documentation, and best practices</p><p><p><p><p><p><p><p><p><p><strong>Thanks &amp; Regards</strong></p><p><strong></strong></p><p><strong>Devendra Singh</strong></p><p><strong>IT Recruiter</strong></p><p><strong>Amiga Informatics </strong><a href=\"https://maps.google.com/?q=501,+S.+Broadway+Hicksville,+NY+11801&amp;entry=gmail&amp;source=g\" target=\"_blank\">501, S. Broadway Hicksville, NY 11801</a></p><p>Email : <a href=\"mailto:devendra@amigainformatics.com\">devendra@amigainformatics.com</a></p><p><strong>Direct No +1-516-802-9877 / Contact No +1-516-531-9060 Ext. 126</strong></p><p><strong>USA ||Canada ||Hong Kong ||India ||Dubai</strong></p><br></td>        </tr>      <tr>      <td width=\"800\" valign=\"top\" style=\"border-top: solid 1px #333399; \">      <p align=\"justify\" style=\"margin-left:0px;margin-right:0px;margin-top:0px; margin-bottom:0px;\"> <font style=\"font-size:12px\" color=\"#666666\" face=\"Verdana\"> <a href=\"http://www.prohires.com/#!products/c5n6\" style=\"text-decoration: none; color: red\" title=\"Click to view more details\"><u><b>Sign-Up</b></u> for your account with <b>PROHIRES POWERHOUSE Recruiting Portal</b> to broadcast requirements & hotlists.</a></font></p>      </td>            <td valign=\"top\" style=\"border-top: solid 1px #333399; \">            <p align=\"right\" style=\"margin-left:0px;margin-right:0px;margin-top:0px; margin-bottom:0px;\">  <font style=\"font-size:10px\" color=\"#3C3C3C\" face=\"Verdana\"></font></p>            </td>        </tr></table><br></p>",
+	        "cityid": 1,
+	        "stateid": 1,
+	        "visa": "GCEAD, USC"
+	    },
+	    {
+	        "id": 707,
+	        "name": "SAP ABAP",
+	        "state": "NJ",
+	        "skills": "SAP",
+	        "city": "NewYork",
+	        "country": null,
+	        "employmentTypeId": null,
+	        "joiningdays": null,
+	        "description": null,
+	        "totalExp": 7,
+	        "priorityId": null,
+	        "postedDate": "2019-09-01T00:00:00",
+	        "lastDate": null,
+	        "numberOfOpening": null,
+	        "active": true,
+	        "inserted": null,
+	        "updated": null,
+	        "consultancyId": 17,
+	        "rawHtml": "<p align=\"center\" style=\"margin-left:0px;margin-top:30px; margin-right:0px;margin-bottom:25px;\"><table width=\"1024\" cellspacing=\"0\" cellpadding=\"0\" border=\"0\">                                                  <tr>       <td colspan=\"2\" valign=\"middle\"><p style=\"margin-left:0px;margin-right:0px;margin-top:0px; margin-bottom:0px;\"> <font style=\"font-size:15px\" color=\"#3C3C3C\" face=\"Verdana\">                                            <br><u>From</u>:<br>                                   Imthyas,<br>                                   Xforia.inc<br>                                                   imthyas@xforia.com<br>       <span style=\"background-color: #FFFF00\"><b>Reply to:</b></span> imthyas@xforia.com<br><br></font></p>      </td></tr>                                                        <tr><td colspan=\"2\" valign=\"middle\"><br><p><p>QA-Issaquah, Washington</p><p><strong><u>atleast 2 or 3 of the following skills</u></strong><br>Selenium web driver Automation using Java<br>API testing and API automation<br>ETL testing<br>Strong DB skills.</p><p><p><strong>Job Description: (</strong><strong>Client is going to educate them on ETL if they have minimum knowledge)</strong></p><ul><li>Solid understanding of principles, practices, and procedures of Software Quality Assurance</li><li>Familiarity with data warehousing methodology, data modeling, ETL, databases, and business intelligence</li><li>Hands-on SQL to create queries with complex joins to extract data from various databases and systems and compare against data warehouse</li><li>Experience Working in D365 implementation project (good to have)</li><li>REST API testing experience</li><li>Experience using tools to test web services (REST/RESTful/JSON) like Postman, etc</li><li>Experience using Agile toolset Jira, Confluence, Bitbucket etc</li><li>Experience with Microsoft test Management tools like VSTS.</li><li>Dev Ops exposure/mindset</li><li>Experience testing in a Pair programming or Peer Programming model</li><li>Reporting &ndash; testing progress, metrics, issues</li><li>Experience working in an Onsite-offshore model (if we are planning on implementing onsite offshore model)</li><li>Excellent Cross-team and collaboration skill</li></ul><p>Thanks.<br>Imthyas<br>IT Recruiter<br>Xforia Inc<br>Direct: 214-238-8254<br>Cell: 469 848 6849    <br>E-mail: imthyas@xforia.com<br>www.xforia.com</p><br></td>        </tr>      <tr>      <td width=\"800\" valign=\"top\" style=\"border-top: solid 1px #333399; \">      <p align=\"justify\" style=\"margin-left:0px;margin-right:0px;margin-top:0px; margin-bottom:0px;\"> <font style=\"font-size:12px\" color=\"#666666\" face=\"Verdana\"> <a href=\"http://www.prohires.com/#!products/c5n6\" style=\"text-decoration: none; color: red\" title=\"Click to view more details\"><u><b>Sign-Up</b></u> for your account with <b>PROHIRES POWERHOUSE Recruiting Portal</b> to broadcast requirements & hotlists.</a></font></p>      </td>            <td valign=\"top\" style=\"border-top: solid 1px #333399; \">            <p align=\"right\" style=\"margin-left:0px;margin-right:0px;margin-top:0px; margin-bottom:0px;\">  <font style=\"font-size:10px\" color=\"#3C3C3C\" face=\"Verdana\"></font></p>            </td>        </tr></table><br></p>",
+	        "cityid": 1,
+	        "stateid": 1,
+	        "visa": "OPT/CPT"
+	    },
+	    {
+	        "id": 711,
+	        "name": "SAP MM",
+	        "state": "NJ",
+	        "skills": "SAP",
+	        "city": "NewYork",
+	        "country": null,
+	        "employmentTypeId": null,
+	        "joiningdays": null,
+	        "description": null,
+	        "totalExp": 4,
+	        "priorityId": null,
+	        "postedDate": "2019-01-01T00:00:00",
+	        "lastDate": null,
+	        "numberOfOpening": null,
+	        "active": true,
+	        "inserted": null,
+	        "updated": null,
+	        "consultancyId": 5,
+	        "rawHtml": "<p align=\"center\" style=\"margin-left:0px;margin-top:30px; margin-right:0px;margin-bottom:25px;\"><table width=\"1024\" cellspacing=\"0\" cellpadding=\"0\" border=\"0\">                                                  <tr>       <td colspan=\"2\" valign=\"middle\"><p style=\"margin-left:0px;margin-right:0px;margin-top:0px; margin-bottom:0px;\"> <font style=\"font-size:15px\" color=\"#3C3C3C\" face=\"Verdana\">                                            <br><u>From</u>:<br>                                   vishal,<br>                                   smartcaliber.Inc<br>                                                   vishal@smartcaliber.com<br>       <span style=\"background-color: #FFFF00\"><b>Reply to:</b></span> vishal@smartcaliber.com<br><br></font></p>      </td></tr>                                                        <tr><td colspan=\"2\" valign=\"middle\"><br><p><strong>Position:</strong> IBM Sterling EDI B2B Inegrator</p><p><strong>Location:</strong> Seattle, WA</p><p><strong>Duration:</strong> 6+ Months</p><p><p>9+ Yrs</p><p>This person will support migration of EDI transaction maps in IBM Sterling B2B Integrator away from Mainframe-based GENTRAN. The EDI developer will work with both internal and external customers to deliver quality EDI integrations that are efficient, scalable and maintainable. This includes interpreting, clarifying and coding to specifications as well as testing and maintaining implementations. The developer will be working with a team that is developing and deploying EDI solutions for critical business areas.</p><p><p>Qualifications &amp; Skills</p><p>&bull; 3+ years&rsquo; experience in code development, scripting, workflow, data mapping</p><p>&bull; Must be familiar with X12 and EDIFACT EDI standards</p><p>&bull; Experience mapping on <strong>IBM Sterling B2B Integrator required</strong></p><p>&bull; Experience with EDI Mapping for SAP IDoc highly desirable</p><p>&bull; Knowledge of software design and testing methodologies</p><p>&bull; Willing to learn new technologies</p><p>&bull; Effective communication and problem-solving skills</p><p>&bull; Ability to work effectively in a team environment, customer support environment and with all levels of the organization</p><p>&bull; On call availability (24x7) for system support</p><p>&bull; Experience with Mainframe platforms is desired</p><p>&bull; Experience with automotive, manufacturing or distribution companies a plus</p><p><p><p><p><p><strong>Best Regards,</strong></p><p><strong>Vishal</strong></p><p><strong>Truth Lies in Heart</strong></p><p><br></td>        </tr>      <tr>      <td width=\"800\" valign=\"top\" style=\"border-top: solid 1px #333399; \">      <p align=\"justify\" style=\"margin-left:0px;margin-right:0px;margin-top:0px; margin-bottom:0px;\"> <font style=\"font-size:12px\" color=\"#666666\" face=\"Verdana\"> <a href=\"http://www.prohires.com/#!products/c5n6\" style=\"text-decoration: none; color: red\" title=\"Click to view more details\"><u><b>Sign-Up</b></u> for your account with <b>PROHIRES POWERHOUSE Recruiting Portal</b> to broadcast requirements & hotlists.</a></font></p>      </td>            <td valign=\"top\" style=\"border-top: solid 1px #333399; \">            <p align=\"right\" style=\"margin-left:0px;margin-right:0px;margin-top:0px; margin-bottom:0px;\">  <font style=\"font-size:10px\" color=\"#3C3C3C\" face=\"Verdana\"></font></p>            </td>        </tr></table><br></p>",
+	        "cityid": 1,
+	        "stateid": 1,
+	        "visa": "OPT/CPT"
+	    },
+	    {
+	        "id": 712,
+	        "name": "SAP SD",
+	        "state": "IL",
+	        "skills": "SAP",
+	        "city": "Chicago",
+	        "country": null,
+	        "employmentTypeId": null,
+	        "joiningdays": null,
+	        "description": null,
+	        "totalExp": 5,
+	        "priorityId": null,
+	        "postedDate": "2019-01-01T00:00:00",
+	        "lastDate": null,
+	        "numberOfOpening": null,
+	        "active": true,
+	        "inserted": null,
+	        "updated": null,
+	        "consultancyId": 8,
+	        "rawHtml": "<p align=\"center\" style=\"margin-left:0px;margin-top:30px; margin-right:0px;margin-bottom:25px;\"><table width=\"1024\" cellspacing=\"0\" cellpadding=\"0\" border=\"0\">                                                  <tr>       <td colspan=\"2\" valign=\"middle\"><p style=\"margin-left:0px;margin-right:0px;margin-top:0px; margin-bottom:0px;\"> <font style=\"font-size:15px\" color=\"#3C3C3C\" face=\"Verdana\">                                            <br><u>From</u>:<br>                                   Sekar,<br>                                   Smart IT Frame<br>                                                   sekar@smartitframe.com<br>       <span style=\"background-color: #FFFF00\"><b>Reply to:</b></span> sekar@smartitframe.com<br><br></font></p>      </td></tr>                                                        <tr><td colspan=\"2\" valign=\"middle\"><br><p><strong>Role: Informatica Lead/Developer </strong></p><p><strong>Location: El Segundo, CA &amp; Jersey City, NJ </strong></p><p><strong>Long Term Contract</strong></p><p><p><strong>Job Description:</strong></p><p><ul><li>Knowledge of Informatica Power center. Application Support, Change Control Management, Communication, Cross Cultural Adaptability, Customer Expectation Mgmt.</li><li>Responsible for the resolution of complex systems and programming problems.</li><li>Requires exceptional expertise in development and detailed knowledge of industry trends.</li><li>Competent at the highest technical level, understands whole systems architecture, has multi-systems knowledge and background.</li><li>Possesses full systems development expertise and is considered the application expert.</li><li>Develops and trains less experienced technical staff</li><li>Operates under deadlines with multiple project responsibility.</li></ul><br></td>        </tr>      <tr>      <td width=\"800\" valign=\"top\" style=\"border-top: solid 1px #333399; \">      <p align=\"justify\" style=\"margin-left:0px;margin-right:0px;margin-top:0px; margin-bottom:0px;\"> <font style=\"font-size:12px\" color=\"#666666\" face=\"Verdana\"> <a href=\"http://www.prohires.com/#!products/c5n6\" style=\"text-decoration: none; color: red\" title=\"Click to view more details\"><u><b>Sign-Up</b></u> for your account with <b>PROHIRES POWERHOUSE Recruiting Portal</b> to broadcast requirements & hotlists.</a></font></p>      </td>            <td valign=\"top\" style=\"border-top: solid 1px #333399; \">            <p align=\"right\" style=\"margin-left:0px;margin-right:0px;margin-top:0px; margin-bottom:0px;\">  <font style=\"font-size:10px\" color=\"#3C3C3C\" face=\"Verdana\"></font></p>            </td>        </tr></table><br></p>",
+	        "cityid": 3,
+	        "stateid": 4,
+	        "visa": "GCEAD"
+	    },
+	    {
+	        "id": 713,
+	        "name": "SAP Technical",
+	        "state": "NJ",
+	        "skills": "SAP",
+	        "city": "NewYork",
+	        "country": null,
+	        "employmentTypeId": null,
+	        "joiningdays": null,
+	        "description": null,
+	        "totalExp": 7,
+	        "priorityId": null,
+	        "postedDate": "2019-01-01T00:00:00",
+	        "lastDate": null,
+	        "numberOfOpening": null,
+	        "active": true,
+	        "inserted": null,
+	        "updated": null,
+	        "consultancyId": 9,
+	        "rawHtml": "<p align=\"center\" style=\"margin-left:0px;margin-top:30px; margin-right:0px;margin-bottom:25px;\"><table width=\"1024\" cellspacing=\"0\" cellpadding=\"0\" border=\"0\">                                                  <tr>       <td colspan=\"2\" valign=\"middle\"><p style=\"margin-left:0px;margin-right:0px;margin-top:0px; margin-bottom:0px;\"> <font style=\"font-size:15px\" color=\"#3C3C3C\" face=\"Verdana\">                                            <br><u>From</u>:<br>                                   saritha,<br>                                   Agile enterprise solutions<br>                                                   saritha_nannuri@aesinc.us.com<br>       <span style=\"background-color: #FFFF00\"><b>Reply to:</b></span> saritha_nannuri@aesinc.us.com<br><br></font></p>      </td></tr>                                                        <tr><td colspan=\"2\" valign=\"middle\"><br><div><p>Hi,<br>Hope you are doing great!!!!!!!!!!<br>Please go through the below requirement let me know your interest</p><p><strong>Job Title :</strong> <strong>Mainframe Lead<br>Location :</strong> <strong>New York/NJ</strong><br><strong>Duration  : Contract</strong><br><br><strong><strong>Note: &ldquo;US Citizens and those authorized to work in the US are encouraged to apply. We are unable to sponsor H1b visa&rsquo;s at this time&quot;</strong> </strong></p><p><strong>Job Description:</strong></p>Strong Mainframe experienced person with good COBOL, DB2, CICS, JCL skills with SCM domain and preferably with impact analysis tool experience like IBM ADDI or Micro focus EA<p>--</p><pre>Thanks &amp; Regards, Saritha Nannuri Agile Enterprise Solutions Inc PH: 972-440-0061E-mail: <a href=\"mailto:saritha_nannuri@aesinc.us.com\">saritha_nannuri@aesinc.us.com</a> || <a href=\"http://www.aesinc.us.com\">www.aesinc.us.com</a> Note: If you have received this mail in error or prefer not to receive such emails in the future, please reply with &quot;REMOVE&quot; in the subject line and the email id(s) to be removed. All removal requests will be honored ASAP. We sincerely apologize for any inconvenience caused. </pre></div><br></td>        </tr>      <tr>      <td width=\"800\" valign=\"top\" style=\"border-top: solid 1px #333399; \">      <p align=\"justify\" style=\"margin-left:0px;margin-right:0px;margin-top:0px; margin-bottom:0px;\"> <font style=\"font-size:12px\" color=\"#666666\" face=\"Verdana\"> <a href=\"http://www.prohires.com/#!products/c5n6\" style=\"text-decoration: none; color: red\" title=\"Click to view more details\"><u><b>Sign-Up</b></u> for your account with <b>PROHIRES POWERHOUSE Recruiting Portal</b> to broadcast requirements & hotlists.</a></font></p>      </td>            <td valign=\"top\" style=\"border-top: solid 1px #333399; \">            <p align=\"right\" style=\"margin-left:0px;margin-right:0px;margin-top:0px; margin-bottom:0px;\">  <font style=\"font-size:10px\" color=\"#3C3C3C\" face=\"Verdana\"></font></p>            </td>        </tr></table><br></p>",
+	        "cityid": 1,
+	        "stateid": 1,
+	        "visa": "GC"
+	    },
+	    {
+	        "id": 715,
+	        "name": "SAP PI/PO",
+	        "state": "NJ",
+	        "skills": "SAP",
+	        "city": "NewYork",
+	        "country": null,
+	        "employmentTypeId": null,
+	        "joiningdays": null,
+	        "description": null,
+	        "totalExp": 9,
+	        "priorityId": null,
+	        "postedDate": "2019-01-01T00:00:00",
+	        "lastDate": null,
+	        "numberOfOpening": null,
+	        "active": true,
+	        "inserted": null,
+	        "updated": null,
+	        "consultancyId": 11,
+	        "rawHtml": "<p align=\"center\" style=\"margin-left:0px;margin-top:30px; margin-right:0px;margin-bottom:25px;\"><table width=\"1024\" cellspacing=\"0\" cellpadding=\"0\" border=\"0\">                                                  <tr>       <td colspan=\"2\" valign=\"middle\"><p style=\"margin-left:0px;margin-right:0px;margin-top:0px; margin-bottom:0px;\"> <font style=\"font-size:15px\" color=\"#3C3C3C\" face=\"Verdana\">                                            <br><u>From</u>:<br>                                   Sivaranjani,<br>                                   IDC<br>                                                   sivaranjani@idctechnologies.com<br>       <span style=\"background-color: #FFFF00\"><b>Reply to:</b></span> sivaranjani@idctechnologies.com<br><br></font></p>      </td></tr>                                                        <tr><td colspan=\"2\" valign=\"middle\"><br><p>Hi,</p><p>Hope you are doing great. This is the JD kindly go through it and let me know your interest.</p><p><p><strong>Java Developer</strong></p><p><strong>Location:</strong> <strong>Saint Louis, MO and Plano, TX</strong></p><p><strong>Duration: Long Term</strong></p><p><strong>Visa: Except OPT</strong></p><p><strong>Share resume who is available to take webex interview tomorrow.</strong></p><p><p><strong>Job Description:</strong></p><p>5+ years of experience in Java/J2EE and strong concepts in design and development of Enterprise grade applications using Java.</p><p>Experience with distributed (multi-tiered) systems, algorithms, and application development.</p><p>Demonstrated experience with front-end design and JavaScript frameworks, specifically React.js or AngularJS.</p><p>Experience in an Agile enterprise setting.</p><p>Some level of MicroServices frameworks: Spring Boot, Dropwizard.</p><p>Maven/Gradle, CI/CD tools (Jenkins, GIT and deployment tools). Any experience in Logging concepts and ELK/Splunk.</p><p>Skills in testing tools (Junit, Mockito, RestEasy, Jmeter, Gatling or others.</p><p>Demonstrated experience with advanced GIT usage (project maintainer level).</p><p>Ability to solve complex merges and code integrations.</p><p>A proven hunger to learn new technologies and translate them into working software.</p><p>Ability to effectively communicate to internal and external Business Partners on solution design.</p><p>Previous exposure to Domain Driven Design a plus.</p><p><p><p><p><p><p>With Regards</p><p><p>Sivaranjani</p><p>IDC Technologies, Inc</p><p>Work: 408-484-7141</p><p>Mailto: <a href=\"mailto:sivaranjani@idctechnologies.com\">sivaranjani@idctechnologies.com</a></p><p>_____________________________________</p><p>Empowering Technologies Services</p><p>Remote Services | IT Services | BPO |</p><p>IT Consulting | Staffing Solutions |</p><p>_____________________________________</p><p><br></td>        </tr>      <tr>      <td width=\"800\" valign=\"top\" style=\"border-top: solid 1px #333399; \">      <p align=\"justify\" style=\"margin-left:0px;margin-right:0px;margin-top:0px; margin-bottom:0px;\"> <font style=\"font-size:12px\" color=\"#666666\" face=\"Verdana\"> <a href=\"http://www.prohires.com/#!products/c5n6\" style=\"text-decoration: none; color: red\" title=\"Click to view more details\"><u><b>Sign-Up</b></u> for your account with <b>PROHIRES POWERHOUSE Recruiting Portal</b> to broadcast requirements & hotlists.</a></font></p>      </td>            <td valign=\"top\" style=\"border-top: solid 1px #333399; \">            <p align=\"right\" style=\"margin-left:0px;margin-right:0px;margin-top:0px; margin-bottom:0px;\">  <font style=\"font-size:10px\" color=\"#3C3C3C\" face=\"Verdana\"></font></p>            </td>        </tr></table><br></p>",
+	        "cityid": 1,
+	        "stateid": 1,
+	        "visa": "H1B"
+	    }
+	],
+	"candidateList" : [
+		{
+			"id":1,
+			"name": "Vivek",
+			"title": "Java Developer",
+			"appliedJobs": 90,
+			"newMatchingJobs": 12
+			
+		},
+		{
+			"id":2,
+			"name": "Bhupathi",
+			"title": "Java Developer",
+			"appliedJobs": 67,
+			"newMatchingJobs": 22
+			
+		},
+		{
+			"id":3,
+			"name": "Ram",
+			"title": "Java Developer",
+			"appliedJobs": 30,
+			"newMatchingJobs": 14
+			
+		},
+		{
+			"id":4,
+			"name": "Senthil",
+			"title": "Front-End Developer",
+			"appliedJobs": 42,
+			"newMatchingJobs": 12
+			
+		},
+		{
+			"id":5,
+			"name": "Mouli",
+			"title": "Java Developer",
+			"appliedJobs": 35,
+			"newMatchingJobs": 17
+			
+		}
+	],
+	"jobPositionTypeList": ["C2C"],
+	"jobTypeList": ["Onsite (Mon-Friday)","Full Remote","Onsite (Mon-Thur) & Remote-Friday","Remote possible in future"],
+	"jobProjectStartList" : ["Immediate","1 week","2 Weeks","2-4 Weeks","1 Month"],
+	"visaPostJobList": ["H1B", "OPT/CPT", "GCEAD", "GC", "USC", "L2EAD", "H4EAD"]
+
+
+}

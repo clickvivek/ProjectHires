@@ -1,0 +1,11 @@
+@import "src/@hires/scss/utilities/all";
+@import "src/@hires/scss/helpers/typography";
+
+.login-wrapper {
+  .email-login {
+    .forgot-password {
+      @extend .ft-default;
+      @include ft-calc($font-small);
+    }
+  }
+}

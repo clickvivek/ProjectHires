@@ -1,0 +1,55 @@
+<div class="inbox-resume-comments-wrapper">
+
+    <loader *ngIf="!isLoaded"></loader>
+
+    <ng-container *ngIf="isLoaded">
+
+        <div class="top d-flex align-items-center">
+            <span class="icon material-symbols-outlined text-h3 text-secondary-800 me-1 pointer" (click)="hideComments()">chevron_left</span>
+            <p class="text-base">Comments</p>
+        </div>
+    
+        <div class="resume-container">
+            <div class="mt-4">
+                <p class="fw-medium">{{resume?.candidateProfile.candidateName}}</p>
+                <p class="text-sm fw-medium text-primary-600" [profileMapColor]="resume.candidateProfileMappingStatusId" >{{resume?.candidateProfileMappingStatusName}}</p>
+            </div>
+            <div class="comments-box">
+                <div class="comment-section {commentList.length != 0 ? 'scroll' : ''} ">
+                    
+                    <p class="fw-medium text-dark-500 no-comment" *ngIf="commentList.length == 0">No Comments available</p>
+
+                    <ng-scrollbar
+                    #scrollable
+                    track="all"
+                    pointerEventsMethod="scrollbar"
+                    [autoHeightDisabled]="false"
+                    >
+
+                        <div class="list-group-item" *ngFor=" let item of commentList">
+                            <div class="left flex-grow-1">
+                                <p class="fw-medium">{{item.comment}}</p>
+                                <p class="text-dark-500 text-sm mt-1">Posted {{ getPostedDays(item.updated) }} ago</p>
+                            </div>
+                            <div class="right">
+                                <div class="material-symbols-outlined text-h5 text-danger-500 pointer" (click)="deleteComment(item)">close</div>
+                            </div>
+                        </div>
+
+                    </ng-scrollbar>
+                    
+                </div>
+                <div class="add-comment-area">
+                    <textarea class="add-comme-input shadow" placeholder="Add comment" [(ngModel)]="comment"></textarea>
+                    <div class="d-flex justify-content-end mt-3">
+                        <div class="btn btn-primary" (click)="addComment()">Submit</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </ng-container>
+
+    
+    
+</div>

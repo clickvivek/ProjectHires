@@ -1,0 +1,11 @@
+@import "src/@hires/scss/utilities/all";
+@import "src/@hires/scss/helpers/typography";
+
+.page-search-wrapper {
+    form {
+        .input-group-text {
+            cursor: auto;
+            background-color: pick-color(dark, 200);
+        }
+    }
+}

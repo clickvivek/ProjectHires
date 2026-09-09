@@ -1,0 +1,24 @@
+<div class="adv-filter-container" [ngClass]="isFixed ? 'fixed' : ''">
+  <div class="container">
+    <div class="row">
+      <div class="col-12">
+        <div class="filter-card">
+          <div class="title">
+            <p class="text-base">Filter</p>
+            <div hideAdvFilter class="close text-base pointer ms-auto">
+              <i class="fa-solid fa-close"></i>
+            </div>
+          </div>
+          <div class="filter-content">
+            <span
+              class="material-symbols-outlined text-h4 me-3 text-primary-600 d-none d-lg-block"
+              >tune</span
+            >
+            <ng-content></ng-content>
+          </div>
+        </div>
+        <div class="overlay"></div>
+      </div>
+    </div>
+  </div>
+</div>

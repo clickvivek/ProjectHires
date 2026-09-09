@@ -1,0 +1,14 @@
+@import "src/@hires/scss/utilities/all";
+@import "src/@hires/scss/helpers/typography";
+
+.download-box {
+  cursor: pointer;
+  padding: 4px 8px;
+  background-color: pick-color(tertiary, 100);
+  border: 1px solid pick-color(tertiary, 500);
+  color: pick-color(tertiary, 900);
+  @include border-radius(4px);
+  .icon {
+    font-size: inherit;
+  }
+}

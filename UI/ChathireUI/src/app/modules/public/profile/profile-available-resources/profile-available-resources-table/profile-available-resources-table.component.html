@@ -1,0 +1,26 @@
+<div class="profile-available-resources-table-wrapper">
+    <table class="table table-bordered">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Technology</th>
+            <th>Years</th>
+            <th>Visa</th>
+            <th>Location</th>
+            <th>Preference</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let item of list">
+            <td class="fw-semibold">{{ item.candidateName }}</td>
+            <td>{{ item.title }}</td>
+            <td>{{ item.totalExp }} years</td>
+            <td>{{ getVisa(item.visaId) }}</td>
+            <td>{{ item.city?.stateCode }}</td>
+            <td>
+              <span class="overflow"> {{ getRelocation(item) }}</span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+</div>

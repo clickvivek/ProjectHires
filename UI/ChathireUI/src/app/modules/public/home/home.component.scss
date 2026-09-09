@@ -1,0 +1,93 @@
+@import "src/@hires/scss/utilities/all";
+@import "src/@hires/scss/helpers/typography";
+
+@import "src/@hires/scss/utilities/all";
+@import "src/@hires/scss/helpers/typography";
+
+.home-wrapper {
+  margin-top: 70px; /* offset the fixed header */
+}
+
+/* Transition Utilities */
+.transition {
+  transition: all 0.25s ease-in-out;
+}
+
+/* Hover Utilities */
+.hover-shadow:hover {
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
+  transform: translateY(-2px);
+}
+
+.hover-shadow-lg:hover {
+  box-shadow: 0 1rem 3rem rgba(0, 0, 0, 0.175) !important;
+  transform: translateY(-4px);
+}
+
+.hover-primary:hover {
+  color: var(--bs-primary, #1fa270) !important; /* using the existing primary brand color */
+}
+
+.hover-transform-x:hover {
+  transform: translateX(4px);
+}
+
+.hover-bg-light:hover {
+  background-color: #f8f9fa !important;
+}
+
+/* Specific component tweaks */
+.hero-block {
+  display: flex;
+  align-items: center;
+}
+
+.z-index-1 {
+  z-index: 1;
+}
+
+.max-w-2xl {
+  max-width: 42rem;
+}
+
+.border-light {
+  border-color: #f3f4f6 !important;
+}
+
+.how-it-works-block {
+  .nav-tabs {
+    border-bottom: none;
+    .nav-item {
+      .nav-link {
+        font-size: 1.125rem;
+        padding: 12px 32px;
+        border: 2px solid transparent;
+        color: #6c757d;
+        background-color: transparent;
+        border-radius: 0;
+        &.active {
+          color: pick-color(primary, 500) !important;
+          border-bottom: 2px solid pick-color(primary, 500) !important;
+        }
+        &:hover {
+          color: pick-color(primary, 500);
+        }
+      }
+    }
+  }
+  .tab-content {
+    .col-border {
+      @include hires-breakpoint("gt-sm") {
+        border-left: 1px solid #dee2e6;
+      }
+    }
+    .content-box {
+      .head {
+        font-size: 1.25rem;
+      }
+      .desp {
+        min-height: 48px;
+      }
+    }
+  }
+}

@@ -1,0 +1,89 @@
+<div class="my-hotlist-wrapper">
+  <div class="container">
+    <div class="row">
+      <div class="col-sm-12">
+        
+        <loader *ngIf="!isJobLoaded"></loader>
+
+        <ng-container *ngIf="isJobLoaded && !isError">
+          <div class="title-box">
+            <h6 class="title">
+              <div *ngIf="isJobAvailable">
+                You have {{ totalItems }} candidates in your Hotlist
+              </div>
+              <div *ngIf="!isJobAvailable">No candidates Available</div>
+            </h6>
+            <div class="btn-wrapper ms-auto">
+              <a
+                routerLink="/addcandidate"
+                routerLinkActive="active"
+                [routerLinkActiveOptions]="{ exact: true }"
+                class="btn add-candidate-btn shadow align-items-center justify-content-center d-flex"
+                ><span class="material-symbols-outlined me-1"> add_circle </span
+                >Add Candidate</a
+              >
+            </div>
+          </div>
+
+          <div class="options-wrapper" *ngIf="isJobAvailable">
+            
+            <div class="me-4">
+              <page-search (outputData)="handleSearch($event)" placeholder="Search by name, skills, job title" ></page-search>
+            </div>
+
+            <div class="options d-none d-lg-block" *ngIf="isJobAvailable">
+              <div
+                class="btn view-btn d-inline-flex align-items-center"
+                [ngClass]="
+                  isTableView
+                    ? 'btn-secondary no-pointer'
+                    : 'btn-outline-secondary text-secondary-500'
+                "
+                (click)="handleViewType('table')"
+              >
+                <span class="material-symbols-outlined me-2">table_chart</span
+                >View table
+              </div>
+              <div
+                class="btn view-btn d-inline-flex align-items-center"
+                [ngClass]="
+                  isListView
+                    ? 'btn-secondary no-pointer'
+                    : 'btn-outline-secondary text-secondary-500'
+                "
+                (click)="handleViewType('list')"
+              >
+                <span class="material-symbols-outlined me-2">data_table</span
+                >Detailed List
+              </div>
+            </div>
+          </div>
+
+          <myhotlist-listview
+            *ngIf="isListView"
+            [filteredHotListData]="filteredHotListData"
+            [visaList]="visaList"
+            [availabilityList]="selectAvailabilityList"
+            (handleDeleteCandidate)="deleteCandidate($event)"
+            (handleStatusChange)="onStatusChange($event)"
+          ></myhotlist-listview>
+
+          <myhotlist-tableview
+            *ngIf="isTableView"
+            [filteredHotListData]="filteredHotListData"
+            [visaList]="visaList"
+            [availabilityList]="selectAvailabilityList"
+            (handleDeleteCandidate)="deleteCandidate($event)"
+            (handleStatusChange)="onStatusChange($event)"
+          ></myhotlist-tableview>
+        </ng-container>
+
+        <ng-container *ngIf="isError">
+          <div class="mt-2 alert alert-danger">
+            {{ error }}
+          </div>
+        </ng-container>
+      </div>
+    </div>
+  </div>
+</div>

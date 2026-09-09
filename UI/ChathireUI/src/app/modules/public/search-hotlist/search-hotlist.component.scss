@@ -1,0 +1,93 @@
+@import "src/@hires/scss/utilities/all";
+@import "src/@hires/scss/helpers/typography";
+
+.search-hotlist-wrapper {
+  .options-box {
+    margin: 24px 0 0 0;
+  }
+  .list-container {
+    margin: 20px 0 0 0;
+    .content {
+      .list-group-item {
+        padding: 24px 24px 14px 24px;
+        border: none;
+        @include border-radius(4px);
+        background-color: white;
+  
+        &:not(:last-child) {
+          margin: 0 0 20px 0;
+        }
+  
+        .content-area {
+          .name {
+            @include hires-breakpoint("xs") {
+              margin: 0 0 4px 0;
+            }
+          }
+          .switch {
+            margin-left: auto;
+          }
+  
+          .skills {
+            .item {
+              padding: 4px 10px;
+              display: inline-block;
+  
+              &:not(:last-child) {
+                margin: 0 8px 10px 0;
+              }
+            }
+          }
+  
+          .additional {
+            margin: 0 0 20px 0;
+  
+            @include hires-breakpoint("sm") {
+              margin: 14px 0 20px 0;
+            }
+  
+            @include hires-breakpoint("xs") {
+              margin: 20px 0;
+            }
+  
+            .item {
+              &:not(:last-child) {
+                margin: 0 14px 0 0;
+  
+                @include hires-breakpoint("lt-md") {
+                  margin: 0 0 10px 0;
+                }
+              }
+            }
+          }
+          .others {
+            &:not(:last-child) {
+              margin: 0 0 6px 0;
+              @include hires-breakpoint("lt-md") {
+                margin: 0 0 16px 0;
+              }
+            }
+            .left {
+              width: 150px;
+              flex-shrink: 0;
+              @include hires-breakpoint("lt-md") {
+                margin: 0 0 4px 0;
+              }
+            }
+          }
+          .resume-box {
+            display: inline-flex;
+            margin: 0 0 10px 0;
+            cursor: pointer;
+            padding: 4px 8px;
+            background-color: pick-color(tertiary, 100);
+            border: 1px solid pick-color(tertiary, 500);
+            color: pick-color(tertiary, 900);
+            @include border-radius(4px);
+          }
+        }
+        
+      }
+    }
+  }
+}

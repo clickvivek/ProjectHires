@@ -1,0 +1,438 @@
+<loader *ngIf="!isLoaded"></loader>
+<ng-container *ngIf="isLoaded">
+  <form
+    #postJobsForm="ngForm"
+    name="postJobsForm"
+    (ngSubmit)="postJob()"
+    novalidate
+  >
+    <div class="form-box">
+      <div class="row">
+        <div class="col-sm-6">
+          <div class="input-box">
+            <div class="form-group">
+              <label for="name"
+                >Job Title <span class="req">*</span></label
+              >
+              <input
+                type="text"
+                class="form-control"
+                placeholder="Title"
+                [(ngModel)]="formData.name"
+                name="name"
+                required
+                autocomplete="off"
+              />
+              <div
+                class="mt-2"
+                *ngIf="
+                  postJobsForm.submitted &&
+                  postJobsForm.controls['name'].invalid
+                "
+              >
+                <div
+                  class="input-field-message"
+                  *ngIf="postJobsForm.controls['name'].errors?.['required']"
+                >
+                  Name required
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-sm-6">
+          <div class="input-box select-box">
+            <app-multi-select-field
+              fieldName="jobTypeId"
+              fieldText="Position Type"
+              [fieldRequired]="true"
+              fieldPlaceholder="Position type"
+              fieldType="description"
+              [fieldList]="selectJobPositionTypeList"
+              fieldItemMinLimit="1"
+              [isEdit]="isEdit"
+              [editValue]="formData.jobOpeningJobTypes"
+              (inputChange)="onPositionTypeChange($event)"
+            >
+            </app-multi-select-field>
+            <div
+              class="my-3"
+              *ngIf="
+                postJobsForm.submitted &&
+                postJobsForm.controls['jobTypeId'].invalid
+              "
+            >
+              <div
+                class="input-field-message"
+                *ngIf="postJobsForm.controls['jobTypeId'].errors?.['required']"
+              >
+                Position type required
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-sm-6">
+          <div class="input-box select-box">
+            <app-multi-select-field
+              fieldName="employmentTypeId"
+              fieldText="Job Type"
+              [fieldRequired]="true"
+              fieldPlaceholder="Job type"
+              fieldType="description"
+              [fieldList]="selectEmploymentTypeList"
+              fieldItemMinLimit="1"
+              [isEdit]="isEdit"
+              [editValue]="formData.jobOpeningEmploymentTypes"
+              (inputChange)="onEmploymentTypeChange($event)"
+            >
+            </app-multi-select-field>
+            <div
+              class="my-3"
+              *ngIf="
+                postJobsForm.submitted &&
+                postJobsForm.controls['employmentTypeId'].invalid
+              "
+            >
+              <div
+                class="input-field-message"
+                *ngIf="postJobsForm.controls['employmentTypeId'].errors?.['required']"
+              >
+                Job type required
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-sm-6">
+          <div class="input-box select-box">
+            <app-multi-select-field
+              fieldName="visaId"
+              fieldText="Visa Applicable"
+              [fieldRequired]="true"
+              fieldPlaceholder="Visa"
+              fieldType="name"
+              [fieldList]="selectVisaMapsList"
+              fieldItemMinLimit="1"
+              [isEdit]="isEdit"
+              [editValue]="formData.jobOpeningVisaMaps"
+              (inputChange)="onVisaMapChange($event)"
+            >
+            </app-multi-select-field>
+            <div
+              class="my-3"
+              *ngIf="
+                postJobsForm.submitted &&
+                postJobsForm.controls['visaId'].invalid
+              "
+            >
+              <div
+                class="input-field-message"
+                *ngIf="postJobsForm.controls['visaId'].errors?.['required']"
+              >
+                Visa required
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-sm-6">
+          <div class="input-box search-box">
+            <app-multi-search-field
+              fieldName="cityId"
+              fieldText="Job Location"
+              fieldType="city1,stateName,stateCode"
+              fieldPlaceholder="Enter"
+              [fieldRequired]="true"
+              [fieldList]="selectLocationList"
+              fieldItemMaxLimit="5"
+              [isEdit]="isEdit"
+              [editValue]="formData.jobOpeningLocations"
+              (queryChange)="onLocationQuery($event)"
+              (inputChange)="onLocationChange($event)"
+            >
+            </app-multi-search-field>
+            <div
+              class="my-3"
+              *ngIf="
+                postJobsForm.submitted &&
+                postJobsForm.controls['cityId'].invalid
+              "
+            >
+              <div
+                class="input-field-message"
+                *ngIf="postJobsForm.controls['cityId'].errors?.['required']"
+              >
+                Job location required
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-sm-12">
+          <div class="input-box">
+            <div class="form-group ov">
+              <label for="description"
+                >Job Description<span class="req">*</span></label
+              >
+             <quill-editor
+                class="quill-editor"
+                name="description"
+                [placeholder]="editorPlacehorder"
+                [(ngModel)]="formData.description"
+                (onContentChanged)="onContentChanged($event)"
+                [required]="true"
+                [modules]="modules"
+                #quillEditor
+              >
+              </quill-editor>
+              <div
+                class="py-2 clear"
+                *ngIf="
+                  postJobsForm.submitted &&
+                  postJobsForm.controls['description'].invalid
+                "
+              >
+                <div
+                  class="input-field-message"
+                  *ngIf="postJobsForm.controls['description'].errors?.['required']"
+                >
+                  Job description required
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-sm-6">
+          <div class="input-box search-box">
+            <app-multi-search-field
+              fieldName="skillId"
+              fieldText="Skills ( Add maximum 5 skills)"
+              fieldType="name"
+              fieldPlaceholder="Skill"
+              [fieldRequired]="false"
+              [fieldList]="selectSkillList"
+              fieldItemMaxLimit="5"
+              [isEdit]="isEdit"
+              [editValue]="formData.jobOpeningSkills"
+              (queryChange)="onSkillQuery($event)"
+              (inputChange)="onSelectedSkills($event)"
+            >
+            </app-multi-search-field>
+          </div>
+        </div>
+
+        <div class="col-sm-6">
+          <div class="input-box select-box">
+            <app-select-field
+              fieldName="billingRangeId"
+              fieldText="Salary Range"
+              fieldType="range"
+              fieldPlaceholder="Market"
+              [fieldRequired]="false"
+              [fieldList]="selectBillingList"
+              [isEdit]="isEdit"
+              [editValue]="formData.billingRangeId"
+              (inputChange)="onBillingListChange($event)"
+            >
+            </app-select-field>
+          </div>
+        </div>
+
+        <div class="col-sm-6">
+          <div class="input-box">
+            <div class="form-group">
+              <label for="totalExp">Total years of Exp</label>
+              <input
+                type="number"
+                #postJobExperience
+                class="form-control"
+                placeholder="Enter"
+                [(ngModel)]="formData.totalExp"
+                name="totalExp"
+                autocomplete="off"
+                max="49"
+              />
+              
+              <div
+                class="mt-2"
+                *ngIf="
+                  postJobsForm.submitted &&
+                  postJobsForm.controls['totalExp'].invalid
+                "
+              >
+                <div
+                  class="input-field-message"
+                  *ngIf="postJobsForm.controls['totalExp'].errors?.['max']"
+                >
+                Expereince must be less than 50
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-6">
+          <div class="input-box">
+            <div class="form-group mb-4">
+              <label
+                >Direct Client (Y/N)
+                <span class="req">*</span></label
+              >
+
+              <div class="d-flex mt-1">
+                <ng-container
+                  *ngFor="let option of directClientList"
+                >
+                  <div class="form-check">
+                    <input
+                      class="form-check-input"
+                      type="radio"
+                      name="directClientId"
+                      [id]="option.id"
+                      [value]="option.value"
+                      [(ngModel)]="selectDirectClient"
+                      (change)="
+                        onDirectClientChange(option.value)
+                      "
+                    />
+                    <label
+                      class="form-check-label"
+                      [for]="option.id"
+                    >
+                      {{ option.label }}
+                    </label>
+                  </div>
+                </ng-container>
+              </div>
+
+              <!-- <div
+                class="mt-1"
+                *ngIf="
+                  postJobsForm.submitted &&
+                  postJobsForm.controls['directClientId'].invalid
+                "
+              >
+                <div
+                  class="input-field-message"
+                  *ngIf="postJobsForm.controls['directClientId'].errors?.['required']"
+                >
+                  Direct client required
+                </div>
+              </div> -->
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-sm-12">
+          <div class="input-box">
+            <div class="form-group">
+              <div class="form-check">
+                <input
+                  type="checkbox"
+                  class="form-check-input filled"
+                  id="localCandidatePref"
+                  name="localCandidatePref"
+                  [(ngModel)]="formData.localCandidatePref"
+                />
+                <label
+                  class="form-check-label"
+                  for="localCandidatePref"
+                  >Local candidate preferred</label
+                >
+                <!-- <div
+                *ngIf="
+                  postJobsForm.submitted &&
+                  postJobsForm.controls['localCandidatePref'].invalid">
+                  <div
+                    class="input-field-message"
+                    *ngIf="postJobsForm.controls['localCandidatePref'].errors?.['required']"
+                  >
+                  Local candidate preferred required
+                  </div>
+                </div> -->
+              </div>
+              
+
+              <div class="form-check">
+                <input
+                  type="checkbox"
+                  class="form-check-input filled"
+                  id="notifyOnCandidateProfileMap"
+                  name="notifyOnCandidateProfileMap"
+                  [(ngModel)]="
+                    formData.notifyOnCandidateProfileMap
+                  "
+                />
+                <label
+                  class="form-check-label"
+                  for="notifyOnCandidateProfileMap"
+                  >Receive an individual email update each time
+                  someone applies</label
+                >
+                <!-- <div
+                *ngIf="
+                  postJobsForm.submitted &&
+                  postJobsForm.controls['notifyOnCandidateProfileMap'].invalid">
+                  <div
+                    class="input-field-message"
+                    *ngIf="postJobsForm.controls['notifyOnCandidateProfileMap'].errors?.['required']"
+                  >
+                  Receive an individual email update required
+                  </div>
+                </div> -->
+              </div>
+
+              <div class="form-check">
+                <input
+                  type="checkbox"
+                  class="form-check-input filled"
+                  id="notifyWithResume"
+                  name="notifyWithResume"
+                  [(ngModel)]="formData.notifyWithResume"
+                />
+                <label
+                  class="form-check-label"
+                  for="notifyWithResume"
+                  >Receive resume as an attachment in email
+                </label>
+                <!-- <div
+                *ngIf="
+                  postJobsForm.submitted &&
+                  postJobsForm.controls['notifyWithResume'].invalid">
+                  <div
+                    class="input-field-message"
+                    *ngIf="postJobsForm.controls['notifyWithResume'].errors?.['required']"
+                  >
+                  Receive resume as an attachment in email required
+                  </div>
+                </div> -->
+              </div>
+
+              
+
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="submit-box">
+        <submit-btn
+        [isEdit]="isEdit" 
+        [isSubmit]="isFormSubmitted"
+        defaultText="Submit"
+        editText="Repost this job"
+        defaultActionText="Submitting..."
+        editActionText="Reposing this job..."
+        >
+        </submit-btn>
+        <div class="btn btn-secondary ms-3" *ngIf="isEdit" (click)="onCancel()">Cancel</div>
+      </div>
+    </div>
+  </form>
+</ng-container>

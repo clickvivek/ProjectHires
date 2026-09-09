@@ -1,0 +1,415 @@
+<div class="add-candidate-wrapper">
+  <div class="container">
+    <div class="row">
+      <div class="col-sm-12">
+        <div class="card p-4">
+          <div class="card-body">
+            
+            <ng-container *ngIf="!isCandidatePosted">
+              
+              <h5 class="title mb-3">Please fill in your candidate information</h5>
+              <div class="row">
+                <div class="col-sm-12">
+                  <form
+                    #addCandidateForm="ngForm"
+                    (ngSubmit)="addCandidate()"
+                    enctype="multipart/form-data"
+                  >
+                    <div class="form-box">
+                      <div class="row">
+                        <div class="col-md-6">
+                          <div class="input-box">
+                            <div class="form-group">
+                              <label for="candidateName"
+                                >Candidate Name <span class="req">*</span></label
+                              >
+                              <input
+                                type="text"
+                                class="form-control"
+                                placeholder="Name"
+                                [(ngModel)]="formData.candidateName"
+                                name="candidateName"
+                                required
+                                autocomplete="off"
+                              />
+                              <div
+                                class="mt-2"
+                                *ngIf="
+                                  addCandidateForm.submitted &&
+                                  addCandidateForm.controls['candidateName']
+                                    .invalid
+                                "
+                              >
+                                <div
+                                  class="input-field-message"
+                                  *ngIf="addCandidateForm.controls['candidateName'].errors?.['required']"
+                                >
+                                  Candidate name is required
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="col-md-6">
+                          <div class="input-box">
+                            <div class="form-group">
+                              <label for="title"
+                                >Candidate Position/Current Title
+                                <span class="req">*</span></label
+                              >
+                              <input
+                                type="text"
+                                class="form-control"
+                                placeholder="Name"
+                                [(ngModel)]="formData.title"
+                                name="title"
+                                required
+                                autocomplete="off"
+                              />
+                              <div
+                                class="mt-2"
+                                *ngIf="
+                                  addCandidateForm.submitted &&
+                                  addCandidateForm.controls['title'].invalid
+                                "
+                              >
+                                <div
+                                  class="input-field-message"
+                                  *ngIf="addCandidateForm.controls['title'].errors?.['required']"
+                                >
+                                  Candidate Title is required
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="col-md-6">
+                          <div class="input-box">
+                            <div class="form-group">
+                              <label for="totalExp"
+                                >IT Experience Total
+                                <span class="req">*</span></label
+                              >
+                              <input
+                                type="number"
+                                class="form-control"
+                                placeholder="in Yrs"
+                                [(ngModel)]="formData.totalExp"
+                                name="totalExp"
+                                required
+                                autocomplete="off"
+                              />
+                              <div
+                                class="mt-2"
+                                *ngIf="
+                                  addCandidateForm.submitted &&
+                                  addCandidateForm.controls['totalExp'].invalid
+                                "
+                              >
+                                <div
+                                  class="input-field-message"
+                                  *ngIf="addCandidateForm.controls['totalExp'].errors?.['required']"
+                                >
+                                  Total Experience is required
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="col-sm-6">
+                          <div class="input-box select-box">
+                            <app-select-field
+                              fieldName="billingRangeId"
+                              fieldText="Billing Range Expected"
+                              fieldType="range"
+                              fieldPlaceholder="Market"
+                              [fieldRequired]="false"
+                              [fieldList]="selectBillingList"
+                              [isEdit]="isEdit"
+                              [editValue]="formData.billingRangeId"
+                              (inputChange)="onBillingListChange($event)"
+                            >
+                            </app-select-field>
+                          </div>
+                        </div>
+                        <div class="col-md-6">
+                          <div class="input-box select-box">
+                            <app-select-field
+                              fieldName="visaId"
+                              fieldText="Visa Status"
+                              fieldType="name"
+                              fieldPlaceholder="Select"
+                              [fieldRequired]="true"
+                              [fieldList]="selectVisaList"
+                              [isEdit]="isEdit"
+                              [editValue]="formData.visaId"
+                              (inputChange)="onVisaChange($event)"
+                            >
+                            </app-select-field>
+                            <div
+                              class="mb-3"
+                              *ngIf="
+                                addCandidateForm.submitted &&
+                                addCandidateForm.controls['visaId'].invalid
+                              "
+                            >
+                              <div
+                                class="input-field-message"
+                                *ngIf="addCandidateForm.controls['visaId'].errors?.['required']"
+                              >
+                                Visa Status is required
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="col-md-6">
+                          <div class="input-box search-box">
+                            <app-search-field
+                              fieldName="cityId"
+                              fieldText="Current Location"
+                              fieldType="city1,stateName,countryName"
+                              fieldPlaceholder="Enter first few characters of the city"
+                              [fieldRequired]="true"
+                              [fieldList]="selectLocationList"
+                              [isEdit]="isEdit"
+                              [editValue]="formData.city"
+                              (queryChange)="onLocationQuery($event)"
+                              (inputChange)="onLocationChange($event)"
+                            >
+                            </app-search-field>
+                            <div
+                              class="mb-3"
+                              *ngIf="
+                                addCandidateForm.submitted &&
+                                addCandidateForm.controls['cityId'].invalid
+                              "
+                            >
+                              <div
+                                class="input-field-message"
+                                *ngIf="addCandidateForm.controls['cityId'].errors?.['required']"
+                              >
+                                Current Location is required
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <h5 class="my-3 border-bottom pb-2">
+                      Location Preference
+                    </h5>
+
+                    <div class="row">
+                      <div class="col-md-6">
+                        <div class="form-group mb-4">
+                          <div class="form-check" *ngFor="let option of locationPrefList">
+                            <input
+                              class="form-check-input"
+                              type="radio"
+                              name="locationPrefOption"
+                              [id]="option.id"
+                              [value]="option.value"
+                              [(ngModel)]="selectRemoteLocation"
+                              (change)="onRemoteChange(option.value)"
+                              required
+                            />
+                            <label class="form-check-label" [for]="option.id">
+                              {{option.label}}
+                            </label>
+                          </div>
+                          <div
+                        class="mt-1"
+                        *ngIf="
+                          addCandidateForm.submitted &&
+                          addCandidateForm.controls['locationPrefOption'].invalid
+                        "
+                      >
+                        <div
+                          class="input-field-message"
+                          *ngIf="addCandidateForm.controls['locationPrefOption'].errors?.['required']"
+                        >
+                          Location preference required
+                        </div>
+                      </div>
+                        </div>
+                              
+                      </div>
+                    </div>
+
+                    <div class="row">
+
+                      <div class="col-sm-6" [hidden]="selectRemoteLocation !== '3'">
+                        <div class="input-box search-box">
+                          <app-multi-search-field
+                            fieldName="stateId"
+                            fieldText="Select Specific States below"
+                            fieldType="city1"
+                            fieldPlaceholder="Enter first few characters of the state"
+                            [fieldRequired]="
+                              selectRemoteLocation === '3' ? true : false
+                            "
+                            [fieldList]="selectReLocationList"
+                            fieldItemMinLimit="1"
+                            fieldItemMaxLimit="10"
+                            [isEdit]="isEdit"
+                            [editValue]="formData.candidatePrefLocations"
+                            (queryChange)="onReLocationQuery($event)"
+                            (inputChange)="onSelectedLocations($event)"
+                          >
+                          </app-multi-search-field>
+                          <div
+                            class="mb-3"
+                            *ngIf="
+                              addCandidateForm?.submitted &&
+                              addCandidateForm.controls['stateId'].invalid
+                            "
+                          >
+                            <div
+                              class="input-field-message"
+                              *ngIf="addCandidateForm.controls['stateId'].errors?.['required']"
+                            >
+                              Relocation is required
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      
+                      <div class="col-sm-6">
+                        <div class="input-box search-box">
+                          <app-multi-search-field
+                            fieldName="skillId"
+                            fieldText="Skills ( Add maximum 5 skills)"
+                            fieldType="name"
+                            fieldPlaceholder="Skill"
+                            [fieldRequired]="false"
+                            [fieldList]="selectSkillList"
+                            fieldItemMaxLimit="5"
+                            [isEdit]="isEdit"
+                            [editValue]="formData.candidateProfileSkills"
+                            (queryChange)="onSkillQuery($event)"
+                            (inputChange)="onSelectedSkills($event)"
+                          >
+                          </app-multi-search-field>
+                        </div>
+                      </div>
+                      <div class="col-md-6">
+                        <div class="input-box select-box">
+                          <app-select-field
+                            fieldName="availability"
+                            fieldText="Availability"
+                            fieldType="name"
+                            fieldPlaceholder="Select"
+                            [fieldRequired]="false"
+                            [fieldList]="selectAvailabilityList"
+                            [isEdit]="isEdit"
+                            [editValue]="formData.availability"
+                            (inputChange)="onAvailabilityChange($event)"
+                          >
+                          </app-select-field>
+                        </div>
+                      </div>
+                    </div>
+
+
+                    <div class="row">
+                      <div class="col-sm-6">
+                        <div class="input-box">
+                          <div class="form-group">
+                            <label for="candidateExperience"
+                              >LinkedIn Profile URL (Optional)</label
+                            >
+                            <input
+                              type="text"
+                              class="form-control"
+                              placeholder="Link"
+                              [(ngModel)]="formData.linkedIn"
+                              name="linkedInProfile"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="attach-resume">
+                      <div class="icon-box">
+                        <div
+                          class="btn btn-sm btn-outline-secondary"
+                        >
+                          Attach resume
+                        </div>
+                        <input
+                          type="file"
+                          (change)="attachResume($event)"
+                          accept=".doc, .docx, .pdf, .xls, .xlsx"
+                          [ngClass]="selectedFile ? 'disabled' : ''"
+                        />
+                      </div>
+                    </div>
+
+                    <div
+                      *ngIf="selectedFile"
+                      class="file-box text-xs mt-1"
+                    >
+                    <span>{{ this.selectedFile.name }}</span>
+                    <span
+                      class="material-symbols-outlined text-sm ms-1 pointer"
+                      (click)="deleteFile()"
+                    >
+                      close
+                    </span>
+                    </div>
+
+                    <div class="d-flex mt-1" *ngIf="candidateDocuments.length > 0 && !selectedFile">
+                      <view-resume *ngIf="candidateDocuments.length > 0" [doc]="candidateDocuments[0]['doc']" ></view-resume>
+                    </div>
+
+
+                    <div class="submit-box">
+                      <submit-btn
+                      [isSubmit]="isFormSubmitted"
+                      defaultText="Submit"
+                      defaultActionText="Submitting..."
+                      editText="Update"
+                      editActionText="Updating..."
+                      >
+                      </submit-btn>
+
+                    </div>
+                  </form>
+                </div>
+              </div>
+
+            </ng-container>
+
+
+            <div class="success-message" *ngIf="isCandidatePosted">
+              <h5 class="title d-flex align-items-center">
+                <div class="tick d-flex align-items-center justify-content-center">
+                  <span
+                  class="material-symbols-outlined text-h4 text-white"
+                  >done</span
+                >
+                </div>
+                Candidate has been added to your Hotlist.
+              </h5>
+              <div class="actions d-flex align-items-center">
+                <div class="action-item">
+                  <a href="javascript:void(0)" class="action-link text-secondary" (click)="isCandidatePosted=!isCandidatePosted">Add another Candidate</a>
+                </div>
+                <div class="action-item">
+                  <a href="javascript:void(0)" class="action-link text-secondary" routerLink="/myhotlist">View my Candidates (Hotlist)</a>
+                </div>
+                <div class="action-item">
+                  <a href="javascript:void(0)" class="action-link text-secondary" routerLink="/search-jobs">Search jobs and Apply</a>
+                </div>     
+                
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

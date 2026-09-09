@@ -1,0 +1,374 @@
+﻿using BusinessEntityAndDTO.Common;
+using BusinessEntityAndDTO.DTO;
+using BusinessEntityAndDTO.Models;
+using DataAccessLayer.Common;
+using DataAccessLayer.Models;
+using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
+using System;
+using System.Collections.Generic;
+using System.Data;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace DataAccessLayer.Repository
+{
+    public interface ICandidateProfileRepository : IRepository<CandidateProfile, long>
+    {
+        Task<List<CandidateProfile>> GetCandidateProfileByUser(long? userId, long? Id, UserContext userContext);
+        Task<List<CandidateProfile>> GetByConsultancyUserID(long? Id, string? publicprofileID, UserContext userContext);
+        Task<List<CandidateProfile>> GetByConsultancyUserSimplelist(long? Id, bool? isActive, short? statusId, UserContext userContext);
+        Task<bool> ActivateOrDeActivateCandidateProfile(long CandidateProfileId, bool? Active, short? StatusId, UserContext userContext);
+        List<CandidateProfileForSearchResultsDto> SearchCandidateProfile(CandidateProfileForSearchDto candidateProfile);
+        Task<CandidateProfile> GetCandidateProfile(long? Id, UserContext userContext);
+        Task<int> GetCountResumesReceivedTodayByConsultancyUserID(long ConsultancyUserId, UserContext userContext);
+        Task<int> GetCountResumesReceivedByDateByConsultancyUserID(long ConsultancyUserId, DateTime FromDate, DateTime ToDate, UserContext userContext);
+        Task<int> GetCountUnreadResumesByConsultancyUserID(long ConsultancyUserId, UserContext userContext);
+        Task<int> GetActiveCountHotListByConsultancyUserID(long ConsultancyUserId, UserContext userContext);
+    }
+
+    public class CandidateProfileRepository : BaseRepository<CandidateProfile, long>, ICandidateProfileRepository
+    {
+        public CandidateProfileRepository(EFContexts context) : base(context) { }
+
+        public async Task<List<CandidateProfile>> GetCandidateProfileByUser(long? userId, long? Id, UserContext userContext)
+        {
+            IQueryable<CandidateProfile> candidateProfiles;
+
+
+            if (userId != null)
+            {
+                candidateProfiles = _context.CandidateProfiles
+               .Include(o => o.CandidatePrefJobTypes)
+               .ThenInclude(o => o.JobType)
+               .Include(o => o.CandidatePrefLocations)
+               .ThenInclude(o => o.City)
+               .Include(o => o.CandidateProfileDomains)
+               .ThenInclude(o => o.Domain)
+               .Include(o => o.CandidateProfileEmploymentTypes)
+               .ThenInclude(o => o.EmploymentType)
+               .Include(o => o.CandidateProfileSkills)
+               .ThenInclude(o => o.Skill)
+               .Include(o => o.City)
+               .ThenInclude(o => o.IdStateNavigation)
+               .Where(c => c.UserId == userId);
+            }
+            else
+            {
+                candidateProfiles = _context.CandidateProfiles
+               .Include(o => o.CandidatePrefJobTypes)
+               .ThenInclude(o => o.JobType)
+               .Include(o => o.CandidatePrefLocations)
+               .ThenInclude(o => o.City)
+               .Include(o => o.CandidateProfileDomains)
+               .ThenInclude(o => o.Domain)
+               .Include(o => o.CandidateProfileEmploymentTypes)
+               .ThenInclude(o => o.EmploymentType)
+               .Include(o => o.CandidateProfileSkills)
+               .ThenInclude(o => o.Skill)
+               .Include(o => o.City)
+               .ThenInclude(o => o.IdStateNavigation)
+               .Where(c => c.Id == Id);
+            }
+
+
+            return await candidateProfiles.ToListAsync();
+        }
+
+        public async Task<int> GetCountResumesReceivedTodayByConsultancyUserID(long ConsultancyUserId, UserContext userContext)
+        {
+            var count = await _context.CandidateProfiles
+                .Where(o => o.ConsultancyUserId == ConsultancyUserId && o.Updated > DateTime.Today)
+                .CountAsync();
+            return count;
+        }
+
+        public async Task<int> GetCountResumesReceivedByDateByConsultancyUserID(long ConsultancyUserId, DateTime FromDate, DateTime ToDate, UserContext userContext)
+        {
+            var count = await _context.CandidateProfiles
+                .Where(o => o.ConsultancyUserId == ConsultancyUserId && o.Updated >= FromDate && o.Updated >= ToDate)
+                .CountAsync();
+            return count;
+        }
+
+        public async Task<int> GetCountUnreadResumesByConsultancyUserID(long ConsultancyUserId, UserContext userContext)
+        {
+            var count = await _context.JobOpeningCandidateProfileMaps
+                .Where(o => o.ConsultancyUserId == ConsultancyUserId && o.IsRead == false)
+                .CountAsync();
+            return count;
+        }
+
+        public async Task<int> GetActiveCountHotListByConsultancyUserID(long ConsultancyUserId, UserContext userContext)
+        {
+            var count = await _context.CandidateProfiles
+                .Where(o => o.ConsultancyUserId == ConsultancyUserId && o.Active == true)
+                .CountAsync();
+            return count;
+        }
+
+        public async Task<List<CandidateProfile>> GetByConsultancyUserID(long? Id, string? publicprofileID, UserContext userContext)
+        {
+
+            var candidateProfiles = _context.CandidateProfiles
+               .Include(o => o.CandidatePrefJobTypes)
+               .ThenInclude(o => o.JobType)
+               .Include(o => o.CandidatePrefLocations)
+               .ThenInclude(o => o.City)
+               .Include(o => o.CandidateProfileDomains)
+               .ThenInclude(o => o.Domain)
+               .Include(o => o.CandidateProfileEmploymentTypes)
+               .ThenInclude(o => o.EmploymentType)
+               .Include(o => o.CandidateProfileSkills)
+               .ThenInclude(o => o.Skill)
+               .Include(o => o.City)
+               .ThenInclude(o => o.IdStateNavigation)
+               .Include(o => o.CandidateDocuments)
+               .ThenInclude(o => o.Document)
+               .Where(c => c.ConsultancyUserId == Id && c.ConsultancyUser.PublicProfileUserName == publicprofileID);
+            return await candidateProfiles.ToListAsync();
+        }
+
+        public async Task<List<CandidateProfile>> GetByConsultancyUserSimplelist(long? Id, bool? isActive, short? statusId, UserContext userContext)
+        {
+            var candidateProfiles = _context.CandidateProfiles
+           .Include(o => o.CandidatePrefJobTypes)
+           .ThenInclude(o => o.JobType)
+           .Include(o => o.CandidatePrefLocations)
+           .ThenInclude(o => o.City)
+           .Include(o => o.CandidateProfileDomains)
+           .ThenInclude(o => o.Domain)
+           .Include(o => o.CandidateProfileEmploymentTypes)
+           .ThenInclude(o => o.EmploymentType)
+           .Include(o => o.CandidateProfileSkills)
+           .ThenInclude(o => o.Skill)
+           .Include(o => o.City)
+           .ThenInclude(o => o.IdStateNavigation)
+           .Include(o => o.Visa)
+           .Include(o => o.CandidateDocuments)
+           .Where(c => c.ConsultancyUserId == Id)
+           .Where(a => (isActive != null) ? a.Active == isActive : true)
+           .Where(a => (statusId != null) ? a.StatusId == statusId : true);
+            return await candidateProfiles.ToListAsync();
+        }
+
+        public async Task<CandidateProfile> GetCandidateProfile(long? Id, UserContext userContext)
+        {
+            var candidateProfiles = _context.CandidateProfiles
+           .Include(o => o.CandidatePrefJobTypes)
+           .ThenInclude(o => o.JobType)
+           .Include(o => o.CandidatePrefLocations)
+           .ThenInclude(o => o.City)
+           .ThenInclude(o => o.IdStateNavigation)
+           .Include(o => o.CandidateProfileDomains)
+           .ThenInclude(o => o.Domain)
+           .Include(o => o.CandidateProfileEmploymentTypes)
+           .ThenInclude(o => o.EmploymentType)
+           .Include(o => o.CandidateProfileSkills)
+           .ThenInclude(o => o.Skill)
+           .Include(o => o.City)
+           .ThenInclude(o => o.IdStateNavigation)
+           .ThenInclude(o => o.CountryCodeNavigation)
+           .Include(o => o.Visa)
+           .Include(o => o.CandidateDocuments)
+               .ThenInclude(o => o.Document)
+           .Where(c => c.Id == Id);
+            return await candidateProfiles.FirstOrDefaultAsync();
+        }
+
+        public List<CandidateProfileForSearchResultsDto> SearchCandidateProfile(CandidateProfileForSearchDto candidateProfile)
+        {
+            List<CandidateProfileForSearchResultsDto> rtn = new List<CandidateProfileForSearchResultsDto>();
+
+
+            List<SqlParameter> parameters = new List<SqlParameter>();
+
+            if (candidateProfile.SearchString != null)
+            {
+                SqlParameter param = new SqlParameter("@SearchString", SqlDbType.Structured)
+                {
+                    TypeName = "[dbo].[UDT_StringType]",
+                    Value = Util.PopulateDataTable(candidateProfile.SearchString.Cast<object>().ToList(), typeof(string))
+                };
+                parameters.Add(param);
+            }
+
+            if (candidateProfile.cityIds != null)
+            {
+                SqlParameter param = new SqlParameter("@CityId", SqlDbType.Structured)
+                {
+                    TypeName = "[dbo].[UDT_IntType]",
+                    Value = Util.PopulateDataTable(candidateProfile.cityIds.Cast<object>().ToList(), typeof(int))
+                };
+                parameters.Add(param);
+            }
+
+            if (candidateProfile.stateIds != null)
+            {
+                SqlParameter param = new SqlParameter("@StateId", SqlDbType.Structured)
+                {
+                    TypeName = "[dbo].[UDT_IntType]",
+                    Value = Util.PopulateDataTable(candidateProfile.stateIds.Cast<object>().ToList(), typeof(int))
+                };
+                parameters.Add(param);
+            }
+
+            if (candidateProfile.skills != null)
+            {
+                SqlParameter param = new SqlParameter("@Skills", SqlDbType.Structured)
+                {
+                    TypeName = "[dbo].[UDT_IntType]",
+                    Value = Util.PopulateDataTable(candidateProfile.skills.Cast<object>().ToList(), typeof(int))
+                };
+                parameters.Add(param);
+            }
+
+            if (candidateProfile.visas != null)
+            {
+                SqlParameter param = new SqlParameter("@Visa", SqlDbType.Structured)
+                {
+                    TypeName = "[dbo].[UDT_IntType]",
+                    Value = Util.PopulateDataTable(candidateProfile.visas.Cast<object>().ToList(), typeof(int))
+                };
+                parameters.Add(param);
+            }
+
+            //if (candidateProfile.employmentTypes != null)
+            //{
+            //    SqlParameter param = new SqlParameter("@EmploymentType", SqlDbType.Structured)
+            //    {
+            //        TypeName = "[dbo].[UDT_IntType]",
+            //        Value = Util.PopulateDataTable(candidateProfile.employmentTypes.Cast<object>().ToList(), typeof(int))
+            //    };
+            //    parameters.Add(param);
+            //}
+
+            //if (candidateProfile.jobTypes != null)
+            //{
+            //    SqlParameter param = new SqlParameter("@JobType", SqlDbType.Structured)
+            //    {
+            //        TypeName = "[dbo].[UDT_IntType]",
+            //        Value = Util.PopulateDataTable(candidateProfile.jobTypes.Cast<object>().ToList(), typeof(int))
+            //    };
+            //    parameters.Add(param);
+            //}
+
+            if (candidateProfile.startYearsOfExp > 0)
+            {
+                SqlParameter param = new SqlParameter("@StartYearsOfExp", SqlDbType.SmallInt)
+                {
+                    Value = candidateProfile.startYearsOfExp
+                };
+                parameters.Add(param);
+            }
+
+            if (candidateProfile.endYearsOfExp > 0)
+            {
+                SqlParameter param = new SqlParameter("@EndYearsOfExp", SqlDbType.SmallInt)
+                {
+                    Value = candidateProfile.endYearsOfExp
+                };
+                parameters.Add(param);
+            }
+
+            if (candidateProfile.RowsOfPage > 0)
+            {
+                SqlParameter param = new SqlParameter("@RowsOfPage", SqlDbType.Int)
+                {
+                    Value = candidateProfile.RowsOfPage
+                };
+                parameters.Add(param);
+            }
+
+            if (candidateProfile.PageNumber > 0)
+            {
+                SqlParameter param = new SqlParameter("@PageNumber", SqlDbType.Int)
+                {
+                    Value = candidateProfile.PageNumber
+                };
+                parameters.Add(param);
+            }
+
+            //if (candidateProfile.PostedStartDate >= DateTime.Today.AddDays(-90))
+            //{
+            //    SqlParameter param = new SqlParameter("@PostedStartDate", SqlDbType.DateTime)
+            //    {
+            //        Value = candidateProfile.PostedStartDate
+            //    };
+            //    parameters.Add(param);
+            //}
+
+            //if (candidateProfile.PostedEndDate >= DateTime.Today.AddDays(-90))
+            //{
+            //    SqlParameter param = new SqlParameter("@PostedEndDate", SqlDbType.DateTime)
+            //    {
+            //        Value = candidateProfile.PostedEndDate
+            //    };
+            //    parameters.Add(param);
+            //}
+
+
+
+            using (var cnn = _context.Database.GetDbConnection())
+            {
+                var cmm = cnn.CreateCommand();
+                cmm.CommandType = System.Data.CommandType.StoredProcedure;
+                cmm.CommandText = "[dbo].[GetCandidateSearch_updated]";
+
+                cmm.Parameters.AddRange(parameters.ToArray());
+                cmm.Connection = cnn;
+                cnn.Open();
+                var reader = cmm.ExecuteReader();
+
+                while (reader.Read())
+                {
+                    CandidateProfileForSearchResultsDto result = new CandidateProfileForSearchResultsDto();
+
+                    result.CandidateProfileId = reader["Id"].ToString();
+                    result.CandidateName = reader["CandidateName"].ToString();
+                    result.Title = reader["Title"].ToString();
+                    result.VisaId = reader["VisaId"].ToString();
+                    result.Visa = reader["Visa"].ToString();
+                    result.CandidateAvailability = reader["CandidateAvailability"].ToString();
+                    result.CurrentLocationCity = reader["CurrentLocationCity"].ToString();
+                    result.CurrentLocationState = reader["CurrentLocationState"].ToString();
+                    result.TotalExp = reader["TotalExp"].ToString();
+                    result.CanRelocate = reader["CanRelocate"].ToString();
+                    result.RemoteOnly = reader["RemoteOnly"].ToString();
+                    result.ConsultancyUserId = reader["ConsultancyUserId"].ToString();
+                    result.ConsultancyUserFName = reader["ConsultancyUserFName"].ToString();
+                    result.ConsultancyUserLName = reader["ConsultancyUserLName"].ToString();
+                    result.ConsultancyName = reader["ConsultancyName"].ToString();
+                    result.Skills = reader["Skills"].ToString().Split('|').ToList();
+                    result.Locations = reader["Locations"].ToString().Split('|').ToList();
+                    result.EmploymentTypeName = (reader != null && reader["EmploymentTypeName"] != null) ? reader["EmploymentTypeName"].ToString() : String.Empty;
+                    result.JobTypeName = (reader != null && reader["JobTypename"] != null) ? reader["JobTypename"].ToString() : String.Empty;
+
+                    result.ProfilePic = reader["ProfilePic"].ToString();
+                    result.Resume = reader["Resume"].ToString();
+                    result.PublicProfileUserName = reader["PublicProfileUserName"].ToString();
+                    rtn.Add(result);
+                }
+                return rtn;
+            }
+
+        }
+
+        public async Task<bool> ActivateOrDeActivateCandidateProfile(long CandidateProfileId, bool? Active, short? StatusId, UserContext userContext)
+        {
+            var profile = await _context.CandidateProfiles.Where(o => o.Id == CandidateProfileId).FirstOrDefaultAsync();
+            if (profile != null)
+            {
+                if (Active != null)
+                    profile.Active = Active;
+                profile.UserId = userContext.UserId;
+                if (StatusId != null)
+                    profile.StatusId = (short)StatusId;
+                await this.Put(profile.Id, profile, true);
+                return true;
+            }
+            return false;
+        }
+    }
+}

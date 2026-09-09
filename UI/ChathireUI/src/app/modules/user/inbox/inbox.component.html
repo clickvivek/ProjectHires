@@ -1,0 +1,116 @@
+<div class="inbox-wrapper">
+
+    <div class="container">
+        <div class="row">
+
+            <div class="col-sm-12">
+                
+                <loader *ngIf="!isLoaded"></loader>
+
+                <ng-container *ngIf="isLoaded">
+
+                    <div class="row">
+                        <div class="col-md-8 col-lg-6">
+                            <page-search (outputData)="handleSearch($event)" placeholder="Search by job, location" ></page-search>
+                        </div>
+                        <div class="col-md-4 col-lg-6">
+                            <div class="active-box">
+                                <slider-classic
+                                    [data]="isActive" 
+                                    activeText="Show active jobs" 
+                                    inActiveText="Show inactive jobs"
+                                    (outputparams)="handleActiveList($event)">
+                                </slider-classic>
+                            </div>
+                        </div>
+                    </div>
+
+                    <ng-container *ngIf="isDataAvailable()">
+                       
+                        <div class="options-box">
+                            <div class="row">
+                                <div class="col-md-4 col-lg-3">
+                                    <h6>{{totalItems}} results available </h6>
+                                </div>
+                                <div class="col-md-8 col-lg-9">
+                                    <div class="options-area">
+                                        <div class="option d-flex align-items-center">
+                                            <p class="label me-1 text-sm">Sort By:</p>
+                                            <dropdown-classic [fieldList]="sortList" fieldType="name"></dropdown-classic>
+                                        </div>
+                                        <div class="d-flex align-items-center">
+                                            <p class="label me-1 text-sm">Order By:</p>
+                                            <dropdown-classic [fieldList]="orderList" fieldType="name"></dropdown-classic>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+    
+                        <div class="inbox-container">
+    
+                            <ng-container *ngFor="let item of filteredData">
+                                <li class="list-group-item shadow">
+                                    <div class="top">
+                                        <p class="text-secondary-800 desp fw-medium">
+                                            {{ item.name }}
+                                        </p>
+                                        <p
+                                        class="text-dark-600 text-sm desp fw-medium d-none d-md-block"
+                                      >
+                                        {{ item.jobOpeningLocation | jobLocation }}
+                                      </p>
+                                      <div class="desp ms-auto">
+                                        <slider-classic [data]="item.active" [selectedItem]="item" activeText="Active job" inActiveText="Inactive job" (outputparams)="handleActive($event)"></slider-classic>
+                                      </div>
+                                    </div>
+                                    <div class="middle">
+                                        <p
+                                        class="text-dark-600 text-sm desp fw-medium d-md-none"
+                                      >
+                                        {{ item.jobOpeningLocation | jobLocation }}
+                                      </p>
+                                        <p
+                                        class="text-dark-400 text-sm desp"
+                                        >
+                                        posted on {{getDate(item.postDate)}}
+                                        </p>
+                                    </div>
+                                    <div class="middle">
+                                        <p class="text-sm fw-medium text-tertiary-700 underline pointer mt-2 d-inline-block" (click)="handleJob(item)">Job Details</p>
+                                    </div>
+                                    <div class="bottom">
+                                        <div class="row">
+                                            <div class="col-6 col-md-3 col-lg-2" *ngFor="let profile of item.profileCountSummary">
+                                                <div class="box" (click)="handleResumeType(item, profile.candidateProfileMappingStatusId)">
+                                                    <p class="text-base fw-medium" [profileMapColor]="profile.candidateProfileMappingStatusId">{{profile.count}}</p>
+                                                    <p class="text-sm fw-medium" [profileMapColor]="profile.candidateProfileMappingStatusId">{{profile.candidateProfileMappingStatusName}}</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </li>
+                            </ng-container>
+    
+                        </div>
+
+                    </ng-container>
+
+                    <div class="options-box" *ngIf="!isDataAvailable()">
+                        <h6>No data found</h6>
+                    </div>
+
+                </ng-container>
+
+            </div>
+
+            
+        </div>
+    </div>
+
+    <router-outlet></router-outlet>
+
+</div>
+
+
+  

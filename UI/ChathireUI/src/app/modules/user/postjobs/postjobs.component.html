@@ -1,0 +1,48 @@
+<div class="postjobs-wrapper">
+  <div class="container">
+    <div class="row">
+      <div class="col-sm-12">
+        <div class="card p-4">
+          
+          <div class="card-body">
+            
+            <ng-container *ngIf="!isJobPosted">
+              <h5 class="title mb-3">Enter your job details and post</h5>
+              <div class="row">
+                <div class="col-sm-12">
+                  <post-job-details [isJobPosted]="isJobPosted" (postparams)="handleJobPost($event)"></post-job-details>
+                </div>
+              </div>
+            </ng-container>
+            
+            <div class="success-message" *ngIf="isJobPosted">
+              <h5 class="title d-flex align-items-center">
+                <div class="tick d-flex align-items-center justify-content-center">
+                  <span
+                  class="material-symbols-outlined text-h4 text-white"
+                  >done</span
+                >
+                </div>
+                Your job has been posted.
+              </h5>
+              <div class="actions d-flex align-items-center">
+                <div class="action-item">
+                  <a href="javascript:void(0)" class="action-link text-secondary" (click)="isJobPosted=!isJobPosted">Post another job</a>
+                </div>
+                <div class="action-item">
+                  <a href="javascript:void(0)" class="action-link text-secondary" routerLink="/search-hotlist">Search Candidates</a>
+                </div>
+                <div class="action-item">
+                  <a href="javascript:void(0)" class="action-link text-secondary" routerLink="/posting-history">View posted jobs</a>
+                </div>     
+                
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

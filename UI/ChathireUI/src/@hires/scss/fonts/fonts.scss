@@ -1,0 +1,42 @@
+@import "../utilities/all";
+
+@import url("https://fonts.googleapis.com/css2?family=Catamaran:wght@300;400;500;600;700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;500;600;700&display=swap");
+@import url('https://fonts.googleapis.com/css2?family=Albert+Sans:wght@300;400;500;600;700&display=swap');
+
+@font-face {
+  font-family: "Metropolis";
+  src: url("./Metropolis-Thin.otf") format("opentype");
+  font-weight: $fw-light;
+}
+
+@font-face {
+  font-family: "Metropolis";
+  src: url("./Metropolis-Regular.otf") format("opentype");
+  font-weight: $fw-normal;
+}
+
+@font-face {
+  font-family: "Metropolis";
+  src: url("./Metropolis-Medium.otf") format("opentype");
+  font-weight: $fw-medium;
+}
+
+@font-face {
+  font-family: "Metropolis";
+  src: url("./Metropolis-SemiBold.otf") format("opentype");
+  font-weight: $fw-semibold;
+}
+
+@font-face {
+  font-family: "Metropolis";
+  src: url("./Metropolis-Bold.otf") format("opentype");
+  font-weight: $fw-bold;
+}
+
+@font-face {
+  font-family: "Material Symbols Outlined";
+  font-style: normal;
+  font-weight: 100 700;
+  src: url("./material-icon.woff2") format("woff2");
+}

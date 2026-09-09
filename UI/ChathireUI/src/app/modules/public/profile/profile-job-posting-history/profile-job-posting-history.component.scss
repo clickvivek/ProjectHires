@@ -1,0 +1,90 @@
+@import "src/@hires/scss/utilities/all";
+@import "src/@hires/scss/helpers/typography";
+
+.profile-job-posting-history-wrapper {
+  overflow: auto;
+    .lists-box {
+      display: flex;
+      border-top: 1px solid pick-color(dark, 300);
+      overflow: hidden;
+      .left-area {
+        display: flex;
+        flex-direction: column;
+        width: 300px;
+        border-right: 1px solid pick-color(dark, 300);
+        flex-shrink: 0;
+        @include hires-breakpoint("lt-md") {
+          width: 100%;
+          border-right: 0;
+        }
+        .left-box {
+          .list {          
+            &.recruit {
+              .list-group-item {
+                cursor: pointer;
+                &:after {
+                  content: "\f107";
+                  font-family: $fta;
+                  position: absolute;
+                  right: 20px;
+                  top: 36px;
+                  color: pick-color(dark, 500);
+                  @include ft-calc($font-base);
+                }
+                &:hover {
+                  background-color: pick-color(dark, 100);
+                  @include transition(all 0.15s ease);
+                  &:after {
+                    color: $primary;
+                    @include transition(all 0.15s ease);
+                  }
+                }
+                &.selected {
+                  &:after {
+                    content: "\f106";
+                  }
+                }
+              }
+            }
+          }
+          .pagination-wrapper {
+            .pagination {
+              margin: 0;
+              display: flex !important;
+              align-items: center;
+              justify-content: center;
+              @include border-radius(0);
+              padding: 30px 0;
+              .left {
+                display: none !important;
+              }
+              .page-numbers {
+                margin-left: 0 !important;
+                li a {
+                  padding: 8px 14px;
+                }
+              }
+            }
+          }
+        }
+        
+      }
+      .left-area, .right-area {
+        height: 700px;
+        overflow: scroll;
+      }
+      .right-area {
+        flex-grow: 1;
+        background-color: white;
+        @include hires-breakpoint("lt-md") {
+          position: fixed;
+          top: 0;
+          width: 100%;
+          left: 0;
+          z-index: 1000;
+          height: 100% !important;
+          overflow: scroll;
+        }
+      }
+    }
+}

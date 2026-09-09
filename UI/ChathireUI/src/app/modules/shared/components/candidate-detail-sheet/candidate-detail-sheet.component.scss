@@ -1,0 +1,101 @@
+@import "src/@hires/scss/utilities/all";
+@import "src/@hires/scss/helpers/typography";
+
+.candidate-details-wrapper {
+  .candidate-head {
+    padding: 18px 20px 14px 20px;
+    border-bottom: 1px solid pick-color(dark, 50);
+    background-color: pick-color(dark, 300);
+    overflow: hidden;
+    clear: both;
+    @include hires-breakpoint("lt-lg") {
+      background-color: transparent;
+    }
+    h4 {
+      @extend .ft-head;
+      @include ft-calc($font-h6);
+      padding: 0 0 8px 0;
+      @include hires-breakpoint("xs") {
+        @include ft-calc($font-base);
+      }
+    }
+    h5 {
+      @include ft-calc($font-normal);
+      .icon {
+        @include ft-calc($font-base);
+      }
+    }
+    p {
+      padding: 6px 0 0 0;
+      color: pick-color(dark, 500);
+      margin: 0;
+      @include ft-calc($font-small);
+    }
+    .apply-btn {
+      @include ft-calc($font-normal);
+      @include text-shadow(0 1px 0 rgba(black, 0.2));
+      @include hires-breakpoint("lt-lg") {
+        padding: 4px 14px !important;
+      }
+    }
+    .social {
+      margin: 12px 0 0 0 !important;
+      display: flex;
+      justify-content: flex-end;
+      li {
+        background-color: transparent;
+        border: none;
+        padding: 0;
+        &:not(:last-child) {
+          margin: 0 15px 0 0;
+          @include hires-breakpoint("lt-lg") {
+            margin: 0 8px 0 0;
+          }
+        }
+        a {
+          @include ft-calc($font-small);
+          @include hires-breakpoint("lt-lg") {
+            @include ft-calc($font-smaller);
+          }
+
+          i {
+            @include ft-calc($font-normal);
+          }
+        }
+      }
+    }
+  }
+  .visa-box {
+    padding: 14px 20px 6px 20px !important;
+    border-bottom: 1px solid pick-color(dark, 50);
+    li {
+      background-color: pick-color(dark, 500);
+      padding: 6px 14px;
+      @include border-radius(2px);
+      @include ft-calc($font-tiny);
+      margin-bottom: 8px;
+      &:not(:last-child) {
+        margin-right: 8px;
+      }
+    }
+  }
+  .candidate-details-container {
+    overflow: auto;
+    padding: 20px;
+    @extend .ft-default;
+    @include ft-calc($font-normal);
+    @include hires-breakpoint("lt-lg") {
+      height: 300px;
+    }
+    > p {
+      display: none;
+    }
+  }
+  table {
+    width: 100%;
+    td p {
+      @extend .ft-default;
+      @include ft-calc($font-small);
+    }
+  }
+}

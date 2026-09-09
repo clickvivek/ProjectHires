@@ -1,0 +1,47 @@
+@import "src/@hires/scss/utilities/all";
+@import "src/@hires/scss/helpers/typography";
+
+$shades-dark: map-get($hires-colors, "cool-gray");
+
+footer {
+  background: pick-color(dark, 700);
+  .footer-area {
+    display: flex;
+    align-items: center;
+    padding: 24px 0;
+    @include hires-breakpoint("lt-lg") {
+      display: block;
+    }
+    .copyright {
+      margin: 0 30px 0 0;
+      color: pick-color(dark, 400);
+      @extend .text-sm;
+      @include hires-breakpoint("lt-lg") {
+        margin: 0 0 20px 0;
+      }
+    }
+    .footer-links {
+      a {
+        color: pick-color(dark, 400);
+        @extend .text-sm;
+        &:not(:last-child) {
+          border-right: 1px solid pick-color(dark, 500);
+          margin: 0 16px 0 0;
+          padding: 0 16px 0 0;
+        }
+        &:hover {
+          color: pick-color(dark, 50);
+        }
+        @include hires-breakpoint("lt-md") {
+            display: block;
+            border: none !important;
+            
+            padding: 0 !important;
+            &:not(:last-child) {
+              margin: 0 0 12px 0 !important;
+            }
+        }
+      }
+    }
+  }
+}

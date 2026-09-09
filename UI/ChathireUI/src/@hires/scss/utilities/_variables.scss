@@ -1,0 +1,159 @@
+$hires-breakpoints: (
+  xs: "(min-width: 0) and (max-width: 575px)",
+  sm: "(min-width: 576px) and (max-width: 767px)",
+  md: "(min-width: 768px) and (max-width: 991px)",
+  lg: "(min-width: 992px) and (max-width: 1199px)",
+  xl: "(min-width: 1200px)",
+  lt-md: "(max-width: 767px)",
+  lt-lg: "(max-width: 991px)",
+  lt-xl: "(max-width: 1199px)",
+  gt-xs: "(min-width: 576px)",
+  gt-sm: "(min-width: 768px)",
+  gt-md: "(min-width: 992px)",
+) !default;
+
+$fta: FontAwesome;
+
+$hires-colors: (
+  "primary": (
+    50: #eef6f0,
+    100: #bbf7d8,
+    200: #8df1be,
+    300: #63c694,
+    400: #29c26f,
+    500: #18c36c,
+    600: #39a26d,
+    700: #0e723f,
+    800: #2b5535,
+    900: #03170d,
+  ),
+  "secondary": (
+    50: #e8f0f9,
+    100: #d2e1f4,
+    200: #a5c3e7,
+    300: #79a5da,
+    400: #4d87cc,
+    500: #1668bd,
+    600: #1259a4,
+    700: #0d4b8c,
+    800: #093e74,
+    900: #032447,
+  ),
+  "warning": (
+    50: #fff0ea,
+    100: #ffe0d4,
+    200: #ffd1bf,
+    300: #ffc2aa,
+    400: #feb295,
+    500: #fca27f,
+    600: #fa9169,
+    700: #f78052,
+    800: #f36e37,
+    900: #ef5b0c,
+  ),
+  "danger": (
+    50: #fef2f2,
+    100: #fee2e2,
+    200: #fecaca,
+    300: #fca5a5,
+    400: #f87171,
+    500: #ef4444,
+    600: #dc2626,
+    700: #b91c1c,
+    800: #991b1b,
+    900: #7f1d1d,
+  ),
+  "tertiary": (
+    50: #f7f7ee,
+    100: #fefce8,
+    200: #fef9c3,
+    300: #fef08a,
+    400: #fde047,
+    500: #facc15,
+    600: #eab308,
+    700: #ca8a04,
+    800: #a16207,
+    900: #854d0e,
+  ),
+  "dark": (
+    50: #f9fafb,
+    100: #f3f4f6,
+    200: #e5e7eb,
+    300: #d1d5db,
+    400: #9ca3af,
+    // input placeholder color
+    500: #6b7280,
+    // gray variatent for text
+    600: #4b5563,
+    700: #374151,
+    800: #292a2b,
+    900: #212121,
+  ),
+) !default;
+
+$primary: #18c36c;
+$secondary: #1668bd;
+$tertiary: #facc15;
+$warning: #fca27f;
+$danger: #ef4444;
+$dark: #969fae;
+
+//font-sizes
+$ft-base: 10px;
+$font-huge: 50px;
+$font-big: 38px;
+$font-h1: 36px;
+$font-h2: 34px;
+$font-h3: 30px;
+$font-h4: 24px;
+$font-h5: 22px;
+$font-h6: 20px;
+$font-base: 18px;
+$font-normal: 16px;
+$font-regular: 15px;
+$font-small: 14px;
+$font-smaller: 13px;
+$font-tiny: 12px;
+$font-nano: 10px;
+
+//font Weights
+$fw-light: 300 !default;
+$fw-normal: 400 !default;
+$fw-medium: 500 !default;
+$fw-semibold: 600 !default;
+$fw-bold: 700 !default;
+
+//letter spaces
+$spaces: (
+  "ls--2": 0.2px,
+  "ls--25": 0.25px,
+  "ls--4": 0.4px,
+  "ls--15": 1.5px,
+);
+
+//line height
+$line-heights: (
+  "lh-14": 14px,
+  "lh-18": 18px,
+);
+
+//buttons
+
+$btn-padding-y: 6px;
+$btn-padding-x: 18px;
+$btn-font-size: 16px;
+$btn-border-radius: 4px;
+$btn-line-height: 32px;
+
+$btn-padding-y-lg: 8px;
+$btn-padding-x-lg: 20px;
+
+$btn-padding-y-sm: 2px;
+$btn-padding-x-sm: 14px;
+$btn-font-size-sm: 12px;
+
+$btn-font-size-lg: 20px;
+$btn-border-radius-lg: 4px;
+
+// images
+$images: "~src/assets/images";

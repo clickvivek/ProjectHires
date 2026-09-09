@@ -1,0 +1,14 @@
+@import "src/@hires/scss/utilities/all";
+@import "src/@hires/scss/helpers/typography";
+
+.view-comments-box {
+  cursor: pointer;
+  padding: 4px 8px;
+  background-color: pick-color(secondary, 50);
+  border: 1px solid pick-color(secondary, 200);
+  color: pick-color(secondary, 800);
+  @include border-radius(4px);
+  .icon {
+    font-size: inherit;
+  }
+}

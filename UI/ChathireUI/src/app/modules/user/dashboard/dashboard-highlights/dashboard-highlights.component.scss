@@ -1,0 +1,49 @@
+@import "src/@hires/scss/utilities/all";
+@import "src/@hires/scss/helpers/typography";
+
+.dashboard-highlights-wrapper {
+    .data-box {
+        margin: 10px 0 0 0;
+        .card-list {
+          display: flex;
+          @include hires-breakpoint("xs") {
+            display: block;
+          }
+          li {
+            width: 220px;
+            margin: 0 25px 20px 0;
+            @include hires-breakpoint("xs") {
+              width: 100%;
+              margin: 0 0 20px 0;
+            }
+            .card {
+              height: 100%;
+              margin: 0;
+              .icon {
+                position: absolute;
+                right: 15px;
+                bottom: 10px;
+              }
+            }
+          }
+        }
+        .data-list {
+          li {
+            width: 100%;
+            border: none;
+            padding: 16px 20px 16px 20px;
+            &:not(:last-child) {
+              border-bottom: 1px solid pick-color(dark, 300);
+            }
+            &:nth-child(even) {
+              background-color: pick-color(dark, 50);
+            }
+            .item {
+              @include hires-breakpoint("lt-md") {
+                margin: 10px 0;
+              }
+            }
+          }
+        }
+      }
+}

@@ -1,0 +1,50 @@
+<div class="my-account-wrapper">
+	<div class="container">
+		<div class="row">
+			<div class="col-sm-12">
+				<div class="panel rounded">
+					<ul class="nav nav-tabs" role="tablist">
+						<li class="nav-item">
+							<a
+							  class="nav-link active"
+							  href="#profile-pic"
+							  role="tab"
+							  data-bs-toggle="tab"
+							  >Profile Picture</a
+							>
+						  </li>
+						<li class="nav-item">
+							<a
+							  class="nav-link"
+							  href="#profile-details"
+							  role="tab"
+							  data-bs-toggle="tab"
+							  >Personal Details</a
+							>
+						  </li>
+						  <li class="nav-item">
+							<a
+							  class="nav-link"
+							  href="#profile-password"
+							  role="tab"
+							  data-bs-toggle="tab"
+							  >Change Password</a
+							>
+						  </li>
+					</ul>
+					<div class="tab-content">
+						<div role="tabpanel" class="tab-pane fade show active" id="profile-pic">
+							<profile-pic [user]="user"></profile-pic>
+						</div>
+						<div role="tabpanel" class="tab-pane fade show" id="profile-details">
+							<personal-details></personal-details>
+						</div>
+						<div role="tabpanel" class="tab-pane fade" id="profile-password">
+							<change-password></change-password>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>

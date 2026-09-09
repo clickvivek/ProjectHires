@@ -1,0 +1,130 @@
+<div class="search-job-wrapper adv-filter-wrapper">
+  <div class="container">
+    <div class="row">
+
+      <div class="col-md-8 offset-md-2 col-lg-10 offset-lg-1 text-center">
+        <h5 class="mb-4">Search from thousands of tech Jobs posted everyday</h5>
+        <div class="mb-4">
+          <search-skill-location
+            [skill]="skill"
+            [location]="location"
+            [cityId]="cityId"
+            type="jobs"
+          ></search-skill-location>
+        </div>
+      </div>
+
+      <div class="col-md-12">
+
+        <loader *ngIf="!isLoaded"></loader>
+
+        <ng-container *ngIf="isLoaded">
+
+          <div class="mt-2 alert alert-danger" *ngIf="isError">
+            {{ error }}
+          </div>
+
+          <ng-container *ngIf="isDataAvailable">
+            
+            <div class="options-box">
+              <h6>{{ skill }} - {{ totalItems }} jobs found</h6>
+            </div>
+            
+
+            <div class="list-container">
+
+              <adv-filter-card>
+                <adv-filter-date-posted
+                  (inputChange)="onDateFilter($event)"
+                ></adv-filter-date-posted>
+                <adv-filter-visa
+                  (inputChange)="onVisaFilter($event)"
+                ></adv-filter-visa>
+                <adv-filter-experience-level
+                  (inputChange)="onExpFilter($event)"
+                ></adv-filter-experience-level>
+                <adv-filter-work-model
+                  (inputChange)="onWorkModeFilter($event)"
+                ></adv-filter-work-model>
+                <adv-filter-reset></adv-filter-reset>
+              </adv-filter-card>
+
+              <div class="content" *ngIf="jobData.length > 0">
+
+                <div class="left-area">
+                  <div class="left-box">
+                    <div class="section shadow">
+                      <ng-container
+                        *ngFor="
+                          let job of jobData | slice : ItemStartIndex : ItemEndIndex
+                        "
+                      >
+                        <li
+                          class="list-group-item item"
+                          (click)="showJobDescription(job)"
+                          [ngClass]="isSelected(job.jobOpeningId)"
+                        >
+                          <div class="holder">
+                            <span class="text-h5">{{
+                              job.jobOpeningName | subStr : 1
+                            }}</span>
+                          </div>
+                          <div class="right">
+                            <h5
+                              class="mb-1 text-normal title fw-medium text-primary-700"
+                            >
+                              {{ job.jobOpeningName }}
+                            </h5>
+                            <p class="text-sm sub-title fw-medium">
+                              {{ job.companyName }}
+                            </p>
+                            <p class="mt-1 text-sm caption text-dark-500">
+                              <span
+                                *ngFor="
+                                  let location of job.locations;
+                                  let lastItem = last
+                                "
+                                >{{ location
+                                }}<span *ngIf="!lastItem">, &nbsp;</span></span
+                              >
+                            </p>
+                          </div>
+                        </li>
+                      </ng-container>
+                    </div>
+                    <app-pagination-box
+                      [totalItems]="totalItems"
+                      [ItemStartIndex]="ItemStartIndex"
+                      [ItemEndIndex]="ItemEndIndex"
+                      [itemLimit]="itemLimit"
+                      (outputParams)="getIndexParams($event)"
+                    >
+                    </app-pagination-box>
+                  </div>
+                </div>
+
+                <div *ngIf="isJobSheet" class="right-area">
+                  <app-job-detail-sheet
+                  [selectedJob]="selectedJob"
+                  (outParam)="handleJobSheet($event)"
+                  ></app-job-detail-sheet>
+                </div>
+
+              </div>
+
+
+            </div>
+
+          </ng-container>
+
+          <div *ngIf="!isDataAvailable && skill">
+            <h6>No data found</h6>
+          </div>
+
+
+        </ng-container>
+
+      </div>
+    </div>
+  </div>
+</div>
