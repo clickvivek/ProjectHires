@@ -1,4 +1,4 @@
-﻿using AutoMapper;
+using AutoMapper;
 using BusinessEntityAndDTO.Common;
 using BusinessEntityAndDTO.DTO;
 using BusinessEntityAndDTO.Models;
@@ -16,10 +16,11 @@ namespace MiddleWare.Controllers
     [ApiController]
     public class JobOpeningController : BaseCtrler<JobOpeningController>
     {
-        EFContexts dbcontext = new EFContexts();
+        EFContexts dbcontext;
 
         public JobOpeningController(IServiceProvider serviceProvider, ILogger<JobOpeningController> logger, IMapper mapper) : base(serviceProvider, logger, mapper)
         {
+            dbcontext = serviceProvider.GetService<EFContexts>();
         }
 
         [HttpPost]

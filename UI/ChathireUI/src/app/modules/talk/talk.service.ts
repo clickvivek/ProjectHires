@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { environment } from 'src/environments/environment';
 
 import Talk from 'talkjs';
 
@@ -8,14 +9,14 @@ import Talk from 'talkjs';
 })
 export class TalkService {
 
-  APP_ID = 'tKzUD2dn';
+  APP_ID = environment.talkJsAppId;
 
   constructor(
     private http: HttpClient
   ) { }
 
   fetchTalkUserPresence(id) {
-    return this.http.post(`https://api.talkjs.com/v1/tKzUD2dn/presences/`, {userIds : [id]})
+    return this.http.post(`https://api.talkjs.com/v1/${this.APP_ID}/presences/`, {userIds : [id]})
   }
 
 }

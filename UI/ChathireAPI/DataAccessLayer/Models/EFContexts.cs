@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 
@@ -115,9 +115,7 @@ public partial class EFContexts : DbContext
 
     public virtual DbSet<Visa> Visas { get; set; }
 
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
-        => optionsBuilder.UseSqlServer("Server=ones.database.windows.net,1433;Initial Catalog=HIRES;Persist Security Info=False;User ID=vijisrk;Password=Thayasrk22@@;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;");
+    // OnConfiguring removed because it's configured in Program.cs via AddDbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

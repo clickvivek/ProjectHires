@@ -1,6 +1,7 @@
 import { Directive, OnInit, Input, ElementRef, Output, EventEmitter, HostListener} from '@angular/core';
 import {  Router } from '@angular/router';
 import Talk from 'talkjs';
+import { environment } from 'src/environments/environment';
 
 import { picUrl, defaultProfilePic, publicProfileUrlPrefix } from 'src/app/data/various';
 import _ from 'underscore';
@@ -24,7 +25,7 @@ export class ChatButtonDirective  {
 
   user:any;
 
-  APP_ID = 'tKzUD2dn';
+  APP_ID = environment.talkJsAppId;
   popup:any;
   session:any;
   conversation:any;
@@ -176,7 +177,7 @@ export class InboxDirective  {
 
   @Output() onUnreadEvent = new EventEmitter()
 
-  APP_ID = 'tKzUD2dn';
+  APP_ID = environment.talkJsAppId;
   session:any;
   conversation:any;
 

@@ -1,4 +1,4 @@
-
+using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using Middleware.Shared;
 using Middleware.Security;
@@ -24,7 +24,8 @@ builder.Services.AddAuthentication(CustomAuthenticationScheme)
 //            .AddScheme<BasicAuthenticationOptions, CustomAuthenticationHandler>("Basic", null);
 
 builder.Services.AddMvc(option => option.EnableEndpointRouting = false);
-builder.Services.AddTransient<DataAccessLayer.Models.EFContexts>();
+builder.Services.AddDbContext<DataAccessLayer.Models.EFContexts>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 var config = new AutoMapper.MapperConfiguration(
     cfg =>
     {

@@ -1,4 +1,4 @@
-﻿using AutoMapper;
+using AutoMapper;
 using BusinessEntityAndDTO.Common;
 using BusinessEntityAndDTO.DTO;
 using BusinessEntityAndDTO.Models;
@@ -16,10 +16,11 @@ namespace MiddleWare.Controllers
     [ApiController]
     public class SubscriptionController : BaseCtrler<SubscriptionController>
     {
-        EFContexts dbcontext = new EFContexts();
+        EFContexts dbcontext;
 
         public SubscriptionController(IServiceProvider serviceProvider, ILogger<SubscriptionController> logger, IMapper mapper) : base(serviceProvider, logger, mapper)
         {
+            dbcontext = serviceProvider.GetService<EFContexts>();
         }
 
         [HttpGet]

@@ -1,4 +1,4 @@
-﻿using AutoMapper;
+using AutoMapper;
 using BusinessEntityAndDTO.DTO;
 using BusinessEntityAndDTO.Models;
 using BusinessLayer.Manager;
@@ -14,10 +14,11 @@ namespace MiddleWare.Controllers
     [ApiController]
     public class ConsultancyController : BaseCtrler<ConsultancyController>
     {
-        EFContexts dbcontext = new EFContexts();
+        EFContexts dbcontext;
 
         public ConsultancyController(IServiceProvider serviceProvider, ILogger<ConsultancyController> logger, IMapper mapper) : base(serviceProvider, logger, mapper)
         {
+            dbcontext = serviceProvider.GetService<EFContexts>();
         }
 
         [HttpPost]
