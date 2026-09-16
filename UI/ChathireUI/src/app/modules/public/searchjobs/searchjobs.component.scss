@@ -1,6 +1,9 @@
 @import "src/@hires/scss/utilities/all";
 
 .search-job-wrapper {
+  padding-bottom: 200px;
+  min-height: calc(100vh - 300px);
+
   .options-box {
     margin: 24px 0 0 0;
   }

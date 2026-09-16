@@ -1,4 +1,4 @@
-﻿using AutoMapper;
+using AutoMapper;
 using BusinessEntityAndDTO.Common;
 using BusinessLayer.Common;
 using DataAccessLayer.Repository;
@@ -19,6 +19,8 @@ namespace BusinessLayer.Manager
     public interface ILoginManager
     {
         Task<Tuple<String, String, UserContext, String>> GenerateToken(string EmployeeCode, String Pwd);
+
+        Task<Tuple<String, String, UserContext, String>> GenerateGoogleToken(string idToken);
 
         Task<TokenModel> ValidateToken(String Token);
 
@@ -107,6 +109,27 @@ namespace BusinessLayer.Manager
                     throw new UnauthorizedAccessException(ex.Message, ex);
                 }
             }, "GenerateToken", null);
+        }
+
+        public async Task<Tuple<String, String, UserContext, String>> GenerateGoogleToken(string idToken)
+        {
+            return await ExecuteAsync<Tuple<String, String, UserContext, String>>(async () =>
+            {
+                var googleSection = CustomConfigurationProvider.GetConfigurationSection(configuration, "Google");
+                var clientId = googleSection?.GetValue("ClientId") ?? "262467975068-u0o6qtjog1o7e1p4jp5kuag34ibhfm1l.apps.googleusercontent.com";
+
+                var validationSettings = new Google.Apis.Auth.GoogleJsonWebSignature.ValidationSettings
+                {
+                    Audience = new[] { clientId }
+                };
+
+                var payload = await Google.Apis.Auth.GoogleJsonWebSignature.ValidateAsync(idToken, validationSettings);
+
+                var loginRepo = repositoryFactory.Get<IUserRepository>();
+                var result = await loginRepo.ValidateOrCreateGoogleUser(payload.Email, payload.GivenName, payload.FamilyName, payload.Picture);
+
+                return Tuple.Create(result.Item1, GetTokenFromContext(result.Item2), result.Item2, result.Item3);
+            }, "GenerateGoogleToken", null);
         }
 
 

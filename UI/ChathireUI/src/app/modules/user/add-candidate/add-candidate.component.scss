@@ -1,40 +1,174 @@
 @import "src/@hires/scss/utilities/all";
 @import "src/@hires/scss/helpers/typography";
 
+:host {
+  --bg-page: #F7F8FA;
+  --bg-card: #FFFFFF;
+  --color-heading: #101828;
+  --color-label: #344054;
+  --color-body: #667085;
+  --color-placeholder: #98A2B3;
+  --color-border: #EAECF0;
+  --primary-purple: #70246D;
+  --primary-hover: #5C1C59;
+  --light-purple: #F5EDF5;
+  --color-error: #D92D20;
+
+  display: block;
+  background-color: var(--bg-page);
+  min-height: calc(100vh - 70px);
+}
+
 .add-candidate-wrapper {
+  background-color: var(--bg-page);
+  padding: 24px 0 60px 0;
+  min-height: calc(100vh - 70px);
+
+  .card {
+    background-color: var(--bg-card) !important;
+    border: 1px solid #E4E7EC !important;
+    border-radius: 12px !important;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04) !important;
+
+    h5.title, h4.title {
+      color: var(--color-heading) !important;
+      font-weight: 700 !important;
+      font-size: 1.25rem !important;
+      border-bottom: 2px solid var(--light-purple) !important;
+      padding-bottom: 12px !important;
+      margin-bottom: 24px !important;
+      letter-spacing: -0.3px;
+    }
+
+    h5.subtitle {
+      color: var(--color-heading) !important;
+      font-weight: 700 !important;
+      font-size: 1.1rem !important;
+      border-bottom: 1px solid var(--color-border) !important;
+      padding-bottom: 8px !important;
+    }
+  }
+
+  label, .form-label {
+    color: var(--color-label) !important;
+    font-weight: 600 !important;
+    font-size: 0.9rem !important;
+    margin-bottom: 6px !important;
+
+    .req {
+      color: var(--color-error) !important;
+      margin-left: 3px;
+    }
+  }
+
+  input.form-control,
+  textarea.form-control,
+  .form-control {
+    border: 1px solid #D0D5DD !important;
+    border-radius: 8px !important;
+    height: 44px;
+    background-color: #FFFFFF !important;
+    color: var(--color-heading) !important;
+    font-size: 0.95rem !important;
+    transition: all 0.2s ease-in-out !important;
+
+    &::placeholder {
+      color: var(--color-placeholder) !important;
+    }
+
+    &:focus {
+      border-color: var(--primary-purple) !important;
+      box-shadow: 0 0 0 3px rgba(112, 36, 109, 0.12) !important;
+      outline: none;
+    }
+  }
+
+  .form-check {
+    margin-bottom: 10px;
+
+    .form-check-input {
+      border-color: #D0D5DD !important;
+      cursor: pointer;
+
+      &:checked {
+        background-color: var(--primary-purple) !important;
+        border-color: var(--primary-purple) !important;
+      }
+    }
+
+    .form-check-label {
+      color: #344054 !important;
+      font-size: 0.95rem;
+      cursor: pointer;
+    }
+  }
+
   .attach-resume {
     .icon-box {
       position: relative;
       display: inline-block;
       overflow: hidden;
+
       input {
         opacity: 0;
         position: absolute;
         left: 0;
+        top: 0;
         width: 100%;
         height: 100%;
-        transform: scale(3, 4);
-        z-index: 1000;
+        cursor: pointer;
+        z-index: 10;
+
         &.disabled {
           pointer-events: none;
         }
+
         &::-webkit-file-upload-button {
           cursor: pointer;
         }
       }
     }
   }
+
   .file-box {
-    display: inline-flex;
-    align-items: center;
-    margin: 0 0 10px 0;
-    padding: 4px 8px;
-    background-color: pick-color(tertiary, 100);
-    border: 1px solid pick-color(tertiary, 500);
-    color: pick-color(tertiary, 900);
-    @include border-radius(4px);
+    padding: 8px 14px;
+    background-color: #F5EDF5;
+    border: 1px solid #E7D5E6;
+    color: #70246D;
+    border-radius: 8px;
+    font-size: 13.5px;
   }
-  .submit-box {
-    margin: 20px 0 30px 0;
+
+  /* Success Screen Styling */
+  .success-message {
+    .bg-purple-brand {
+      background-color: var(--primary-purple);
+      width: 64px;
+      height: 64px;
+    }
+
+    .btn-purple-brand {
+      background-color: var(--primary-purple);
+      color: #FFFFFF;
+      font-weight: 600;
+      border-radius: 8px;
+
+      &:hover {
+        background-color: var(--primary-hover);
+        color: #FFFFFF;
+      }
+    }
+
+    .btn-outline-purple {
+      border: 1px solid var(--primary-purple);
+      color: var(--primary-purple);
+      font-weight: 600;
+      border-radius: 8px;
+
+      &:hover {
+        background-color: var(--light-purple);
+        color: var(--primary-hover);
+      }
+    }
   }
 }

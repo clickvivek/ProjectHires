@@ -1,84 +1,345 @@
 @import "src/@hires/scss/utilities/all";
 @import "src/@hires/scss/helpers/typography";
 
+$primary-plum: #673260;
+$primary-hover: #51264C;
+$light-plum: #F6EFF5;
+$dark-heading: #111827;
+$body-text: #5F5962;
+$muted-text: #8F8992;
+$page-bg: #F7F6F3;
+$card-bg: #FFFFFF;
+$border-color: #E6E2E5;
+
 .inbox-wrapper {
-    .active-box {
+  background-color: $page-bg;
+  min-height: calc(100vh - 70px);
+  padding-top: 24px;
+  padding-bottom: 48px;
+
+  .dashboard-header {
+    .page-title {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: $dark-heading;
+      letter-spacing: -0.02em;
+    }
+
+    .page-subtitle {
+      font-size: 0.875rem;
+      color: $body-text;
+    }
+
+    .badge-active-jobs {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 14px;
+      background-color: $card-bg;
+      border: 1px solid $border-color;
+      border-radius: 20px;
+      font-size: 0.8125rem;
+      font-weight: 600;
+      color: $primary-plum;
+
+      .pulse-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background-color: #10B981;
+        box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2);
+      }
+    }
+  }
+
+  .toolbar-card {
+    background-color: $card-bg;
+    border: 1px solid $border-color;
+    border-radius: 12px;
+    padding: 14px 20px;
+    box-shadow: 0 2px 8px rgba(17, 24, 39, 0.04);
+
+    .control-label {
+      font-size: 0.8125rem;
+      font-weight: 600;
+      color: $body-text;
+    }
+
+    .toolbar-divider {
+      width: 1px;
+      height: 24px;
+      background-color: $border-color;
+    }
+
+    .active-filter-box {
+      display: flex;
+      align-items: center;
+    }
+  }
+
+  .job-list-container {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .job-card {
+    background-color: $card-bg;
+    border: 1px solid $border-color;
+    border-radius: 12px;
+    padding: 20px 24px;
+    box-shadow: 0 2px 8px rgba(17, 24, 39, 0.04);
+    transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+
+    &:hover {
+      border-color: lighten($primary-plum, 35%);
+      box-shadow: 0 4px 16px rgba(103, 50, 96, 0.08);
+    }
+
+    .card-header-row {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 16px;
+      padding-bottom: 12px;
+      border-bottom: 1px dashed $border-color;
+      margin-bottom: 16px;
+
+      .title-meta-wrap {
+        flex: 1;
+
+        .job-title {
+          font-size: 1.125rem;
+          font-weight: 700;
+          color: $dark-heading;
+          cursor: pointer;
+          transition: color 0.15s ease;
+
+          &:hover {
+            color: $primary-plum;
+          }
+        }
+
+        .candidate-count-pill {
+          display: inline-flex;
+          align-items: center;
+          padding: 2px 10px;
+          background-color: $light-plum;
+          color: $primary-plum;
+          font-size: 0.75rem;
+          font-weight: 500;
+          border-radius: 12px;
+          cursor: pointer;
+
+          strong {
+            font-weight: 700;
+            margin-right: 3px;
+          }
+        }
+
+        .job-sub-meta {
+          display: flex;
+          align-items: center;
+          margin-top: 4px;
+          font-size: 0.8125rem;
+          color: $body-text;
+
+          .meta-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+
+            svg {
+              color: $muted-text;
+            }
+          }
+        }
+      }
+
+      .card-toggle-wrap {
         display: flex;
-        justify-content: flex-end;
         align-items: center;
-        height: 100%;
-        @include hires-breakpoint("lt-md") {
-           margin: 4px 0 0 0;
-           justify-content: start;
-        }
+      }
     }
-    .options-box {
-        margin: 24px 0 0 0;
-        .options-area {
-            display: flex;
-            align-items: center;
-            @include hires-breakpoint("lt-md") {
-                margin: 16px 0 0 0;
-            }
-            .option {
-                .label {
-                    color: pick-color(dark, 700);
-                    @extend .ft-head;
-                }
-                &:not(:last-child) {
-                    margin: 0 20px 0 0;
-                }
-            }
-            
+
+    .stat-tiles-row {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 12px;
+      margin-bottom: 16px;
+
+      @include hires-breakpoint("lt-lg") {
+        grid-template-columns: repeat(3, 1fr);
+      }
+
+      @include hires-breakpoint("lt-md") {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .stat-tile {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 10px 8px;
+        min-height: 68px;
+        border-radius: 8px;
+        border: 1px solid transparent;
+        cursor: pointer;
+        transition: all 0.15s ease-in-out;
+
+        .tile-number {
+          font-size: 1.25rem;
+          font-weight: 700;
+          line-height: 1.2;
         }
-    }
-    .inbox-container {
-        margin: 20px 0 0 0;
-        .list-group-item {
-          padding: 14px 24px 14px 24px;
-          border: none;
-          @include border-radius(4px);
-          background-color: white;
-          &:not(:last-child) {
-            margin: 0 0 20px 0;
-          }
-          .top {
-            display: flex;
-            align-items: center;
-            @include hires-breakpoint("lt-md") {
-                margin: 0 0 4px 0;
-            }
-          }
-        .desp {
-            &:not(:last-child) {
-                margin: 0 12px 0 0;
-            }
+
+        .tile-title {
+          font-size: 0.75rem;
+          font-weight: 600;
+          margin-top: 2px;
+          text-align: center;
+          white-space: nowrap;
         }
-          .bottom {
-            margin: 10px 0 0 0;
-            @include hires-breakpoint("lt-md") {
-                margin: 20px 0 0 0;
-            }
-            .box {
-                cursor: pointer;
-                width: 100%;
-                border: 1px solid pick-color(dark, 200);
-                background-color: pick-color(dark, 50);
-                border-radius: 4px;
-                padding: 10px;
-                height: 100%;
-                display: flex;
-                flex-direction: column;
-                justify-content: center;
-                &:hover {
-                    background-color: pick-color(dark, 200);
-                }
-                @include hires-breakpoint("lt-lg") {
-                    height: auto;
-                    margin: 0 0 10px 0;
-                }
-            }
+
+        // Status variants
+        &.tile-new {
+          background-color: #F6EFF5;
+          border-color: rgba(103, 50, 96, 0.15);
+          .tile-number { color: #673260; }
+          .tile-title { color: #51264C; }
+          &:hover {
+            background-color: darken(#F6EFF5, 3%);
+            border-color: #673260;
           }
         }
+
+        &.tile-on-hold {
+          background-color: #F0F4FA;
+          border-color: rgba(78, 111, 174, 0.15);
+          .tile-number { color: #4E6FAE; }
+          .tile-title { color: #3A5587; }
+          &:hover {
+            background-color: darken(#F0F4FA, 3%);
+            border-color: #4E6FAE;
+          }
+        }
+
+        &.tile-selected {
+          background-color: #EBF5F3;
+          border-color: rgba(37, 124, 105, 0.15);
+          .tile-number { color: #257C69; }
+          .tile-title { color: #1B5C4E; }
+          &:hover {
+            background-color: darken(#EBF5F3, 3%);
+            border-color: #257C69;
+          }
+        }
+
+        &.tile-no-response {
+          background-color: #FAF4EB;
+          border-color: rgba(201, 131, 36, 0.15);
+          .tile-number { color: #C98324; }
+          .tile-title { color: #9E6417; }
+          &:hover {
+            background-color: darken(#FAF4EB, 3%);
+            border-color: #C98324;
+          }
+        }
+
+        &.tile-interview {
+          background-color: #EEF7F2;
+          border-color: rgba(46, 139, 87, 0.15);
+          .tile-number { color: #2E8B57; }
+          .tile-title { color: #216640; }
+          &:hover {
+            background-color: darken(#EEF7F2, 3%);
+            border-color: #2E8B57;
+          }
+        }
+
+        &.tile-rejected {
+          background-color: #FDF2F2;
+          border-color: rgba(198, 70, 70, 0.15);
+          .tile-number { color: #C64646; }
+          .tile-title { color: #9C3333; }
+          &:hover {
+            background-color: darken(#FDF2F2, 3%);
+            border-color: #C64646;
+          }
+        }
+
+        &.tile-zero {
+          background-color: #F9F8F6;
+          border-color: $border-color;
+          .tile-number { color: #9CA3AF; }
+          .tile-title { color: #8F8992; }
+          &:hover {
+            background-color: #F3F1ED;
+            border-color: #DEDADF;
+          }
+        }
+      }
     }
+
+    .card-footer-row {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+
+      .btn-view-details {
+        background: none;
+        border: none;
+        padding: 0;
+        font-size: 0.875rem;
+        font-weight: 600;
+        color: $primary-plum;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        transition: color 0.15s ease;
+
+        .arrow {
+          font-size: 1.1rem;
+          line-height: 1;
+          transition: transform 0.15s ease;
+        }
+
+        &:hover {
+          color: $primary-hover;
+          .arrow {
+            transform: translateX(3px);
+          }
+        }
+      }
+    }
+  }
+
+  .empty-state-card {
+    background-color: $card-bg;
+    border: 1px dashed $border-color;
+    border-radius: 12px;
+    padding: 48px 24px;
+    text-align: center;
+    margin-top: 16px;
+
+    .empty-state-icon {
+      margin-bottom: 16px;
+    }
+
+    .empty-state-title {
+      font-size: 1.125rem;
+      font-weight: 700;
+      color: $dark-heading;
+      margin-bottom: 6px;
+    }
+
+    .empty-state-desc {
+      font-size: 0.875rem;
+      color: $body-text;
+      max-width: 420px;
+      margin: 0 auto;
+    }
+  }
 }

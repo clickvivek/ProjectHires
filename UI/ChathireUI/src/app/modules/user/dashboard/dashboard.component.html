@@ -3,267 +3,549 @@
     <div class="row">
       <div class="col-sm-12">
         
-        
+        <!-- Onboarding Wizard for users without consultancy -->
+        <ng-container *ngIf="isLoggedIn() && !isConsultancyId()">
 
-          <div class="card shadow user-panel mb-3">
-            <div class="card-body d-flex" *ngIf="isConsultancyId()">
-              <div>
-                <h6 class="ft-head mb-1 fw-medium">Hello, {{ user?.fname }}</h6>
-                <p class="d-inline-block px-2 py-1 mt-1 text-sm text-dark-600 text-sm bg-tertiary-400 fw-medium">{{ user?.userTypeId == 2 ? "Bench Sales" : "Recruiter"}}</p>
-              </div>
-              <div class="ms-auto">
-                <div class="notify position-relative">
-                  <span class="material-symbols-outlined">mail</span>
-                  <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-primary">
-                    {{uneadCount}}
-                    <span class="visually-hidden">unread messages</span>
-                  </span>
+          <div class="onboarding-card mx-auto my-4">
+            
+            <!-- STEP 1: ROLE SELECTION -->
+            <ng-container *ngIf="currentStep === 1">
+              
+              <!-- Progress Tracker Header -->
+              <div class="d-flex align-items-center justify-content-between mb-4 flex-wrap gap-2">
+                <div class="onboarding-step-badge d-inline-flex align-items-center gap-2">
+                  <span class="step-dot"></span>
+                  <span class="step-text">Profile setup • Step 1 of 3</span>
+                </div>
+                <div class="step-flow d-none d-sm-flex align-items-center gap-2 text-sm">
+                  <span class="fw-bold text-dark">Role</span>
+                  <span class="text-muted">→</span>
+                  <span class="text-muted">Profile</span>
+                  <span class="text-muted">→</span>
+                  <span class="text-muted">Contact Info</span>
                 </div>
               </div>
-            </div>
-          </div>
 
-          <ng-container *ngIf="isLoggedIn() && !isConsultancyId()">
+              <!-- Main Header / Title -->
+              <div class="mb-4">
+                <h1 class="onboarding-title mb-2">Welcome to ChatHire</h1>
+                <p class="onboarding-subtitle mb-0">
+                  Select your role to help us customize your experience.
+                </p>
+              </div>
 
-            <div class="card shadow user-panel">
-                <div class="card-body py-4">
-                  <p class="text-primary-500 text-base mb-2">
-                    You are almost ready to start Hiring or post your jobs. Provide
-                    your information below
-                  </p>
-                  <div class="row">
-                    <div class="col-md-12 col-lg-8">
-                      <form #addUserForm="ngForm" (ngSubmit)="addUser()">
-                        <div class="form-box">
-                          <div class="input-box">
-                            <div class="form-group">
-                              <label for="candidateName"
-                                >First Name <span class="req">*</span></label
-                              >
-                              <input
-                                type="text"
-                                class="form-control"
-                                placeholder="First name"
-                                [(ngModel)]="formData.fname"
-                                name="fname"
-                                required
-                                autocomplete="off"
-                              />
-                              <div
-                                class="mt-2"
-                                *ngIf="
-                                  addUserForm.submitted &&
-                                  addUserForm.controls['fname'].invalid
-                                "
-                              >
-                                <div
-                                  class="input-field-message"
-                                  *ngIf="addUserForm.controls['fname'].errors?.['required']"
-                                >
-                                  First name is required
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                          <div class="input-box">
-                            <div class="form-group">
-                              <label for="candidateName"
-                                >Last Name <span class="req">*</span></label
-                              >
-                              <input
-                                type="text"
-                                class="form-control"
-                                placeholder="Last name"
-                                [(ngModel)]="formData.lname"
-                                name="lname"
-                                required
-                                autocomplete="off"
-                              />
-                              <div
-                                class="mt-2"
-                                *ngIf="
-                                  addUserForm.submitted &&
-                                  addUserForm.controls['lname'].invalid
-                                "
-                              >
-                                <div
-                                  class="input-field-message"
-                                  *ngIf="addUserForm.controls['lname'].errors?.['required']"
-                                >
-                                  Last name is required
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-
-                          <div class="input-box">
-                            <div class="form-group">
-                              <label for="profileId"
-                                >Profile ID</label
-                              >
-                            <div class="d-flex align-items-center">
-                              <span>{{publicProfileUrlPrefix}}</span>
-                                <input
-                                type="text"
-                                class="form-control"
-                                placeholder="name"
-                                [(ngModel)]="formData.publicProfileUserName"
-                                name="profileId"
-                                autocomplete="off"
-                                [disabled]="isProfileIdSubmitted"
-                                (ngModelChange)="handleProfileId()"
-                              />
-                          
-                            </div>
-                            <div class="d-flex align-items-center mt-2">
-                              <div class="btn btn-sm btn-secondary {{isCheckAvailability ? '' : 'disabled'}}" (click)="checkProfileId()">Check Availability</div>
-                              <div class="btn btn-dark btn-sm ms-2 {{isCheckAvailability ? '' : 'disabled'}}" (click)="clearProfileId()">Cancel</div>
-                              <div class="ms-2 text-sm" *ngIf="isProfileIdAvailable && formData.publicProfileUserName != ''" [ngClass]="isProfileIdAvailable == 'true' ? 'text-primary' : 'text-danger-500'">
-                                Profile ID {{isProfileIdAvailable == 'false' ? 'not' : ''}} available
-                              </div>
-                            </div>
-                              <div
-                                class="mt-2"
-                                *ngIf="
-                                  addUserForm.submitted &&
-                                  addUserForm.controls['profileId'].invalid
-                                "
-                              >
-                                <div
-                                  class="input-field-message"
-                                  *ngIf="addUserForm.controls['profileId'].errors?.['required']"
-                                >
-                                  Profile ID is required
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                          
-                          <div class="input-box search-box mb-2">
-                            <app-search-field
-                              fieldName="consultancyId"
-                              fieldText="Company Name"
-                              fieldType="name"
-                              fieldPlaceholder="Enter"
-                              [fieldRequired]="true"
-                              [fieldList]="selectCompanyList"
-                              (queryChange)="onCompanyQuery($event)"
-                              (inputChange)="onCompanyChange($event)"
-                            >
-                            </app-search-field>
-                            <div
-                              class="mb-3"
-                              *ngIf="
-                                addUserForm.submitted &&
-                                addUserForm.controls['consultancyId'].invalid
-                              "
-                            >
-                              <div
-                                class="input-field-message"
-                                *ngIf="addUserForm.controls['consultancyId'].errors?.['required']"
-                              >
-                                Company name is required
-                              </div>
-                            </div>
-                          </div>
-                          
-                          <div class="input-box search-box mb-2">
-                            <app-search-field
-                              fieldName="cityId"
-                              fieldText="City & State"
-                              fieldType="city1,stateName,countryName"
-                              fieldPlaceholder="Enter"
-                              [fieldRequired]="true"
-                              [fieldList]="selectLocationList"
-                              (queryChange)="onLocationQuery($event)"
-                              (inputChange)="onLocationChange($event)"
-                            >
-                            </app-search-field>
-                            <div
-                              class="mb-3"
-                              *ngIf="
-                                addUserForm.submitted &&
-                                addUserForm.controls['cityId'].invalid
-                              "
-                            >
-                              <div
-                                class="input-field-message"
-                                *ngIf="addUserForm.controls['cityId'].errors?.['required']"
-                              >
-                                City name is required
-                              </div>
-                            </div>
-                          </div>
-
-
-                          <div class="input-box">
-                            <div class="form-group">
-                              <label for="countryHire"
-                                >Country you are hiring:
-                                <span class="fw-semibold">US</span></label
-                              >
-                            </div>
-                          </div>
-                          <div class="input-box">
-                            <div class="form-group">
-                              <label for="linkedInProfile"
-                                >LinkedIn (Optional)</label
-                              >
-                              <input
-                                type="text"
-                                class="form-control"
-                                placeholder="Link"
-                                [(ngModel)]="formData.linkedIn"
-                                name="linkedInProfile"
-                              />
-                            </div>
-                          </div>
-                          <div class="input-box">
-                            <div class="form-group">
-                              <label for="alternateEmail"
-                                >Alternate Email (Optional)</label
-                              >
-                              <input
-                                type="email"
-                                class="form-control"
-                                id="alternateEmail"
-                                name="alternateEmail"
-                                placeholder="Email"
-                                [(ngModel)]="formData.alternateEmail"
-                                pattern="[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,4}$"
-                                email
-                              />
-                              <div
-                                class="mt-2"
-                                *ngIf="
-                                  addUserForm.submitted &&
-                                  addUserForm.controls['alternateEmail'].invalid
-                                "
-                              >
-                                <div class="input-field-message">Invalid Email</div>
-                              </div>
-                            </div>
-                          </div>
-                          <div class="input-box">
-                            <app-intl-tel-input
-                              [phoneNumber]="formData.phone"
-                              (phoneNumberChange)="formData.phone = $event"
-                              [edit]="true"
-                            ></app-intl-tel-input>
-                          </div>
-                          <div class="submit-box text-start">
-                            <button type="submit" class="btn btn-primary">
-                              Submit
-                            </button>
-                          </div>
-                        </div>
-                      </form>
-                    </div>
+              <!-- Role Selection Options -->
+              <div class="role-selection-grid d-flex flex-column gap-3 mb-4">
+                
+                <!-- Candidate / Job Seeker Option -->
+                <div 
+                  class="role-card p-3 rounded-3 border d-flex align-items-center cursor-pointer transition-all"
+                  [ngClass]="selectedRole === 5 ? 'role-card-active' : ''"
+                  (click)="selectRole(5)"
+                >
+                  <div class="role-icon-box me-3 rounded-circle d-flex align-items-center justify-content-center">
+                    <span class="material-symbols-outlined">person</span>
+                  </div>
+                  <div class="flex-grow-1">
+                    <h6 class="fw-bold mb-1 role-card-title">Candidate</h6>
+                    <p class="text-muted text-sm mb-0">Looking for C2C or tech job opportunities</p>
+                  </div>
+                  <div class="role-radio-check ms-3">
+                    <div class="custom-radio-circle" [ngClass]="selectedRole === 5 ? 'checked' : ''"></div>
                   </div>
                 </div>
+
+                <!-- Recruiter Option -->
+                <div 
+                  class="role-card p-3 rounded-3 border d-flex align-items-center cursor-pointer transition-all"
+                  [ngClass]="selectedRole === 1 ? 'role-card-active' : ''"
+                  (click)="selectRole(1)"
+                >
+                  <div class="role-icon-box me-3 rounded-circle d-flex align-items-center justify-content-center">
+                    <span class="material-symbols-outlined">badge</span>
+                  </div>
+                  <div class="flex-grow-1">
+                    <h6 class="fw-bold mb-1 role-card-title">Recruiter</h6>
+                    <p class="text-muted text-sm mb-0">Hiring talent & posting job openings</p>
+                  </div>
+                  <div class="role-radio-check ms-3">
+                    <div class="custom-radio-circle" [ngClass]="selectedRole === 1 ? 'checked' : ''"></div>
+                  </div>
+                </div>
+
+                <!-- Bench Sales Recruiter / Manager Option -->
+                <div 
+                  class="role-card p-3 rounded-3 border d-flex align-items-center cursor-pointer transition-all"
+                  [ngClass]="selectedRole === 2 ? 'role-card-active' : ''"
+                  (click)="selectRole(2)"
+                >
+                  <div class="role-icon-box me-3 rounded-circle d-flex align-items-center justify-content-center">
+                    <span class="material-symbols-outlined">groups</span>
+                  </div>
+                  <div class="flex-grow-1">
+                    <h6 class="fw-bold mb-1 role-card-title">Bench Sales Recruiter / Manager</h6>
+                    <p class="text-muted text-sm mb-0">Marketing bench candidates & consultants</p>
+                  </div>
+                  <div class="role-radio-check ms-3">
+                    <div class="custom-radio-circle" [ngClass]="selectedRole === 2 ? 'checked' : ''"></div>
+                  </div>
+                </div>
+
+              </div>
+
+              <!-- Step 1 Next Button -->
+              <div class="pt-3 border-top text-end">
+                <button 
+                  type="button" 
+                  class="btn btn-complete-profile"
+                  [disabled]="!selectedRole"
+                  (click)="goToStep(2)"
+                >
+                  <span class="d-flex align-items-center justify-content-center gap-2">
+                    <span>Continue</span>
+                    <span class="material-symbols-outlined fs-6">arrow_forward</span>
+                  </span>
+                </button>
               </div>
 
             </ng-container>
+
+            <!-- STEP 2: PROFILE & COMPANY INFORMATION -->
+            <ng-container *ngIf="currentStep === 2">
+              
+              <!-- Progress Tracker Header -->
+              <div class="d-flex align-items-center justify-content-between mb-4 flex-wrap gap-2">
+                <div class="onboarding-step-badge d-inline-flex align-items-center gap-2">
+                  <span class="step-dot"></span>
+                  <span class="step-text">Profile setup • Step 2 of 3</span>
+                </div>
+                <div class="step-flow d-none d-sm-flex align-items-center gap-2 text-sm">
+                  <span class="text-success fw-medium">Role ✓</span>
+                  <span class="text-muted">→</span>
+                  <span class="fw-bold text-dark">Profile</span>
+                  <span class="text-muted">→</span>
+                  <span class="text-muted">Contact Info</span>
+                </div>
+              </div>
+
+              <!-- Main Header / Title -->
+              <div class="mb-4">
+                <h1 class="onboarding-title mb-2">
+                  {{ selectedRole === 5 ? 'Complete your candidate profile' : 'Complete your profile & company info' }}
+                </h1>
+                <p class="onboarding-subtitle mb-0">
+                  {{ selectedRole === 5 ? 'Tell us about yourself and your location to help us set up your account.' : 'Tell us about yourself and your company to help us set up your account.' }}
+                </p>
+              </div>
+
+              <form #step2Form="ngForm" (ngSubmit)="nextStepFrom2()" novalidate>
+                
+                <!-- SECTION 1: Personal Information -->
+                <div class="form-section mb-4">
+                  <h2 class="section-title mb-3">Personal information</h2>
+                  
+                  <div class="row g-3 mb-3">
+                    <!-- First Name -->
+                    <div class="col-12 col-md-6">
+                      <div class="form-group mb-0">
+                        <label for="fname" class="form-label field-label">First Name <span class="text-danger">*</span></label>
+                        <input
+                          type="text"
+                          class="form-control custom-input"
+                          [ngClass]="submittedStep2 && !formData.fname ? 'is-invalid border-danger' : ''"
+                          placeholder="First name"
+                          [(ngModel)]="formData.fname"
+                          (ngModelChange)="onNameChange()"
+                          name="fname"
+                          required
+                          autocomplete="off"
+                        />
+                        <div *ngIf="submittedStep2 && !formData.fname" class="text-danger text-xs mt-1 fw-medium">
+                          First name is required.
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- Last Name -->
+                    <div class="col-12 col-md-6">
+                      <div class="form-group mb-0">
+                        <label for="lname" class="form-label field-label">Last Name <span class="text-danger">*</span></label>
+                        <input
+                          type="text"
+                          class="form-control custom-input"
+                          [ngClass]="submittedStep2 && !formData.lname ? 'is-invalid border-danger' : ''"
+                          placeholder="Last name"
+                          [(ngModel)]="formData.lname"
+                          (ngModelChange)="onNameChange()"
+                          name="lname"
+                          required
+                          autocomplete="off"
+                        />
+                        <div *ngIf="submittedStep2 && !formData.lname" class="text-danger text-xs mt-1 fw-medium">
+                          Last name is required.
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Unified Profile URL (Recruiter / Bench Sales only) -->
+                  <div class="form-group mb-3" *ngIf="selectedRole !== 5">
+                    <label for="profileId" class="form-label field-label">Profile URL</label>
+                    <div class="unified-url-input-group d-flex align-items-stretch">
+                      <span class="input-group-text url-prefix">{{publicProfileUrlPrefix}}</span>
+                      <input
+                        type="text"
+                        class="form-control url-input"
+                        placeholder="your-name"
+                        [(ngModel)]="formData.publicProfileUserName"
+                        name="profileId"
+                        autocomplete="off"
+                        (ngModelChange)="handleProfileId()"
+                      />
+                      <button 
+                        type="button" 
+                        class="btn btn-check-url flex-shrink-0" 
+                        [disabled]="!formData.publicProfileUserName"
+                        (click)="checkProfileId()"
+                      >
+                        Check availability
+                      </button>
+                    </div>
+                    
+                    <!-- Status message -->
+                    <div class="mt-2 text-sm" *ngIf="isProfileIdAvailable !== null && formData.publicProfileUserName">
+                      <div *ngIf="isProfileIdAvailable === 'true'" class="text-success d-flex align-items-center gap-1 fw-medium">
+                        <span class="material-symbols-outlined fs-6">check_circle</span>
+                        <span>✓ Profile URL is available</span>
+                      </div>
+                      <div *ngIf="isProfileIdAvailable === 'false'" class="text-danger text-xs mt-1 fw-medium">
+                        <span class="material-symbols-outlined fs-6">error</span>
+                        <span>That profile URL is already taken. Try another.</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Location Information -->
+                  <div class="row g-3 mb-3">
+                    <!-- Hiring Country / Country Select -->
+                    <div class="col-12 col-md-6">
+                      <div class="form-group mb-0">
+                        <label for="hiringCountry" class="form-label field-label">{{ selectedRole === 5 ? 'Country' : (selectedRole === 2 ? 'Select the country you have bench candidates from' : "Select the country you're hiring candidates from") }} <span class="text-danger">*</span></label>
+                        <select
+                          id="hiringCountry"
+                          name="hiringCountry"
+                          class="form-select custom-input"
+                          [(ngModel)]="formData.country"
+                        >
+                          <option value="United States">🇺🇸 United States</option>
+                          <option value="Canada">🇨🇦 Canada</option>
+                        </select>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- RECRUITER / BENCH SALES CURRENT LOCATION -->
+                  <ng-container *ngIf="selectedRole !== 5">
+                    <!-- Recruiter Current Country -->
+                    <div class="row g-3 mb-3">
+                      <div class="col-12 col-md-6">
+                        <div class="form-group mb-0">
+                          <label for="recruiterCountry" class="form-label field-label">Select your current location country <span class="text-danger">*</span></label>
+                          <select
+                            id="recruiterCountry"
+                            name="recruiterCountry"
+                            class="form-select custom-input"
+                            [(ngModel)]="formData.recruiterCountry"
+                            (change)="onRecruiterCountryChange()"
+                          >
+                            <option value="United States">🇺🇸 United States</option>
+                            <option value="Canada">🇨🇦 Canada</option>
+                            <option value="India">🇮🇳 India</option>
+                            <option value="Others">🌐 Others</option>
+                          </select>
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- USA Specific: City & State -->
+                    <div class="row g-3" *ngIf="formData.recruiterCountry === 'United States'">
+                      <div class="col-12 col-md-6">
+                        <div class="form-group mb-0">
+                          <app-search-field
+                            fieldName="cityId"
+                            fieldText="City & State or Zipcode"
+                            fieldType="city1,stateName,countryName"
+                            fieldPlaceholder="enter Zipcode or City name"
+                            [fieldRequired]="true"
+                            [fieldList]="selectLocationList"
+                            (queryChange)="onLocationQuery($event)"
+                            (inputChange)="onLocationChange($event)"
+                          ></app-search-field>
+                          <div *ngIf="submittedStep2 && !formData.cityId" class="text-danger text-xs mt-1 fw-medium">
+                            City & state or Zipcode is required.
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- Canada Specific: City & Province/Territory -->
+                    <div class="row g-3" *ngIf="formData.recruiterCountry === 'Canada'">
+                      <div class="col-12 col-md-6">
+                        <div class="form-group mb-0">
+                          <app-search-field
+                            fieldName="cityId"
+                            fieldText="City & Province/Territory"
+                            fieldType="city1,stateName,countryName"
+                            fieldPlaceholder="Search city or province"
+                            [fieldRequired]="true"
+                            [fieldList]="selectLocationList"
+                            (queryChange)="onLocationQuery($event)"
+                            (inputChange)="onLocationChange($event)"
+                          ></app-search-field>
+                          <div *ngIf="submittedStep2 && !formData.cityId" class="text-danger text-xs mt-1 fw-medium">
+                            City & province/territory is required.
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- India Specific: Free text City Name -->
+                    <div class="row g-3" *ngIf="formData.recruiterCountry === 'India'">
+                      <div class="col-12 col-md-6">
+                        <div class="form-group mb-0">
+                          <label for="recruiterCityIndia" class="form-label field-label">City Name <span class="text-danger">*</span></label>
+                          <input
+                            type="text"
+                            id="recruiterCityIndia"
+                            name="recruiterCityIndia"
+                            class="form-control custom-input"
+                            [ngClass]="submittedStep2 && !formData.recruiterCityIndia ? 'is-invalid border-danger' : ''"
+                            placeholder="Enter city name (e.g. Bengaluru, Hyderabad, Mumbai)"
+                            [(ngModel)]="formData.recruiterCityIndia"
+                            autocomplete="off"
+                          />
+                          <div *ngIf="submittedStep2 && !formData.recruiterCityIndia" class="text-danger text-xs mt-1 fw-medium">
+                            City name is required.
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- Others Specific: Free text City & Country Name -->
+                    <div class="row g-3" *ngIf="formData.recruiterCountry === 'Others'">
+                      <div class="col-12 col-md-6">
+                        <div class="form-group mb-0">
+                          <label for="recruiterCityOthers" class="form-label field-label">City & Country Name <span class="text-danger">*</span></label>
+                          <input
+                            type="text"
+                            id="recruiterCityOthers"
+                            name="recruiterCityOthers"
+                            class="form-control custom-input"
+                            [ngClass]="submittedStep2 && !formData.recruiterCityIndia ? 'is-invalid border-danger' : ''"
+                            placeholder="Enter city and country name (e.g. London, UK)"
+                            [(ngModel)]="formData.recruiterCityIndia"
+                            autocomplete="off"
+                          />
+                          <div *ngIf="submittedStep2 && !formData.recruiterCityIndia" class="text-danger text-xs mt-1 fw-medium">
+                            City & country name is required.
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </ng-container>
+
+                  <!-- CANDIDATE LOCATION -->
+                  <ng-container *ngIf="selectedRole === 5">
+                    <div class="row g-3">
+                      <div class="col-12 col-md-6">
+                        <div class="form-group mb-0">
+                          <app-search-field
+                            fieldName="cityId"
+                            fieldText="City & State or Zipcode"
+                            fieldType="city1,stateName,countryName"
+                            fieldPlaceholder="enter Zipcode or City name"
+                            [fieldRequired]="true"
+                            [fieldList]="selectLocationList"
+                            (queryChange)="onLocationQuery($event)"
+                            (inputChange)="onLocationChange($event)"
+                          ></app-search-field>
+                          <div *ngIf="submittedStep2 && !formData.cityId" class="text-danger text-xs mt-1 fw-medium">
+                            City & state or Zipcode is required.
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </ng-container>
+                </div>
+
+                <!-- SECTION 2: Company Information (RECRUITER / BENCH SALES) -->
+                <ng-container *ngIf="selectedRole !== 5">
+                  <hr class="section-divider my-4" />
+
+                  <div class="form-section mb-4">
+                    <h2 class="section-title mb-3">Company information</h2>
+
+                    <!-- Company Name Search -->
+                    <div class="form-group mb-0">
+                      <app-search-field
+                        fieldName="consultancyId"
+                        fieldText="Company Name"
+                        fieldType="name"
+                        fieldPlaceholder="Search company"
+                        [fieldRequired]="true"
+                        [fieldList]="selectCompanyList"
+                        [isEdit]="!!selectedCompanyObj"
+                        [editValue]="selectedCompanyObj"
+                        [showCreateOption]="true"
+                        (createNewClick)="openCreateCompanyModal()"
+                        (queryChange)="onCompanyQuery($event)"
+                        (inputChange)="onCompanyChange($event)"
+                      ></app-search-field>
+                      
+                      <div class="d-flex align-items-center justify-content-between mt-2 p-2 rounded-3 bg-light border border-dashed">
+                        <span class="text-secondary text-xs">Can't find your company in the list?</span>
+                        <button 
+                          type="button" 
+                          class="btn btn-create-company-link d-inline-flex align-items-center gap-1"
+                          (click)="openCreateCompanyModal()"
+                        >
+                          <span class="material-symbols-outlined">add_circle</span>
+                          <span>+ Create New Company</span>
+                        </button>
+                      </div>
+
+                      <div *ngIf="submittedStep2 && selectedRole !== 5 && !formData.consultancyId" class="text-danger text-xs mt-1 fw-medium">
+                        Company name is required.
+                      </div>
+                    </div>
+                  </div>
+                </ng-container>
+
+                <!-- Step 2 Navigation Buttons -->
+                <div class="pt-4 border-top mt-4 d-flex align-items-center justify-content-between gap-2">
+                  <button type="button" class="btn btn-outline-secondary px-4 py-2" (click)="goToStep(1)">
+                    ← Back
+                  </button>
+                  <button type="submit" class="btn btn-complete-profile">
+                    <span class="d-flex align-items-center justify-content-center gap-2">
+                      <span>Next: Contact Info</span>
+                      <span class="material-symbols-outlined fs-6">arrow_forward</span>
+                    </span>
+                  </button>
+                </div>
+
+              </form>
+
+            </ng-container>
+
+            <!-- STEP 3: CONTACT INFORMATION (OPTIONAL) -->
+            <ng-container *ngIf="currentStep === 3">
+              
+              <!-- Progress Tracker Header -->
+              <div class="d-flex align-items-center justify-content-between mb-4 flex-wrap gap-2">
+                <div class="onboarding-step-badge d-inline-flex align-items-center gap-2">
+                  <span class="step-dot"></span>
+                  <span class="step-text">Profile setup • Step 3 of 3</span>
+                </div>
+                <div class="step-flow d-none d-sm-flex align-items-center gap-2 text-sm">
+                  <span class="text-success fw-medium">Role ✓</span>
+                  <span class="text-muted">→</span>
+                  <span class="text-success fw-medium">Profile ✓</span>
+                  <span class="text-muted">→</span>
+                  <span class="fw-bold text-dark">Contact Info</span>
+                </div>
+              </div>
+
+              <!-- Main Header / Title -->
+              <div class="mb-4">
+                <h1 class="onboarding-title mb-2">Contact information</h1>
+                <p class="onboarding-subtitle mb-0">
+                  Add optional details to help clients and candidates connect with you directly.
+                </p>
+              </div>
+
+              <form #addUserForm="ngForm" (ngSubmit)="addUser()" novalidate>
+                
+                <!-- SECTION 3: Contact Information -->
+                <div class="form-section mb-4">
+                  
+                  <!-- LinkedIn Profile -->
+                  <div class="form-group mb-3">
+                    <label for="linkedInProfile" class="form-label field-label d-flex justify-content-between">
+                      <span>LinkedIn <span class="text-muted fw-normal small ms-1">(Optional)</span></span>
+                    </label>
+                    <input
+                      type="text"
+                      class="form-control custom-input"
+                      placeholder="https://linkedin.com/in/your-profile"
+                      [(ngModel)]="formData.linkedin"
+                      name="linkedInProfile"
+                    />
+                  </div>
+
+                  <div class="row g-3">
+                    <!-- Alternate Email -->
+                    <div class="col-12 col-md-6">
+                      <div class="form-group mb-0">
+                        <label for="alternateEmail" class="form-label field-label d-flex justify-content-between">
+                          <span>Alternate Email <span class="text-muted fw-normal small ms-1">(Optional)</span></span>
+                        </label>
+                        <input
+                          type="email"
+                          class="form-control custom-input"
+                          id="alternateEmail"
+                          name="alternateEmail"
+                          placeholder="name@example.com"
+                          [(ngModel)]="formData.alternateEmail"
+                          pattern="[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,4}$"
+                          email
+                        />
+                      </div>
+                    </div>
+
+                    <!-- Phone -->
+                    <div class="col-12 col-md-6">
+                      <div class="form-group mb-0">
+                        <app-intl-tel-input
+                          [phoneNumber]="formData.phone"
+                          (phoneNumberChange)="formData.phone = $event"
+                          [edit]="true"
+                        ></app-intl-tel-input>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Step 3 Action Buttons with Skip option -->
+                <div class="pt-4 border-top mt-4 d-flex align-items-center justify-content-between flex-wrap gap-2">
+                  <button type="button" class="btn btn-outline-secondary px-3 py-2" (click)="goToStep(2)">
+                    ← Back
+                  </button>
+                  
+                  <div class="d-flex align-items-center gap-2 ms-auto">
+                    <button type="button" class="btn btn-light border px-3 py-2 text-muted fw-medium" (click)="skipStep3()">
+                      Skip for Now
+                    </button>
+                    <button type="submit" class="btn btn-complete-profile" [disabled]="isSubmitting">
+                      <span *ngIf="!isSubmitting" class="d-flex align-items-center justify-content-center gap-2">
+                        <span>Complete Profile</span>
+                        <span class="material-symbols-outlined fs-6">arrow_forward</span>
+                      </span>
+                      <span *ngIf="isSubmitting" class="d-flex align-items-center justify-content-center">
+                        <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                        Saving...
+                      </span>
+                    </button>
+                  </div>
+                </div>
+
+              </form>
+
+            </ng-container>
+
+          </div>
+
+        </ng-container>
 
       </div>
     </div>
@@ -272,5 +554,158 @@
      <dashboard-highlights></dashboard-highlights>
     </ng-container>
     
+  </div>
+</div>
+
+<!-- CREATE NEW COMPANY MODAL -->
+<div class="modal fade show d-block" tabindex="-1" *ngIf="showCreateCompanyModal" style="background: rgba(0,0,0,0.5); z-index: 1060;">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content border-0 shadow-lg rounded-4 overflow-hidden">
+      
+      <!-- Modal Header -->
+      <div class="modal-header px-4 py-3 bg-light border-bottom d-flex align-items-center justify-content-between">
+        <div class="d-flex align-items-center gap-2">
+          <div class="icon-circle bg-purple-light text-purple rounded-circle d-flex align-items-center justify-content-center p-2">
+            <span class="material-symbols-outlined">domain_add</span>
+          </div>
+          <div>
+            <h5 class="modal-title fw-bold mb-0 text-dark">Create New Company</h5>
+            <p class="text-muted text-xs mb-0">Add your company details to set up your account</p>
+          </div>
+        </div>
+        <button type="button" class="btn-close" (click)="closeCreateCompanyModal()"></button>
+      </div>
+
+      <form #newCompanyForm="ngForm" (ngSubmit)="submitCreateCompany()" novalidate class="d-flex flex-column m-0">
+        
+        <!-- Modal Body -->
+        <div class="modal-body p-4" style="max-height: 60vh; overflow-y: auto;">
+          <div class="row g-3">
+            <!-- Company Name -->
+            <div class="col-12 col-md-6">
+              <label for="newCompName" class="form-label field-label">Company Name <span class="text-danger">*</span></label>
+              <input
+                type="text"
+                id="newCompName"
+                name="newCompName"
+                class="form-control custom-input"
+                [ngClass]="submittedNewCompany && !newCompanyData.name ? 'is-invalid border-danger' : ''"
+                placeholder="e.g. Acme Tech Solutions"
+                [(ngModel)]="newCompanyData.name"
+                required
+                autocomplete="off"
+              />
+              <div *ngIf="submittedNewCompany && !newCompanyData.name" class="text-danger text-xs mt-1 fw-medium">
+                Company name is required.
+              </div>
+            </div>
+
+            <!-- Website -->
+            <div class="col-12 col-md-6">
+              <label for="newCompWebsite" class="form-label field-label">Website</label>
+              <div class="input-group">
+                <span class="input-group-text bg-light text-muted border-end-0 text-sm">https://</span>
+                <input
+                  type="text"
+                  id="newCompWebsite"
+                  name="newCompWebsite"
+                  class="form-control custom-input border-start-0 ps-0"
+                  placeholder="www.company.com"
+                  [(ngModel)]="newCompanyData.website"
+                  autocomplete="off"
+                />
+              </div>
+            </div>
+
+            <!-- Company Location Country -->
+            <div class="col-12">
+              <label for="newCompCountry" class="form-label field-label">Company Location Country <span class="text-danger">*</span></label>
+              <select
+                id="newCompCountry"
+                name="newCompCountry"
+                class="form-select custom-input"
+                [(ngModel)]="newCompanyData.country"
+                (change)="onNewCompanyCountryChange()"
+              >
+                <option value="United States">🇺🇸 United States (US)</option>
+                <option value="Canada">🇨🇦 Canada (CA)</option>
+                <option value="India">🇮🇳 India</option>
+                <option value="Others">🌐 Others</option>
+              </select>
+            </div>
+
+            <!-- CONDITIONAL FIELDS FOR US & CA -->
+            <ng-container *ngIf="newCompanyData.country === 'United States' || newCompanyData.country === 'Canada'">
+              <!-- City & State -->
+              <div class="col-12">
+                <app-search-field
+                  fieldName="newCompCityId"
+                  fieldText="City & State or Zipcode"
+                  fieldType="city1,stateName,countryName"
+                  fieldPlaceholder="enter Zipcode or City name"
+                  [fieldRequired]="true"
+                  [fieldList]="selectNewCompanyLocationList"
+                  (queryChange)="onNewCompanyLocationQuery($event)"
+                  (inputChange)="onNewCompanyLocationChange($event)"
+                ></app-search-field>
+                <div *ngIf="submittedNewCompany && !newCompanyData.cityId" class="text-danger text-xs mt-1 fw-medium">
+                  City & state or Zipcode is required.
+                </div>
+              </div>
+            </ng-container>
+
+            <!-- CONDITIONAL FIELDS FOR INDIA / OTHERS -->
+            <ng-container *ngIf="newCompanyData.country === 'India' || newCompanyData.country === 'Others'">
+              <!-- Free Text Location/State for India / Others -->
+              <div class="col-12">
+                <label for="newCompStateIndia" class="form-label field-label">{{ newCompanyData.country === 'Others' ? 'City & Country Name' : 'State' }} <span class="text-danger">*</span></label>
+                <input
+                  type="text"
+                  id="newCompStateIndia"
+                  name="newCompStateIndia"
+                  class="form-control custom-input"
+                  [ngClass]="submittedNewCompany && !newCompanyData.stateIndia ? 'is-invalid border-danger' : ''"
+                  [placeholder]="newCompanyData.country === 'Others' ? 'e.g. London, UK' : 'e.g. Karnataka, Maharashtra, Delhi'"
+                  [(ngModel)]="newCompanyData.stateIndia"
+                  required
+                  autocomplete="off"
+                />
+                <div *ngIf="submittedNewCompany && !newCompanyData.stateIndia" class="text-danger text-xs mt-1 fw-medium">
+                  {{ newCompanyData.country === 'Others' ? 'City & country name is required.' : 'State name is required.' }}
+                </div>
+              </div>
+            </ng-container>
+          </div>
+        </div>
+
+        <!-- Modal Footer Actions -->
+        <div class="border-top px-4 py-3 bg-light d-flex align-items-center justify-content-end gap-3">
+          <button 
+            type="button" 
+            class="btn btn-modal-cancel" 
+            style="background-color: #F2F4F7 !important; color: #344054 !important; border: 1px solid #D0D5DD !important; font-weight: 600; padding: 10px 22px; border-radius: 8px; font-size: 14px;"
+            (click)="closeCreateCompanyModal()"
+          >
+            Cancel
+          </button>
+          <button 
+            type="submit" 
+            class="btn btn-modal-submit" 
+            style="background-color: #70246D !important; color: #ffffff !important; border: 1px solid #70246D !important; font-weight: 600; padding: 10px 24px; border-radius: 8px; font-size: 14px; box-shadow: 0 2px 6px rgba(112, 36, 109, 0.25);"
+            [disabled]="isSavingNewCompany"
+          >
+            <span *ngIf="!isSavingNewCompany" class="d-flex align-items-center gap-2" style="color: #ffffff !important;">
+              <span style="color: #ffffff !important;">Create & Select Company</span>
+              <span class="material-symbols-outlined fs-6" style="color: #ffffff !important;">check</span>
+            </span>
+            <span *ngIf="isSavingNewCompany" class="d-flex align-items-center gap-2" style="color: #ffffff !important;">
+              <span class="spinner-border spinner-border-sm text-light" role="status" aria-hidden="true"></span>
+              <span style="color: #ffffff !important;">Saving...</span>
+            </span>
+          </button>
+        </div>
+
+      </form>
+    </div>
   </div>
 </div>

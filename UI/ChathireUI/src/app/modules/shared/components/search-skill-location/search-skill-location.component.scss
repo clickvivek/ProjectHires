@@ -49,38 +49,43 @@
           padding: 0 16px 0 32px;
           height: 40px;
           font-size: 14px;
+          border-color: #E5E3E0;
           &:focus {
-            border-color: pick-color(secondary, 400);
-            
+            border-color: #5B365A;
+            box-shadow: 0 0 0 0.2rem rgba(91, 54, 90, 0.15);
           }
         }
         .icon {
           position: absolute;
           top: 10px;
           left: 10px;
-          color: pick-color(secondary, 400);
+          color: #5B365A;
           @extend .text-h5;
         }
       }
       .submit-btn {
-        background: $primary;
-        color: white;
-        @include box-shadow(0px 2px 8px rgba(0, 0, 0, 0.1));
-        @include border-radius(4px);
+        background-color: #5B365A !important;
+        color: white !important;
+        @include box-shadow(0px 2px 8px rgba(91, 54, 90, 0.15));
+        @include border-radius(6px);
         border: none;
+        transition: background-color 0.2s ease-in-out;
+        &:hover {
+          background-color: #472844 !important;
+        }
         @include hires-breakpoint("lt-md") {
           height: 48px;
         }
         @include hires-breakpoint("lt-md") {
           width: 100%;
-          border: 1px solid $primary;
+          border: 1px solid #5B365A !important;
           margin: 0;
           span {
             position: relative;
             top: 2px;
           }
           &:hover {
-            border: 1px solid $primary;
+            border: 1px solid #472844 !important;
           }
         }
       }
@@ -89,6 +94,17 @@
       margin: 20px 0 0 0;
       text-align: center;
       .submit-btn {
+        background-color: #5B365A !important;
+        color: white !important;
+        border-radius: 6px;
+        padding: 10px 32px;
+        font-weight: 600;
+        border: none !important;
+        box-shadow: 0px 2px 8px rgba(91, 54, 90, 0.2);
+        transition: background-color 0.2s ease-in-out;
+        &:hover {
+          background-color: #472844 !important;
+        }
         @include hires-breakpoint("lt-md") {
           width: 100%;
         }
@@ -96,7 +112,7 @@
     }
     &.home {
       .search-area {
-        justify-content: left;
+        justify-content: center;
       }
     }
   }

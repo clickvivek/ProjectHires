@@ -956,6 +956,14 @@ public partial class EFContexts : DbContext
                 .HasMaxLength(1)
                 .IsUnicode(false)
                 .IsFixedLength();
+            entity.Property(e => e.Hiringforcountry)
+                .HasMaxLength(25)
+                .IsUnicode(false)
+                .HasColumnName("HIRINGFORCOUNTRY");
+            entity.Property(e => e.Location)
+                .HasMaxLength(25)
+                .IsUnicode(false)
+                .HasColumnName("LOCATION");
             entity.Property(e => e.Linkedin)
                 .HasMaxLength(200)
                 .IsUnicode(false);

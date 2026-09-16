@@ -1,31 +1,105 @@
 @import "src/@hires/scss/utilities/all";
 @import "src/@hires/scss/helpers/typography";
 
-@import "src/@hires/scss/utilities/all";
-@import "src/@hires/scss/helpers/typography";
+:host {
+  --brand-primary: #5B365A;
+  --brand-hover: #472844;
+  --brand-light: #F6F0F5;
 
-.home-wrapper {
-  margin-top: 70px; /* offset the fixed header */
+  --heading: #11111D;
+  --body: #4B4850;
+  --muted: #8A878C;
+
+  --page-bg: #F8F7F3;
+  --card-bg: #FFFFFF;
+  --soft-bg: #F0EFEB;
+  --border: #E5E3E0;
+
+  /* Bootstrap Variable Overrides */
+  --bs-primary: var(--brand-primary);
+  --bs-primary-rgb: 91, 54, 90;
+  
+  --bs-body-bg: var(--page-bg);
+  --bs-body-color: var(--body);
+  --bs-dark: var(--heading);
+  --bs-secondary: var(--body);
+  --bs-light: var(--soft-bg);
+  --bs-border-color: var(--border);
 }
 
-/* Transition Utilities */
+::ng-deep .home-wrapper {
+  background-color: var(--page-bg) !important;
+  color: var(--body);
+
+  .bg-white {
+    background-color: var(--card-bg) !important;
+  }
+
+  .bg-light {
+    background-color: var(--page-bg) !important;
+  }
+  
+  .text-primary {
+    color: var(--brand-primary) !important;
+  }
+  
+  .btn-primary {
+    background-color: var(--brand-primary) !important;
+    border-color: var(--brand-primary) !important;
+    color: #fff !important;
+    &:hover {
+      background-color: var(--brand-hover) !important;
+      border-color: var(--brand-hover) !important;
+    }
+  }
+
+  .btn-outline-primary {
+    color: var(--brand-primary) !important;
+    border-color: var(--brand-primary) !important;
+    &:hover {
+      background-color: var(--brand-primary) !important;
+      color: #fff !important;
+    }
+  }
+
+  .text-dark, h1, h2, h3, h4, h5, h6 {
+    color: var(--heading) !important;
+  }
+
+  .text-secondary, .text-muted {
+    color: var(--body) !important;
+  }
+
+  .border, .border-bottom, .border-top, .border-light {
+    border-color: var(--border) !important;
+  }
+
+  .badge-plum {
+    background-color: var(--brand-light) !important;
+    color: var(--brand-primary) !important;
+    border: 1px solid var(--border) !important;
+    &:hover {
+      background-color: var(--brand-primary) !important;
+      color: #ffffff !important;
+    }
+  }
+}
+
+.home-wrapper {
+  margin-top: 66px;
+}
+
 .transition {
   transition: all 0.25s ease-in-out;
 }
 
-/* Hover Utilities */
 .hover-shadow:hover {
-  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
+  box-shadow: 0 0.5rem 1.5rem rgba(91, 54, 90, 0.12) !important;
   transform: translateY(-2px);
 }
 
-.hover-shadow-lg:hover {
-  box-shadow: 0 1rem 3rem rgba(0, 0, 0, 0.175) !important;
-  transform: translateY(-4px);
-}
-
 .hover-primary:hover {
-  color: var(--bs-primary, #1fa270) !important; /* using the existing primary brand color */
+  color: var(--brand-primary) !important;
 }
 
 .hover-transform-x:hover {
@@ -33,10 +107,9 @@
 }
 
 .hover-bg-light:hover {
-  background-color: #f8f9fa !important;
+  background-color: var(--brand-light) !important;
 }
 
-/* Specific component tweaks */
 .hero-block {
   display: flex;
   align-items: center;
@@ -50,10 +123,6 @@
   max-width: 42rem;
 }
 
-.border-light {
-  border-color: #f3f4f6 !important;
-}
-
 .how-it-works-block {
   .nav-tabs {
     border-bottom: none;
@@ -62,15 +131,15 @@
         font-size: 1.125rem;
         padding: 12px 32px;
         border: 2px solid transparent;
-        color: #6c757d;
+        color: var(--body);
         background-color: transparent;
         border-radius: 0;
         &.active {
-          color: pick-color(primary, 500) !important;
-          border-bottom: 2px solid pick-color(primary, 500) !important;
+          color: var(--brand-primary) !important;
+          border-bottom: 2px solid var(--brand-primary) !important;
         }
         &:hover {
-          color: pick-color(primary, 500);
+          color: var(--brand-primary);
         }
       }
     }
@@ -78,7 +147,7 @@
   .tab-content {
     .col-border {
       @include hires-breakpoint("gt-sm") {
-        border-left: 1px solid #dee2e6;
+        border-left: 1px solid var(--border);
       }
     }
     .content-box {
@@ -88,6 +157,165 @@
       .desp {
         min-height: 48px;
       }
+    }
+  }
+}
+
+.cta-section {
+  background: linear-gradient(135deg, #5B365A 0%, #3D213A 100%) !important;
+  text-align: center;
+  padding: 72px 24px 68px;
+
+  @include hires-breakpoint("lt-md") {
+    padding: 48px 20px;
+  }
+
+  .cta-container {
+    max-width: 840px;
+    margin: 0 auto;
+  }
+
+  .cta-title {
+    color: #FFFFFF !important;
+    font-size: 30px;
+    font-weight: 600;
+    line-height: 1.25;
+
+    @include hires-breakpoint("lt-md") {
+      font-size: 24px;
+    }
+  }
+
+  .cta-description {
+    color: #E3D6E0 !important;
+    font-size: 17px;
+    line-height: 1.6;
+    margin-top: 12px;
+    max-width: 680px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .cta-buttons {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 16px;
+    margin-top: 28px;
+
+    @include hires-breakpoint("lt-md") {
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .find-jobs-btn {
+      background: #FFFFFF !important;
+      color: #673260 !important;
+      border: none !important;
+      height: 48px;
+      padding: 0 24px;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: 600;
+      transition: all 0.2s ease;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+
+      @include hires-breakpoint("lt-md") {
+        width: 100%;
+        max-width: 300px;
+      }
+
+      &:hover {
+        background: #F6EFF5 !important;
+        color: #51264C !important;
+        transform: translateY(-1px);
+      }
+
+      &:focus-visible {
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.25);
+      }
+    }
+
+    .find-talent-btn {
+      background: transparent !important;
+      border: 2px solid #FFFFFF !important;
+      color: #FFFFFF !important;
+      height: 48px;
+      padding: 0 24px;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: 600;
+      transition: all 0.2s ease;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+
+      @include hires-breakpoint("lt-md") {
+        width: 100%;
+        max-width: 300px;
+      }
+
+      &:hover {
+        background: rgba(255, 255, 255, 0.10) !important;
+        border-color: #FFFFFF !important;
+        color: #FFFFFF !important;
+      }
+
+      &:focus-visible {
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.25);
+      }
+    }
+  }
+
+  .cta-divider {
+    width: 540px;
+    max-width: 70%;
+    height: 1px;
+    background: rgba(255, 255, 255, 0.25);
+    margin: 26px auto 18px;
+  }
+
+  .cta-hiring-label {
+    color: #F1E8EF !important;
+    font-size: 14px;
+    font-weight: 500;
+    margin-bottom: 10px;
+  }
+
+  .post-job-btn {
+    background: #F6EFF5 !important;
+    color: #673260 !important;
+    border: none !important;
+    height: 44px;
+    padding: 0 22px;
+    border-radius: 8px;
+    font-size: 15px;
+    font-weight: 600;
+    transition: all 0.2s ease;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    @include hires-breakpoint("lt-md") {
+      width: 100%;
+      max-width: 300px;
+    }
+
+    &:hover {
+      background: #FFFFFF !important;
+      color: #51264C !important;
+    }
+
+    &:focus-visible {
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.25);
     }
   }
 }

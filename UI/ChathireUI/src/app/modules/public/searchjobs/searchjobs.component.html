@@ -1,9 +1,9 @@
-<div class="search-job-wrapper adv-filter-wrapper">
+<div class="search-job-wrapper adv-filter-wrapper py-4">
   <div class="container">
-    <div class="row">
+    <div class="row justify-content-center">
 
-      <div class="col-md-8 offset-md-2 col-lg-10 offset-lg-1 text-center">
-        <h5 class="mb-4">Search from thousands of tech Jobs posted everyday</h5>
+      <div class="col-12 col-lg-10 col-xl-8 text-center pt-4 pb-3">
+        <h2 class="fw-bold mb-3" style="color: #11111D; letter-spacing: -0.5px;">Search from thousands of tech Jobs posted everyday</h2>
         <div class="mb-4">
           <search-skill-location
             [skill]="skill"
@@ -75,18 +75,12 @@
                             >
                               {{ job.jobOpeningName }}
                             </h5>
-                            <p class="text-sm sub-title fw-medium">
+                            <p class="text-sm sub-title fw-medium mb-0">
                               {{ job.companyName }}
                             </p>
-                            <p class="mt-1 text-sm caption text-dark-500">
-                              <span
-                                *ngFor="
-                                  let location of job.locations;
-                                  let lastItem = last
-                                "
-                                >{{ location
-                                }}<span *ngIf="!lastItem">, &nbsp;</span></span
-                              >
+                            <p class="mt-1 text-sm caption text-dark-500 d-flex align-items-center" *ngIf="getFormattedLocations(job.locations)">
+                              <span class="material-symbols-outlined text-danger me-1" style="font-size: 14px;">location_on</span>
+                              <span>{{ getFormattedLocations(job.locations) }}</span>
                             </p>
                           </div>
                         </li>

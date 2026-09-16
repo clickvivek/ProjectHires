@@ -136,14 +136,24 @@ export class SearchHotlistComponent implements OnInit {
   }
 
   getRelocation(location) {
-    
+    if (!location || !Array.isArray(location)) return ''
     let newArray = location.map(item => {
-      let newData = item.split('-')
-      item = newData[0]
+      if (typeof item === 'string') {
+        let parts = item.split('-')
+        let city = parts[0] ? parts[0].trim() : ''
+        let state = parts[1] ? parts[1].trim() : ''
+        return (city && state) ? `${city}, ${state}` : (city || state)
+      } else if (item && typeof item === 'object') {
+        let rawCity = item.cityName || item.name || ''
+        let parts = rawCity.split('-')
+        let city = parts[0] ? parts[0].trim() : ''
+        let state = (item.stateCode || (parts[1] ? parts[1].trim() : '') || item.stateName || '').trim()
+        return (city && state) ? `${city}, ${state}` : (city || state)
+      }
       return item
-    });
-    let uniqueArray = newArray.filter((value, index, self) => self.indexOf(value) === index);
-    return uniqueArray.join(', ')
+    })
+    let uniqueArray = newArray.filter((value, index, self) => value && self.indexOf(value) === index)
+    return uniqueArray.join('; ')
   }
 
   getProfilePic(url) {

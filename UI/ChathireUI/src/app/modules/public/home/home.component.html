@@ -1,94 +1,44 @@
-<div class="home-wrapper bg-light" style="min-height: 100vh;">
+<div class="home-wrapper" style="min-height: 100vh; background-color: var(--page-bg);">
   
   <!-- 1. Hero Section -->
-  <section class="hero-block bg-white py-4 py-lg-4 border-bottom">
+  <section class="hero-block py-4 py-lg-5 border-bottom" style="background-color: var(--page-bg);">
     <div class="container py-lg-2">
-      <div class="row align-items-start">
+      <div class="row justify-content-center text-center mb-4">
         <!-- Hero Content -->
-        <div class="col-lg-9 pe-lg-4 mb-4 mb-lg-0">
-          <h1 class="display-5 fw-bolder text-dark mb-3" style="letter-spacing: -1px; line-height: 1.1;">
-            Find the right talent.<br><span class="text-primary">Hire faster.</span>
+        <div class="col-lg-10 col-xl-8">
+          <h1 class="display-5 fw-bolder text-dark mb-3" style="letter-spacing: -1px; line-height: 1.15;">
+            Find the right talent. <span class="text-primary">Hire faster.</span>
           </h1>
-          <p class="lead text-secondary mb-4" style="font-size: 1.1rem;">
+          <p class="lead text-secondary mb-0 max-w-2xl mx-auto" style="font-size: 1.15rem; color: var(--body);">
             Connect with recruiters, consultants, bench sales professionals and companies through one simple hiring marketplace.
           </p>
-          
-          <!-- Unified Search Experience -->
-          <div class="search-container position-relative z-index-1 mt-3">
+        </div>
+      </div>
+
+      <!-- Unified Search Experience (Centered) -->
+      <div class="row justify-content-center">
+        <div class="col-12 col-lg-10">
+          <div class="search-container position-relative z-index-1">
             <home-search-tabs></home-search-tabs>
             
             <!-- Popular Searches -->
-            <div class="mt-3 d-flex align-items-center flex-wrap gap-2">
+            <div class="mt-3 d-flex align-items-center justify-content-center flex-wrap gap-2">
               <span class="text-muted small fw-medium me-2">Popular:</span>
-              <a href="javascript:void(0)" class="badge rounded-pill bg-light text-dark border px-3 py-2 text-decoration-none hover-shadow transition">Java</a>
-              <a href="javascript:void(0)" class="badge rounded-pill bg-light text-dark border px-3 py-2 text-decoration-none hover-shadow transition">.NET</a>
-              <a href="javascript:void(0)" class="badge rounded-pill bg-light text-dark border px-3 py-2 text-decoration-none hover-shadow transition">React</a>
-              <a href="javascript:void(0)" class="badge rounded-pill bg-light text-dark border px-3 py-2 text-decoration-none hover-shadow transition">SAP</a>
-              <a href="javascript:void(0)" class="badge rounded-pill bg-light text-dark border px-3 py-2 text-decoration-none hover-shadow transition">Salesforce</a>
-              <a href="javascript:void(0)" class="badge rounded-pill bg-light text-dark border px-3 py-2 text-decoration-none hover-shadow transition">DevOps</a>
+              <a href="javascript:void(0)" class="badge badge-plum rounded-pill px-3 py-2 text-decoration-none hover-shadow transition">Java</a>
+              <a href="javascript:void(0)" class="badge badge-plum rounded-pill px-3 py-2 text-decoration-none hover-shadow transition">.NET</a>
+              <a href="javascript:void(0)" class="badge badge-plum rounded-pill px-3 py-2 text-decoration-none hover-shadow transition">React</a>
+              <a href="javascript:void(0)" class="badge badge-plum rounded-pill px-3 py-2 text-decoration-none hover-shadow transition">SAP</a>
+              <a href="javascript:void(0)" class="badge badge-plum rounded-pill px-3 py-2 text-decoration-none hover-shadow transition">Salesforce</a>
+              <a href="javascript:void(0)" class="badge badge-plum rounded-pill px-3 py-2 text-decoration-none hover-shadow transition">DevOps</a>
             </div>
-          </div>
-        </div>
-        
-        <!-- Hero Illustration -->
-        <div class="col-lg-3 d-none d-lg-block text-center ps-lg-0" style="transform: translateY(-10px);">
-          <img class="img-fluid" src="assets/images/main-cover.png" alt="ChatHire Recruitment Platform" style="max-width: 100%; height: auto; transform-origin: center right;" />
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- 2. Why ChatHire Section -->
-  <section class="why-chathire py-4 bg-light">
-    <div class="container py-3">
-      <div class="text-center mb-4">
-        <h2 class="fw-bold mb-2">Everything you need to hire and get hired faster.</h2>
-        <p class="text-muted lead mb-0">A modern marketplace built specifically for C2C recruitment.</p>
-      </div>
-      
-      <div class="row g-3">
-        <div class="col-md-6 col-lg-3">
-          <div class="card h-100 border-0 shadow-sm rounded-3 text-center p-3 transition hover-shadow">
-            <div class="icon-box bg-primary bg-opacity-10 text-primary rounded-circle d-inline-flex align-items-center justify-content-center mx-auto mb-3" style="width: 48px; height: 48px;">
-              <span class="material-symbols-outlined fs-4">bolt</span>
-            </div>
-            <h6 class="fw-bold mb-2">Faster Hiring</h6>
-            <p class="text-muted mb-0 small" style="font-size: 0.85rem;">Connect with relevant talent and active opportunities instantly.</p>
-          </div>
-        </div>
-        <div class="col-md-6 col-lg-3">
-          <div class="card h-100 border-0 shadow-sm rounded-3 text-center p-3 transition hover-shadow">
-            <div class="icon-box bg-primary bg-opacity-10 text-primary rounded-circle d-inline-flex align-items-center justify-content-center mx-auto mb-3" style="width: 48px; height: 48px;">
-              <span class="material-symbols-outlined fs-4">lan</span>
-            </div>
-            <h6 class="fw-bold mb-2">Recruiter Network</h6>
-            <p class="text-muted mb-0 small" style="font-size: 0.85rem;">Access thousands of recruiters, consultants and bench sales professionals.</p>
-          </div>
-        </div>
-        <div class="col-md-6 col-lg-3">
-          <div class="card h-100 border-0 shadow-sm rounded-3 text-center p-3 transition hover-shadow">
-            <div class="icon-box bg-primary bg-opacity-10 text-primary rounded-circle d-inline-flex align-items-center justify-content-center mx-auto mb-3" style="width: 48px; height: 48px;">
-              <span class="material-symbols-outlined fs-4">forum</span>
-            </div>
-            <h6 class="fw-bold mb-2">Direct Communication</h6>
-            <p class="text-muted mb-0 small" style="font-size: 0.85rem;">Connect and communicate without unnecessary intermediaries.</p>
-          </div>
-        </div>
-        <div class="col-md-6 col-lg-3">
-          <div class="card h-100 border-0 shadow-sm rounded-3 text-center p-3 transition hover-shadow">
-            <div class="icon-box bg-primary bg-opacity-10 text-primary rounded-circle d-inline-flex align-items-center justify-content-center mx-auto mb-3" style="width: 48px; height: 48px;">
-              <span class="material-symbols-outlined fs-4">model_training</span>
-            </div>
-            <h6 class="fw-bold mb-2">Better Matching</h6>
-            <p class="text-muted mb-0 small" style="font-size: 0.85rem;">Find the exact opportunities and candidates based on detailed skills.</p>
           </div>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- 3. Explore Jobs & Talent Section -->
-  <section class="explore-block py-4 bg-white border-top border-bottom">
+  <!-- 2. Explore Jobs & Talent Section -->
+  <section class="explore-block py-4 py-lg-5 bg-white border-bottom">
     <div class="container py-3">
       <div class="text-center mb-4">
         <h2 class="fw-bold mb-2">Explore Jobs & Talent</h2>
@@ -98,8 +48,8 @@
       <div class="row g-4">
         <!-- Requirements Card -->
         <div class="col-lg-6">
-          <div class="card border-0 shadow-sm rounded-4 h-100 overflow-hidden">
-            <div class="card-header bg-light border-0 py-3 text-center">
+          <div class="card border-0 shadow-sm rounded-4 h-100 overflow-hidden" style="border: 1px solid var(--border) !important;">
+            <div class="card-header border-0 py-3 text-center" style="background-color: var(--brand-light);">
               <h5 class="fw-bold mb-0 text-dark d-flex align-items-center justify-content-center">
                 <span class="material-symbols-outlined text-danger me-2">local_fire_department</span> Trending Job Requirements
               </h5>
@@ -108,23 +58,23 @@
               <div class="list-group list-group-flush">
                 <a href="javascript:void(0)" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center py-2 px-4 border-light hover-bg-light">
                   <span class="fw-medium small">JavaScript</span>
-                  <span class="badge bg-primary rounded-pill px-2 py-1">40 Jobs</span>
+                  <span class="badge rounded-pill px-2 py-1" style="background-color: var(--brand-primary); color: #fff;">40 Jobs</span>
                 </a>
                 <a href="javascript:void(0)" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center py-2 px-4 border-light hover-bg-light">
                   <span class="fw-medium small">.NET</span>
-                  <span class="badge bg-primary rounded-pill px-2 py-1">30 Jobs</span>
+                  <span class="badge rounded-pill px-2 py-1" style="background-color: var(--brand-primary); color: #fff;">30 Jobs</span>
                 </a>
                 <a href="javascript:void(0)" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center py-2 px-4 border-light hover-bg-light">
                   <span class="fw-medium small">React Developers</span>
-                  <span class="badge bg-primary rounded-pill px-2 py-1">10 Jobs</span>
+                  <span class="badge rounded-pill px-2 py-1" style="background-color: var(--brand-primary); color: #fff;">10 Jobs</span>
                 </a>
                 <a href="javascript:void(0)" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center py-2 px-4 border-light hover-bg-light">
                   <span class="fw-medium small">SAP</span>
-                  <span class="badge bg-primary rounded-pill px-2 py-1">10 Jobs</span>
+                  <span class="badge rounded-pill px-2 py-1" style="background-color: var(--brand-primary); color: #fff;">10 Jobs</span>
                 </a>
                 <a href="javascript:void(0)" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center py-2 px-4 border-light hover-bg-light">
                   <span class="fw-medium small">IBM WebSphere</span>
-                  <span class="badge bg-primary rounded-pill px-2 py-1">40 Jobs</span>
+                  <span class="badge rounded-pill px-2 py-1" style="background-color: var(--brand-primary); color: #fff;">40 Jobs</span>
                 </a>
               </div>
             </div>
@@ -138,8 +88,8 @@
         
         <!-- Talent Card -->
         <div class="col-lg-6">
-          <div class="card border-0 shadow-sm rounded-4 h-100 overflow-hidden">
-            <div class="card-header bg-light border-0 py-3 text-center">
+          <div class="card border-0 shadow-sm rounded-4 h-100 overflow-hidden" style="border: 1px solid var(--border) !important;">
+            <div class="card-header border-0 py-3 text-center" style="background-color: var(--brand-light);">
               <h5 class="fw-bold mb-0 text-dark d-flex align-items-center justify-content-center">
                 <span class="material-symbols-outlined text-primary me-2">group_add</span> Available Talent
               </h5>
@@ -148,23 +98,23 @@
               <div class="list-group list-group-flush">
                 <a href="javascript:void(0)" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center py-2 px-4 border-light hover-bg-light">
                   <span class="fw-medium small">JavaScript</span>
-                  <span class="badge bg-dark rounded-pill px-2 py-1">40 Candidates</span>
+                  <span class="badge rounded-pill px-2 py-1" style="background-color: var(--heading); color: #fff;">40 Candidates</span>
                 </a>
                 <a href="javascript:void(0)" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center py-2 px-4 border-light hover-bg-light">
                   <span class="fw-medium small">.NET</span>
-                  <span class="badge bg-dark rounded-pill px-2 py-1">30 Candidates</span>
+                  <span class="badge rounded-pill px-2 py-1" style="background-color: var(--heading); color: #fff;">30 Candidates</span>
                 </a>
                 <a href="javascript:void(0)" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center py-2 px-4 border-light hover-bg-light">
                   <span class="fw-medium small">React Developers</span>
-                  <span class="badge bg-dark rounded-pill px-2 py-1">10 Candidates</span>
+                  <span class="badge rounded-pill px-2 py-1" style="background-color: var(--heading); color: #fff;">10 Candidates</span>
                 </a>
                 <a href="javascript:void(0)" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center py-2 px-4 border-light hover-bg-light">
                   <span class="fw-medium small">SAP</span>
-                  <span class="badge bg-dark rounded-pill px-2 py-1">10 Candidates</span>
+                  <span class="badge rounded-pill px-2 py-1" style="background-color: var(--heading); color: #fff;">10 Candidates</span>
                 </a>
                 <a href="javascript:void(0)" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center py-2 px-4 border-light hover-bg-light">
                   <span class="fw-medium small">IBM WebSphere</span>
-                  <span class="badge bg-dark rounded-pill px-2 py-1">40 Candidates</span>
+                  <span class="badge rounded-pill px-2 py-1" style="background-color: var(--heading); color: #fff;">40 Candidates</span>
                 </a>
               </div>
             </div>
@@ -179,10 +129,13 @@
     </div>
   </section>
 
-  <!-- 4. How It Works -->
-  <section class="how-it-works-block py-4 bg-white">
+  <!-- 3. How It Works -->
+  <section class="how-it-works-block py-4 py-lg-5" style="background-color: var(--page-bg);">
     <div class="container py-3">
-      <h2 class="fw-bold text-center mb-4">How it works</h2>
+      <div class="text-center mb-4">
+        <h2 class="fw-bold mb-2">How it works</h2>
+        <p class="text-muted lead mb-0">A modern marketplace built specifically for C2C recruitment.</p>
+      </div>
       <div class="content-wrapper position-relative">
         <div class="row">
           <div class="col-md-12 col-lg-10 offset-lg-1">
@@ -194,7 +147,7 @@
                 <a class="nav-link" href="#benchsales" role="tab" data-bs-toggle="tab">Bench Sales Managers</a>
               </li>
             </ul>
-            <div class="tab-content bg-white shadow-sm border" style="border-radius: 0 0 8px 8px; border-top: none;">
+            <div class="tab-content bg-white shadow-sm border" style="border-radius: 0 0 8px 8px; border-top: none; border-color: var(--border) !important;">
               <div role="tabpanel" class="tab-pane fade show active" id="recruiters">
                 <div class="row position-relative">
                   <div class="col-lg-4 col-md-4 col-sm-12">
@@ -203,7 +156,7 @@
                         <div class="flex-grow-1">
                           <img src="assets/images/post-job-icon.svg" width="60" class="mb-3" />
                           <h5 class="mb-2 head fw-normal">Post your job openings</h5>
-                          <p class="desp text-muted small">Create your won profile page and share it in Linkedin</p>
+                          <p class="desp text-muted small">Create your own profile page and share it in Linkedin and Add in Your email Signature</p>
                         </div>
                         <div class="mt-3"><button class="btn btn-outline-primary px-4 py-2" style="border-radius: 4px;">Post your Job</button></div>
                       </div>
@@ -215,7 +168,7 @@
                         <div class="flex-grow-1">
                           <img src="assets/images/search-hotlist-icon.svg" width="60" class="mb-3" />
                           <h5 class="mb-2 head fw-normal">Search Hotlist</h5>
-                          <p class="desp text-muted small">Search hotlist posted by fellow recruiters and connect</p>
+                          <p class="desp text-muted small">Search hotlist posted by fellow recruiters and connect and do live chat</p>
                         </div>
                         <div class="mt-3"><button class="btn btn-outline-primary px-4 py-2" style="border-radius: 4px;">Explore</button></div>
                       </div>
@@ -270,22 +223,23 @@
     </div>
   </section>
 
-  <!-- 5. Final CTA -->
-  <section class="cta-block py-4 text-center" style="background: linear-gradient(135deg, #1fa270 0%, #0e7850 100%);">
-    <div class="container py-4">
-      <h3 class="fw-bold text-white mb-3">Ready to make your next hiring move?</h3>
-      <p class="lead text-white-50 mb-4 max-w-2xl mx-auto" style="font-size: 1.1rem;">Join thousands of recruiters and professionals growing their network.</p>
+  <!-- 4. Final CTA -->
+  <section class="cta-section">
+    <div class="cta-container">
+      <h3 class="cta-title mb-0">Ready to make your next hiring move?</h3>
+      <p class="cta-description">Join thousands of recruiters and professionals growing their network.</p>
       
-      <div class="d-flex flex-column flex-md-row justify-content-center align-items-center gap-3">
-        <button class="btn px-4 py-2 fw-bold shadow-sm" routerLink="/search-jobs" style="background-color: white; border: none; color: #1fa270; border-radius: 8px;">FIND JOBS</button>
-        <button class="btn px-4 py-2 fw-bold" routerLink="/search-hotlist" style="background-color: transparent; border: 2px solid white; color: white; border-radius: 8px;">FIND TALENT</button>
+      <div class="cta-buttons">
+        <button class="find-jobs-btn" routerLink="/search-jobs">Find Jobs</button>
+        <button class="find-talent-btn" routerLink="/search-hotlist">Find Talent</button>
       </div>
       
-      <div class="mt-4 pt-3 border-top border-white border-opacity-25 w-50 mx-auto">
-        <p class="text-white mb-2 fw-medium small">Are you hiring right now?</p>
-        <button class="btn btn-warning fw-bold px-3 py-1" routerLink="/postjobs" style="border-radius: 6px; color: #111;">POST A JOB — FREE</button>
+      <div class="cta-divider"></div>
+
+      <div>
+        <p class="cta-hiring-label">Are you hiring right now?</p>
+        <button class="post-job-btn" routerLink="/postjobs">Post a Job — FREE</button>
       </div>
     </div>
   </section>
 </div>
-

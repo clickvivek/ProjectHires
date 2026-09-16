@@ -14,6 +14,11 @@ import { defaultPostJobVisas } from 'src/app/data/various';
 
 import _ from 'underscore';
 
+import { AuthService } from 'src/app/core/auth/auth.service';
+import { TokenService } from 'src/app/api/api/token.service';
+
+declare var google: any;
+
 @Component({
   selector: 'post-job-details',
   templateUrl: './post-job-details.component.html',
@@ -25,6 +30,9 @@ export class PostJobDetailsComponent {
 
   @Output() outputparams = new EventEmitter();
   @Output() postparams = new EventEmitter();
+
+  showAuthPromptModal: boolean = false;
+  googleClientId: string = '262467975068-u0o6qtjog1o7e1p4jp5kuag34ibhfm1l.apps.googleusercontent.com';
 
   formData: any = {
     name: "",
@@ -109,7 +117,9 @@ export class PostJobDetailsComponent {
     private sessionService: SessionService,
     private sharedService: SharedService,
     private toastr: ToastrService,
-    private jobOpeningService: JobOpeningService
+    private jobOpeningService: JobOpeningService,
+    private authService: AuthService,
+    private tokenService: TokenService
   ) { 
 
     router.events.subscribe((event: any) => {
@@ -488,6 +498,13 @@ export class PostJobDetailsComponent {
         }
 
       }
+
+      if (!this.authService.isLoggedIn()) {
+        sessionStorage.setItem('ch_pending_job_post', JSON.stringify(this.job));
+        this.showAuthPromptModal = true;
+        this.isFormSubmitted = false;
+        return;
+      }
        
       this.jobOpeningService.apiJobOpeningAddPost(this.job).subscribe({
           next: (res : any) => {
@@ -522,7 +539,77 @@ export class PostJobDetailsComponent {
 
   }
 
+  loginWithGoogleFromModal() {
+    if (typeof google !== 'undefined' && google.accounts) {
+      google.accounts.id.initialize({
+        client_id: this.googleClientId,
+        callback: (response: any) => this.handleGoogleResponse(response)
+      });
+      google.accounts.id.prompt();
+    } else {
+      this.toastr.error('Google Auth service is loading. Please try again.');
+    }
+  }
+
+  handleGoogleResponse(response: any) {
+    if (response && response.credential) {
+      this.isFormSubmitted = true;
+      this.tokenService.apiTokenGooglePost({ idToken: response.credential }).subscribe({
+        next: (res: any) => {
+          let user = {
+            userEmail: res.value.userName,
+            userId: res.value.userId,
+            token: res.value.token,
+            userTypeId: res.value.userTypeId,
+            consultancyId: res.value.consultancyId,
+            consultancyUserId: res.value.consultancyUserId
+          };
+          this.authService.login(user);
+          this.showAuthPromptModal = false;
+          this.checkAndAutoSubmitPendingJob();
+        },
+        error: (err: any) => {
+          this.isFormSubmitted = false;
+          this.toastr.error('Google Authentication failed. Please try again.');
+        }
+      });
+    }
+  }
+
+  checkAndAutoSubmitPendingJob() {
+    const pendingJobStr = sessionStorage.getItem('ch_pending_job_post');
+    if (pendingJobStr && this.authService.isLoggedIn()) {
+      try {
+        const pendingJob = JSON.parse(pendingJobStr);
+        pendingJob.consultancyUserId = this.sessionService.consultancyUserId;
+
+        this.isFormSubmitted = true;
+        this.jobOpeningService.apiJobOpeningAddPost(pendingJob).subscribe({
+          next: (res: any) => {
+            sessionStorage.removeItem('ch_pending_job_post');
+            this.toastr.success('Your job post has been published successfully!', '', {
+              timeOut: 4000,
+              positionClass: 'toast-top-center'
+            });
+            this.scrollToTop();
+            this.postparams.emit(true);
+            this.isFormSubmitted = false;
+          },
+          error: (err: any) => {
+            sessionStorage.removeItem('ch_pending_job_post');
+            this.toastr.error('Failed to post job. Please try again.');
+            this.isFormSubmitted = false;
+          }
+        });
+      } catch (e) {
+        sessionStorage.removeItem('ch_pending_job_post');
+      }
+    }
+  }
+
   ngOnInit() {
+
+    this.checkAndAutoSubmitPendingJob();
 
     this.formData.jobOpeningVisaMaps = defaultPostJobVisas
 

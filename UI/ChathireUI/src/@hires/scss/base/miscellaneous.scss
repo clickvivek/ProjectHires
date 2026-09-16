@@ -42,19 +42,24 @@
     }
 }
 
-$chat-btn-color: pick-color(dark, 500);
+$chat-btn-color: #FFFFFF;
 
 .chat-btn {
-    border: 1px solid $chat-btn-color;
-    color: $chat-btn-color !important;
+    color: #FFFFFF !important;
+    span, div {
+      color: #FFFFFF !important;
+    }
     &:hover {
-      background-color: pick-color(dark, 200);
-      color: $chat-btn-color !important;
-      border: 1px solid $chat-btn-color;
+      color: #FFFFFF !important;
+      span, div {
+        color: #FFFFFF !important;
+      }
     }
     svg {
+      color: #FFFFFF !important;
+      stroke: #FFFFFF !important;
       path {
-        fill: $chat-btn-color;
+        stroke: #FFFFFF !important;
       }
    }
    &.disabled {

@@ -6,76 +6,101 @@
         <loader *ngIf="!isJobLoaded"></loader>
 
         <ng-container *ngIf="isJobLoaded && !isError">
-          <div class="title-box">
-            <h6 class="title">
-              <div *ngIf="isJobAvailable">
-                You have {{ totalItems }} candidates in your Hotlist
+          
+          <!-- When Candidates ARE Available -->
+          <div *ngIf="isJobAvailable">
+            <div class="title-box d-flex align-items-center justify-content-between mb-4 flex-wrap gap-3">
+              <h5 class="fw-bold mb-0 text-dark">
+                You have {{ totalItems }} candidate{{ totalItems === 1 ? '' : 's' }} in your Hotlist
+              </h5>
+              <div class="btn-wrapper">
+                <a
+                  routerLink="/addcandidate"
+                  routerLinkActive="active"
+                  [routerLinkActiveOptions]="{ exact: true }"
+                  class="btn btn-add-candidate d-inline-flex align-items-center gap-2"
+                >
+                  <span class="material-symbols-outlined fs-5">add_circle</span>
+                  <span>Add Candidate</span>
+                </a>
               </div>
-              <div *ngIf="!isJobAvailable">No candidates Available</div>
-            </h6>
-            <div class="btn-wrapper ms-auto">
+            </div>
+
+            <div class="options-wrapper mb-4">
+              <div class="me-4">
+                <page-search (outputData)="handleSearch($event)" placeholder="Search by name, skills, job title"></page-search>
+              </div>
+
+              <div class="options d-none d-lg-block">
+                <div
+                  class="btn view-btn d-inline-flex align-items-center me-2"
+                  [ngClass]="
+                    isTableView
+                      ? 'btn-secondary no-pointer'
+                      : 'btn-outline-secondary text-secondary-500'
+                  "
+                  (click)="handleViewType('table')"
+                >
+                  <span class="material-symbols-outlined me-2">table_chart</span>
+                  View table
+                </div>
+                <div
+                  class="btn view-btn d-inline-flex align-items-center"
+                  [ngClass]="
+                    isListView
+                      ? 'btn-secondary no-pointer'
+                      : 'btn-outline-secondary text-secondary-500'
+                  "
+                  (click)="handleViewType('list')"
+                >
+                  <span class="material-symbols-outlined me-2">data_table</span>
+                  Detailed List
+                </div>
+              </div>
+            </div>
+
+            <myhotlist-listview
+              *ngIf="isListView"
+              [filteredHotListData]="filteredHotListData"
+              [visaList]="visaList"
+              [availabilityList]="selectAvailabilityList"
+              (handleDeleteCandidate)="deleteCandidate($event)"
+              (handleStatusChange)="onStatusChange($event)"
+            ></myhotlist-listview>
+
+            <myhotlist-tableview
+              *ngIf="isTableView"
+              [filteredHotListData]="filteredHotListData"
+              [visaList]="visaList"
+              [availabilityList]="selectAvailabilityList"
+              (handleDeleteCandidate)="deleteCandidate($event)"
+              (handleStatusChange)="onStatusChange($event)"
+            ></myhotlist-tableview>
+          </div>
+
+          <!-- Interactive Empty State when NO Candidates Available -->
+          <div *ngIf="!isJobAvailable" class="empty-state-card text-center mx-auto my-5 p-5">
+            <div class="empty-icon-wrapper mx-auto mb-3 rounded-circle d-flex align-items-center justify-content-center">
+              <span class="material-symbols-outlined empty-icon">group_add</span>
+            </div>
+            
+            <h3 class="empty-title mb-2">No candidates added yet</h3>
+            
+            <p class="empty-description mb-4 mx-auto text-muted">
+              Start building your hotlist by adding candidates. You can track their profiles, skills, availability, and easily share them with employers.
+            </p>
+
+            <div class="d-flex justify-content-center">
               <a
                 routerLink="/addcandidate"
-                routerLinkActive="active"
-                [routerLinkActiveOptions]="{ exact: true }"
-                class="btn add-candidate-btn shadow align-items-center justify-content-center d-flex"
-                ><span class="material-symbols-outlined me-1"> add_circle </span
-                >Add Candidate</a
+                class="btn btn-add-candidate-lg d-inline-flex align-items-center justify-content-center gap-2 px-4 py-3"
               >
+                <span class="material-symbols-outlined fs-5">add_circle</span>
+                <span>Add Candidate to Hotlist</span>
+              </a>
             </div>
           </div>
 
-          <div class="options-wrapper" *ngIf="isJobAvailable">
-            
-            <div class="me-4">
-              <page-search (outputData)="handleSearch($event)" placeholder="Search by name, skills, job title" ></page-search>
-            </div>
-
-            <div class="options d-none d-lg-block" *ngIf="isJobAvailable">
-              <div
-                class="btn view-btn d-inline-flex align-items-center"
-                [ngClass]="
-                  isTableView
-                    ? 'btn-secondary no-pointer'
-                    : 'btn-outline-secondary text-secondary-500'
-                "
-                (click)="handleViewType('table')"
-              >
-                <span class="material-symbols-outlined me-2">table_chart</span
-                >View table
-              </div>
-              <div
-                class="btn view-btn d-inline-flex align-items-center"
-                [ngClass]="
-                  isListView
-                    ? 'btn-secondary no-pointer'
-                    : 'btn-outline-secondary text-secondary-500'
-                "
-                (click)="handleViewType('list')"
-              >
-                <span class="material-symbols-outlined me-2">data_table</span
-                >Detailed List
-              </div>
-            </div>
-          </div>
-
-          <myhotlist-listview
-            *ngIf="isListView"
-            [filteredHotListData]="filteredHotListData"
-            [visaList]="visaList"
-            [availabilityList]="selectAvailabilityList"
-            (handleDeleteCandidate)="deleteCandidate($event)"
-            (handleStatusChange)="onStatusChange($event)"
-          ></myhotlist-listview>
-
-          <myhotlist-tableview
-            *ngIf="isTableView"
-            [filteredHotListData]="filteredHotListData"
-            [visaList]="visaList"
-            [availabilityList]="selectAvailabilityList"
-            (handleDeleteCandidate)="deleteCandidate($event)"
-            (handleStatusChange)="onStatusChange($event)"
-          ></myhotlist-tableview>
         </ng-container>
 
         <ng-container *ngIf="isError">

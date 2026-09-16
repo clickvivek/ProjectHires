@@ -1,4 +1,4 @@
-﻿using AutoMapper;
+using AutoMapper;
 using BusinessEntityAndDTO.Common;
 using BusinessEntityAndDTO.DTO;
 using BusinessLayer.Manager;
@@ -32,15 +32,38 @@ namespace MiddleWare.Controllers
         {
             return ExecuteAsync<UserDto>(async () =>
             {
-                var userNameValidation = await UserNameValidation(User.Email);
-                if (userNameValidation.value)
+                var mgr = managerFactory.Get<IUserManager>();
+                var usrDtls = await mgr.GetUserByUserName(User.Email, GetDummyUserContext());
+                var existingUser = usrDtls?.FirstOrDefault();
+
+                if (existingUser != null && existingUser.EmailVerified == true)
                 {
                     throw new ArgumentException("User Already exists");
                 }
-                var UserManager = managerFactory.Get<IUserManager>();
 
-                return await UserManager.AddUser(User, GetDummyUserContext());
+                return await mgr.AddUser(User, GetDummyUserContext());
+            });
+        }
 
+        [HttpPost]
+        [Route("VerifyOtp")]
+        public Task<Result<bool>> VerifyOtp([FromBody] VerifyOtpModel model)
+        {
+            return ExecuteAsync<bool>(async () =>
+            {
+                var mgr = managerFactory.Get<IUserManager>();
+                return await mgr.VerifyOtp(model.Email, model.Otp, GetDummyUserContext());
+            });
+        }
+
+        [HttpPost]
+        [Route("ResendOtp")]
+        public Task<Result<bool>> ResendOtp([FromBody] ResendOtpModel model)
+        {
+            return ExecuteAsync<bool>(async () =>
+            {
+                var mgr = managerFactory.Get<IUserManager>();
+                return await mgr.ResendOtp(model.Email, GetDummyUserContext());
             });
         }
 

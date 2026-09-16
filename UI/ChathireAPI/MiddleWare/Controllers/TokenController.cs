@@ -1,4 +1,4 @@
-﻿using AutoMapper;
+using AutoMapper;
 using BusinessEntityAndDTO.Models;
 using BusinessLayer.Manager;
 using Microsoft.AspNetCore.Authorization;
@@ -67,6 +67,66 @@ namespace MiddleWare.Controllers
                     Token = result.Item2,
                     Functions = userFunctions,
                     UserTypeId = result.Item3.UserTypeId.Value,
+                    UserId = result.Item3.UserId,
+                    UserName = result.Item1,
+                    UserTypeName = result.Item4,
+                    ConsultancyId = result.Item3.ConsultancyId,
+                    ConsultancyUserId = result.Item3.ConsultancyUserId
+                };
+
+                return loginModel;
+            });
+        }
+
+        [HttpPost]
+        [Route("Google")]
+        [AllowAnonymous]
+        public Task<Result<LoginModel>> GoogleToken([FromBody] GoogleAuthRequestModel model)
+        {
+            return ExecuteAsync<LoginModel>(async () =>
+            {
+                var loginMgr = managerFactory.Get<ILoginManager>();
+
+                var result = await loginMgr.GenerateGoogleToken(model.IdToken);
+
+                var userFunctions = await loginMgr.UserFunction(result.Item3);
+
+                String _key = String.Format("Functions_{0}", result.Item3.UserId);
+                List<String> functions;
+                memoryCache.Remove(_key);
+                if (!memoryCache.TryGetValue(_key, out functions))
+                {
+                    var funs = userFunctions;
+
+                    if (funs != null && funs.Count > 0)
+                    {
+                        if (functions == null) functions = new List<string>();
+                        functions.AddRange(funs);
+                    }
+                    long? _timeOut = null;
+                    MemoryCacheEntryOptions options = new MemoryCacheEntryOptions();
+                    if (_timeOut == null)
+                    {
+                        long timeOut;
+                        if (long.TryParse(CustomConfigurationProvider.GetConfigurationSection(configuration, "Auth").GetValue("SessionTimeOut"), out timeOut))
+                        {
+                            _timeOut = timeOut;
+                        }
+                        else
+                        {
+                            _timeOut = Defaults.Timeout;
+                        }
+                    }
+                    options.SetSlidingExpiration(TimeSpan.FromSeconds(_timeOut.Value));
+
+                    memoryCache.Set(_key, functions, options);
+                }
+
+                var loginModel = new LoginModel()
+                {
+                    Token = result.Item2,
+                    Functions = userFunctions,
+                    UserTypeId = result.Item3.UserTypeId.HasValue ? result.Item3.UserTypeId.Value : 1,
                     UserId = result.Item3.UserId,
                     UserName = result.Item1,
                     UserTypeName = result.Item4,

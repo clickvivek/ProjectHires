@@ -7,7 +7,7 @@
           routerLinkActive="active"
           [routerLinkActiveOptions]="{ exact: true }"
         ><h1 class="logo-text">ChatHire</h1>
-          <img class="logo" src="assets/images/logo.jpg" />
+          <img class="logo" src="assets/images/logo.png" alt="ChatHire" />
         </a>
       <button class="navbar-toggle">
         <div class="navbar-toggler-icon" (click)="showMenuMini()">
@@ -41,24 +41,21 @@
                 <a class="nav-link" routerLink="/login" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">Log In</a>
               </li>
               <li class="nav-item">
-                <a class="nav-link fw-bold text-primary" routerLink="/signup" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">Sign Up</a>
+                <a class="nav-link fw-bold" style="color: #39756F !important;" routerLink="/signup" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">Sign Up</a>
               </li>
             </ul>
           </ng-container>
 
           <ng-container *ngIf="isLoggedIn() && !isConsultancyId()">
-            <a class="fw-medium" href="javascript:void(0)" (click)="logout()"
-              >Logout</a
-            >
+            <a class="btn-logout-subtle" href="javascript:void(0)" (click)="logout()">Logout</a>
           </ng-container>
 
           <ng-container *ngIf="isLoggedIn() && isConsultancyId()">
             
-            <ul class="navbar-nav">
+            <ul class="navbar-nav align-items-center">
               <li class="nav-item">
                 <a
-                  href="javascript:void"
-                  class="nav-link"
+                  class="nav-link nav-link-custom"
                   routerLink="/dashboard"
                   routerLinkActive="active"
                   [routerLinkActiveOptions]="{ exact: true }"
@@ -67,8 +64,7 @@
               </li>
               <li class="nav-item">
                 <a
-                  href="javascript:void"
-                  class="nav-link"
+                  class="nav-link nav-link-custom"
                   routerLink="/search-jobs"
                   routerLinkActive="active"
                   >Search Jobs</a
@@ -76,16 +72,15 @@
               </li>
               <li class="nav-item dropdown">
                 <a
-                  class="nav-link"
+                  class="nav-link nav-link-custom d-inline-flex align-items-center"
                   href="#"
                   data-bs-toggle="dropdown"
                   id="recruiterDropdown"
                   aria-haspopup="true"
                   aria-expanded="false"
-                  >Recruiter<span class="material-symbols-outlined icon me-2"
-                  >expand_more</span></a
+                  >Recruiter<span class="material-symbols-outlined fs-6 ms-1">expand_more</span></a
                 >
-                <div class="dropdown-menu" aria-labelledby="recruiterDropdown">
+                <div class="dropdown-menu shadow-sm border-0" aria-labelledby="recruiterDropdown">
                   <a
                     class="dropdown-item"
                     routerLink="/postjobs"
@@ -124,16 +119,15 @@
               </li>
               <li class="nav-item dropdown">
                 <a
-                  class="nav-link"
+                  class="nav-link nav-link-custom d-inline-flex align-items-center"
                   href="#"
                   data-bs-toggle="dropdown"
                   id="benchSalesDropdown"
                   aria-haspopup="true"
                   aria-expanded="false"
-                  >Bench Sales<span class="material-symbols-outlined icon me-2"
-                  >expand_more</span></a
+                  >Bench Sales<span class="material-symbols-outlined fs-6 ms-1">expand_more</span></a
                 >
-                <div class="dropdown-menu" aria-labelledby="benchSalesDropdown">
+                <div class="dropdown-menu shadow-sm border-0" aria-labelledby="benchSalesDropdown">
                   <a
                     class="dropdown-item"
                     routerLink="/myhotlist"
@@ -155,34 +149,46 @@
                 </div>
               </li>
               <li class="nav-item">
-                <a href="javascript:void" class="nav-link" routerLink="/profile/{{profileId}}"
-                target="_blank">Public Profile</a>
+                <a class="nav-link nav-link-custom" routerLink="/profile/{{profileId}}" target="_blank">Public Profile</a>
               </li>
-              <li class="nav-item">
-                <a href="javascript:void" class="nav-link" routerLink="/chat"
-                routerLinkActive="active"
-                [routerLinkActiveOptions]="{ exact: true }">Chat<span *ngIf="uneadCount">({{uneadCount}})</span></a>
+              <!-- Chat Icon Button -->
+              <li class="nav-item ms-lg-2 me-lg-2">
+                <a
+                  routerLink="/chat"
+                  routerLinkActive="active"
+                  [routerLinkActiveOptions]="{ exact: true }"
+                  class="header-icon-btn position-relative d-inline-flex align-items-center justify-content-center"
+                  title="Chat"
+                >
+                  <span class="material-symbols-outlined fs-5">forum</span>
+                  <span *ngIf="uneadCount" class="position-absolute top-0 start-100 translate-middle badge rounded-circle bg-purple-badge">
+                    {{ uneadCount }}
+                  </span>
+                </a>
               </li>
-              <li class="nav-item user dropdown order-lg-last order-first">
+
+              <!-- User Profile Dropdown -->
+              <li class="nav-item user dropdown order-lg-last order-first ms-lg-1">
                   <a
                     href="#"
-                    class="d-flex align-items-center"
+                    class="d-flex align-items-center user-profile-link"
                     role="button"
                     data-bs-toggle="dropdown"
                     id="userProfileDropDown"
                     aria-haspopup="true"
                     aria-expanded="false"
                   >
-                    <figure class="profile-picture">
-                      <img src="{{ profilePicUrl }}" id="userProfile" />
+                    <figure class="profile-picture mb-0 me-2">
+                      <img [src]="profilePicUrl || 'assets/images/profile-placehoder-img.png'" (error)="onImageError($event)" id="userProfile" alt="User Profile" />
                     </figure>
-                    <div class="profile-info">
-                      <h4 class="name fw-medium ms-2 me-1">
+                    <div class="profile-info d-flex align-items-center gap-1">
+                      <span class="name fw-medium me-1">
                         {{ user?.fname }} {{ user?.lname }}
-                      </h4>
+                      </span>
+                      <span class="material-symbols-outlined text-muted fs-6">expand_more</span>
                     </div>
                   </a>
-                  <div class="dropdown-menu" aria-labelledby="userProfileDropDown">
+                  <div class="dropdown-menu shadow-sm border-0 dropdown-menu-end" aria-labelledby="userProfileDropDown">
                     <a
                       class="dropdown-item"
                       routerLink="/myaccount"
@@ -207,8 +213,9 @@
                         help</span
                       >Help & FAQs</a
                     >
+                    <div class="dropdown-divider"></div>
                     <a
-                      class="dropdown-item"
+                      class="dropdown-item text-danger"
                       href="javascript:void(0)"
                       (click)="logout()"
                       ><span class="material-symbols-outlined icon me-2">

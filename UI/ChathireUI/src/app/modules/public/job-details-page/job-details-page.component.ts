@@ -131,6 +131,29 @@ export class JobDetailsPageComponent {
       return defaultProfilePic
   }
 
+  getFormattedLocations(locations: any): string {
+    if (!locations || !Array.isArray(locations) || locations.length === 0) {
+      return '';
+    }
+    const formatted = locations
+      .filter(loc => loc && typeof loc === 'string' && loc.trim().length > 0)
+      .map(loc => {
+        let trimmed = loc.trim().replace(/[,;\s]+$/, '');
+        if (trimmed.includes('-')) {
+          const parts = trimmed.split('-');
+          return parts.map(p => p.trim()).filter(p => p).join(', ');
+        }
+        if (trimmed.includes(',')) {
+          const parts = trimmed.split(',');
+          return parts.map(p => p.trim()).filter(p => p).join(', ');
+        }
+        return trimmed;
+      })
+      .filter(str => str.length > 0);
+
+    return formatted.join(' ; ');
+  }
+
   copyURL() {
     navigator.clipboard.writeText("");
   }

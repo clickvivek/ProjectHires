@@ -1,6 +1,6 @@
 <div class="profile-pic-box">
   <div class="pic-area">
-    <img src="{{ profilePicUrl }}" />
+    <img [src]="profilePicUrl || 'assets/images/profile-placehoder-img.png'" (error)="onImageError($event)" />
   </div>
   <div class="edit-area">
     <form enctype="multipart/form-data">

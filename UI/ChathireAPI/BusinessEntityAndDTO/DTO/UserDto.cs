@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -38,6 +38,10 @@ namespace BusinessEntityAndDTO.DTO
         public string? Gender { get; set; }
 
         public long? UserTypeId { get; set; }
+
+        public string? Hiringforcountry { get; set; }
+
+        public string? Location { get; set; }
 
         public string? Otpemail { get; set; }
 
@@ -151,6 +155,10 @@ namespace BusinessEntityAndDTO.DTO
         public string? Gender { get; set; }
 
         public long? UserTypeId { get; set; }
+
+        public string? Hiringforcountry { get; set; }
+
+        public string? Location { get; set; }
 
         public string? Lname { get; set; }
         public long? ConsultancyUserId { get; set; }

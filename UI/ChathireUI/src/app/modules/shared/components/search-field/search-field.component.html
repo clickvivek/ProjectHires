@@ -18,6 +18,13 @@
 			<ng-container *ngFor="let item of fieldList">
 				<li class="list-group-item" (click)="getSelectedItem(item)">{{getItemData(item)}}</li>
 			</ng-container>
+			<div *ngIf="showCreateOption && (!fieldList || fieldList.length === 0)" class="p-3 text-center bg-white border-top">
+				<p class="text-muted text-xs mb-2">No matching company found</p>
+				<button type="button" class="btn btn-sm btn-purple-outline d-inline-flex align-items-center gap-1" (click)="triggerCreateNew($event)">
+					<i class="fa fa-plus-circle"></i>
+					<span>+ Create New Company</span>
+				</button>
+			</div>
 		</div>
 	</div>
 </div>

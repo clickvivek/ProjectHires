@@ -194,4 +194,36 @@ export class InboxComponent {
 
   }
 
+  getTotalCandidates(item: any): number {
+    if (!item || !item.profileCountSummary) return 0;
+    return item.profileCountSummary.reduce((acc: number, p: any) => acc + (p.count || 0), 0);
+  }
+
+  getStatusDisplayName(profile: any): string {
+    if (!profile) return '';
+    const id = profile.candidateProfileMappingStatusId;
+    switch (id) {
+      case 1: return 'New';
+      case 2: return 'On Hold';
+      case 3: return 'Selected';
+      case 4: return 'No Response';
+      case 5: return 'Interview';
+      case 6: return 'Rejected';
+      default: return profile.candidateProfileMappingStatusName || '';
+    }
+  }
+
+  getStatusTileClass(statusId: number, count: number): string {
+    if (!count || count === 0) return 'tile-zero';
+    switch (statusId) {
+      case 1: return 'tile-new';
+      case 2: return 'tile-on-hold';
+      case 3: return 'tile-selected';
+      case 4: return 'tile-no-response';
+      case 5: return 'tile-interview';
+      case 6: return 'tile-rejected';
+      default: return 'tile-default';
+    }
+  }
+
 }

@@ -89,29 +89,36 @@ export class ProfileJobPostingHistoryComponent {
       this.isJobSheet = true;
   }
 
-  ngOnInit() {    
-
+  ngOnInit() {
+    this.fetchJobs();
   }
 
   ngOnChanges(changes: SimpleChanges) {
-    
-    if(this.consultancyUserId && this.profileId) {
-        this.jobOpeningService.apiJobOpeningSearchJobOpeningsGet(undefined, undefined,undefined,undefined,undefined,undefined,undefined,undefined,undefined,undefined,undefined,undefined, this.consultancyUserId, this.profileId).subscribe({
-          next:(res:any) => {
-            
-            this.initialDataList = res
-            this.filteredDataList = this.initialDataList
-            this.isJobLoaded = true
+    this.fetchJobs();
+  }
+
+  fetchJobs() {
+    if (this.profileId) {
+        this.jobOpeningService.apiJobOpeningSearchJobOpeningsGet(
+          undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined,
+          undefined,
+          this.profileId
+        ).subscribe({
+          next: (res: any) => {
+            const rawData = Array.isArray(res) ? res : (res?.value || []);
+            this.initialDataList = rawData;
+            this.filteredDataList = this.initialDataList;
+            this.isJobLoaded = true;
 
             this.totalItems = this.filteredDataList.length;
 
-            if(this.totalItems == 0) {
-              this.isJobAvailable = false
-              this.outParams.emit(false)
+            if (this.totalItems === 0) {
+              this.isJobAvailable = false;
+              this.outParams.emit(false);
             }
             else {
-              this.isJobAvailable = true
-              this.outParams.emit(true)
+              this.isJobAvailable = true;
+              this.outParams.emit(true);
               if (this.totalItems > this.itemLimit) {
                 this.ItemEndIndex = this.itemLimit;
               }
@@ -119,27 +126,21 @@ export class ProfileJobPostingHistoryComponent {
                 this.ItemEndIndex = this.totalItems;
               }
 
-              this.selectedJob = this.initialDataList[0];
-              this.selectedJobId = this.initialDataList[0].jobOpeningId;
-  
-              if (!_.isEmpty(this.initialDataList)) {
+              if (this.initialDataList && this.initialDataList.length > 0) {
                 this.selectedJob = this.initialDataList[0];
                 this.selectedJobId = this.initialDataList[0].jobOpeningId;
               }
             }
 
           },
-          error:(error:any) => {
-            this.isJobLoaded = true
-            this.isJobAvailable = false
-            this.isError = true
-            this.error = "Some error occured"
+          error: (error: any) => {
+            this.isJobLoaded = true;
+            this.isJobAvailable = false;
+            this.isError = true;
+            this.error = "Some error occured";
           }
-        })
+        });
     }
-
-    
-
   }
 
 }

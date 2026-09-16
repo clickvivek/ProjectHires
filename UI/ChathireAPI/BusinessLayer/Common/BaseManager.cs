@@ -1,4 +1,4 @@
-﻿//using DataAccessLayer.Audit;
+//using DataAccessLayer.Audit;
 //using DataAccessLayer.Common;
 //using EntityAndDTO.AuditEntity;
 //using EntityAndDTO.Common;
@@ -17,6 +17,7 @@ namespace BusinessLayer.Common
 {
     public class BaseManager<M> : IManager
     {
+        protected IServiceProvider serviceProvider;
         protected IRepositoryFactory repositoryFactory;
         protected IManagerFactory managerFactory;
         protected ILogger<M> _logger;
@@ -24,6 +25,7 @@ namespace BusinessLayer.Common
 
         public BaseManager(IServiceProvider serviceProvider, ILogger<M> logger,IMapper mapper)
         {
+            this.serviceProvider = serviceProvider;
             this.repositoryFactory = serviceProvider.GetService<IRepositoryFactory>();
             this.managerFactory = serviceProvider.GetService<IManagerFactory>();
             _logger = logger;

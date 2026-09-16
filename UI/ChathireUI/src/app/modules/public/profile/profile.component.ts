@@ -32,6 +32,7 @@ export class ProfileComponent  {
   profileId:any;
   profileUrlPrefix = publicProfileUrlPrefix;
   profileUrl = ""
+  isCopied: boolean = false;
 
   consultancyUserId:any;
 
@@ -69,8 +70,25 @@ export class ProfileComponent  {
 
   }
 
-  copyURL(text) {
+  copyURL(text: string) {
+    if (!text) return;
     navigator.clipboard.writeText(text);
+    this.isCopied = true;
+    setTimeout(() => {
+      this.isCopied = false;
+    }, 2000);
+  }
+
+  getRoleText(): string {
+    if (!this.user) return 'Recruiter';
+    return this.user.userTypeId === 2 ? 'Bench Sales Specialist' : 'Recruiter';
+  }
+
+  getUserInitials(): string {
+    if (!this.user) return 'CH';
+    const first = (this.user.fname || '').charAt(0).toUpperCase();
+    const last = (this.user.lname || '').charAt(0).toUpperCase();
+    return `${first}${last}` || 'CH';
   }
 
   isLoggedIn() {

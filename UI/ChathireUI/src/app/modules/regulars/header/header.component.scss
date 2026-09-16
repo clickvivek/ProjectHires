@@ -7,35 +7,112 @@ header {
     top: 0;
     width: 100%;
     z-index: 1000;
-    height: 70px;
-    background-color: white;
-    @include hires-breakpoint("lt-lg") {
-      @include box-shadow(0 0 4px pick-color(dark, 300));
-      &:before {
-        content: "";
-        position: absolute;
-        width: 0;
-        @include opacity(0);
-        height: 100vh;
-        background: rgba(black, 0.6);
-        left: 0;
-        top: 0;
-        @include transition(opacity 0.15s ease);
+    height: 66px;
+    background-color: #ffffff;
+    border-bottom: 1px solid #EAECF0;
+    box-shadow: none;
+
+    .nav-link-custom {
+      font-size: 14px;
+      font-weight: 500;
+      color: #475467 !important;
+      padding: 6px 12px !important;
+      border-radius: 6px;
+      position: relative;
+      transition: all 0.2s ease-in-out;
+      text-decoration: none;
+
+      &:hover {
+        color: #70246D !important;
+        background-color: #FAF7FA;
+      }
+
+      &.active {
+        color: #70246D !important;
+        background-color: #F5EDF5;
+        font-weight: 600;
       }
     }
-    &.awake {
-      @include transition(all 0.15s ease);
-      @include box-shadow(0 0 4px pick-color(dark, 300));
-      z-index: 4;
+
+    .header-icon-btn {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background-color: #F8FAFC;
+      border: 1px solid #E4E7EC;
+      color: #475467;
+      transition: all 0.2s ease-in-out;
+      text-decoration: none;
+
+      &:hover {
+        background-color: #FAF7FA;
+        border-color: #E7D5E6;
+        color: #70246D;
+      }
+
+      &.active {
+        background-color: #F5EDF5;
+        border-color: #E7D5E6;
+        color: #70246D;
+        box-shadow: 0 0 0 2px rgba(112, 36, 109, 0.15);
+      }
+
+      .bg-purple-badge {
+        background-color: #70246D;
+        color: #ffffff;
+        font-size: 10px;
+        font-weight: 600;
+        min-width: 16px;
+        height: 16px;
+        padding: 0 4px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+    }
+
+    .user-profile-link {
+      text-decoration: none;
+      padding: 4px 8px;
+      border-radius: 8px;
+      transition: background-color 0.2s ease-in-out;
+
+      &:hover {
+        background-color: #F9FAFB;
+      }
+
+      .name {
+        color: #101828;
+        font-size: 14px;
+      }
+    }
+
+    .btn-logout-subtle {
+      font-size: 14px;
+      font-weight: 500;
+      color: #344054 !important;
+      text-decoration: none;
+      padding: 8px 16px;
+      border-radius: 8px;
+      background-color: transparent;
+      transition: all 0.2s ease-in-out;
+      display: inline-flex;
+      align-items: center;
+
+      &:hover {
+        background-color: #F2F4F7 !important;
+        color: #1D2939 !important;
+      }
     }
     .navbar-brand {
       display: flex;
       align-items: center;
       flex-shrink: 0;
       .logo {
-        width: 100%;
-        object-fit: cover;
-        height: 26px;
+        height: 52px;
+        width: auto;
+        max-width: 260px;
+        object-fit: contain;
       }
       .logo-text {
         text-indent: -999px;
@@ -108,10 +185,11 @@ header {
             @extend .fw-medium;
             padding: 0;
             line-height: 40px;
-            color: pick-color(dark, 900);
+            color: #39756F !important;
+            transition: color 0.2s ease-in-out;
             &:hover,
             &.active {
-              color: $primary;
+              color: #2E625D !important;
             }
             @include hires-breakpoint("lg") {
               font-size: 13px;
@@ -121,32 +199,34 @@ header {
               padding: 0;
               &:hover,
               &.active {
-                color: $primary;
+                color: #2E625D !important;
               }
             }
           }
           &.special {
             .nav-link {
-              color: white;
+              color: white !important;
               display: block;
-              background: $primary;
-              @include border-radius(3px);
+              background-color: #39756F !important;
+              border-color: #39756F !important;
+              @include border-radius(6px);
               padding: 0 16px;
-              @include hires-breakpoint("lt-lg") {
-                background: transparent;
-                color: inherit;
-                padding: 0;
+              transition: background-color 0.2s ease-in-out;
+              &:hover {
+                background-color: #2E625D !important;
+                border-color: #2E625D !important;
+                color: white !important;
               }
               span {
                 @include hires-breakpoint("lt-lg") {
                   color: white;
-                  background: $primary;
+                  background: #39756F;
                   @include ft-calc($font-tiny);
                   padding: 4px 15px;
                   position: relative;
                   top: -2px;
                   left: 4px;
-                  border: 1px solid $primary;
+                  border: 1px solid #39756F;
                   @include border-radius(4px);
                 }
                 
@@ -178,74 +258,81 @@ header {
                 }
             }
             .dropdown-menu {
-              top: 40px !important;
-              min-width: 180px !important;
-              right: -10px !important;
+              top: calc(100% + 6px) !important;
+              min-width: 200px !important;
+              right: 0 !important;
               left: auto !important;
-              border: 0;
-              padding: 0;
-              @include border-radius(4px);
-              @include box-shadow(0 0 4px 0 rgba(pick-color(dark, 900), 0.3));
-              &:before {
-                content: "";
-                border: 10px solid transparent;
-                border-left-color: white;
-                border-top-color: white;
-                position: absolute;
-                @include border-radius(3px);
-                @include box-shadow(
-                  -4px -4px 6px -3px rgba(pick-color(dark, 900), 0.17)
-                );
-                @include transform(rotate(45deg));
-                top: -8px;
-                right: 15px;
-                z-index: 1002;
+              border: 1px solid #E4E7EC !important;
+              padding: 6px !important;
+              border-radius: 10px !important;
+              background-color: #ffffff !important;
+              box-shadow: 0 10px 25px -5px rgba(16, 24, 40, 0.1), 0 4px 6px -2px rgba(16, 24, 40, 0.05) !important;
+              margin-top: 0 !important;
+
+              &:before, &:after {
+                display: none !important;
+                content: none !important;
               }
+
+              .dropdown-divider {
+                border-top: 1px solid #EAECF0 !important;
+                margin: 4px 0 !important;
+                opacity: 1;
+              }
+
               .dropdown-item {
-                @extend .ft-head;
-                @extend .text-sm;
-                padding: 10px 14px;
-                @include transition(all 0.2s ease);
-                margin: 0 auto;
+                font-size: 13.5px !important;
+                font-weight: 500 !important;
+                padding: 9px 12px !important;
+                border-radius: 6px !important;
+                color: #344054 !important;
+                border-bottom: none !important;
                 display: flex;
                 align-items: center;
-                &:not(:last-child) {
-                  border-bottom: 1px solid pick-color(dark, 300);
+                transition: all 0.15s ease-in-out;
+                margin: 0;
+
+                .icon, .material-symbols-outlined {
+                  font-size: 18px !important;
+                  color: #667085 !important;
+                  margin-right: 10px !important;
+                  transition: color 0.15s ease-in-out;
                 }
-                &:hover,
+
+                &:hover {
+                  background-color: #F8FAFC !important;
+                  color: #101828 !important;
+
+                  .icon, .material-symbols-outlined {
+                    color: #70246D !important;
+                  }
+                }
+
                 &.active {
-                  background: transparent;
-                  color: $primary;
-                  @include transition(all 0.2s ease);
-                }
-                .icon {
-                  @extend .text-h6;
-                }
-              }
-              @include hires-breakpoint("lt-lg") {
-                visibility: hidden;
-                max-height: 0;
-                box-shadow: none;
-                @include transition(max-height 0.2s ease);
-                &.show {
-                  visibility: visible;
-                  max-height: 2000px;
-                  @include transition(max-height 0.2s ease);
-                  &:before {
-                    content: none;
-                  }
-                  .dropdown-item {
-                    padding: 10px 0;
-                    border-bottom: 0;
-                    padding: 0 0 0 20px;
-                    margin: 0 0 20px 0;
-                    font-size: 16px;
+                  background-color: #F5EDF5 !important;
+                  color: #70246D !important;
+                  font-weight: 600 !important;
+
+                  .icon, .material-symbols-outlined {
+                    color: #70246D !important;
                   }
                 }
-              }
-              @include hires-breakpoint("lg") {
-                .dropdown-item {
-                  font-size: 13px;
+
+                &.text-danger {
+                  color: #D92D20 !important;
+
+                  .icon, .material-symbols-outlined {
+                    color: #D92D20 !important;
+                  }
+
+                  &:hover {
+                    background-color: #FEF3F2 !important;
+                    color: #B42318 !important;
+
+                    .icon, .material-symbols-outlined {
+                      color: #B42318 !important;
+                    }
+                  }
                 }
               }
             }

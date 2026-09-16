@@ -92,6 +92,10 @@ export class HeaderComponent implements OnInit {
     return newData[0]
   }
 
+  onImageError(event: any) {
+    event.target.src = defaultProfilePic;
+  }
+
   ngOnInit() {
 
     this.mobileScreen();
@@ -99,12 +103,16 @@ export class HeaderComponent implements OnInit {
     this.sessionService.userdetailscast.subscribe((res: any) => {
       this.user = res
       if (this.user && this.user?.profilePic) {
-        this.profilePicUrl = `${picUrl}${this.user?.profilePic}`
+        if (this.user.profilePic.startsWith('http://') || this.user.profilePic.startsWith('https://')) {
+          this.profilePicUrl = this.user.profilePic;
+        } else {
+          this.profilePicUrl = `${picUrl}${this.user?.profilePic}`;
+        }
       }
       else {
-        this.profilePicUrl = defaultProfilePic
+        this.profilePicUrl = defaultProfilePic;
       }
-      this.profileId = this.user?.consultancyUsers[0].publicProfileUserName
+      this.profileId = this.user?.consultancyUsers && this.user?.consultancyUsers[0] ? this.user?.consultancyUsers[0].publicProfileUserName : '';
     })
 
     this.sharedService.inboxunreadcountcast.subscribe((res:any) => {

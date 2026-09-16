@@ -33,6 +33,7 @@ var config = new AutoMapper.MapperConfiguration(
         //cf.ValidateInlineMaps = false;
     });
 builder.Services.AddSingleton(config.CreateMapper());
+builder.Services.AddHttpClient<BusinessLayer.Services.IResendEmailService, BusinessLayer.Services.ResendEmailService>();
 DependancyManager.ConfigureAPI(builder.Services);
 
 //builder.Services.AddScoped(_ =>

@@ -1,4 +1,4 @@
-﻿using AutoMapper;
+using AutoMapper;
 using BusinessEntityAndDTO.Common;
 using BusinessEntityAndDTO.DTO;
 using BusinessEntityAndDTO.Models;
@@ -18,6 +18,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using Utility.Configuration;
+using BusinessLayer.Services;
 
 namespace BusinessLayer.Manager
 {
@@ -32,6 +33,8 @@ namespace BusinessLayer.Manager
         Task<UserDto> UpdateUser(UserDetailsDtoForUpdate user, UserContext userContext);
         Task<bool> UpdatePassword(string email, string? newpassword, string EmailTemplateId, IConfigurationValueProvider? authValueProvider, UserContext userContext);
         Task<bool> UpdateProfilePic(string email, string? filename, UserContext userContext);
+        Task<bool> VerifyOtp(string email, string otp, UserContext userContext);
+        Task<bool> ResendOtp(string email, UserContext userContext);
     }
     public class UserManager : BaseManager<UserManager>, IUserManager
     {
@@ -64,19 +67,127 @@ namespace BusinessLayer.Manager
             var result = await ExecuteAsync<User>(async () =>
             {
                 var date = DateTime.UtcNow;
-                var _user = mapper.Map<User>(user);
-
                 var repo = repositoryFactory.Get<IUserRepository>();
-                _user.Updated = date;
-                _user.UpdatedBy = userContext.UserId;
-                _user.UserName = user.Email;
-                if (user.Fname == null || user.Fname == "")
-                    _user.Fname = "";
+                var existingUsers = await repo.GetUserByUserName(user.Email);
+                var existingUser = existingUsers?.FirstOrDefault();
 
-                return await repo.Post(_user, true);
+                var otpCode = RandomNumberGenerator.GetInt32(100000, 999999).ToString();
+
+                User targetUser;
+                if (existingUser != null)
+                {
+                    if (existingUser.EmailVerified == true)
+                    {
+                        throw new ArgumentException("User Already exists");
+                    }
+                    existingUser.Password = user.Password;
+                    existingUser.Otpemail = otpCode;
+                    existingUser.OtpemailDate = date.AddMinutes(10);
+                    existingUser.Updated = date;
+                    existingUser.UpdatedBy = userContext.UserId;
+                    await repo.Put(existingUser.Id, existingUser, true);
+                    targetUser = existingUser;
+                }
+                else
+                {
+                    var _user = mapper.Map<User>(user);
+                    _user.Updated = date;
+                    _user.UpdatedBy = userContext.UserId;
+                    _user.UserName = user.Email;
+                    _user.Active = false;
+                    _user.EmailVerified = false;
+                    _user.Otpemail = otpCode;
+                    _user.OtpemailDate = date.AddMinutes(10);
+                    if (string.IsNullOrEmpty(user.Fname))
+                        _user.Fname = "";
+
+                    targetUser = await repo.Post(_user, true);
+                }
+
+                var emailService = serviceProvider?.GetService<IResendEmailService>();
+                if (emailService != null)
+                {
+                    await emailService.SendOtpEmailAsync(targetUser.Email, otpCode);
+                }
+
+                return targetUser;
             }, "AddUser", userContext);
 
             return mapper.Map<UserDto>(result);
+        }
+
+        public async Task<bool> VerifyOtp(string email, string otp, UserContext userContext)
+        {
+            return await ExecuteAsync<bool>(async () =>
+            {
+                var repo = repositoryFactory.Get<IUserRepository>();
+                var users = await repo.GetUserByUserName(email);
+                var user = users?.FirstOrDefault();
+
+                if (user == null)
+                {
+                    throw new ArgumentException("User account not found");
+                }
+
+                if (user.EmailVerified == true)
+                {
+                    return true;
+                }
+
+                if (string.IsNullOrWhiteSpace(user.Otpemail) || user.Otpemail.Trim() != otp.Trim())
+                {
+                    throw new ArgumentException("Invalid verification code. Please check and try again.");
+                }
+
+                if (user.OtpemailDate.HasValue && user.OtpemailDate.Value < DateTime.UtcNow)
+                {
+                    throw new ArgumentException("Verification code has expired. Please click 'Resend' to get a new code.");
+                }
+
+                user.EmailVerified = true;
+                user.Active = true;
+                user.Otpemail = null;
+                user.OtpemailDate = null;
+                user.Updated = DateTime.UtcNow;
+
+                await repo.Put(user.Id, user, true);
+                return true;
+            }, "VerifyOtp", userContext);
+        }
+
+        public async Task<bool> ResendOtp(string email, UserContext userContext)
+        {
+            return await ExecuteAsync<bool>(async () =>
+            {
+                var repo = repositoryFactory.Get<IUserRepository>();
+                var users = await repo.GetUserByUserName(email);
+                var user = users?.FirstOrDefault();
+
+                if (user == null)
+                {
+                    throw new ArgumentException("User account not found");
+                }
+
+                if (user.EmailVerified == true)
+                {
+                    throw new ArgumentException("Email is already verified");
+                }
+
+                var otpCode = RandomNumberGenerator.GetInt32(100000, 999999).ToString();
+                user.Otpemail = otpCode;
+                user.OtpemailDate = DateTime.UtcNow.AddMinutes(10);
+                user.Updated = DateTime.UtcNow;
+
+                await repo.Put(user.Id, user, true);
+
+                var emailService = serviceProvider?.GetService<IResendEmailService>();
+                if (emailService != null)
+                {
+                    await emailService.SendOtpEmailAsync(user.Email, otpCode);
+                }
+
+                return true;
+            }, "ResendOtp", userContext);
         }
 
         public async Task<UserDto> AddUserWithConsultacy(UserDtoForInsert? user, long? consultacyId, UserContext userContext)
@@ -225,6 +336,12 @@ namespace BusinessLayer.Manager
 
                 if (user.UserDtoForUpdate.Address != null)
                     _user.Address = user.UserDtoForUpdate.Address;
+
+                if (user.UserDtoForUpdate.Hiringforcountry != null)
+                    _user.Hiringforcountry = user.UserDtoForUpdate.Hiringforcountry;
+
+                if (user.UserDtoForUpdate.Location != null)
+                    _user.Location = user.UserDtoForUpdate.Location;
 
                 if (user.UserDtoForUpdate.Gender != null)
                     _user.Gender = user.UserDtoForUpdate.Gender;

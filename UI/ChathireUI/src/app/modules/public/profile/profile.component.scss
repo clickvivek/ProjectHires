@@ -1,61 +1,391 @@
 @import "src/@hires/scss/utilities/all";
 @import "src/@hires/scss/helpers/typography";
 
-.profile-wrapper {  
-  .profile-card {
-    .card-body {
-      padding: 25px;
-      .profile-content {
+$primary-plum: #673260;
+$primary-hover: #51264C;
+$light-plum: #F6EFF5;
+$plum-border: #E6D8E3;
+$dark-heading: #111827;
+$body-text: #5F5962;
+$muted-text: #8F8992;
+$page-bg: #F7F6F3;
+$card-bg: #FFFFFF;
+$border-color: #E6E2E5;
+$verified-green: #2E8B57;
+$linkedin-blue: #0A66C2;
+$linkedin-hover: #084E96;
+
+.profile-wrapper {
+  background-color: $page-bg;
+  min-height: calc(100vh - 70px);
+  padding-top: 24px;
+  padding-bottom: 48px;
+
+  .max-width-lg {
+    max-width: 1140px;
+    margin: 0 auto;
+  }
+
+  // Main Profile Card
+  .main-profile-card {
+    background-color: $card-bg;
+    border: 1px solid $border-color;
+    border-radius: 16px;
+    box-shadow: 0 2px 10px rgba(17, 24, 39, 0.05);
+
+    .profile-header-grid {
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      gap: 28px;
+      align-items: center;
+
+      @include hires-breakpoint("lt-lg") {
+        grid-template-columns: 1fr;
+        gap: 20px;
+      }
+    }
+
+    // Avatar Column
+    .avatar-col {
+      .avatar-wrap {
+        position: relative;
+        width: 124px;
+        height: 124px;
+
+        ::ng-deep img,
+        ::ng-deep .profile-pic {
+          width: 124px !important;
+          height: 124px !important;
+          border-radius: 50% !important;
+          border: 4px solid #FFFFFF;
+          box-shadow: 0 4px 16px rgba(17, 24, 39, 0.10);
+          object-fit: cover;
+        }
+
+        .verified-dot {
+          position: absolute;
+          bottom: 4px;
+          right: 4px;
+          width: 24px;
+          height: 24px;
+          background-color: $verified-green;
+          border: 2px solid #FFFFFF;
+          border-radius: 50%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          box-shadow: 0 2px 6px rgba(46, 139, 87, 0.3);
+        }
+      }
+    }
+
+    // Identity Column
+    .identity-col {
+      .profile-name {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: $dark-heading;
+        letter-spacing: -0.02em;
+      }
+
+      .role-badge {
+        display: inline-flex;
+        align-items: center;
+        padding: 4px 12px;
+        background-color: $light-plum;
+        color: $primary-plum;
+        border: 1px solid $plum-border;
+        border-radius: 999px;
+        font-size: 0.8125rem;
+        font-weight: 600;
+      }
+
+      .profile-headline {
+        font-size: 0.9375rem;
+        color: $body-text;
+      }
+
+      .profile-location {
+        font-size: 0.875rem;
+        color: $body-text;
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+
+        .location-icon {
+          color: $muted-text;
+        }
+      }
+
+      // Action Buttons
+      .action-buttons-group {
         display: flex;
         align-items: center;
-        .middle {
-          .icon {
-            cursor: pointer;
+        gap: 12px;
+        flex-wrap: wrap;
+
+        .btn-message {
+          display: inline-flex;
+          align-items: center;
+          gap: 8px;
+          height: 42px;
+          padding: 0 20px;
+          background-color: #397774 !important;
+          color: #FFFFFF !important;
+          border: none;
+          border-radius: 8px;
+          font-size: 0.875rem;
+          font-weight: 600;
+          cursor: pointer;
+          transition: all 0.15s ease;
+
+          span, div {
+            color: #FFFFFF !important;
+          }
+
+          svg {
+            color: #FFFFFF !important;
+            stroke: #FFFFFF !important;
+            fill: none !important;
+            path {
+              fill: none !important;
+              stroke: #FFFFFF !important;
+            }
+          }
+
+          &:hover {
+            background-color: #2F6663 !important;
+            color: #FFFFFF !important;
+            span, div {
+              color: #FFFFFF !important;
+            }
             svg {
-              width: 36px;
+              color: #FFFFFF !important;
+              stroke: #FFFFFF !important;
               path {
-                fill: #0077b5;
+                fill: none !important;
+                stroke: #FFFFFF !important;
               }
             }
           }
-          .chat-btn {
-           padding: 3px 20px;
-           @include border-radius(4px)
+
+          &:focus-visible {
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(57, 119, 116, 0.25);
           }
         }
-        .right {
-          margin: 0 0 0 30px;
-          flex-grow: 1;
-          .bottom {
-            .desp {
-              margin: 0 14px 0 0;
-              input {
-                height: 42px;
-              }
+
+        .btn-linkedin {
+          display: inline-flex;
+          align-items: center;
+          gap: 6px;
+          height: 42px;
+          padding: 0 18px;
+          background-color: $linkedin-blue;
+          color: #FFFFFF;
+          border: none;
+          border-radius: 8px;
+          font-size: 0.875rem;
+          font-weight: 600;
+          text-decoration: none;
+          transition: background-color 0.15s ease;
+
+          &:hover {
+            background-color: $linkedin-hover;
+            color: #FFFFFF;
+          }
+        }
+      }
+    }
+
+    // Shareable Link Card Column
+    .share-link-col {
+      min-width: 280px;
+
+      @include hires-breakpoint("lt-lg") {
+        min-width: 100%;
+      }
+
+      .public-link-card {
+        background-color: #FAF9FA;
+        border: 1px solid $border-color;
+        border-radius: 10px;
+        padding: 12px 14px;
+
+        .link-label {
+          display: block;
+          font-size: 0.75rem;
+          font-weight: 600;
+          color: $muted-text;
+          margin-bottom: 6px;
+          text-transform: uppercase;
+          letter-spacing: 0.04em;
+        }
+
+        .link-input-group {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          background-color: #FFFFFF;
+          border: 1px solid $border-color;
+          border-radius: 6px;
+          padding: 4px 8px 4px 12px;
+          gap: 8px;
+
+          .link-url-text {
+            font-size: 0.8125rem;
+            color: $body-text;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 170px;
+          }
+
+          .btn-copy-url {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            background: none;
+            border: none;
+            padding: 4px 8px;
+            color: $primary-plum;
+            font-size: 0.75rem;
+            font-weight: 600;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: background-color 0.15s ease;
+
+            &:hover {
+              background-color: $light-plum;
             }
           }
         }
       }
     }
-    @include hires-breakpoint("lt-lg") {
-      margin: 60px 0 0 0;
-      .card-body {
-        padding-bottom: 10px;
-        .right {
-          margin: 70px 0 0 0 !important;
-          .bottom {
-            .desp {
-                margin: 0 0 14px 0 !important;
+
+    .profile-section-divider {
+      border: 0;
+      height: 1px;
+      background-color: $border-color;
+      margin: 28px 0;
+    }
+
+    // Common Section Title
+    .section-title {
+      font-size: 1.125rem;
+      font-weight: 700;
+      color: $dark-heading;
+      margin-bottom: 14px;
+      letter-spacing: -0.01em;
+    }
+
+    // Professional Information Section
+    .professional-info-section {
+      .info-box {
+        display: flex;
+        flex-direction: column;
+        background-color: #FAF9FA;
+        border: 1px solid $border-color;
+        border-radius: 8px;
+        padding: 12px 16px;
+
+        .info-label {
+          font-size: 0.8125rem;
+          font-weight: 600;
+          color: $muted-text;
+          margin-bottom: 2px;
+        }
+
+        .info-value {
+          font-size: 0.9375rem;
+          font-weight: 600;
+          color: $dark-heading;
+
+          .info-link {
+            color: $primary-plum;
+            text-decoration: none;
+
+            &:hover {
+              text-decoration: underline;
             }
           }
         }
       }
-      .profile-inner {
-        position: absolute;
-        left: calc(50% - 65px);
-        top: -60px;
+    }
+
+    // About Section
+    .about-section {
+      .about-body {
+        font-size: 0.9375rem;
+        line-height: 1.6;
+        color: $body-text;
+        max-width: 820px;
+        margin: 0;
+      }
+    }
+
+    // Specializations Section
+    .specializations-section {
+      .chips-flex {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+
+        .plum-chip {
+          display: inline-block;
+          padding: 5px 14px;
+          background-color: $light-plum;
+          color: $primary-plum;
+          border: 1px solid $plum-border;
+          border-radius: 999px;
+          font-size: 0.8125rem;
+          font-weight: 600;
+        }
       }
     }
   }
-}
 
+  // Activity & Jobs History Card
+  .activity-panel-card {
+    background-color: $card-bg;
+    border: 1px solid $border-color;
+    border-radius: 16px;
+    box-shadow: 0 2px 10px rgba(17, 24, 39, 0.05);
+
+    .custom-plum-tabs {
+      border-bottom: 2px solid $border-color;
+      gap: 24px;
+
+      .nav-item {
+        margin-bottom: -2px;
+
+        .nav-link {
+          border: none;
+          border-bottom: 2px solid transparent;
+          background: transparent;
+          color: $body-text;
+          font-size: 0.9375rem;
+          font-weight: 600;
+          padding: 10px 4px 14px 4px;
+          transition: all 0.15s ease;
+
+          &:hover {
+            color: $primary-plum;
+          }
+
+          &.active {
+            color: $primary-plum;
+            border-bottom-color: $primary-plum;
+          }
+        }
+      }
+    }
+  }
+
+  // Empty Profile State Card
+  .empty-profile-card {
+    background-color: $card-bg;
+    border: 1px dashed $border-color;
+    border-radius: 16px;
+  }
+}

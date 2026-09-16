@@ -11,13 +11,14 @@
                         <div class="job-head">
 
                             <div class="left">
-                                <h6 class="fw-medium mb-2">{{ selectedJob.jobOpeningName }}</h6>
-                                <div class="info">
-                                  <div class="text-dark-500 sub-title">
+                                <h6 class="fw-medium mb-1">{{ selectedJob.jobOpeningName }}</h6>
+                                <div class="info d-flex flex-column align-items-start">
+                                  <div class="text-dark-500 sub-title fw-medium">
                                     {{ selectedJob.companyName }}
                                   </div>
-                                  <div class="text-dark-500 text-sm sub-title">
-                                    {{ selectedJob.locations[0] }}, {{ selectedJob.locations[1] }}
+                                  <div class="text-dark-500 text-sm location-info d-flex align-items-center mt-1" *ngIf="getFormattedLocations(selectedJob?.locations)">
+                                    <span class="material-symbols-outlined text-danger me-1" style="font-size: 16px;">location_on</span>
+                                    <span>{{ getFormattedLocations(selectedJob?.locations) }}</span>
                                   </div>
                                 </div>
                                 <div class="text-secondary-500 fw-medium text-sm mt-1">
@@ -98,11 +99,11 @@
                                 </div>
                             </div>
                             
-                            <div class="list-wrapper visa-list-wrapper mt-2">
-                                <span class="material-symbols-outlined text-base me-2">location_on</span>
+                            <div class="list-wrapper skills-list-wrapper mt-2">
+                                <img src="assets/images/skills-icon.png" alt="skills" class="me-2" style="width: 18px; height: 18px; object-fit: contain;" />
                                 <div class="lists">
-                                    <div class="item text-sm" *ngFor="let item of selectedJob?.skills">
-                                    {{ item }}
+                                    <div class="item text-sm" *ngFor="let item of selectedJob?.skills; let last = last">
+                                    {{ item }}<span *ngIf="!last">,&nbsp;</span>
                                     </div>
                                 </div>
                             </div>

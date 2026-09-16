@@ -12,35 +12,14 @@
         display: flex;
         .left {
           .info {
-            display: flex;
-            align-items: center;
-            @include hires-breakpoint("md") {
-              display: block;
-            }
+            display: block;
             .sub-title {
-              &:not(:last-child) {
-                padding-right: 8px;
-                &::after {
-                  position: relative;
-                  content: "-";
-                  right: -2px;
-                  @include hires-breakpoint("md") {
-                    content: "";
-                  }
-                }
-              }
+              font-weight: 500;
+              color: #475467;
             }
-            @include hires-breakpoint("xs") {
-              display: block;
-              .sub-title {
-                margin: 0 0 6px 0;
-                &:not(:last-child) {
-                  padding-right: 0;
-                  &:after {
-                    content: none;
-                  }
-                }
-              }
+            .location-info {
+              color: #475467;
+              font-size: 13.5px;
             }
           }
         }
@@ -120,6 +99,16 @@
       .list-wrapper {
         display: flex;
         align-items: center;
+        &.skills-list-wrapper {
+          .lists {
+            .item:not(:last-child) {
+              margin-right: 0;
+              &::after {
+                content: none !important;
+              }
+            }
+          }
+        }
         .lists {
           display: flex;
           .item {
@@ -177,19 +166,66 @@
           }
           .right {
             margin-left: auto;
-            margin-right: 20px;
-            .icon {
-              margin: 0 6px 0 0;
-            }
-            @include hires-breakpoint("md") {
-              margin: 0;
-              .chat-btn {
-                margin: 20px 0 0 0;
-                justify-content: center;
+            display: flex;
+            align-items: center;
+
+            .chat-btn {
+              display: inline-flex !important;
+              align-items: center !important;
+              justify-content: center !important;
+              padding: 8px 18px !important;
+              background-color: #EAECEF !important;
+              border: 1px solid #D1D5DB !important;
+              border-radius: 8px !important;
+              color: #374151 !important;
+              font-size: 14px !important;
+              font-weight: 500 !important;
+              cursor: pointer !important;
+              transition: all 0.2s ease-in-out !important;
+
+              span, div {
+                color: #374151 !important;
+              }
+
+              svg {
+                width: 18px !important;
+                height: 18px !important;
+                margin-right: 6px !important;
+                fill: #374151 !important;
+                color: #374151 !important;
+                stroke: #374151 !important;
+
+                path {
+                  fill: #374151 !important;
+                  stroke: none !important;
+                }
+              }
+
+              &:hover {
+                background-color: #D1D5DB !important;
+                border-color: #9CA3AF !important;
+                color: #111827 !important;
+
+                span, div {
+                  color: #111827 !important;
+                }
+
+                svg path {
+                  fill: #111827 !important;
+                }
+              }
+
+              &.disabled {
+                opacity: 0.5;
+                cursor: not-allowed;
               }
             }
-            @include hires-breakpoint("lt-md") {
-              margin-right: 0;
+
+            @include hires-breakpoint("md") {
+              margin: 16px 0 0 0;
+              .chat-btn {
+                width: 100%;
+              }
             }
           }
         }

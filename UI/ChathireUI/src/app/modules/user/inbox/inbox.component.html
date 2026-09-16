@@ -1,116 +1,149 @@
 <div class="inbox-wrapper">
+  <div class="container-fluid px-md-4">
 
-    <div class="container">
-        <div class="row">
+    <!-- Loading State -->
+    <loader *ngIf="!isLoaded"></loader>
 
-            <div class="col-sm-12">
-                
-                <loader *ngIf="!isLoaded"></loader>
+    <ng-container *ngIf="isLoaded">
 
-                <ng-container *ngIf="isLoaded">
+      <!-- Header Section -->
+      <div class="dashboard-header mb-4">
+        <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3 mb-3">
+          <div>
+            <h1 class="page-title mb-1">Recruitment Operations</h1>
+            <p class="page-subtitle mb-0">Manage job postings, candidate pipelines, and screening workflows</p>
+          </div>
+          <div class="d-flex align-items-center gap-2">
+            <span class="badge-active-jobs" *ngIf="isDataAvailable()">
+              <span class="pulse-dot"></span>
+              {{ totalItems }} {{ isActive ? 'Active' : 'Inactive' }} {{ totalItems === 1 ? 'Job Posting' : 'Job Postings' }}
+            </span>
+          </div>
+        </div>
 
-                    <div class="row">
-                        <div class="col-md-8 col-lg-6">
-                            <page-search (outputData)="handleSearch($event)" placeholder="Search by job, location" ></page-search>
-                        </div>
-                        <div class="col-md-4 col-lg-6">
-                            <div class="active-box">
-                                <slider-classic
-                                    [data]="isActive" 
-                                    activeText="Show active jobs" 
-                                    inActiveText="Show inactive jobs"
-                                    (outputparams)="handleActiveList($event)">
-                                </slider-classic>
-                            </div>
-                        </div>
-                    </div>
-
-                    <ng-container *ngIf="isDataAvailable()">
-                       
-                        <div class="options-box">
-                            <div class="row">
-                                <div class="col-md-4 col-lg-3">
-                                    <h6>{{totalItems}} results available </h6>
-                                </div>
-                                <div class="col-md-8 col-lg-9">
-                                    <div class="options-area">
-                                        <div class="option d-flex align-items-center">
-                                            <p class="label me-1 text-sm">Sort By:</p>
-                                            <dropdown-classic [fieldList]="sortList" fieldType="name"></dropdown-classic>
-                                        </div>
-                                        <div class="d-flex align-items-center">
-                                            <p class="label me-1 text-sm">Order By:</p>
-                                            <dropdown-classic [fieldList]="orderList" fieldType="name"></dropdown-classic>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-    
-                        <div class="inbox-container">
-    
-                            <ng-container *ngFor="let item of filteredData">
-                                <li class="list-group-item shadow">
-                                    <div class="top">
-                                        <p class="text-secondary-800 desp fw-medium">
-                                            {{ item.name }}
-                                        </p>
-                                        <p
-                                        class="text-dark-600 text-sm desp fw-medium d-none d-md-block"
-                                      >
-                                        {{ item.jobOpeningLocation | jobLocation }}
-                                      </p>
-                                      <div class="desp ms-auto">
-                                        <slider-classic [data]="item.active" [selectedItem]="item" activeText="Active job" inActiveText="Inactive job" (outputparams)="handleActive($event)"></slider-classic>
-                                      </div>
-                                    </div>
-                                    <div class="middle">
-                                        <p
-                                        class="text-dark-600 text-sm desp fw-medium d-md-none"
-                                      >
-                                        {{ item.jobOpeningLocation | jobLocation }}
-                                      </p>
-                                        <p
-                                        class="text-dark-400 text-sm desp"
-                                        >
-                                        posted on {{getDate(item.postDate)}}
-                                        </p>
-                                    </div>
-                                    <div class="middle">
-                                        <p class="text-sm fw-medium text-tertiary-700 underline pointer mt-2 d-inline-block" (click)="handleJob(item)">Job Details</p>
-                                    </div>
-                                    <div class="bottom">
-                                        <div class="row">
-                                            <div class="col-6 col-md-3 col-lg-2" *ngFor="let profile of item.profileCountSummary">
-                                                <div class="box" (click)="handleResumeType(item, profile.candidateProfileMappingStatusId)">
-                                                    <p class="text-base fw-medium" [profileMapColor]="profile.candidateProfileMappingStatusId">{{profile.count}}</p>
-                                                    <p class="text-sm fw-medium" [profileMapColor]="profile.candidateProfileMappingStatusId">{{profile.candidateProfileMappingStatusName}}</p>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </li>
-                            </ng-container>
-    
-                        </div>
-
-                    </ng-container>
-
-                    <div class="options-box" *ngIf="!isDataAvailable()">
-                        <h6>No data found</h6>
-                    </div>
-
-                </ng-container>
-
+        <!-- Controls Toolbar -->
+        <div class="toolbar-card">
+          <div class="row g-3 align-items-center">
+            <!-- Search -->
+            <div class="col-12 col-lg-5">
+              <page-search (outputData)="handleSearch($event)" placeholder="Search jobs by title or location..."></page-search>
             </div>
 
-            
+            <!-- Right Controls: Sort, Order, Toggle -->
+            <div class="col-12 col-lg-7">
+              <div class="d-flex flex-wrap align-items-center justify-content-lg-end gap-3">
+                <div class="toolbar-control-group d-flex align-items-center gap-2">
+                  <span class="control-label">Sort:</span>
+                  <dropdown-classic [fieldList]="sortList" fieldType="name"></dropdown-classic>
+                </div>
+
+                <div class="toolbar-control-group d-flex align-items-center gap-2 me-lg-2">
+                  <span class="control-label">Order:</span>
+                  <dropdown-classic [fieldList]="orderList" fieldType="name"></dropdown-classic>
+                </div>
+
+                <div class="toolbar-divider d-none d-lg-block"></div>
+
+                <div class="active-filter-box">
+                  <slider-classic
+                    [data]="isActive" 
+                    activeText="Show active jobs" 
+                    inActiveText="Show inactive jobs"
+                    (outputparams)="handleActiveList($event)">
+                  </slider-classic>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
-    </div>
+      </div>
 
-    <router-outlet></router-outlet>
+      <!-- Job List Section -->
+      <ng-container *ngIf="isDataAvailable()">
+        <div class="job-list-container">
+          <div class="job-card" *ngFor="let item of filteredData">
+            
+            <!-- Card Header -->
+            <div class="card-header-row">
+              <div class="title-meta-wrap">
+                <div class="d-flex align-items-center flex-wrap gap-2 mb-1">
+                  <h3 class="job-title mb-0" (click)="handleJob(item)">{{ item.name }}</h3>
+                  <span class="candidate-count-pill" (click)="handleJob(item)">
+                    <strong>{{ getTotalCandidates(item) }}</strong> Candidates
+                  </span>
+                </div>
+                <div class="job-sub-meta">
+                  <span class="meta-badge location me-3">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                      <circle cx="12" cy="10" r="3"></circle>
+                    </svg>
+                    {{ item.jobOpeningLocation | jobLocation }}
+                  </span>
+                  <span class="meta-badge post-date">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                      <line x1="16" y1="2" x2="16" y2="6"></line>
+                      <line x1="8" y1="2" x2="8" y2="6"></line>
+                      <line x1="3" y1="10" x2="21" y2="10"></line>
+                    </svg>
+                    Posted on {{ getDate(item.postDate) }}
+                  </span>
+                </div>
+              </div>
 
+              <div class="card-toggle-wrap ms-auto">
+                <slider-classic 
+                  [data]="item.active" 
+                  [selectedItem]="item" 
+                  activeText="Active job" 
+                  inActiveText="Inactive job" 
+                  (outputparams)="handleActive($event)">
+                </slider-classic>
+              </div>
+            </div>
+
+            <!-- Candidate Status Stat Tiles Grid -->
+            <div class="stat-tiles-row">
+              <div 
+                class="stat-tile" 
+                *ngFor="let profile of item.profileCountSummary" 
+                [ngClass]="getStatusTileClass(profile.candidateProfileMappingStatusId, profile.count)"
+                (click)="handleResumeType(item, profile.candidateProfileMappingStatusId)">
+                <span class="tile-number">{{ profile.count }}</span>
+                <span class="tile-title">{{ getStatusDisplayName(profile) }}</span>
+              </div>
+            </div>
+
+            <!-- Card Footer Row -->
+            <div class="card-footer-row">
+              <button class="btn-view-details" (click)="handleJob(item)">
+                View details <span class="arrow">&rarr;</span>
+              </button>
+            </div>
+
+          </div>
+        </div>
+      </ng-container>
+
+      <!-- Empty State -->
+      <div class="empty-state-card" *ngIf="!isDataAvailable()">
+        <div class="empty-state-icon">
+          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#8F8992" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+            <polyline points="14 2 14 8 20 8"></polyline>
+            <line x1="16" y1="13" x2="8" y2="13"></line>
+            <line x1="16" y1="17" x2="8" y2="17"></line>
+            <polyline points="10 9 9 9 8 9"></polyline>
+          </svg>
+        </div>
+        <h4 class="empty-state-title">No job postings found</h4>
+        <p class="empty-state-desc">Try tweaking your search term or adjusting the active/inactive status filter above.</p>
+      </div>
+
+    </ng-container>
+
+  </div>
+
+  <router-outlet></router-outlet>
 </div>
-
-
-  

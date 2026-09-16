@@ -35,12 +35,20 @@ export class ProfilePicComponent {
       error: (error: any) => { },
     })
   }
+  onImageError(event: any) {
+    event.target.src = defaultProfilePic;
+  }
+
   ngOnChanges() {
     if (this.user && this.user?.profilePic) {
-      this.profilePicUrl = `${picUrl}${this.user?.profilePic}`
+      if (this.user.profilePic.startsWith('http://') || this.user.profilePic.startsWith('https://')) {
+        this.profilePicUrl = this.user.profilePic;
+      } else {
+        this.profilePicUrl = `${picUrl}${this.user?.profilePic}`;
+      }
     }
     else {
-      this.profilePicUrl = defaultProfilePic
+      this.profilePicUrl = defaultProfilePic;
     }
   }
 

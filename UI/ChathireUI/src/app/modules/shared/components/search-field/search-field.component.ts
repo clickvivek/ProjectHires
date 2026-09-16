@@ -22,12 +22,23 @@ export class SearchFieldComponent implements OnInit, OnChanges {
 
   @Input() fieldDisabled:boolean = false;
 
+  @Input() showCreateOption: boolean = false;
+
   selectedItem:any = null;
   isItemSelected:boolean = false;
   isExpanded:boolean = false;
 
   @Output() queryChange = new EventEmitter();
   @Output() inputChange = new EventEmitter();
+  @Output() createNewClick = new EventEmitter();
+
+  triggerCreateNew(event: Event) {
+    if (event) {
+      event.stopPropagation();
+    }
+    this.isExpanded = false;
+    this.createNewClick.emit();
+  }
 
   constructor(
     private element: ElementRef
@@ -80,17 +91,17 @@ export class SearchFieldComponent implements OnInit, OnChanges {
   }
 
   ngOnChanges(changes: SimpleChanges) {
-    if (!_.isEmpty(this.editValue) && this.isEdit && !this.fieldModel && _.isEmpty(this.selectedItem)) {
+    if (!_.isEmpty(this.editValue) && this.isEdit && (changes['editValue'] || !this.fieldModel)) {
       let newData = this.fieldType.split(',')
       let finalData = ""
       newData.forEach((typeItem, index) => {
-        finalData = `${finalData + this.editValue[typeItem]}${(index !== newData.length-1) ? ', ' : ''}`
+        finalData = `${finalData + (this.editValue[typeItem] || '')}${(index !== newData.length-1) ? ', ' : ''}`
       });
       
       this.fieldModel = finalData;
+      this.selectedItem = this.editValue;
       this.inputChange.emit(this.editValue);
     }
-
   }
 
 

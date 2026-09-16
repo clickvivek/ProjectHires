@@ -8,6 +8,8 @@ import { TokenService } from 'src/app/api/api/token.service';
 import { SessionService } from 'src/app/core/session/session.service';
 import { AuthService } from 'src/app/core/auth/auth.service';
 
+declare var google: any;
+
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
@@ -24,6 +26,8 @@ export class LoginComponent implements OnInit {
   showPassword:boolean = false
   isFormSubmitted:boolean = false;
   error:string = ""
+
+  googleClientId: string = '262467975068-u0o6qtjog1o7e1p4jp5kuag34ibhfm1l.apps.googleusercontent.com';
 
   loginData:AuthRequestModel = {};
 
@@ -48,6 +52,50 @@ export class LoginComponent implements OnInit {
 
   handleTogglePassword() {
     this.showPassword = !this.showPassword
+  }
+
+  loginWithGoogle() {
+    if (typeof google !== 'undefined' && google.accounts) {
+      google.accounts.id.initialize({
+        client_id: this.googleClientId,
+        callback: (response: any) => this.handleGoogleResponse(response)
+      });
+      google.accounts.id.prompt((notification: any) => {
+        if (notification.isNotDisplayed() || notification.isSkippedMoment()) {
+          // Fallback to standard Google prompt if One-Tap is dismissed
+        }
+      });
+    } else {
+      this.error = "Google Auth service is initializing. Please try again in a moment.";
+    }
+  }
+
+  handleGoogleResponse(response: any) {
+    if (response && response.credential) {
+      this.isFormSubmitted = true;
+      this.error = "";
+
+      this.tokenService.apiTokenGooglePost({ idToken: response.credential }).subscribe({
+        next: (res: any) => {
+          this.isFormSubmitted = false;
+
+          let user = {
+            userEmail: res.value.userName,
+            userId: res.value.userId,
+            token: res.value.token,
+            userTypeId: res.value.userTypeId,
+            consultancyId: res.value.consultancyId,
+            consultancyUserId: res.value.consultancyUserId
+          };
+          this.authService.login(user);
+        },
+        error: (err: any) => {
+          console.error('Google Login Error:', err);
+          this.isFormSubmitted = false;
+          this.error = "Google Sign-In failed. Please try again.";
+        }
+      });
+    }
   }
 
   login() {
@@ -108,9 +156,14 @@ export class LoginComponent implements OnInit {
 
 
   ngOnInit() {
-
-
-
+    setTimeout(() => {
+      if (typeof google !== 'undefined' && google.accounts) {
+        google.accounts.id.initialize({
+          client_id: this.googleClientId,
+          callback: (response: any) => this.handleGoogleResponse(response)
+        });
+      }
+    }, 1000);
   }
 
 }

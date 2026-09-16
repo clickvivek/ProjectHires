@@ -9,6 +9,9 @@ import { RegularsModule } from './modules/regulars/regulars.module';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 
+import { BASE_PATH } from 'src/app/api';
+import { environment } from 'src/environments/environment';
+
 @NgModule({
   declarations: [
     AppComponent
@@ -21,7 +24,9 @@ import { AppComponent } from './app.component';
     BrowserAnimationsModule,
     HttpClientModule
   ],
-  providers: [],
+  providers: [
+    { provide: BASE_PATH, useValue: environment.rootUrl }
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

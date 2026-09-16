@@ -43,6 +43,11 @@ export class AuthService {
 
     this.destroyChatPopup()
 
+    const pendingJob = sessionStorage.getItem('ch_pending_job_post');
+    if (pendingJob) {
+      this._router.navigate(['/postjobs']);
+    }
+
   }
 
   reDirectToLogin() {

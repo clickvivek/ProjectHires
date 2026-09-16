@@ -1,0 +1,239 @@
+@import "src/@hires/scss/utilities/all";
+@import "src/@hires/scss/helpers/typography";
+
+:host {
+  --bg-page: #F8F7F3;
+  --bg-card: #FFFFFF;
+  --color-heading: #111827;
+  --color-label: #29242B;
+  --color-body: #625B65;
+  --color-placeholder: #9A949D;
+  --color-border: #DEDADF;
+  --primary-plum: #673260;
+  --primary-hover: #51264C;
+  --light-plum: #F6EFF5;
+  --color-error: #B42318;
+
+  display: block;
+  background-color: var(--bg-page);
+  min-height: calc(100vh - 70px);
+}
+
+::ng-deep .postjobs-wrapper {
+  background-color: var(--bg-page) !important;
+  padding: 30px 0 60px 0;
+  min-height: calc(100vh - 70px);
+
+  /* Main Card styling */
+  .card {
+    background-color: var(--bg-card) !important;
+    border: 1px solid var(--color-border) !important;
+    border-radius: 12px !important;
+    box-shadow: 0 4px 20px rgba(41, 36, 43, 0.04) !important;
+
+    h5.title, h4.title {
+      color: var(--color-heading) !important;
+      font-weight: 700 !important;
+      font-size: 1.25rem !important;
+      border-bottom: 2px solid var(--light-plum) !important;
+      padding-bottom: 12px !important;
+      margin-bottom: 24px !important;
+      letter-spacing: -0.3px;
+    }
+  }
+
+  /* Form Labels */
+  label, .form-label {
+    color: var(--color-label) !important;
+    font-weight: 600 !important;
+    font-size: 0.9rem !important;
+    margin-bottom: 6px !important;
+
+    .req, span.font-medium {
+      color: var(--color-error) !important;
+      margin-left: 3px;
+    }
+  }
+
+  /* Descriptive / Body texts */
+  p, .text-muted, .text-secondary, .form-check-label {
+    color: var(--color-body) !important;
+    font-size: 0.95rem;
+  }
+
+  /* Text Controls, Textareas & Select Inputs */
+  input.form-control,
+  textarea.form-control,
+  .form-control {
+    border: 1px solid var(--color-border) !important;
+    border-radius: 6px !important;
+    background-color: #FFFFFF !important;
+    color: var(--color-heading) !important;
+    font-size: 0.95rem !important;
+    transition: all 0.2s ease-in-out !important;
+
+    &::placeholder {
+      color: var(--color-placeholder) !important;
+      font-style: normal !important;
+    }
+
+    &:focus {
+      border-color: var(--primary-plum) !important;
+      box-shadow: 0 0 0 0.25rem rgba(103, 50, 96, 0.15) !important;
+      background-color: #FFFFFF !important;
+    }
+  }
+
+  /* Checkboxes & Radio inputs */
+  .form-check {
+    margin-bottom: 10px;
+
+    .form-check-input {
+      border-color: var(--color-border) !important;
+      cursor: pointer;
+
+      &:checked {
+        background-color: var(--primary-plum) !important;
+        border-color: var(--primary-plum) !important;
+      }
+    }
+
+    .form-check-input.filled[type="checkbox"]:checked + label:before {
+      background-color: var(--primary-plum) !important;
+      border-color: var(--primary-plum) !important;
+    }
+
+    label {
+      font-weight: 500 !important;
+      color: var(--color-label) !important;
+    }
+  }
+
+  /* Select Arrows */
+  .select-arrow:after {
+    color: var(--primary-plum) !important;
+  }
+
+  /* Dropdowns for Search & Select fields */
+  .dropdown-wrapper {
+    .dropdown {
+      background-color: #FFFFFF !important;
+      border: 1px solid var(--color-border) !important;
+      border-radius: 8px !important;
+      box-shadow: 0 6px 18px rgba(41, 36, 43, 0.08) !important;
+
+      li, .list-group-item {
+        color: var(--color-heading) !important;
+        border-bottom: 1px solid var(--color-border) !important;
+        transition: background-color 0.15s ease-in-out !important;
+
+        &:hover, &.selected {
+          background-color: var(--light-plum) !important;
+          color: var(--primary-plum) !important;
+        }
+
+        &.selected:before {
+          color: var(--primary-plum) !important;
+        }
+      }
+    }
+  }
+
+  /* Multi-select Badges */
+  .badge-list {
+    ul li {
+      background-color: var(--light-plum) !important;
+      color: var(--primary-plum) !important;
+      border: 1px solid var(--color-border) !important;
+      border-radius: 4px !important;
+      font-weight: 500 !important;
+
+      i {
+        color: var(--primary-plum) !important;
+      }
+    }
+  }
+
+  /* Quill Rich Text Editor */
+  .quill-editor {
+    .ql-toolbar {
+      border-color: var(--color-border) !important;
+      background-color: var(--light-plum) !important;
+      border-radius: 8px 8px 0 0 !important;
+    }
+
+    .ql-container {
+      border-color: var(--color-border) !important;
+      border-radius: 0 0 8px 8px !important;
+      background-color: #FFFFFF !important;
+      color: var(--color-heading) !important;
+
+      .ql-editor.ql-blank::before {
+        color: var(--color-placeholder) !important;
+        font-style: normal !important;
+      }
+    }
+  }
+
+  /* Error messages */
+  .input-field-message {
+    color: var(--color-error) !important;
+    font-weight: 500 !important;
+    font-size: 0.85rem !important;
+    margin-top: 4px !important;
+  }
+
+  /* Buttons & Submit section */
+  .submit-box {
+    margin-top: 32px !important;
+
+    .btn, button[type="submit"], submit-btn .btn {
+      background-color: var(--primary-plum) !important;
+      border-color: var(--primary-plum) !important;
+      color: #FFFFFF !important;
+      font-weight: 600 !important;
+      border-radius: 6px !important;
+      padding: 10px 32px !important;
+      transition: all 0.2s ease-in-out !important;
+
+      &:hover {
+        background-color: var(--primary-hover) !important;
+        border-color: var(--primary-hover) !important;
+        box-shadow: 0 4px 12px rgba(103, 50, 96, 0.25) !important;
+      }
+    }
+
+    .btn-secondary {
+      background-color: var(--color-body) !important;
+      border-color: var(--color-body) !important;
+      color: #FFFFFF !important;
+      border-radius: 6px !important;
+      padding: 10px 24px !important;
+
+      &:hover {
+        background-color: var(--color-label) !important;
+      }
+    }
+  }
+
+  /* Success Screen State */
+  .success-message {
+    .tick {
+      background-color: var(--primary-plum) !important;
+      border-radius: 50%;
+      width: 48px;
+      height: 48px;
+    }
+
+    .action-link, .btn-outline-primary {
+      color: var(--primary-plum) !important;
+      border-color: var(--primary-plum) !important;
+      font-weight: 600;
+
+      &:hover {
+        background-color: var(--primary-plum) !important;
+        color: #FFFFFF !important;
+      }
+    }
+  }
+}

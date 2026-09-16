@@ -1,4 +1,4 @@
-﻿using BusinessEntityAndDTO.Common;
+using BusinessEntityAndDTO.Common;
 using BusinessEntityAndDTO.DTO;
 using BusinessEntityAndDTO.Models;
 using DataAccessLayer.Common;
@@ -16,6 +16,7 @@ namespace DataAccessLayer.Repository
     public interface IUserRepository : IRepository<User, long>
     {
         Task<Tuple<String, UserContext, String>> ValidateUser(string UserName, string password);
+        Task<Tuple<String, UserContext, String>> ValidateOrCreateGoogleUser(string email, string fname, string lname, string profilePic);
 
         Task<List<String>> UserFunction(UserContext userContext);
         Task<List<User>> GetUserByUserName(string email);
@@ -69,10 +70,53 @@ namespace DataAccessLayer.Repository
                     }
                 }
                 throw new ArgumentException("Invalid UserName/Password");
-            }catch(Exception ex)
+            }
+            catch(Exception ex)
             {
                 throw ex;
             }
+        }
+
+        public async Task<Tuple<String, UserContext, String>> ValidateOrCreateGoogleUser(string email, string fname, string lname, string profilePic)
+        {
+            var result = await _context.Users
+                                .Include(u => u.UserType)
+                                .Include(u => u.ConsultancyUsers)
+                                .Where(u => u.Email == email || u.AlternateEmail == email)
+                                .FirstOrDefaultAsync();
+
+            if (result == null)
+            {
+                var defaultUserType = await _context.UserTypes.FirstOrDefaultAsync() ?? new UserType { Id = 1, Name = "Candidate" };
+                result = new User
+                {
+                    Fname = !string.IsNullOrEmpty(fname) ? fname : email,
+                    Lname = lname ?? "",
+                    Email = email,
+                    UserName = email,
+                    ProfilePic = profilePic,
+                    Active = true,
+                    EmailVerified = true,
+                    UserTypeId = defaultUserType.Id,
+                    Updated = DateTime.UtcNow
+                };
+                _context.Users.Add(result);
+                await _context.SaveChangesAsync();
+
+                result.UserType = defaultUserType;
+            }
+
+            string userTypeName = result.UserType != null ? result.UserType.Name : "Candidate";
+            string userName = result.UserName ?? result.Email;
+
+            return new Tuple<string, UserContext, string>(userName, new UserContext
+            {
+                UserId = result.Id,
+                UserTypeId = result.UserTypeId,
+                ResetPassword = result.ResetPassword,
+                ConsultancyId = result.ConsultancyUsers.FirstOrDefault() != null ? result.ConsultancyUsers.FirstOrDefault().ConsultancyId : null,
+                ConsultancyUserId = result.ConsultancyUsers.FirstOrDefault() != null ? result.ConsultancyUsers.FirstOrDefault().Id : null,
+            }, userTypeName);
         }
 
         public async Task<List<String>> UserFunction(UserContext userContext)

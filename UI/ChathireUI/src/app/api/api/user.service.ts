@@ -790,4 +790,38 @@ export class UserService {
         );
     }
 
+    public apiUserVerifyOtpPost(verifyOtpModel?: { email?: string, otp?: string }, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext}): Observable<any> {
+        let localVarHeaders = this.defaultHeaders;
+        let localVarCredential = this.configuration.lookupCredential('Bearer');
+        if (localVarCredential) {
+            localVarHeaders = localVarHeaders.set('Authorization', localVarCredential);
+        }
+        localVarHeaders = localVarHeaders.set('Content-Type', 'application/json');
+        localVarHeaders = localVarHeaders.set('Accept', 'application/json');
+
+        return this.httpClient.request<any>('post', `${this.configuration.basePath}/api/User/VerifyOtp`, {
+            body: verifyOtpModel,
+            headers: localVarHeaders,
+            observe: observe,
+            reportProgress: reportProgress
+        });
+    }
+
+    public apiUserResendOtpPost(resendOtpModel?: { email?: string }, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext}): Observable<any> {
+        let localVarHeaders = this.defaultHeaders;
+        let localVarCredential = this.configuration.lookupCredential('Bearer');
+        if (localVarCredential) {
+            localVarHeaders = localVarHeaders.set('Authorization', localVarCredential);
+        }
+        localVarHeaders = localVarHeaders.set('Content-Type', 'application/json');
+        localVarHeaders = localVarHeaders.set('Accept', 'application/json');
+
+        return this.httpClient.request<any>('post', `${this.configuration.basePath}/api/User/ResendOtp`, {
+            body: resendOtpModel,
+            headers: localVarHeaders,
+            observe: observe,
+            reportProgress: reportProgress
+        });
+    }
+
 }

@@ -23,7 +23,7 @@
           </app-pagination-box>
         </div>
       </div>
-      <div *ngIf="isJobSheet" class="right-area">
+      <div *ngIf="isJobSheet && selectedJob" class="right-area">
         <app-job-detail-sheet
                   [selectedJob]="selectedJob"
                   (outParam)="handleJobSheet($event)"

@@ -35,9 +35,12 @@ export class PostingHistoryListComponent {
       let newArray:string[] = []
       location.forEach(item => {
         let name = item.city
-        newArray.push(name.city1 + '-' + name.stateCode)
+        let city = name.city1 ? name.city1.trim() : ''
+        let state = name.stateCode ? name.stateCode.trim() : ''
+        let formatted = (city && state) ? `${city}, ${state}` : (city || state)
+        if (formatted) newArray.push(formatted)
       });
-      return newArray.join(', ')
+      return newArray.join('; ')
     }
     else {
       return ""

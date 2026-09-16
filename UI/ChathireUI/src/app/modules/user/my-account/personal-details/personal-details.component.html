@@ -24,6 +24,7 @@
                               class="form-control"
                               placeholder="Name"
                               [(ngModel)]="formData.fname"
+                              (ngModelChange)="onNameChange()"
                               name="firstName"
                               required
                               autocomplete="off"
@@ -58,6 +59,7 @@
                               class="form-control"
                               placeholder="Name"
                               [(ngModel)]="formData.lname"
+                              (ngModelChange)="onNameChange()"
                               name="lastName"
                               required
                               autocomplete="off"

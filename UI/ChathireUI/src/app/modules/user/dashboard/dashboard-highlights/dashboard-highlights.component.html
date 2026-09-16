@@ -1,132 +1,225 @@
-<div class="dashboard-highlights-wrapper">
-    <div class="row">
-        
-        <div class="col-sm-12">
-          
-          <div class="data-box">
-            <p class="fw-medium text-base mb-2">Recruitment</p>
-            <ul class="lists card-list">
-              <li class="list-inline-item">
-                <div class="card shadow">
-                  <div class="card-body">
-                    <div class="icon">
-                      <img src="assets/images/job-post-icon.svg" width="35" />
-                    </div>
-                    <p class="text-dark-500 fw-medium mb-2">
-                      Job Requirement Posted
-                    </p>
-                    <h3 class="mt-0 text-start">12</h3>
-                  </div>
-                </div>
-              </li>
-              <li class="list-inline-item">
-                <div class="card shadow">
-                  <div class="card-body">
-                    <div class="icon">
-                      <img src="assets/images/expired-icon.svg" width="35" />
-                    </div>
-                    <p class="text-dark-500 fw-medium mb-2">
-                      Expired Postings
-                    </p>
-                    <h3 class="mt-0 text-start">6</h3>
-                  </div>
-                </div>
-              </li>
-              <li class="list-inline-item">
-                <div class="card shadow">
-                  <div class="card-body">
-                    <div class="icon">
-                      <img src="assets/images/resume-icon.svg" width="35" />
-                    </div>
-                    <p class="text-dark-500 fw-medium mb-2">
-                      Resumes Received
-                    </p>
-                    <h3 class="mt-0 text-start">65</h3>
-                  </div>
-                </div>
-              </li>
-            </ul>
-          </div>
+<div class="dashboard-highlights-wrapper py-3">
 
-          <div class="data-box">
-            <p class="text-base fw-medium mb-2">Bench Sales</p>
-            <ul class="list-inline card-list">
-              <li class="list-inline-item">
-                <div class="card shadow">
-                  <div class="card-body">
-                    <div class="icon">
-                      <img src="assets/images/candidate-icon.svg" width="35" />
-                    </div>
-                    <p class="text-dark-500 fw-medium mb-2">
-                      Total Hotlist Candidates
-                    </p>
-                    <h3 class="mt-0 text-start">5</h3>
-                  </div>
-                </div>
-              </li>
-              <li class="list-inline-item">
-                <div class="card shadow">
-                  <div class="card-body">
-                    <div class="icon">
-                      <img src="assets/images/resume-icon.svg" width="35" />
-                    </div>
-                    <p class="text-dark-500 fw-medium mb-2">
-                      Resume submitted
-                    </p>
-                    <h3 class="mt-0 text-start">481</h3>
-                  </div>
-                </div>
-              </li>
-            </ul>
+  <!-- Collapsible Dashboard Card Container -->
+  <div class="card dashboard-collapsible-card border rounded-3 bg-white mb-4">
+    
+    <!-- Collapsible Card Header -->
+    <div
+      class="card-header border-0 bg-transparent p-3 p-md-4 d-flex align-items-center justify-content-between cursor-pointer user-select-none"
+      (click)="toggleCollapse()"
+    >
+      <div class="d-flex align-items-center gap-3">
+        <div>
+          <div class="d-flex align-items-center gap-2 mb-1">
+            <h1 class="welcome-title mb-0">Hello, {{ user?.fname || 'Raj' }} 👋</h1>
+            <span class="role-badge ms-1">
+              {{ user?.userTypeId == 2 ? 'Bench Sales' : 'Recruiter' }}
+            </span>
           </div>
-
+          <p class="welcome-subtitle mb-0">
+            Here’s what’s happening with your recruiting activity today.
+          </p>
         </div>
+      </div>
 
-        <div class="col-sm-12">
-          <div class="data-box">
-            <div class="card shadow data-list">
-              <p class="text-base fw-medium border-bottom p-3">Candidates Lists</p>
-              <ul class="list-group">
-                <ng-container *ngFor="let candidate of candidateList">
-                  <li class="list-group-item">
-                    <div class="row">
-                      <div class="col-sm-12 col-md-4">
-                        <div class="item">
-                          <h5 class="text-normal text-secondary-800 fw-medium mb-1">
-                            {{ candidate.name }}
-                          </h5>
-                          <p class="text-normal text-dark-500">
-                            {{ candidate.title }}
-                          </p>
-                        </div>
-                      </div>
-                      <div class="col-sm-12 col-md-4">
-                        <div class="item">
-                          <h5 class="text-normal text-secondary-800 fw-medium mb-1">
-                            Applied Jobs
-                          </h5>
-                          <span class="text-normal text-dark-500">{{
-                            candidate.appliedJobs
-                          }}</span>
-                        </div>
-                      </div>
-                      <div class="col-sm-12 col-md-4">
-                        <div class="item">
-                          <h5 class="text-normal text-secondary-800 fw-medium mb-1">
-                            New Matching Jobs
-                          </h5>
-                          <span class="text-normal text-dark-500">{{
-                            candidate.newMatchingJobs
-                          }}</span>
-                        </div>
-                      </div>
-                    </div>
-                  </li>
-                </ng-container>
-              </ul>
+      <div class="d-flex align-items-center gap-2">
+        <button type="button" class="btn btn-subtle-purple btn-sm d-inline-flex align-items-center gap-1">
+          <span>{{ isCollapsed ? 'View Dashboard Highlights' : 'Hide Dashboard Highlights' }}</span>
+          <span class="material-symbols-outlined fs-5 transition-transform" [class.rotated]="!isCollapsed">
+            expand_more
+          </span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Collapsible Card Body (Collapsed by default) -->
+    <div class="card-body px-3 px-md-4 pb-4 pt-0 border-top" *ngIf="!isCollapsed">
+      
+      <!-- SECTION 1: RECRUITMENT -->
+      <div class="data-section mt-4 mb-4">
+        <h2 class="section-heading mb-3">Recruitment</h2>
+        <div class="row g-3">
+          
+          <!-- Job Requirement Posted -->
+          <div class="col-12 col-md-4">
+            <div class="kpi-card p-3 rounded-3 bg-white border">
+              <div class="d-flex align-items-center justify-content-between">
+                <div>
+                  <span class="kpi-title d-block mb-1">Job Requirement Posted</span>
+                  <h3 class="kpi-value mb-0">12</h3>
+                </div>
+                <div class="kpi-icon-box rounded-3 d-flex align-items-center justify-content-center" style="background-color: #EFF6FF; color: #3B82F6;">
+                  <span class="material-symbols-outlined">work</span>
+                </div>
+              </div>
             </div>
           </div>
-        </div>
 
+          <!-- Expired Postings -->
+          <div class="col-12 col-md-4">
+            <div class="kpi-card p-3 rounded-3 bg-white border">
+              <div class="d-flex align-items-center justify-content-between">
+                <div>
+                  <span class="kpi-title d-block mb-1">Expired Postings</span>
+                  <h3 class="kpi-value mb-0">6</h3>
+                </div>
+                <div class="kpi-icon-box rounded-3 d-flex align-items-center justify-content-center" style="background-color: #FFF7E6; color: #D97706;">
+                  <span class="material-symbols-outlined">timer_off</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Resumes Received -->
+          <div class="col-12 col-md-4">
+            <div class="kpi-card p-3 rounded-3 bg-white border">
+              <div class="d-flex align-items-center justify-content-between">
+                <div>
+                  <span class="kpi-title d-block mb-1">Resumes Received</span>
+                  <h3 class="kpi-value mb-0">65</h3>
+                </div>
+                <div class="kpi-icon-box rounded-3 d-flex align-items-center justify-content-center" style="background-color: #ECFDF3; color: #22A06B;">
+                  <span class="material-symbols-outlined">description</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
       </div>
+
+      <!-- SECTION 2: BENCH SALES -->
+      <div class="data-section mb-4">
+        <h2 class="section-heading mb-3">Bench Sales</h2>
+        <div class="row g-3">
+          
+          <!-- Total Hotlist Candidates -->
+          <div class="col-12 col-md-4">
+            <div class="kpi-card p-3 rounded-3 bg-white border">
+              <div class="d-flex align-items-center justify-content-between">
+                <div>
+                  <span class="kpi-title d-block mb-1">Total Hotlist Candidates</span>
+                  <h3 class="kpi-value mb-0">5</h3>
+                </div>
+                <div class="kpi-icon-box rounded-3 d-flex align-items-center justify-content-center" style="background-color: #F5EDF5; color: #70246D;">
+                  <span class="material-symbols-outlined">group</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Resume Submitted -->
+          <div class="col-12 col-md-4">
+            <div class="kpi-card p-3 rounded-3 bg-white border">
+              <div class="d-flex align-items-center justify-content-between">
+                <div>
+                  <span class="kpi-title d-block mb-1">Resume Submitted</span>
+                  <h3 class="kpi-value mb-0">481</h3>
+                </div>
+                <div class="kpi-icon-box rounded-3 d-flex align-items-center justify-content-center" style="background-color: #EEF7F6; color: #397774;">
+                  <span class="material-symbols-outlined">send</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- SECTION 3: CANDIDATE LISTS TABLE -->
+      <div class="data-section mb-2">
+        <div class="candidate-table-card bg-white border rounded-3 overflow-hidden">
+          
+          <!-- Card Header -->
+          <div class="table-header-bar p-3 border-bottom d-flex align-items-center justify-content-between flex-wrap gap-3">
+            <div class="d-flex align-items-center gap-2">
+              <h2 class="section-heading mb-0 fs-5">Candidate Lists</h2>
+            </div>
+
+            <div class="d-flex align-items-center gap-2 ms-auto flex-wrap">
+              <!-- Compact Search Box -->
+              <div class="compact-search-box position-relative">
+                <span class="material-symbols-outlined search-icon position-absolute">search</span>
+                <input
+                  type="text"
+                  class="form-control compact-search-input"
+                  placeholder="Search candidates..."
+                  [(ngModel)]="searchTerm"
+                  (ngModelChange)="filterCandidates()"
+                />
+              </div>
+
+              <!-- Filter Button -->
+              <button type="button" class="btn btn-sm btn-outline-secondary d-inline-flex align-items-center gap-1 filter-btn">
+                <span class="material-symbols-outlined fs-6">filter_list</span>
+                <span>Filter</span>
+              </button>
+
+              <!-- View All -->
+              <a routerLink="/myhotlist" class="btn btn-sm btn-subtle-purple d-inline-flex align-items-center gap-1">
+                <span>View All</span>
+                <span class="material-symbols-outlined fs-6">arrow_forward</span>
+              </a>
+            </div>
+          </div>
+
+          <!-- Structured Table -->
+          <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0 candidate-table">
+              <thead>
+                <tr>
+                  <th scope="col" style="width: 28%;">Candidate</th>
+                  <th scope="col" style="width: 25%;">Primary Skill</th>
+                  <th scope="col" class="text-center" style="width: 18%;">Applied Jobs</th>
+                  <th scope="col" class="text-center" style="width: 18%;">Matching Jobs</th>
+                  <th scope="col" class="text-end pe-4" style="width: 11%;">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let candidate of filteredCandidateList">
+                  <td>
+                    <div class="d-flex align-items-center gap-2">
+                      <div class="candidate-avatar rounded-circle d-flex align-items-center justify-content-center">
+                        {{ candidate.name ? candidate.name.charAt(0) : 'C' }}
+                      </div>
+                      <div>
+                        <a routerLink="/myhotlist" class="candidate-name-link fw-semibold">
+                          {{ candidate.name }}
+                        </a>
+                      </div>
+                    </div>
+                  </td>
+                  <td>
+                    <span class="candidate-role text-muted">{{ candidate.title }}</span>
+                  </td>
+                  <td class="text-center">
+                    <span class="numeric-val fw-semibold text-dark-700">{{ candidate.appliedJobs }}</span>
+                  </td>
+                  <td class="text-center">
+                    <span class="badge matching-badge">
+                      {{ candidate.newMatchingJobs }}
+                    </span>
+                  </td>
+                  <td class="text-end pe-4">
+                    <a routerLink="/myhotlist" class="btn btn-sm btn-action-view">
+                      View
+                    </a>
+                  </td>
+                </tr>
+                <tr *ngIf="!filteredCandidateList || filteredCandidateList.length === 0">
+                  <td colspan="5" class="text-center py-4 text-muted">
+                    No candidates found matching "{{ searchTerm }}"
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
 </div>

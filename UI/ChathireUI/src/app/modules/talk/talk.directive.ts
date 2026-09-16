@@ -52,17 +52,12 @@ export class ChatButtonDirective  {
       this.popup.destroy()
     }
 
-    if(this.isProfile) {
-      if(this.authService.isLoggedIn()) {
-        this.initChat(this.chatUser)
-      }
-      else {
-        this.router.navigate(['/login']);
-      }
+    if(!this.authService.isLoggedIn()) {
+      this.router.navigate(['/login']);
+      return;
     }
-    else {
-      this.initChat(this.chatUser)
-    }
+
+    this.initChat(this.chatUser);
 
     this.popup = this.session?.createPopup();
     this.popup?.select(this.conversation);
