@@ -8,6 +8,7 @@ import * as moment from 'moment';
 import _ from 'underscore';
 
 import { ConfirmApplyJobComponent } from '../../public/searchjobs/confirm-apply-job/confirm-apply-job.component';
+import { LoginModalComponent } from 'src/app/modules/shared/components/login-modal/login-modal.component';
 
 import { UserService } from 'src/app/api/api/user.service';
 import { JobOpeningService } from 'src/app/api/api/job-opening.service';
@@ -169,10 +170,22 @@ export class JobDetailsPageComponent {
       });
     }
     else {
-      this.sharedService.setPageToRetain({page: this._router.url, job: this.selectedJob})
-      this._router.navigate(['/login']);
+      const loginDialogRef = this.dialog.open(LoginModalComponent, {
+        width: '440px',
+        panelClass: 'login-modal-panel',
+        data: { actionText: 'apply for this job' }
+      });
 
-
+      loginDialogRef.afterClosed().subscribe(res => {
+        if (res && res.success) {
+          const applyJobDialogRef = this.dialog.open(ConfirmApplyJobComponent, {
+            panelClass: ['material', 'confirm-apply-modal-panel'],
+            maxHeight: '90vh',
+            disableClose: true,
+            data: this.selectedJob
+          });
+        }
+      });
     }
     
   }

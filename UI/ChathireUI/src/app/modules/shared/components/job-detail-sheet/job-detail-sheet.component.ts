@@ -6,6 +6,7 @@ import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { picUrl, defaultProfilePic } from 'src/app/data/various';
 
 import { ConfirmApplyJobComponent } from '../../../public/searchjobs/confirm-apply-job/confirm-apply-job.component';
+import { LoginModalComponent } from '../login-modal/login-modal.component';
 
 import * as moment from 'moment';
 import _ from 'underscore';
@@ -110,10 +111,22 @@ export class JobDetailSheetComponent implements OnInit {
       });
     }
     else {
-      this.sharedService.setPageToRetain({page: this._router.url, job: this.selectedJob})
-      this._router.navigate(['/login']);
+      const loginDialogRef = this.dialog.open(LoginModalComponent, {
+        width: '440px',
+        panelClass: 'login-modal-panel',
+        data: { actionText: 'apply for this job' }
+      });
 
-
+      loginDialogRef.afterClosed().subscribe(res => {
+        if (res && res.success) {
+          const applyJobDialogRef = this.dialog.open(ConfirmApplyJobComponent, {
+            panelClass: ['material', 'confirm-apply-modal-panel'],
+            maxHeight: '90vh',
+            disableClose: true,
+            data: this.selectedJob
+          });
+        }
+      });
     }
     
   }
