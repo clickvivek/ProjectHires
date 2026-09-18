@@ -1,33 +1,19 @@
 @import "src/@hires/scss/utilities/all";
 @import "src/@hires/scss/helpers/typography";
 
-// Enterprise SaaS Color Palette
-$primary-purple: #72246C;
-$primary-purple-hover: #5D1D58;
-$bg-light-purple: #F7EFF7;
-$border-soft-lavender: #E9D8E8;
-
-$secondary-teal: #287D78;
-$teal-hover: #216864;
-
-$gold-warm: #F4C542;
-$gold-light-bg: #FFF7D6;
-$gold-text: #8A6100;
-$gold-border: #F4D675;
-
-$text-main: #101828;
-$text-secondary: #667085;
-$text-body-dark: #344054;
-$text-muted: #98A2B3;
-
-$page-bg: #F7F7F8;
+$primary-plum: #673260;
+$primary-hover: #51264C;
+$light-plum: #F6EFF5;
+$plum-border: #E6D8E3;
+$dark-heading: #111827;
+$body-text: #5F5962;
+$muted-text: #8F8992;
+$page-bg: #F7F6F3;
 $card-bg: #FFFFFF;
-$border-neutral: #E4E7EC;
-$success-green: #12B76A;
-
+$border-color: #E6E2E5;
+$verified-green: #2E8B57;
 $linkedin-blue: #0A66C2;
 $linkedin-hover: #084E96;
-$verified-blue: #1677FF;
 
 :host {
   display: block;
@@ -48,9 +34,9 @@ $verified-blue: #1677FF;
   // Main Profile Card
   .main-profile-card {
     background-color: $card-bg;
-    border: 1px solid $border-neutral;
-    border-radius: 20px;
-    box-shadow: 0 6px 24px rgba(16, 24, 40, 0.06);
+    border: 1px solid $border-color;
+    border-radius: 16px;
+    box-shadow: 0 2px 10px rgba(17, 24, 39, 0.05);
 
     .profile-header-card-layout {
       display: flex;
@@ -92,7 +78,7 @@ $verified-blue: #1677FF;
           height: 104px !important;
           border-radius: 50% !important;
           border: 3px solid #FFFFFF;
-          box-shadow: 0 4px 14px rgba(16, 24, 40, 0.08);
+          box-shadow: 0 4px 14px rgba(17, 24, 39, 0.10);
           object-fit: cover;
         }
       }
@@ -101,13 +87,13 @@ $verified-blue: #1677FF;
         .profile-name-row {
           display: flex;
           align-items: center;
-          gap: 8px;
+          gap: 6px;
           flex-wrap: wrap;
 
           .profile-name {
-            font-size: 24px;
+            font-size: 1.4rem;
             font-weight: 700;
-            color: $text-main;
+            color: $dark-heading;
             letter-spacing: -0.02em;
             margin: 0;
             line-height: 1.2;
@@ -118,42 +104,42 @@ $verified-blue: #1677FF;
             align-items: center;
             justify-content: center;
             cursor: pointer;
-            transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+            filter: drop-shadow(0 2px 4px rgba(0, 102, 255, 0.28));
+            transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), filter 0.2s ease;
 
             svg {
               display: block;
             }
 
             &:hover {
-              transform: scale(1.15);
+              transform: scale(1.2) rotate(6deg);
+              filter: drop-shadow(0 4px 10px rgba(0, 102, 255, 0.45));
             }
           }
         }
 
-        .role-badge-gold {
+        .role-badge-yellow {
           display: inline-block;
-          background-color: $gold-light-bg;
-          color: $gold-text;
-          border: 1px solid $gold-border;
+          background-color: #FCD34D;
+          color: #78350F;
           font-size: 0.75rem;
-          font-weight: 600;
+          font-weight: 700;
           padding: 2px 10px;
-          border-radius: 6px;
+          border-radius: 4px;
           letter-spacing: 0.2px;
-          line-height: 1.4;
         }
 
         .action-buttons-group {
           display: flex;
           align-items: center;
           gap: 10px;
-          margin-top: 6px;
+          margin-top: 4px;
 
           .btn-linkedin-square {
-            width: 32px;
-            height: 32px;
-            background-color: $linkedin-blue;
-            border-radius: 6px;
+            width: 30px;
+            height: 30px;
+            background-color: #0A66C2;
+            border-radius: 4px;
             display: inline-flex;
             align-items: center;
             justify-content: center;
@@ -167,29 +153,28 @@ $verified-blue: #1677FF;
             }
 
             &:hover {
-              background-color: $linkedin-hover;
+              background-color: #084E96;
               transform: translateY(-1px);
             }
           }
 
-          .btn-chat-teal,
           .btn-chat-green,
           .btn-chat-outline {
             display: inline-flex;
             align-items: center;
             justify-content: center;
             gap: 6px;
-            height: 32px;
-            padding: 0 14px;
-            background-color: $secondary-teal !important;
+            height: 30px;
+            padding: 0 12px;
+            background-color: #397774 !important;
             border: none !important;
-            border-radius: 6px !important;
+            border-radius: 4px !important;
             color: #FFFFFF !important;
             font-size: 0.8125rem !important;
             font-weight: 600 !important;
             cursor: pointer;
             transition: all 0.15s ease-in-out;
-            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
 
             span, div, .chat-btn-text {
               color: #FFFFFF !important;
@@ -210,10 +195,10 @@ $verified-blue: #1677FF;
             }
 
             &:hover {
-              background-color: $teal-hover !important;
+              background-color: #2F6663 !important;
               color: #FFFFFF !important;
               transform: translateY(-1px);
-              box-shadow: 0 2px 5px rgba(0, 0, 0, 0.12);
+              box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
 
               span, div, .chat-btn-text {
                 color: #FFFFFF !important;
@@ -230,10 +215,9 @@ $verified-blue: #1677FF;
         }
 
         .profile-designation-text {
-          font-size: 15px;
-          color: $text-body-dark;
-          font-weight: 500;
-          margin-top: 8px;
+          font-size: 0.875rem;
+          color: #374151;
+          font-weight: 600;
         }
       }
     }
@@ -252,16 +236,16 @@ $verified-blue: #1677FF;
 
       .company-text-col {
         .company-name-title {
-          font-size: 19px;
+          font-size: 1.2rem;
           font-weight: 700;
-          color: $text-main;
+          color: $dark-heading;
           letter-spacing: -0.01em;
         }
 
         .company-website-link,
         .company-email-link {
-          font-size: 14px;
-          color: $text-secondary;
+          font-size: 0.8125rem;
+          color: #9CA3AF;
           font-weight: 500;
           text-decoration: none;
           display: inline-block;
@@ -269,24 +253,24 @@ $verified-blue: #1677FF;
           transition: color 0.15s ease;
 
           &:hover {
-            color: $primary-purple;
+            color: $primary-plum;
             text-decoration: underline;
           }
         }
       }
 
       .company-brand-box {
-        width: 56px;
-        height: 56px;
-        border-radius: 10px;
-        border: 1px solid $border-neutral;
+        width: 58px;
+        height: 58px;
+        border-radius: 8px;
+        border: 1px solid #E5E7EB;
         background-color: #FFFFFF;
         display: flex;
         align-items: center;
         justify-content: center;
         overflow: hidden;
         flex-shrink: 0;
-        box-shadow: 0 1px 3px rgba(16, 24, 40, 0.04);
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
 
         .company-brand-img {
           width: 100%;
@@ -301,35 +285,241 @@ $verified-blue: #1677FF;
           display: flex;
           align-items: center;
           justify-content: center;
-          background-color: $bg-light-purple;
-          color: $primary-purple;
+          background-color: #F3F4F6;
+          color: #4B5563;
           font-weight: 700;
           font-size: 1.25rem;
-          user-select: none;
         }
       }
+    }
+
+    // Public Link Strip (Moved Down)
+    .public-link-strip {
+      .public-link-strip-inner {
+        background-color: #FAF6FB;
+        border: 1px solid #EBE0EC;
+        border-radius: 12px;
+        padding: 14px 18px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        flex-wrap: wrap;
+
+        @include hires-breakpoint("lt-md") {
+          flex-direction: column;
+          align-items: stretch;
+        }
+
+        .link-title-group {
+          .link-icon-badge {
+            width: 32px;
+            height: 32px;
+            background-color: #F1E3F2;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+
+            svg {
+              color: $primary-plum;
+              stroke: $primary-plum;
+            }
+          }
+
+          .link-card-title {
+            font-size: 0.875rem;
+            font-weight: 700;
+            color: #1F1625;
+          }
+
+          .link-hint-text {
+            font-size: 0.75rem;
+            color: #7B7382;
+            margin: 0;
+            display: block;
+          }
+        }
+
+        .link-input-group {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          background-color: #FFFFFF;
+          border: 1px solid #E2D7E3;
+          border-radius: 8px;
+          padding: 3px 4px 3px 12px;
+          gap: 8px;
+          min-width: 280px;
+          max-width: 440px;
+          flex-grow: 1;
+          transition: border-color 0.15s ease;
+
+          @include hires-breakpoint("lt-md") {
+            max-width: 100%;
+          }
+
+          &:focus-within {
+            border-color: $primary-plum;
+          }
+
+          .link-url-text {
+            font-size: 0.8125rem;
+            color: #374151;
+            font-weight: 500;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            flex: 1;
+          }
+
+          .btn-copy-url {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            background-color: #F5EDF6;
+            border: 1px solid #EADBEC;
+            padding: 5px 12px;
+            color: $primary-plum;
+            font-size: 0.8125rem;
+            font-weight: 600;
+            cursor: pointer;
+            border-radius: 6px;
+            flex-shrink: 0;
+            transition: all 0.15s ease;
+
+            svg {
+              color: $primary-plum;
+              stroke: $primary-plum;
+            }
+
+            &:hover {
+              background-color: #ECE0EE;
+              color: $primary-hover;
+            }
+
+            &:active {
+              transform: scale(0.97);
+            }
+          }
+        }
+      }
+    }
+
     .profile-section-divider {
       border: 0;
       height: 1px;
-      background-color: $border-neutral;
-      margin: 30px 0;
+      background-color: $border-color;
+      margin: 28px 0;
     }
 
     // Common Section Title
     .section-title {
-      font-size: 18px;
+      font-size: 1.125rem;
       font-weight: 700;
-      color: $text-main;
-      margin-bottom: 12px;
+      color: $dark-heading;
+      margin-bottom: 14px;
       letter-spacing: -0.01em;
+    }
+
+    // Professional Information Section
+    .professional-info-section {
+      .info-box {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        background-color: #FAF9FA;
+        border: 1px solid $border-color;
+        border-radius: 10px;
+        padding: 14px 18px;
+        min-height: 84px;
+
+        .info-label {
+          font-size: 0.8125rem;
+          font-weight: 600;
+          color: $muted-text;
+          margin-bottom: 6px;
+        }
+
+        .info-value-row {
+          display: flex;
+          align-items: center;
+          min-height: 42px;
+        }
+
+        .info-value {
+          font-size: 0.9375rem;
+          font-weight: 600;
+          color: $dark-heading;
+
+          .info-link {
+            color: $primary-plum;
+            text-decoration: none;
+
+            &:hover {
+              text-decoration: underline;
+            }
+          }
+        }
+
+        .company-detail-row {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+          min-height: 42px;
+
+          .company-logo-badge {
+            width: 42px;
+            height: 42px;
+            min-width: 42px;
+            min-height: 42px;
+            border-radius: 8px;
+            background-color: #FFFFFF;
+            border: 1px solid $plum-border;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+
+            .company-logo-img {
+              width: 100%;
+              height: 100%;
+              object-fit: contain;
+              padding: 3px;
+            }
+
+            .company-logo-fallback {
+              width: 100%;
+              height: 100%;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              background-color: $light-plum;
+              color: $primary-plum;
+              font-weight: 700;
+              font-size: 16px;
+              user-select: none;
+            }
+          }
+
+          .company-name-text {
+            font-size: 1rem;
+            font-weight: 600;
+            color: $dark-heading;
+            line-height: 1.3;
+          }
+        }
+      }
     }
 
     // About Section
     .about-section {
       .about-body {
-        font-size: 15px;
+        font-size: 0.9375rem;
         line-height: 1.6;
-        color: $text-secondary;
+        color: $body-text;
         max-width: 820px;
         margin: 0;
       }
@@ -342,22 +532,15 @@ $verified-blue: #1677FF;
         flex-wrap: wrap;
         gap: 8px;
 
-        .purple-chip,
         .plum-chip {
           display: inline-block;
-          padding: 7px 16px;
-          background-color: $bg-light-purple;
-          color: $primary-purple;
-          border: 1px solid $border-soft-lavender;
+          padding: 5px 14px;
+          background-color: $light-plum;
+          color: $primary-plum;
+          border: 1px solid $plum-border;
           border-radius: 999px;
-          font-size: 13.5px;
-          font-weight: 500;
-          transition: background-color 0.15s ease, border-color 0.15s ease;
-
-          &:hover {
-            background-color: darken($bg-light-purple, 2%);
-            border-color: darken($border-soft-lavender, 5%);
-          }
+          font-size: 0.8125rem;
+          font-weight: 600;
         }
       }
     }
@@ -366,12 +549,12 @@ $verified-blue: #1677FF;
   // Activity & Jobs History Card
   .activity-panel-card {
     background-color: $card-bg;
-    border: 1px solid $border-neutral;
-    border-radius: 20px;
-    box-shadow: 0 6px 24px rgba(16, 24, 40, 0.06);
+    border: 1px solid $border-color;
+    border-radius: 16px;
+    box-shadow: 0 2px 10px rgba(17, 24, 39, 0.05);
 
     .custom-plum-tabs {
-      border-bottom: 2px solid $border-neutral;
+      border-bottom: 2px solid $border-color;
       gap: 24px;
 
       .nav-item {
@@ -381,7 +564,7 @@ $verified-blue: #1677FF;
           border: none;
           border-bottom: 2px solid transparent;
           background: transparent;
-          color: $text-secondary;
+          color: $body-text;
           font-size: 0.9375rem;
           font-weight: 600;
           padding: 10px 4px 14px 4px;
@@ -390,18 +573,18 @@ $verified-blue: #1677FF;
           transition: all 0.15s ease;
 
           &:hover:not(.disabled) {
-            color: $primary-purple;
+            color: $primary-plum;
           }
 
           &.active {
-            color: $primary-purple;
-            border-bottom-color: $primary-purple;
+            color: $primary-plum;
+            border-bottom-color: $primary-plum;
           }
 
           &.disabled,
           &.cursor-not-allowed,
           &[aria-disabled="true"] {
-            color: $text-muted !important;
+            color: #9CA3AF !important;
             cursor: not-allowed !important;
             pointer-events: none;
             opacity: 0.55;
@@ -415,7 +598,7 @@ $verified-blue: #1677FF;
   // Empty Profile State Card
   .empty-profile-card {
     background-color: $card-bg;
-    border: 1px dashed $border-neutral;
-    border-radius: 20px;
+    border: 1px dashed $border-color;
+    border-radius: 16px;
   }
 }

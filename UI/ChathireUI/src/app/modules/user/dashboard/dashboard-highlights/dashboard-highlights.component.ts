@@ -3,8 +3,7 @@ import { Router } from '@angular/router';
 import * as moment from 'moment';
 import { SessionService } from 'src/app/core/session/session.service';
 import { CandidateProfileService } from 'src/app/api/api/candidate-profile.service';
-import { JobOpeningService, ConsultancyService } from 'src/app/api';
-import { picUrl } from 'src/app/data/various';
+import { JobOpeningService } from 'src/app/api';
 import { SharedService } from '../../../shared/services/shared.service';
 
 @Component({
@@ -18,7 +17,6 @@ export class DashboardHighlightsComponent implements OnInit {
   filteredCandidateList: any[] = [];
   searchTerm: string = '';
   user: any;
-  company: any;
   isCollapsed: boolean = false; // Expanded by default
   totalHotlistCandidates: number = 0;
   resumesSubmittedLast30Days: number = 0;
@@ -37,8 +35,7 @@ export class DashboardHighlightsComponent implements OnInit {
     private sessionService: SessionService,
     private sharedService: SharedService,
     private candidateProfileService: CandidateProfileService,
-    private jobOpeningService: JobOpeningService,
-    private consultancyService: ConsultancyService
+    private jobOpeningService: JobOpeningService
   ) { }
 
   ngOnInit() {
@@ -55,13 +52,6 @@ export class DashboardHighlightsComponent implements OnInit {
     this.sessionService.userdetailscast.subscribe((res: any) => {
       this.user = res;
       if (this.user) {
-        let consultancyId = this.user?.consultancyUsers?.[0]?.consultancyId;
-        if (consultancyId) {
-          this.fetchCompanyDetails(consultancyId);
-        } else if (this.user?.consultancyUsers?.[0]?.consultancy) {
-          this.company = this.user.consultancyUsers[0].consultancy;
-        }
-
         if (this.showBenchSalesSection()) {
           this.fetchBenchSalesStats();
         }
@@ -71,34 +61,6 @@ export class DashboardHighlightsComponent implements OnInit {
         }
       }
     });
-  }
-
-  fetchCompanyDetails(id: any) {
-    this.consultancyService.apiConsultancyConsultancyByIdGet(id).subscribe({
-      next: (res: any) => {
-        if (res && res.value) {
-          this.company = res.value;
-        }
-      },
-      error: (error: any) => {
-        console.error('Error fetching company details for dashboard:', error);
-      }
-    });
-  }
-
-  getCompanyLogoUrl(logo: string | null | undefined): string {
-    if (!logo) {
-      return '';
-    }
-    if (logo.startsWith('http://') || logo.startsWith('https://') || logo.startsWith('data:image')) {
-      return logo;
-    }
-    return `${picUrl}${logo}`;
-  }
-
-  getCompanyInitial(): string {
-    const name = this.company?.name || this.user?.consultancyUsers?.[0]?.consultancy?.name || 'C';
-    return name.charAt(0).toUpperCase();
   }
 
   fetchBenchSalesStats() {
