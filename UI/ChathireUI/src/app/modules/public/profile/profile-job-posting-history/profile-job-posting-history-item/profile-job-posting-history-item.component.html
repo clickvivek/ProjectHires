@@ -4,6 +4,6 @@
         <p class="text-dark-500 fw-medium" *ngIf="getFormattedLocations(job?.locations)">
             {{ getFormattedLocations(job?.locations) }}
         </p>
-        <p class="text-dark-400 text-sm mt-2">posted on {{getDate(job?.postedDate)}}</p>
+        <p class="text-dark-400 text-sm mt-2">{{ getRelativeDate(job?.postedDate) }}</p>
     </div>
 </div>

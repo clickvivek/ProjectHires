@@ -67,8 +67,31 @@ export class ProfileJobPostingHistoryItemComponent {
     }
   }
 
-  getDate(date) {
-    return moment(date).format('MMM D, YYYY')
+  getDate(date: any): string {
+    return this.getRelativeDate(date);
+  }
+
+  getRelativeDate(date: any): string {
+    if (!date) return '';
+    const target = moment(date);
+    if (!target.isValid()) return '';
+    const current = moment();
+    const differenceInDays = current.clone().startOf('day').diff(target.clone().startOf('day'), 'days');
+    
+    if (differenceInDays <= 0) {
+      return 'posted today';
+    } else if (differenceInDays === 1) {
+      return 'posted yesterday';
+    } else if (differenceInDays < 30) {
+      return `posted ${differenceInDays} days ago`;
+    } else if (differenceInDays < 60) {
+      return 'posted 1 month ago';
+    } else if (differenceInDays < 365) {
+      const months = Math.floor(differenceInDays / 30);
+      return `posted ${months} months ago`;
+    } else {
+      return `posted on ${moment(date).format('MMM D, YYYY')}`;
+    }
   }
 
   showJobDescription(job) {
