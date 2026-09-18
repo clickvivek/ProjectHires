@@ -1,25 +1,71 @@
 @import "src/@hires/scss/utilities/all";
 @import "src/@hires/scss/helpers/typography";
 
-.profile-available-resources-item-wrapper {
-    .list-group-item {
-        border: none;
-        border-top: 1px solid pick-color(dark, 300);
-        padding: 15px 20px;
-        .icon {
-          @include ft-calc($font-normal);
-          color: pick-color(secondary, 400);
-          margin: 0 2px 0 0;
-        }
-        .additional {
-          .item {
-            &:not(:last-child) {
-              margin: 0 14px 0 0;
-              @include hires-breakpoint("lt-md") {
-                margin: 0 0 10px 0;
-              }
-            }
-          }
-        }
+$primary-blue: #1E40AF;
+$primary-plum: #673260;
+$border-color: #EAECF0;
+$text-dark: #101828;
+$text-body: #344054;
+$text-muted: #667085;
+
+.profile-candidate-card {
+  border-radius: 12px;
+  border: 1px solid $border-color;
+  background-color: #FFFFFF;
+  transition: all 0.2s ease-in-out;
+
+  &:hover {
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06) !important;
+    border-color: #D0D5DD;
+  }
+
+  .candidate-name {
+    color: $primary-blue;
+    font-size: 1.15rem;
+    letter-spacing: -0.01em;
+  }
+
+  .candidate-title {
+    font-size: 0.9375rem;
+    color: $text-body !important;
+  }
+
+  .additional {
+    .meta-item {
+      .meta-icon {
+        font-size: 18px;
+        color: $text-muted;
       }
+      .meta-text {
+        font-size: 0.845rem;
+        color: $text-body;
+        font-weight: 500;
+      }
+    }
+  }
+
+  .candidate-info-box {
+    .info-label {
+      font-size: 0.845rem;
+      width: 90px;
+      color: $text-muted;
+    }
+    .info-value {
+      font-size: 0.845rem;
+      color: $text-dark;
+    }
+  }
+
+  .skills-wrap {
+    .skill-tag {
+      background-color: #ECFDF3;
+      color: #027A48;
+      border: 1px solid #D1FADF;
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-size: 0.775rem;
+      font-weight: 600;
+      letter-spacing: 0.01em;
+    }
+  }
 }

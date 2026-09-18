@@ -80,7 +80,7 @@ namespace BusinessLayer.Common
             catch (System.Exception ex)
             {
                 if (userContext != null)
-                    _logger.LogError(ex, GetLogMessage(userContext, String.Format("Error Occured while executing {ClassName} {Methodname}", typeof(M), MethodName)));
+                    _logger.LogError(ex, GetLogMessage(userContext, String.Format("Error Occured while executing {0} {1}", typeof(M), MethodName)));
                 else
                     _logger.LogError(ex, "Error Occured while executing {ClassName} {Methodname}", typeof(M), MethodName);
                 throw;

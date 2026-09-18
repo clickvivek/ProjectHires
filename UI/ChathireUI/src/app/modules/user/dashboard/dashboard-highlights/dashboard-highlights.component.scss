@@ -107,6 +107,172 @@
         font-size: 20px;
       }
     }
+
+    .btn-kpi-view {
+      color: #70246D;
+      background-color: #F5EDF5;
+      border: 1px solid #E7D5E6;
+      font-weight: 600;
+      font-size: 11.5px;
+      border-radius: 6px;
+      padding: 2px 8px;
+      line-height: 1.4;
+      transition: all 0.15s ease-in-out;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+
+      span.material-symbols-outlined {
+        font-size: 14px;
+        transition: transform 0.15s ease-in-out;
+      }
+
+      &:hover {
+        background-color: #70246D;
+        color: #ffffff;
+        border-color: #70246D;
+
+        span.material-symbols-outlined {
+          transform: translateX(2px);
+        }
+      }
+    }
+  }
+
+  /* CTA Action Card */
+  .kpi-action-btn-card {
+    background: linear-gradient(135deg, #70246D 0%, #8E308A 100%);
+    border: 1px solid #70246D !important;
+    border-radius: 10px;
+    box-shadow: 0 2px 6px rgba(112, 36, 109, 0.2);
+    height: 106px;
+    color: #ffffff !important;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+
+    &:hover {
+      background: linear-gradient(135deg, #5D1E5B 0%, #7B2877 100%);
+      box-shadow: 0 6px 16px rgba(112, 36, 109, 0.3);
+      transform: translateY(-2px);
+
+      .action-arrow-icon {
+        transform: translateX(4px);
+      }
+    }
+
+    .action-icon-circle {
+      width: 42px;
+      height: 42px;
+      background-color: rgba(255, 255, 255, 0.2);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      color: #ffffff;
+      flex-shrink: 0;
+
+      span {
+        font-size: 22px;
+      }
+    }
+
+    .action-btn-label {
+      font-size: 13.5px;
+      color: #ffffff;
+      line-height: 1.3;
+    }
+
+    .bg-free-tag {
+      background-color: #22A06B;
+      color: #ffffff;
+      font-size: 10.5px;
+      letter-spacing: 0.5px;
+      padding: 3px 8px;
+      border-radius: 4px;
+      display: inline-block;
+    }
+
+    .action-arrow-icon {
+      color: rgba(255, 255, 255, 0.85);
+      font-size: 22px;
+      transition: transform 0.2s ease-in-out;
+      flex-shrink: 0;
+    }
+  }
+
+  /* Shared Controls */
+  .compact-search-box {
+    position: relative;
+    width: 240px;
+
+    .search-icon {
+      position: absolute;
+      left: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 18px;
+      color: #98A2B3;
+      pointer-events: none;
+      line-height: 1;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .compact-search-input {
+      height: 38px;
+      padding-left: 34px !important;
+      font-size: 13.5px;
+      border: 1px solid #D0D5DD;
+      border-radius: 8px;
+      color: #101828;
+      background-color: #ffffff;
+      transition: all 0.2s ease-in-out;
+
+      &::placeholder {
+        color: #98A2B3;
+      }
+
+      &:focus {
+        border-color: #70246D !important;
+        box-shadow: 0 0 0 3px rgba(112, 36, 109, 0.12) !important;
+        outline: none;
+      }
+    }
+  }
+
+  .filter-btn {
+    height: 38px;
+    border-color: #D0D5DD;
+    color: #344054;
+    font-size: 13.5px;
+    font-weight: 500;
+    border-radius: 8px;
+    padding: 0 14px;
+
+    &:hover {
+      background-color: #F9FAFB;
+      border-color: #D0D5DD;
+      color: #101828;
+    }
+  }
+
+  .btn-subtle-purple {
+    height: 38px;
+    background-color: #F5EDF5;
+    color: #70246D;
+    font-size: 13.5px;
+    font-weight: 600;
+    border-radius: 8px;
+    padding: 0 14px;
+    border: none;
+    transition: all 0.2s ease-in-out;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+
+    &:hover {
+      background-color: #E7D5E6;
+      color: #5C1C59;
+    }
   }
 
   /* Candidate Table Card */
@@ -120,72 +286,6 @@
       background-color: #ffffff;
       border-bottom: 1px solid #EAECF0 !important;
       padding: 16px 20px;
-    }
-
-    .compact-search-box {
-      width: 240px;
-
-      .search-icon {
-        left: 10px;
-        top: 50%;
-        transform: translateY(-50%);
-        font-size: 18px;
-        color: #98A2B3;
-      }
-
-      .compact-search-input {
-        height: 38px;
-        padding-left: 34px;
-        font-size: 13.5px;
-        border: 1px solid #D0D5DD;
-        border-radius: 8px;
-        color: #101828;
-        background-color: #ffffff;
-        transition: all 0.2s ease-in-out;
-
-        &::placeholder {
-          color: #98A2B3;
-        }
-
-        &:focus {
-          border-color: #70246D !important;
-          box-shadow: 0 0 0 3px rgba(112, 36, 109, 0.12) !important;
-          outline: none;
-        }
-      }
-    }
-
-    .filter-btn {
-      height: 38px;
-      border-color: #D0D5DD;
-      color: #344054;
-      font-size: 13.5px;
-      font-weight: 500;
-      border-radius: 8px;
-      padding: 0 14px;
-
-      &:hover {
-        background-color: #F9FAFB;
-        border-color: #D0D5DD;
-        color: #101828;
-      }
-    }
-
-    .btn-subtle-purple {
-      height: 38px;
-      background-color: #F5EDF5;
-      color: #70246D;
-      font-size: 13.5px;
-      font-weight: 600;
-      border-radius: 8px;
-      padding: 0 14px;
-      border: none;
-      transition: all 0.2s ease-in-out;
-
-      &:hover {
-        background-color: #E7D5E6;
-        color: #5C1C59;
-      }
     }
 
     .candidate-table {
@@ -286,6 +386,136 @@
           background-color: #397774;
           color: #ffffff;
           border-color: #397774;
+        }
+      }
+    }
+  }
+
+  /* Inbox Resumes Glimpse Card */
+  .inbox-glimpse-card {
+    border: 1px solid #E4E7EC !important;
+    box-shadow: 0 1px 3px rgba(16, 24, 40, 0.04);
+
+    .table-header-bar {
+      background-color: #FAFAFB;
+    }
+
+    .dashboard-thin-job-card {
+      background-color: #ffffff;
+      border: 1px solid #EAE6EB !important;
+      border-radius: 10px;
+      padding: 14px 18px !important;
+      transition: all 0.15s ease-in-out;
+
+      &:hover {
+        border-color: #D6BBDA !important;
+        box-shadow: 0 3px 10px rgba(103, 50, 96, 0.06);
+        background-color: #FCFBFD;
+      }
+
+      .job-info-col {
+        min-width: 250px;
+      }
+
+      .dash-job-title {
+        font-size: 15px;
+        color: #101828;
+        transition: color 0.15s ease;
+
+        &:hover {
+          color: #673260;
+        }
+      }
+
+      .dash-candidate-badge {
+        display: inline-flex;
+        align-items: center;
+        padding: 2px 9px;
+        background-color: #F6EFF5;
+        color: #673260;
+        font-size: 11.5px;
+        font-weight: 500;
+        border-radius: 12px;
+        cursor: pointer;
+
+        strong {
+          font-weight: 700;
+          margin-right: 3px;
+        }
+      }
+
+      .dash-new-status-card {
+        padding: 5px 12px;
+        border-radius: 8px;
+        background-color: #F9F8F6;
+        border: 1px solid #EAE6EB;
+        color: #667085;
+        transition: all 0.15s ease-in-out;
+
+        .status-label {
+          font-size: 11px;
+          font-weight: 700;
+          letter-spacing: 0.5px;
+        }
+
+        .status-count-badge {
+          font-size: 13px;
+          font-weight: 700;
+          min-width: 22px;
+          height: 22px;
+          border-radius: 11px;
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          background-color: #EAE6EB;
+          color: #475467;
+          padding: 0 6px;
+        }
+
+        &.has-new {
+          background-color: #F6EFF5;
+          border-color: rgba(103, 50, 96, 0.25);
+          color: #673260;
+
+          .status-count-badge {
+            background-color: #673260;
+            color: #ffffff;
+          }
+
+          &:hover {
+            background-color: #EFE4EE;
+            border-color: #673260;
+            transform: translateY(-1px);
+          }
+        }
+      }
+
+      .dash-active-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 4px 10px;
+        background-color: #ECFDF3;
+        color: #027A48;
+        border: 1px solid #D1FADF;
+        border-radius: 12px;
+        font-size: 12px;
+        font-weight: 600;
+
+        .pulse-dot {
+          width: 7px;
+          height: 7px;
+          border-radius: 50%;
+          background-color: #12B76A;
+        }
+
+        &.inactive {
+          background-color: #F2F4F7;
+          color: #667085;
+          border-color: #EAECF0;
+          .pulse-dot {
+            background-color: #98A2B3;
+          }
         }
       }
     }

@@ -29,17 +29,24 @@ export class SelectFieldComponent implements OnInit, DoCheck {
      private element: ElementRef
   ) { }
 
-  showFieldItems() {
-    this.isExpanded = true
+  showFieldItems(event?: Event) {
+    if (event) {
+      event.stopPropagation();
+    }
+    this.isExpanded = !this.isExpanded;
   }
 
   isFieldRequired(){
     return this.fieldRequired;
   }
 
-  getSelectedItem(item:any) {
+  getSelectedItem(item: any, event?: Event) {
+    if (event) {
+      event.stopPropagation();
+    }
     this.fieldModel = item[this.fieldType];
     this.inputChange.emit(item);
+    this.isExpanded = false;
   }
 
   isSelectedItem(item:any, modal:any) {
@@ -47,18 +54,11 @@ export class SelectFieldComponent implements OnInit, DoCheck {
   }
 
   @HostListener('document:click', ['$event'])
-    onDocumentClick(event:any) {
-
-      event.stopPropagation();
-
-      var el = this.element.nativeElement.querySelector('.select');
-      var arrowElement = this.element.nativeElement.querySelector('.select-arrow');
-
-      if (!el.contains(event.target) && !arrowElement.contains(event.target)) {
-        this.isExpanded = false
-      }
-
-   }
+  onDocumentClick(event: any) {
+    if (!this.element.nativeElement.contains(event.target)) {
+      this.isExpanded = false;
+    }
+  }
 
   ngOnInit() {
 

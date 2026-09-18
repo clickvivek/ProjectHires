@@ -1,9 +1,10 @@
 <div class="form-group">
-    <label for="{{fieldName}}">{{fieldText}}<span *ngIf="isFieldRequired()" class="ms-2 font-medium">*</span></label>
-    <div class="select-wrapper" (click)="showFieldItems()">
+    <label for="{{fieldName}}" class="form-label">{{fieldText}}<span *ngIf="isFieldRequired()" class="req text-danger font-medium ms-1">*</span></label>
+    <div class="select-wrapper" (click)="showFieldItems($event)">
         <input type="text" class="form-control select" 
         #multiInputElem
-        placeholder="{{fieldPlaceholder}}" 
+        [class.active]="isExpanded"
+        [placeholder]="(selectedItem && selectedItem.length > 0) ? '' : fieldPlaceholder" 
         name="{{fieldName}}" 
         [(ngModel)]="fieldModel"
         autocomplete="off" 
@@ -15,7 +16,7 @@
         <div class="dropdown-wrapper show" *ngIf="isExpanded">
             <div class="list-group dropdown">
                 <ng-container *ngFor="let item of fieldList">
-                    <li class="list-group-item" (click)="handleSelectedItem(item)">{{item[fieldType]}}</li>
+                    <li class="list-group-item" (click)="handleSelectedItem(item)"><span class="item-label">{{item[fieldType]}}</span></li>
                 </ng-container>
             </div>
         </div>

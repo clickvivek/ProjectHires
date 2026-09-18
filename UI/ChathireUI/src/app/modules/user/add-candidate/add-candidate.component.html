@@ -7,7 +7,10 @@
             
             <ng-container *ngIf="!isCandidatePosted">
               
-              <h5 class="title mb-4">Please fill in your candidate information</h5>
+              <div class="form-header mb-4 pb-2">
+                <h4 class="page-main-title mb-1">{{ isEdit ? 'Edit Hotlist' : 'Add Hotlist' }}</h4>
+                <p class="subtitle-text mb-0">Please fill in your candidate information</p>
+              </div>
               
               <form
                 #addCandidateForm="ngForm"
@@ -86,12 +89,12 @@
                       </div>
                     </div>
 
-                    <!-- IT Experience Total -->
+                    <!-- Total years of IT Experience -->
                     <div class="col-md-6">
                       <div class="input-box">
                         <div class="form-group mb-0">
                           <label for="totalExp" class="form-label">
-                            IT Experience Total <span class="req">*</span>
+                            Total years of IT Experience <span class="req">*</span>
                           </label>
                           <input
                             type="number"
@@ -176,7 +179,7 @@
                         <app-search-field
                           fieldName="cityId"
                           fieldText="Current Location"
-                          fieldType="city1,stateName,countryName"
+                          fieldType="city1,stateCode,zip,countryName"
                           fieldPlaceholder="Enter first few characters of the city"
                           [fieldRequired]="true"
                           [fieldList]="selectLocationList"
@@ -285,7 +288,7 @@
                   </div>
                   
                   <!-- Skills -->
-                  <div class="col-sm-6">
+                  <div class="col-12">
                     <div class="input-box search-box">
                       <app-multi-search-field
                         fieldName="skillId"
@@ -294,6 +297,7 @@
                         fieldPlaceholder="Skill"
                         [fieldRequired]="false"
                         [fieldList]="selectSkillList"
+                        [allowCustom]="true"
                         fieldItemMaxLimit="5"
                         [isEdit]="isEdit"
                         [editValue]="formData.candidateProfileSkills"

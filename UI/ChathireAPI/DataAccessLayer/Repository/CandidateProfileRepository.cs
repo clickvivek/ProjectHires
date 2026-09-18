@@ -1,4 +1,4 @@
-﻿using BusinessEntityAndDTO.Common;
+using BusinessEntityAndDTO.Common;
 using BusinessEntityAndDTO.DTO;
 using BusinessEntityAndDTO.Models;
 using DataAccessLayer.Common;
@@ -26,6 +26,9 @@ namespace DataAccessLayer.Repository
         Task<int> GetCountResumesReceivedByDateByConsultancyUserID(long ConsultancyUserId, DateTime FromDate, DateTime ToDate, UserContext userContext);
         Task<int> GetCountUnreadResumesByConsultancyUserID(long ConsultancyUserId, UserContext userContext);
         Task<int> GetActiveCountHotListByConsultancyUserID(long ConsultancyUserId, UserContext userContext);
+        Task<int> GetActiveCountHotListByUser(long userId, long? consultancyUserId, UserContext userContext);
+        Task<int> GetCountResumesSubmittedLast30Days(long userId, long? consultancyUserId, UserContext userContext);
+        Task<List<BenchSalesCandidateSummaryDto>> GetRecentBenchSalesCandidates(long userId, long? consultancyUserId, int count, UserContext userContext);
     }
 
     public class CandidateProfileRepository : BaseRepository<CandidateProfile, long>, ICandidateProfileRepository
@@ -78,7 +81,7 @@ namespace DataAccessLayer.Repository
 
         public async Task<int> GetCountResumesReceivedTodayByConsultancyUserID(long ConsultancyUserId, UserContext userContext)
         {
-            var count = await _context.CandidateProfiles
+            var count = await _context.JobOpeningCandidateProfileMaps
                 .Where(o => o.ConsultancyUserId == ConsultancyUserId && o.Updated > DateTime.Today)
                 .CountAsync();
             return count;
@@ -86,7 +89,7 @@ namespace DataAccessLayer.Repository
 
         public async Task<int> GetCountResumesReceivedByDateByConsultancyUserID(long ConsultancyUserId, DateTime FromDate, DateTime ToDate, UserContext userContext)
         {
-            var count = await _context.CandidateProfiles
+            var count = await _context.JobOpeningCandidateProfileMaps
                 .Where(o => o.ConsultancyUserId == ConsultancyUserId && o.Updated >= FromDate && o.Updated >= ToDate)
                 .CountAsync();
             return count;
@@ -106,6 +109,80 @@ namespace DataAccessLayer.Repository
                 .Where(o => o.ConsultancyUserId == ConsultancyUserId && o.Active == true)
                 .CountAsync();
             return count;
+        }
+
+        public async Task<int> GetActiveCountHotListByUser(long userId, long? consultancyUserId, UserContext userContext)
+        {
+            var query = _context.CandidateProfiles.Where(o => o.Active == true);
+            if (consultancyUserId.HasValue && consultancyUserId.Value > 0)
+            {
+                query = query.Where(o => o.ConsultancyUserId == consultancyUserId.Value || o.UserId == userId);
+            }
+            else
+            {
+                query = query.Where(o => o.UserId == userId);
+            }
+            return await query.CountAsync();
+        }
+
+        public async Task<int> GetCountResumesSubmittedLast30Days(long userId, long? consultancyUserId, UserContext userContext)
+        {
+            var fromDate = DateTime.UtcNow.AddDays(-30);
+
+            var query = _context.JobOpeningCandidateProfileMaps
+                .Include(m => m.CandidateProfile)
+                .Where(m => (m.AppliedDate.HasValue && m.AppliedDate.Value >= fromDate) || (m.Updated.HasValue && m.Updated.Value >= fromDate));
+
+            if (consultancyUserId.HasValue && consultancyUserId.Value > 0)
+            {
+                query = query.Where(m => m.CandidateUserId == userId || m.UpdatedBy == userId || (m.CandidateProfile != null && (m.CandidateProfile.ConsultancyUserId == consultancyUserId.Value || m.CandidateProfile.UserId == userId)));
+            }
+            else
+            {
+                query = query.Where(m => m.CandidateUserId == userId || m.UpdatedBy == userId || (m.CandidateProfile != null && m.CandidateProfile.UserId == userId));
+            }
+
+            return await query.CountAsync();
+        }
+
+        public async Task<List<BenchSalesCandidateSummaryDto>> GetRecentBenchSalesCandidates(long userId, long? consultancyUserId, int count, UserContext userContext)
+        {
+            var query = _context.CandidateProfiles
+                .Include(c => c.CandidateProfileSkills)
+                .ThenInclude(s => s.Skill)
+                .Where(c => c.Active == true);
+
+            if (consultancyUserId.HasValue && consultancyUserId.Value > 0)
+            {
+                query = query.Where(o => o.ConsultancyUserId == consultancyUserId.Value || o.UserId == userId);
+            }
+            else
+            {
+                query = query.Where(o => o.UserId == userId);
+            }
+
+            var candidates = await query
+                .OrderByDescending(c => c.Id)
+                .Take(count)
+                .ToListAsync();
+
+            var candidateIds = candidates.Select(c => c.Id).ToList();
+            var appliedJobCounts = await _context.JobOpeningCandidateProfileMaps
+                .Where(m => m.CandidateProfileId.HasValue && candidateIds.Contains(m.CandidateProfileId.Value))
+                .GroupBy(m => m.CandidateProfileId.Value)
+                .Select(g => new { CandidateProfileId = g.Key, Count = g.Count() })
+                .ToDictionaryAsync(g => g.CandidateProfileId, g => g.Count);
+
+            return candidates.Select(c => new BenchSalesCandidateSummaryDto
+            {
+                Id = c.Id,
+                Name = c.CandidateName ?? string.Empty,
+                Title = c.Title ?? string.Empty,
+                PrimarySkill = c.CandidateProfileSkills?.Select(s => s.Skill?.Name).FirstOrDefault(n => !string.IsNullOrEmpty(n))
+                               ?? c.Title ?? string.Empty,
+                AppliedJobs = appliedJobCounts.ContainsKey(c.Id) ? appliedJobCounts[c.Id] : 0,
+                NewMatchingJobs = 0
+            }).ToList();
         }
 
         public async Task<List<CandidateProfile>> GetByConsultancyUserID(long? Id, string? publicprofileID, UserContext userContext)

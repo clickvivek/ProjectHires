@@ -527,4 +527,67 @@ export class ConsultancyService {
         );
     }
 
+    public bulkAdd(consultancies: Array<any>, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext}): Observable<any> {
+        if (consultancies === null || consultancies === undefined) {
+            throw new Error('Required parameter consultancies was null or undefined when calling bulkAdd.');
+        }
+
+        let localVarHeaders = this.defaultHeaders;
+        let localVarCredential: string | undefined;
+        localVarCredential = this.configuration.lookupCredential('Bearer');
+        if (localVarCredential) {
+            localVarHeaders = localVarHeaders.set('Authorization', localVarCredential);
+        }
+
+        localVarHeaders = localVarHeaders.set('Content-Type', 'application/json');
+        let localVarPath = `/api/Consultancy/BulkAdd`;
+        return this.httpClient.request<any>('post', `${this.configuration.basePath}${localVarPath}`,
+            {
+                body: consultancies,
+                responseType: 'json',
+                withCredentials: this.configuration.withCredentials,
+                headers: localVarHeaders,
+                observe: observe,
+                reportProgress: reportProgress
+            }
+        );
+    }
+
+    public uploadCompanyLogo(file: Blob, websiteUrl: string, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext}): Observable<any> {
+        let localVarHeaders = this.defaultHeaders;
+        let localVarCredential: string | undefined;
+        localVarCredential = this.configuration.lookupCredential('Bearer');
+        if (localVarCredential) {
+            localVarHeaders = localVarHeaders.set('Authorization', localVarCredential);
+        }
+
+        const formData = new FormData();
+        if (file) {
+            formData.append('ImageFile', file);
+            formData.append('imageFile', file);
+        }
+        if (websiteUrl) {
+            formData.append('websiteUrl', websiteUrl);
+        }
+
+        let localVarQueryParameters = new HttpParams();
+        if (websiteUrl) {
+            localVarQueryParameters = localVarQueryParameters.append('websiteUrl', websiteUrl);
+        }
+
+        let localVarPath = `/api/Consultancy/UploadCompanyLogo`;
+        return this.httpClient.request<any>('post', `${this.configuration.basePath}${localVarPath}`,
+            {
+                body: formData,
+                params: localVarQueryParameters,
+                responseType: 'json',
+                withCredentials: this.configuration.withCredentials,
+                headers: localVarHeaders,
+                observe: observe,
+                reportProgress: reportProgress
+            }
+        );
+    }
+
 }
+

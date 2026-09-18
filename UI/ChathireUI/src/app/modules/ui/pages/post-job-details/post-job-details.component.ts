@@ -213,7 +213,7 @@ export class PostJobDetailsComponent {
           newData.jobOpeningSkills.forEach(item => {
             let itemData = {
               skillId: item.skillId,
-              name: item.skill.name
+              name: item.skill?.name || item.name || ''
             }
             arrData.push(itemData)
           });
@@ -361,14 +361,15 @@ export class PostJobDetailsComponent {
     if(!_.isEmpty(event)) {
       event.forEach(item => {
         let itemData = {
-            skillId: item.skillId || item.id,
+            skillId: item.skillId || item.id || 0,
+            name: item.name || '',
             isMandate: true,
             active: true
         }
         newData.push(itemData)
       });
       this.formData.jobOpeningSkills = newData;
-      this.formData.skillId = event[0].id;
+      this.formData.skillId = event[0].skillId || event[0].id || 0;
     }
     else {
       this.formData.jobOpeningSkills = []

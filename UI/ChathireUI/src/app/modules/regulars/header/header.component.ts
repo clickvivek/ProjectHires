@@ -61,6 +61,10 @@ export class HeaderComponent implements OnInit {
     return this.authService.isLoggedIn()
   }
 
+  isAdmin() {
+    return Number(this.sessionService.userTypeId) === 7;
+  }
+
   isConsultancyId() {
     return this.sessionService.consultancyId
   }

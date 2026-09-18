@@ -70,6 +70,10 @@ namespace BusinessEntityAndDTO.DTO
         public DateTime? OtppwdDateTime { get; set; }
         public long? ConsultancyUserId { get; set; }
 
+        public bool? RoleRecruiter { get; set; }
+
+        public bool? RoleBenchSales { get; set; }
+
         public List<ConsultancyUserDtoForReturn>? ConsultancyUsers { get; set; }
 
     }
@@ -130,6 +134,10 @@ namespace BusinessEntityAndDTO.DTO
 
         public DateTime? OtppwdDateTime { get; set; }
 
+        public bool? RoleRecruiter { get; set; }
+
+        public bool? RoleBenchSales { get; set; }
+
     }
 
     public partial class UserDtoForReturn
@@ -162,6 +170,10 @@ namespace BusinessEntityAndDTO.DTO
 
         public string? Lname { get; set; }
         public long? ConsultancyUserId { get; set; }
+
+        public bool? RoleRecruiter { get; set; }
+
+        public bool? RoleBenchSales { get; set; }
 
         public List<ConsultancyUserDto>? ConsultancyUsers { get; set; } 
 

@@ -1,0 +1,171 @@
+@import "src/@hires/scss/utilities/all";
+@import "src/@hires/scss/helpers/typography";
+
+$primary-plum: #673260;
+$primary-hover: #52274c;
+$light-plum: #F6EFF5;
+$plum-border: #E6D8E3;
+$border-color: #EAECF0;
+$text-dark: #101828;
+$text-body: #344054;
+$text-muted: #667085;
+
+:host {
+  display: block;
+}
+
+.hotlist-table-card {
+  background-color: #FFFFFF;
+  border: 1px solid $border-color;
+  border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(16, 24, 40, 0.05), 0 1px 2px rgba(16, 24, 40, 0.03);
+  margin-top: 10px;
+
+  .custom-hotlist-table {
+    width: 100%;
+    margin-bottom: 0;
+    border-collapse: collapse;
+
+    thead {
+      background-color: #F8F9FA;
+      border-bottom: 1px solid $border-color;
+
+      th {
+        padding: 13px 16px;
+        font-size: 0.75rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        color: $text-muted;
+        border: none;
+        white-space: nowrap;
+      }
+    }
+
+    tbody {
+      tr {
+        border-bottom: 1px solid #F2F4F7;
+        transition: background-color 0.15s ease-in-out;
+
+        &:last-child {
+          border-bottom: none;
+        }
+
+        &:hover {
+          background-color: #FAF7FB;
+        }
+
+        td {
+          padding: 14px 16px;
+          border: none;
+          font-size: 0.875rem;
+          vertical-align: middle;
+        }
+      }
+    }
+
+    .candidate-avatar {
+      width: 32px;
+      height: 32px;
+      background-color: #F3E8F4;
+      color: $primary-plum;
+      font-size: 0.8125rem;
+      font-weight: 700;
+      border: 1px solid #EADBEC;
+    }
+
+    .candidate-name {
+      color: #1E40AF;
+      font-size: 0.875rem;
+      letter-spacing: -0.01em;
+      white-space: nowrap;
+    }
+
+    .tech-title {
+      color: $text-body;
+      font-size: 0.875rem;
+      font-weight: 500;
+    }
+
+    .exp-badge {
+      background-color: #F2F4F7;
+      color: #344054;
+      border: 1px solid #E4E7EC;
+      font-weight: 600;
+      font-size: 0.775rem;
+      padding: 4px 8px;
+      border-radius: 6px;
+    }
+
+    .visa-badge {
+      background-color: #EEF4FF;
+      color: #3538CD;
+      border: 1px solid #D1E0FF;
+      font-weight: 600;
+      font-size: 0.775rem;
+      padding: 4px 8px;
+      border-radius: 6px;
+    }
+
+    .location-text {
+      color: $text-body;
+      font-size: 0.845rem;
+      font-weight: 500;
+      white-space: nowrap;
+
+      .loc-icon {
+        font-size: 16px;
+        color: $text-muted;
+      }
+    }
+
+    .pref-text {
+      color: $text-muted;
+      font-size: 0.845rem;
+      display: inline-block;
+      max-width: 180px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      vertical-align: middle;
+    }
+
+    .btn-table-action {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 30px;
+      height: 30px;
+      border-radius: 6px;
+      border: 1px solid transparent;
+      cursor: pointer;
+      transition: all 0.15s ease-in-out;
+
+      &.btn-table-edit {
+        background-color: #F8EFF7;
+        color: $primary-plum;
+        border-color: #E7D5E6;
+
+        &:hover {
+          background-color: $primary-plum;
+          color: #FFFFFF;
+          border-color: $primary-plum;
+          transform: translateY(-1px);
+        }
+      }
+
+      &.btn-table-delete {
+        background-color: #FEF3F2;
+        color: #D92D20;
+        border-color: #FECDCA;
+
+        &:hover {
+          background-color: #D92D20;
+          color: #FFFFFF;
+          border-color: #D92D20;
+          transform: translateY(-1px);
+        }
+      }
+    }
+  }
+}

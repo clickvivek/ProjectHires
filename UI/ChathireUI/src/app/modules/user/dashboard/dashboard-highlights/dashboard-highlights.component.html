@@ -11,13 +11,13 @@
       <div class="d-flex align-items-center gap-3">
         <div>
           <div class="d-flex align-items-center gap-2 mb-1">
-            <h1 class="welcome-title mb-0">Hello, {{ user?.fname || 'Raj' }} 👋</h1>
+            <h1 class="welcome-title text-capitalize mb-0">Hello, {{ user?.fname || 'Raj' }} 👋</h1>
             <span class="role-badge ms-1">
-              {{ user?.userTypeId == 2 ? 'Bench Sales' : 'Recruiter' }}
+              {{ getRoleBadgeText() }}
             </span>
           </div>
           <p class="welcome-subtitle mb-0">
-            Here’s what’s happening with your recruiting activity today.
+            Here’s what’s happening with your {{ isBenchSalesOnly() ? 'bench sales' : 'recruiting' }} activity today.
           </p>
         </div>
       </div>
@@ -36,17 +36,27 @@
     <div class="card-body px-3 px-md-4 pb-4 pt-0 border-top" *ngIf="!isCollapsed">
       
       <!-- SECTION 1: RECRUITMENT -->
-      <div class="data-section mt-4 mb-4">
+      <div class="data-section mt-4 mb-4" *ngIf="showRecruitmentSection()">
         <h2 class="section-heading mb-3">Recruitment</h2>
         <div class="row g-3">
           
           <!-- Job Requirement Posted -->
-          <div class="col-12 col-md-4">
+          <div class="col-12 col-sm-6 col-lg-3">
             <div class="kpi-card p-3 rounded-3 bg-white border">
               <div class="d-flex align-items-center justify-content-between">
                 <div>
                   <span class="kpi-title d-block mb-1">Job Requirement Posted</span>
-                  <h3 class="kpi-value mb-0">12</h3>
+                  <div class="d-flex align-items-center gap-2">
+                    <h3 class="kpi-value mb-0">{{ jobRequirementPosted }}</h3>
+                    <a
+                      routerLink="/posting-history"
+                      class="btn btn-sm btn-kpi-view ms-1"
+                      title="View Job Requirements"
+                    >
+                      <span>View</span>
+                      <span class="material-symbols-outlined fs-6">arrow_forward</span>
+                    </a>
+                  </div>
                 </div>
                 <div class="kpi-icon-box rounded-3 d-flex align-items-center justify-content-center" style="background-color: #EFF6FF; color: #3B82F6;">
                   <span class="material-symbols-outlined">work</span>
@@ -56,12 +66,12 @@
           </div>
 
           <!-- Expired Postings -->
-          <div class="col-12 col-md-4">
+          <div class="col-12 col-sm-6 col-lg-3">
             <div class="kpi-card p-3 rounded-3 bg-white border">
               <div class="d-flex align-items-center justify-content-between">
                 <div>
                   <span class="kpi-title d-block mb-1">Expired Postings</span>
-                  <h3 class="kpi-value mb-0">6</h3>
+                  <h3 class="kpi-value mb-0">{{ expiredPostings }}</h3>
                 </div>
                 <div class="kpi-icon-box rounded-3 d-flex align-items-center justify-content-center" style="background-color: #FFF7E6; color: #D97706;">
                   <span class="material-symbols-outlined">timer_off</span>
@@ -71,12 +81,12 @@
           </div>
 
           <!-- Resumes Received -->
-          <div class="col-12 col-md-4">
+          <div class="col-12 col-sm-6 col-lg-3">
             <div class="kpi-card p-3 rounded-3 bg-white border">
               <div class="d-flex align-items-center justify-content-between">
                 <div>
                   <span class="kpi-title d-block mb-1">Resumes Received</span>
-                  <h3 class="kpi-value mb-0">65</h3>
+                  <h3 class="kpi-value mb-0">{{ resumesReceived }}</h3>
                 </div>
                 <div class="kpi-icon-box rounded-3 d-flex align-items-center justify-content-center" style="background-color: #ECFDF3; color: #22A06B;">
                   <span class="material-symbols-outlined">description</span>
@@ -85,11 +95,152 @@
             </div>
           </div>
 
+          <!-- Create New Job Posting FREE Button Card -->
+          <div class="col-12 col-sm-6 col-lg-3">
+            <a
+              routerLink="/postjobs"
+              class="kpi-action-btn-card p-3 rounded-3 d-flex align-items-center justify-content-between text-decoration-none h-100"
+              title="Create New Job Posting"
+            >
+              <div class="d-flex align-items-center gap-3">
+                <div class="action-icon-circle rounded-circle d-flex align-items-center justify-content-center">
+                  <span class="material-symbols-outlined">post_add</span>
+                </div>
+                <div>
+                  <div class="action-btn-label fw-bold">
+                    Create New Job Posting
+                  </div>
+                  <span class="badge bg-free-tag text-uppercase fw-bold mt-1">FREE</span>
+                </div>
+              </div>
+              <span class="material-symbols-outlined action-arrow-icon">arrow_forward</span>
+            </a>
+          </div>
+
+        </div>
+
+        <!-- INBOX RESUMES GLIMPSE CARD -->
+        <div class="inbox-glimpse-card bg-white border rounded-3 overflow-hidden mt-4">
+          
+          <!-- Header Bar -->
+          <div class="table-header-bar p-3 border-bottom d-flex align-items-center justify-content-between flex-wrap gap-3">
+            <div class="d-flex align-items-center gap-2">
+              <span class="material-symbols-outlined fs-5" style="color: #673260;">inbox</span>
+              <div>
+                <h2 class="section-heading mb-0 fs-5">Inbox Resumes</h2>
+                <span class="text-muted" style="font-size: 13px;">Responses for your job postings – Review applicants and screening pipeline</span>
+              </div>
+            </div>
+
+            <div class="d-flex align-items-center gap-2 ms-auto flex-wrap">
+              <!-- Search -->
+              <div class="compact-search-box position-relative">
+                <span class="material-symbols-outlined search-icon position-absolute">search</span>
+                <input
+                  type="text"
+                  class="form-control compact-search-input"
+                  placeholder="Search jobs..."
+                  [(ngModel)]="inboxSearchTerm"
+                  (ngModelChange)="filterInboxJobs()"
+                />
+              </div>
+
+              <!-- View Full Inbox -->
+              <a routerLink="/inbox" class="btn btn-sm btn-subtle-purple d-inline-flex align-items-center gap-1">
+                <span>View Full Inbox</span>
+                <span class="material-symbols-outlined fs-6">arrow_forward</span>
+              </a>
+            </div>
+          </div>
+
+          <!-- Body -->
+          <div class="inbox-glimpse-body p-3">
+            <loader *ngIf="isLoadingInbox"></loader>
+
+            <ng-container *ngIf="!isLoadingInbox">
+              <div class="inbox-job-items d-flex flex-column gap-2" *ngIf="filteredInboxJobs && filteredInboxJobs.length > 0">
+                
+                <div class="dashboard-thin-job-card p-3 rounded-3 border bg-white d-flex align-items-center justify-content-between flex-wrap gap-3" *ngFor="let item of filteredInboxJobs | slice:0:5">
+                  
+                  <!-- Left: Job Information -->
+                  <div class="job-info-col">
+                    <div class="d-flex align-items-center gap-2 flex-wrap mb-1">
+                      <a routerLink="/inbox" class="dash-job-title fw-bold text-dark text-decoration-none">
+                        {{ item.name }}
+                      </a>
+                      <span class="dash-candidate-badge" (click)="handleJobNavigate(item)">
+                        <strong>{{ getTotalCandidates(item) }}</strong> Candidates
+                      </span>
+                    </div>
+                    <div class="d-flex align-items-center gap-3 text-muted" style="font-size: 12.5px;">
+                      <span class="d-inline-flex align-items-center gap-1">
+                        <span class="material-symbols-outlined" style="font-size: 14px;">location_on</span>
+                        {{ item.jobOpeningLocation | jobLocation }}
+                      </span>
+                      <span class="d-inline-flex align-items-center gap-1">
+                        <span class="material-symbols-outlined" style="font-size: 14px;">calendar_today</span>
+                        Posted on {{ getDate(item.postDate) }}
+                      </span>
+                    </div>
+                  </div>
+
+                  <!-- Right: NEW Status Count + Active Status + View Action -->
+                  <div class="d-flex align-items-center gap-3 ms-auto flex-wrap">
+                    
+                    <!-- NEW Status Pill / Card -->
+                    <div 
+                      class="dash-new-status-card d-inline-flex align-items-center gap-2 cursor-pointer"
+                      [class.has-new]="getNewCandidatesCount(item) > 0"
+                      (click)="handleJobNavigate(item, 1)"
+                      title="View New Applicants"
+                    >
+                      <span class="status-label">NEW</span>
+                      <span class="status-count-badge">{{ getNewCandidatesCount(item) }}</span>
+                    </div>
+
+                    <!-- Active Status Pill -->
+                    <span class="dash-active-pill" [class.inactive]="!item.active">
+                      <span class="pulse-dot"></span>
+                      {{ item.active ? 'Active job' : 'Inactive job' }}
+                    </span>
+
+                    <!-- View details button -->
+                    <button type="button" class="btn btn-sm btn-subtle-purple d-inline-flex align-items-center gap-1" (click)="handleJobNavigate(item)">
+                      <span>View</span>
+                      <span class="material-symbols-outlined fs-6">arrow_forward</span>
+                    </button>
+
+                  </div>
+
+                </div>
+
+              </div>
+
+              <!-- Empty State -->
+              <div class="text-center py-4" *ngIf="!filteredInboxJobs || filteredInboxJobs.length === 0">
+                <span class="material-symbols-outlined text-muted fs-1 mb-2">inbox</span>
+                <p class="text-muted mb-2">No job postings with new candidate resumes{{ inboxSearchTerm ? ' matching "' + inboxSearchTerm + '"' : '' }}.</p>
+                <div class="d-flex align-items-center justify-content-center gap-2 mt-2">
+                  <a routerLink="/inbox" class="btn btn-sm btn-subtle-purple">View Full Inbox</a>
+                  <a routerLink="/postjobs" class="btn btn-sm btn-outline-primary">Post a New Job FREE</a>
+                </div>
+              </div>
+
+              <!-- View More footer if > 5 jobs -->
+              <div class="text-center pt-3 border-top mt-2" *ngIf="filteredInboxJobs && filteredInboxJobs.length > 5">
+                <a routerLink="/inbox" class="btn btn-sm btn-subtle-purple">
+                  View all {{ filteredInboxJobs.length }} job postings in Inbox Resumes →
+                </a>
+              </div>
+            </ng-container>
+
+          </div>
+
         </div>
       </div>
 
       <!-- SECTION 2: BENCH SALES -->
-      <div class="data-section mb-4">
+      <div class="data-section mb-4" [class.mt-4]="!showRecruitmentSection()" *ngIf="showBenchSalesSection()">
         <h2 class="section-heading mb-3">Bench Sales</h2>
         <div class="row g-3">
           
@@ -99,7 +250,18 @@
               <div class="d-flex align-items-center justify-content-between">
                 <div>
                   <span class="kpi-title d-block mb-1">Total Hotlist Candidates</span>
-                  <h3 class="kpi-value mb-0">5</h3>
+                  <div class="d-flex align-items-center gap-2">
+                    <h3 class="kpi-value mb-0">{{ totalHotlistCandidates }}</h3>
+                    <a
+                      routerLink="/myhotlist"
+                      [queryParams]="{ view: 'list' }"
+                      class="btn btn-sm btn-kpi-view ms-1"
+                      title="View Total Hotlist Candidates"
+                    >
+                      <span>View</span>
+                      <span class="material-symbols-outlined fs-6">arrow_forward</span>
+                    </a>
+                  </div>
                 </div>
                 <div class="kpi-icon-box rounded-3 d-flex align-items-center justify-content-center" style="background-color: #F5EDF5; color: #70246D;">
                   <span class="material-symbols-outlined">group</span>
@@ -114,7 +276,7 @@
               <div class="d-flex align-items-center justify-content-between">
                 <div>
                   <span class="kpi-title d-block mb-1">Resume Submitted</span>
-                  <h3 class="kpi-value mb-0">481</h3>
+                  <h3 class="kpi-value mb-0">{{ resumesSubmittedLast30Days }}</h3>
                 </div>
                 <div class="kpi-icon-box rounded-3 d-flex align-items-center justify-content-center" style="background-color: #EEF7F6; color: #397774;">
                   <span class="material-symbols-outlined">send</span>
@@ -123,11 +285,33 @@
             </div>
           </div>
 
+          <!-- Add Hotlist / Bench Candidates FREE Button Card -->
+          <div class="col-12 col-md-4">
+            <a
+              routerLink="/addcandidate"
+              class="kpi-action-btn-card p-3 rounded-3 d-flex align-items-center justify-content-between text-decoration-none h-100"
+              title="Add Hotlist / Bench Candidates"
+            >
+              <div class="d-flex align-items-center gap-3">
+                <div class="action-icon-circle rounded-circle d-flex align-items-center justify-content-center">
+                  <span class="material-symbols-outlined">person_add</span>
+                </div>
+                <div>
+                  <div class="action-btn-label fw-bold">
+                    Add Hotlist / Bench Candidates
+                  </div>
+                  <span class="badge bg-free-tag text-uppercase fw-bold mt-1">FREE</span>
+                </div>
+              </div>
+              <span class="material-symbols-outlined action-arrow-icon">arrow_forward</span>
+            </a>
+          </div>
+
         </div>
       </div>
 
       <!-- SECTION 3: CANDIDATE LISTS TABLE -->
-      <div class="data-section mb-2">
+      <div class="data-section mb-2" *ngIf="showBenchSalesSection()">
         <div class="candidate-table-card bg-white border rounded-3 overflow-hidden">
           
           <!-- Card Header -->
@@ -149,12 +333,6 @@
                 />
               </div>
 
-              <!-- Filter Button -->
-              <button type="button" class="btn btn-sm btn-outline-secondary d-inline-flex align-items-center gap-1 filter-btn">
-                <span class="material-symbols-outlined fs-6">filter_list</span>
-                <span>Filter</span>
-              </button>
-
               <!-- View All -->
               <a routerLink="/myhotlist" class="btn btn-sm btn-subtle-purple d-inline-flex align-items-center gap-1">
                 <span>View All</span>
@@ -164,7 +342,9 @@
           </div>
 
           <!-- Structured Table -->
-          <div class="table-responsive">
+          <loader *ngIf="isLoadingStats"></loader>
+
+          <div class="table-responsive" *ngIf="!isLoadingStats">
             <table class="table table-hover align-middle mb-0 candidate-table">
               <thead>
                 <tr>
@@ -190,7 +370,7 @@
                     </div>
                   </td>
                   <td>
-                    <span class="candidate-role text-muted">{{ candidate.title }}</span>
+                    <span class="candidate-role text-muted">{{ candidate.primarySkill || candidate.title }}</span>
                   </td>
                   <td class="text-center">
                     <span class="numeric-val fw-semibold text-dark-700">{{ candidate.appliedJobs }}</span>

@@ -2,6 +2,7 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 
 import { AuthGuard } from './core/auth/guards/auth.guard';
+import { AdminGuard } from './core/auth/guards/admin.guard';
 
 const routes: Routes = [
   { path: 'home', canActivate: [ AuthGuard ], loadChildren: () => import('./modules/public/home/home.module').then(m => m.HomeModule) },
@@ -25,6 +26,8 @@ const routes: Routes = [
   { path: 'inbox', canActivate: [ AuthGuard ], loadChildren: () => import('./modules/user/inbox/inbox.module').then(m => m.InboxModule) },
   { path: 'chat', canActivate: [ AuthGuard ], loadChildren: () => import('./modules/user/messages/messages.module').then(m => m.MessagesModule) },
   { path: 'jobs', canActivate: [ AuthGuard ], loadChildren: () => import('./modules/public/job-details-page/job-details-page.module').then(m => m.JobDetailsPageModule) },
+  { path: 'Adminsetup', canActivate: [ AdminGuard ], loadChildren: () => import('./modules/admin/admin-setup/admin-setup.module').then(m => m.AdminSetupModule) },
+  { path: 'adminsetup', canActivate: [ AdminGuard ], loadChildren: () => import('./modules/admin/admin-setup/admin-setup.module').then(m => m.AdminSetupModule) },
   { path: '', pathMatch: 'full', redirectTo: 'home' }
 ];
 

@@ -1,6 +1,6 @@
 <header>
   <nav class="navbar navbar-expand-lg" AwakeClass [ngClass]="{ expanded: isMenuExpanded }">
-    <div [ngClass]="isMobile ? 'container-fluid' : 'container'">
+    <div class="container-fluid px-3 px-xl-4">
       <a
           class="navbar-brand"
           [routerLink]="isLoggedIn() ? '/dashboard' : '/home'"
@@ -182,13 +182,25 @@
                       <img [src]="profilePicUrl || 'assets/images/profile-placehoder-img.png'" (error)="onImageError($event)" id="userProfile" alt="User Profile" />
                     </figure>
                     <div class="profile-info d-flex align-items-center gap-1">
-                      <span class="name fw-medium me-1">
+                      <span class="name fw-medium me-1 text-capitalize">
                         {{ user?.fname }} {{ user?.lname }}
                       </span>
                       <span class="material-symbols-outlined text-muted fs-6">expand_more</span>
                     </div>
                   </a>
                   <div class="dropdown-menu shadow-sm border-0 dropdown-menu-end" aria-labelledby="userProfileDropDown">
+                    <a
+                      *ngIf="isAdmin()"
+                      class="dropdown-item fw-medium"
+                      routerLink="/Adminsetup"
+                      routerLinkActive="active"
+                      [routerLinkActiveOptions]="{ exact: true }"
+                      style="color: #6d28d9;"
+                      ><span class="material-symbols-outlined icon me-2" style="color: #6d28d9;">
+                        admin_panel_settings</span
+                      >Admin Setup</a
+                    >
+                    <div *ngIf="isAdmin()" class="dropdown-divider"></div>
                     <a
                       class="dropdown-item"
                       routerLink="/myaccount"

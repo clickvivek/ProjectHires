@@ -1,12 +1,13 @@
 <div class="form-group">
-	<label for="{{fieldName}}">{{fieldText}}<span *ngIf="isFieldRequired()" class="ms-2 font-medium">*</span></label>
+	<label for="{{fieldName}}" class="form-label">{{fieldText}}<span *ngIf="isFieldRequired()" class="req text-danger font-medium ms-1">*</span></label>
 	<input type="text"
 		class="form-control search multi-search"
     #multiInputElem
-		placeholder="{{fieldPlaceholder}}"
+		[placeholder]="(selectedItem && selectedItem.length > 0) ? '' : fieldPlaceholder"
 		name="{{fieldName}}"
 		[(ngModel)]="fieldModel"
 		(ngModelChange)="handleModelChange()"
+    (keydown.enter)="handleEnterKey($event)"
     [required]="fieldRequired && selectedItem.length == 0"
     (blur)="clearModel()"
     [ngStyle]="{ 'padding-left.px': leftPadding, 'padding-top.px': topPadding, 'text-indent.px': handleTextIndent() }"
@@ -15,8 +16,16 @@
 	<div class="dropdown-wrapper show" *ngIf="isExpanded">
 		<div class="list-group dropdown">
 			<ng-container *ngFor="let item of fieldList">
-				<li class="list-group-item" (click)="handleSelectedItem(item)">{{getItemData(item)}}</li>
+				<li class="list-group-item pointer" (click)="handleSelectedItem(item)">{{getItemData(item)}}</li>
 			</ng-container>
+      <li
+        class="list-group-item add-custom-item pointer text-primary-700 fw-semibold d-flex align-items-center gap-2 border-top"
+        *ngIf="allowCustom && fieldModel && fieldModel.trim() && !hasExactMatch(fieldModel)"
+        (mousedown)="createCustomItem($event, fieldModel)"
+      >
+        <span class="material-symbols-outlined fs-6 text-primary-600">add_circle</span>
+        <span>Add "<strong>{{ fieldModel.trim() }}</strong>"</span>
+      </li>
 		</div>
 	</div>
   <div class="badge-list" #badgeListElem>

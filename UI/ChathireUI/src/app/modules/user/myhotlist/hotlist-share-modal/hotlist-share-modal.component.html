@@ -1,0 +1,116 @@
+<div class="hotlist-share-modal-wrapper">
+  <!-- Modal Header -->
+  <div class="modal-header-bar d-flex align-items-center justify-content-between p-3 px-4 border-bottom">
+    <div class="d-flex align-items-center gap-2">
+      <div class="linkedin-icon-box rounded-circle d-flex align-items-center justify-content-center">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="#0A66C2">
+          <path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.28 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.75M6.46 10.9v8.37H9.25V10.9H6.46M7.86 6.78a1.6 1.6 0 1 0 1.6 1.6 1.6 1.6 0 0 0-1.6-1.6z"/>
+        </svg>
+      </div>
+      <div>
+        <h5 class="modal-title mb-0 fw-bold">Share Hotlist on LinkedIn</h5>
+        <span class="text-muted fs-7">Preview generated image and post directly to LinkedIn</span>
+      </div>
+    </div>
+    <button type="button" class="btn-close-modal border-0 bg-transparent" (click)="close()">
+      <span class="material-symbols-outlined">close</span>
+    </button>
+  </div>
+
+  <!-- Modal Body -->
+  <div class="modal-body p-4">
+    <div class="row g-4">
+      <!-- Left: Image Preview & Theme Selector -->
+      <div class="col-12 col-lg-7">
+        <!-- Header / Theme Color Picker -->
+        <div class="theme-picker-section mb-3 p-2 px-3 rounded-3 bg-light border d-flex align-items-center justify-content-between flex-wrap gap-2">
+          <div class="d-flex align-items-center gap-2">
+            <span class="material-symbols-outlined fs-6 text-muted">palette</span>
+            <span class="fs-7 fw-bold text-dark-800">Banner Theme:</span>
+          </div>
+          <div class="d-flex align-items-center gap-2">
+            <button
+              *ngFor="let t of themes"
+              type="button"
+              class="theme-swatch-btn rounded-circle border-0 p-0 position-relative d-inline-flex align-items-center justify-content-center"
+              [class.active]="selectedThemeId === t.id"
+              [style.background-color]="t.swatch"
+              [title]="t.name"
+              (click)="selectTheme(t.id)"
+              [disabled]="isReRendering"
+            >
+              <span *ngIf="selectedThemeId === t.id" class="active-check material-symbols-outlined text-white">check</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="preview-label mb-2 fw-semibold text-dark-800 d-flex align-items-center justify-content-between">
+          <span>Generated Hotlist Snapshot</span>
+          <button type="button" class="btn btn-sm btn-link p-0 text-decoration-none text-plum" (click)="downloadImage()">
+            <span class="material-symbols-outlined fs-6 align-middle me-1">download</span>Download PNG
+          </button>
+        </div>
+        <div class="image-preview-frame rounded-3 border overflow-hidden p-2 bg-light text-center position-relative">
+          <div *ngIf="isReRendering" class="theme-rendering-overlay position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center bg-white bg-opacity-75" style="z-index: 5;">
+            <div class="spinner-border spinner-border-sm text-plum me-2" role="status"></div>
+            <span class="fs-7 fw-semibold text-dark-800">Applying theme...</span>
+          </div>
+          <img [src]="imageUrl" alt="Hotlist Banner Preview" class="img-fluid rounded-2 shadow-sm banner-img" />
+        </div>
+      </div>
+
+      <!-- Right: Caption & Actions -->
+      <div class="col-12 col-lg-5 d-flex flex-column justify-content-between">
+        <div>
+          <!-- Caption text area with copy -->
+          <div class="d-flex align-items-center justify-content-between mb-2">
+            <span class="fw-semibold text-dark-800">Suggested LinkedIn Caption</span>
+            <button type="button" class="btn btn-sm btn-outline-secondary btn-copy-caption" (click)="copyCaption()">
+              <span class="material-symbols-outlined fs-6 align-middle me-1">content_copy</span>
+              {{ isCopiedText ? 'Copied!' : 'Copy Text' }}
+            </button>
+          </div>
+          <div class="caption-preview-box p-3 rounded-3 bg-light border mb-3">
+            <p class="caption-text mb-0" style="white-space: pre-line;">{{ captionText }}</p>
+          </div>
+
+          <!-- Step-by-step Quick Guide -->
+          <div class="instructions-card p-3 rounded-3 mb-3">
+            <div class="fw-bold fs-7 text-dark-800 mb-2 d-flex align-items-center gap-2">
+              <span class="material-symbols-outlined text-plum fs-6">rocket_launch</span>
+              <span>2 Quick Steps to Post on LinkedIn:</span>
+            </div>
+            <div class="d-flex flex-column gap-2 fs-7 text-muted">
+              <div class="d-flex align-items-start gap-2">
+                <span class="badge bg-plum-subtle text-plum fw-bold">1</span>
+                <span>Click the button below to <strong>download image</strong>, <strong>copy caption</strong> & open LinkedIn.</span>
+              </div>
+              <div class="d-flex align-items-start gap-2">
+                <span class="badge bg-plum-subtle text-plum fw-bold">2</span>
+                <span>In LinkedIn: Press <strong>Ctrl + V</strong> to paste caption & click <strong>Media (📷)</strong> to select the downloaded hotlist image.</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Primary Action Buttons -->
+        <div class="d-flex flex-column gap-2 mt-3">
+          <button
+            type="button"
+            class="btn btn-linkedin-primary py-2 px-3 fw-bold d-flex align-items-center justify-content-center gap-2"
+            (click)="shareOnLinkedInFlow()"
+          >
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="#FFFFFF">
+              <path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.28 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.75M6.46 10.9v8.37H9.25V10.9H6.46M7.86 6.78a1.6 1.6 0 1 0 1.6 1.6 1.6 1.6 0 0 0-1.6-1.6z"/>
+            </svg>
+            <span>Download Image, Copy Caption & Open LinkedIn</span>
+          </button>
+          
+          <button type="button" class="btn btn-outline-secondary py-2" (click)="close()">
+            Close
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

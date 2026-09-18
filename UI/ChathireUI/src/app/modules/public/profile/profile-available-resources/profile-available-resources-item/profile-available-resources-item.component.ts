@@ -68,4 +68,8 @@ export class ProfileAvailableResourcesItemComponent {
     }
   }
 
+  isSkills(item) {
+    return !_.isEmpty(item);
+  }
+
 }

@@ -66,9 +66,27 @@ form {
   .form-group {
     position: relative;
     margin-bottom: 10px;
-    label {
-      margin: 0 0 5px 0;
-      @extend .ft-default;
+    label,
+    .form-label {
+      margin: 0 0 6px 0;
+      color: #344054 !important;
+      font-weight: 600 !important;
+      font-size: 0.9rem !important;
+      display: inline-block;
+
+      .req,
+      span.font-medium,
+      span.text-danger {
+        color: #D92D20 !important;
+        margin-left: 3px;
+        font-weight: 700 !important;
+      }
+    }
+
+    .select-wrapper {
+      position: relative;
+      display: block;
+      width: 100%;
     }
 
     input {
@@ -190,20 +208,32 @@ form {
         &:focus {
           @include box-shadow(none);
           background-color: white;
-          border: 1px solid pick-color(dark, 300);
+          border-color: $primary;
         }
 
         & + .select-arrow {
+          position: absolute;
+          top: 0;
+          right: 0;
+          height: 100%;
+          min-height: 46px;
+          width: 38px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          pointer-events: none;
+          z-index: 2;
+
           &:after {
-            position: absolute;
-            top: 38px;
-            right: 4px;
+            position: static;
             font-family: $fta;
-            @include ft-calc($font-h6);
-            color: $primary;
-            content: "";
-            padding: 0 0.5em;
+            font-size: 13px;
+            color: pick-color(dark, 500);
+            content: "\f107";
+            padding: 0;
+            line-height: 1;
             display: inline-block;
+            transition: color 0.15s ease, transform 0.2s ease;
           }
 
           &.down {
@@ -215,6 +245,7 @@ form {
           &.up {
             &:after {
               content: "\f106";
+              color: $primary;
             }
           }
         }
@@ -232,10 +263,16 @@ form {
       &.search {
         & + .search-control {
           position: absolute;
-          top: 38px;
+          top: 36px;
           right: 15px;
           @include ft-calc($font-normal);
-          color: $primary;
+          color: #94a3b8;
+          cursor: pointer;
+          transition: color 0.15s ease;
+
+          &:hover {
+            color: #70246d;
+          }
         }
       }
 
@@ -392,15 +429,15 @@ form {
   .dropdown-wrapper {
     display: none;
     position: absolute;
-    z-index: 3;
+    z-index: 1050;
     width: 100%;
     margin: 4px 0 0 0;
-    height: 350px;
+    height: auto;
     ng-scrollbar {
       border-bottom: 1px solid pick-color(dark, 300);
-      border-bottom-left-radius: 4px;
+      border-bottom-left-radius: 6px;
       overflow: hidden;
-      border-bottom-right-radius: 4px;
+      border-bottom-right-radius: 6px;
     }
     &.show {
       display: block;
@@ -410,35 +447,86 @@ form {
     }
     .dropdown {
       width: 100%;
-      max-height: 240px;
-      overflow: auto;
-      @include border-radius(4px);
-      @include box-shadow(0 3px 13px 0 rgba(pick-color(dark, 500), 0.4));
-      li {
+      max-height: 230px;
+      overflow-y: auto !important;
+      overflow-x: hidden !important;
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      @include border-radius(8px);
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.12), 0 8px 10px -6px rgba(0, 0, 0, 0.06);
+      padding: 4px;
+      scrollbar-width: thin;
+      scrollbar-color: #cbd5e1 transparent;
+
+      &::-webkit-scrollbar {
+        width: 5px;
+      }
+      &::-webkit-scrollbar-track {
+        background: transparent;
+      }
+      &::-webkit-scrollbar-thumb {
+        background-color: #cbd5e1;
+        border-radius: 5px;
+      }
+      &::-webkit-scrollbar-thumb:hover {
+        background-color: #94a3b8;
+      }
+
+      li, .list-group-item {
         position: relative;
         cursor: pointer;
         background-color: white;
-        padding: 10px;
+        padding: 9px 12px;
         @include ft-calc($font-small);
+        font-weight: 500;
+        color: #334155;
         width: 100%;
         text-align: left;
-        border-bottom: 1px solid pick-color(dark, 300);
+        border: none;
+        border-radius: 6px;
+        margin-bottom: 2px;
+        transition: all 0.15s ease-in-out;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+
+        .item-label {
+          text-align: left;
+          flex: 1;
+        }
+
+        &:before {
+          display: none !important;
+          content: none !important;
+        }
+
         &:last-child {
-          border-bottom: none;
+          margin-bottom: 0;
         }
         &.selected {
+          background-color: #fdf4ff;
+          color: #70246d;
+          font-weight: 600;
+
           &:before {
-            position: absolute;
-            top: 10px;
-            right: 12px;
-            font-family: $fta;
-            content: "\f00c";
-            color: $primary;
-            margin: 0 6px 0 0;
+            display: none !important;
+            content: none !important;
+          }
+
+          &:after {
+            font-family: $fta !important;
+            content: "\f00c" !important;
+            color: $primary !important;
+            font-size: 12px !important;
+            margin-left: 8px !important;
+            flex-shrink: 0 !important;
+            display: inline-block !important;
           }
         }
         &:hover {
-          background-color: pick-color(dark, 100);
+          background-color: #f8fafc;
+          color: #70246d;
+          transform: translateX(2px);
         }
         &.check-list {
           padding: 0;
@@ -473,21 +561,33 @@ form {
       display: inline-block;
 
       li {
-        background-color: #fff;
-        @include border-radius(2px);
-        border: 1px solid pick-color(dark, 300);
-        padding: 6px 8px 6px 10px;
+        background-color: #E0F2FE;
+        border-radius: 18px !important;
+        border: 1px solid #BAE6FD;
+        padding: 4px 10px 4px 12px;
         @include ft-calc($font-tiny);
-        color: pick-color(dark, 500);
+        font-weight: 600;
+        color: #0369A1;
         margin: 0 4px 4px 0 !important;
         pointer-events: auto;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        box-shadow: 0 1px 2px rgba(3, 105, 161, 0.08);
 
         span {
-          padding-right: 8px !important;
+          padding-right: 0 !important;
         }
 
         i {
           cursor: pointer;
+          color: #0284C7;
+          font-size: 11px;
+          transition: color 0.15s ease;
+
+          &:hover {
+            color: #EF4444 !important;
+          }
         }
       }
     }
@@ -495,13 +595,6 @@ form {
     &.hide {
       display: none;
     }
-  }
-}
-
-.select-box {
-  .dropdown {
-    max-height: 200px;
-    overflow: scroll !important;
   }
 }
 

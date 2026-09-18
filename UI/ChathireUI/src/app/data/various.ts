@@ -5,10 +5,11 @@ export const publicProfileUrlPrefix = 'www.chathire.com/profile/'
 
 export const profileInitialCountSummary = [
     { candidateProfileMappingStatusId: 1, candidateProfileMappingStatusName: "New", count: 0 },
-    { candidateProfileMappingStatusId: 2, candidateProfileMappingStatusName: "OnHold", count: 0 },
-    { candidateProfileMappingStatusId: 6, candidateProfileMappingStatusName: "Screening Reject", count: 0 },
+    { candidateProfileMappingStatusId: 2, candidateProfileMappingStatusName: "On Hold", count: 0 },
+    { candidateProfileMappingStatusId: 3, candidateProfileMappingStatusName: "Shortlisted", count: 0 },
     { candidateProfileMappingStatusId: 4, candidateProfileMappingStatusName: "No Response", count: 0 },
-    { candidateProfileMappingStatusId: 3, candidateProfileMappingStatusName: "Screening Select", count: 0 },
+    { candidateProfileMappingStatusId: 6, candidateProfileMappingStatusName: "Rejected", count: 0 },
+    { candidateProfileMappingStatusId: 7, candidateProfileMappingStatusName: "Submitted", count: 0 },
     { candidateProfileMappingStatusId: 5, candidateProfileMappingStatusName: "Interview", count: 0 },
 ]
 

@@ -1,4 +1,4 @@
-﻿using BusinessEntityAndDTO.Common;
+using BusinessEntityAndDTO.Common;
 using DataAccessLayer.Common;
 //using DataAccessLayer.CustomModels;
 //using DataAccessLayer.EFContext;
@@ -157,9 +157,9 @@ namespace DataAccessLayer.Repository
 
         public async Task Put(I id, T enity, bool saveChanges = true)
         {
-            if (id.Equals(enity.Id))
+            if (enity == null)
             {
-                throw new ArgumentException("Invalid or Missing Id", "Id");
+                throw new ArgumentException("Entity cannot be null", nameof(enity));
             }
 
             _context.Entry(enity).State = EntityState.Modified;

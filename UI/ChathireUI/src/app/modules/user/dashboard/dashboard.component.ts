@@ -497,7 +497,9 @@ export class DashboardComponent implements OnInit {
           linkedin: this.formData.linkedin,
           alternateEmail: this.formData.alternateEmail || "",
           lname: this.formData.lname,
-          userTypeId: this.selectedRole === 5 ? 5 : 1
+          userTypeId: this.selectedRole === 5 ? 5 : 1,
+          roleRecruiter: this.selectedRole === 1,
+          roleBenchSales: this.selectedRole === 2
         },
         consultancyID: this.selectedRole === 5 ? null : this.formData.consultancyId,
         publicProfileUserName: this.formData.publicProfileUserName || ''
@@ -534,6 +536,15 @@ export class DashboardComponent implements OnInit {
 
     this.sessionService.userdetailscast.subscribe((res: any) => {
       this.user = res
+      if (res) {
+        if (res.roleBenchSales) {
+          this.selectedRole = 2;
+        } else if (res.roleRecruiter) {
+          this.selectedRole = 1;
+        } else if (res.userTypeId === 5) {
+          this.selectedRole = 5;
+        }
+      }
     })
 
     this.sharedService.inboxunreadcountcast.subscribe((res:any) => {

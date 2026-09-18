@@ -385,6 +385,9 @@ export class ProfileMapColorDirective {
       case 6:
         status = 'text-danger-600'
         break;
+      case 7:
+        status = 'text-info-600'
+        break;
       default:
         status = 'text-dark-600'
     }

@@ -155,7 +155,10 @@ isFormSubmitted:boolean = false;
   }
 
   onJobRoleChange() {
-    this.formData.userTypeId = this.userTypeId
+    const roleVal = parseInt(this.userTypeId);
+    this.formData.roleRecruiter = (roleVal === 1 || roleVal === 3);
+    this.formData.roleBenchSales = (roleVal === 2 || roleVal === 3);
+    this.formData.userTypeId = (roleVal === 5 ? 5 : 1);
   }
 
   scrollToTop() {
@@ -207,6 +210,11 @@ isFormSubmitted:boolean = false;
         this.formData.publicProfileUserName = this.initialProfileId
       }
 
+      const roleVal = parseInt(this.userTypeId);
+      this.formData.roleRecruiter = (roleVal === 1 || roleVal === 3);
+      this.formData.roleBenchSales = (roleVal === 2 || roleVal === 3);
+      this.formData.userTypeId = (roleVal === 5 ? 5 : 1);
+
       this.formData.updated = new Date().toISOString()
       this.formData.phone = this.userPhone
       this.userData.publicProfileUserName = this.formData.publicProfileUserName
@@ -243,7 +251,15 @@ isFormSubmitted:boolean = false;
         
         this.formData = res.value[0]
         this.userPhone = this.formData.phone ? this.formData.phone : '';
-        this.userTypeId = this.formData.userTypeId?.toString()
+        if (this.formData.roleRecruiter && this.formData.roleBenchSales) {
+          this.userTypeId = '3';
+        } else if (this.formData.roleBenchSales) {
+          this.userTypeId = '2';
+        } else if (this.formData.roleRecruiter) {
+          this.userTypeId = '1';
+        } else {
+          this.userTypeId = this.formData.userTypeId?.toString();
+        }
         
       },
       error:(error:any) => {
@@ -268,7 +284,15 @@ isFormSubmitted:boolean = false;
         }
         
         this.userPhone = this.formData.phone ? this.formData.phone : '';
-        this.userTypeId = this.formData.userTypeId?.toString()
+        if (this.formData.roleRecruiter && this.formData.roleBenchSales) {
+          this.userTypeId = '3';
+        } else if (this.formData.roleBenchSales) {
+          this.userTypeId = '2';
+        } else if (this.formData.roleRecruiter) {
+          this.userTypeId = '1';
+        } else {
+          this.userTypeId = this.formData.userTypeId?.toString();
+        }
         console.log(this.formData)
         this.isLoaded = true
         this.isError = false

@@ -116,24 +116,72 @@
 
   /* Dropdowns for Search & Select fields */
   .dropdown-wrapper {
+    z-index: 1050;
+
     .dropdown {
       background-color: #FFFFFF !important;
-      border: 1px solid var(--color-border) !important;
+      border: 1px solid #E2E8F0 !important;
       border-radius: 8px !important;
-      box-shadow: 0 6px 18px rgba(41, 36, 43, 0.08) !important;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.12), 0 8px 10px -6px rgba(0, 0, 0, 0.06) !important;
+      padding: 4px !important;
+      max-height: 220px !important;
+      overflow-y: auto !important;
+      overflow-x: hidden !important;
 
       li, .list-group-item {
-        color: var(--color-heading) !important;
-        border-bottom: 1px solid var(--color-border) !important;
-        transition: background-color 0.15s ease-in-out !important;
+        position: relative;
+        cursor: pointer;
+        padding: 9px 12px !important;
+        font-size: 13.5px !important;
+        font-weight: 500 !important;
+        color: #334155 !important;
+        border: none !important;
+        border-radius: 6px !important;
+        margin-bottom: 2px !important;
+        transition: all 0.15s ease-in-out !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: space-between !important;
 
-        &:hover, &.selected {
-          background-color: var(--light-plum) !important;
-          color: var(--primary-plum) !important;
+        .item-label {
+          text-align: left !important;
+          flex: 1 !important;
         }
 
-        &.selected:before {
-          color: var(--primary-plum) !important;
+        &:before {
+          display: none !important;
+          content: none !important;
+        }
+
+        &:last-child {
+          margin-bottom: 0 !important;
+        }
+
+        &:hover {
+          background-color: #F8FAFC !important;
+          color: #70246D !important;
+          transform: translateX(2px) !important;
+        }
+
+        &.selected {
+          background-color: #FDF4FF !important;
+          color: #70246D !important;
+          font-weight: 600 !important;
+
+          &:before {
+            display: none !important;
+            content: none !important;
+          }
+
+          &:after {
+            font-family: "FontAwesome" !important;
+            content: "\f00c" !important;
+            color: #70246D !important;
+            font-size: 12px !important;
+            margin-left: 8px !important;
+            flex-shrink: 0 !important;
+            display: inline-block !important;
+          }
         }
       }
     }

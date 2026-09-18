@@ -1,77 +1,56 @@
 <div class="hotlist-box list-box">
   <ng-container *ngFor="let item of list">
-    <li class="list-group-item shadow">
+    <li class="list-group-item">
       <div class="content-area">
-        <div class="row">
-          <div class="col-9 col-md-8 top">
+        <div class="row align-items-start">
+          <!-- Left Column: Name, Title, Metadata, Availability, Relocation -->
+          <div class="col-8 col-md-9 top">
             <div class="left">
-              <div class="mb-1 d-md-flex align-items-center">
-                <h6
-                  class="text-secondary-600 text-uppercase text-normal fw-medium me-3 name"
-                >
+              <!-- Name & Title -->
+              <div class="mb-2 d-md-flex align-items-baseline flex-wrap gap-2">
+                <h5 class="candidate-name mb-0">
                   {{ item.candidateName }}
-                </h6>
-                <p
-                  class="text-dark-600 text-capitalize"
-                >
+                </h5>
+                <span class="candidate-title">
                   {{ item.title }}
-                </p>
+                </span>
               </div>
 
-              <div class="d-md-flex additional align-items-center">
-                <div class="item d-flex align-items-center">
-                  <span
-                    class="material-symbols-outlined text-base text-dark-500 me-2"
-                    >trip</span
-                  >
-                  <p class="text-sm fw-medium">{{ item.totalExp }} years</p>
+              <!-- Metadata Icons Row (Experience, Visa, Location, Rate) -->
+              <div class="d-md-flex additional align-items-center flex-wrap gap-3 mb-3">
+                <div class="meta-item d-flex align-items-center gap-1" *ngIf="item.totalExp">
+                  <span class="material-symbols-outlined meta-icon">work_history</span>
+                  <span class="meta-text">{{ item.totalExp }} years</span>
                 </div>
-                <div class="item d-flex align-items-center">
-                  <span
-                    class="material-symbols-outlined text-base text-dark-500 me-2"
-                    >airplane_ticket</span
-                  >
-                  <p class="text-sm fw-medium">
-                    {{ getVisa(item.visaId) }}
-                  </p>
+                <div class="meta-item d-flex align-items-center gap-1" *ngIf="getVisa(item.visaId)">
+                  <span class="material-symbols-outlined meta-icon">badge</span>
+                  <span class="meta-text">{{ getVisa(item.visaId) }}</span>
                 </div>
-                <div class="item d-flex align-items-center">
-                  <span
-                    class="material-symbols-outlined text-base text-dark-500 me-1"
-                    >location_on</span
-                  >
-                  <p class="text-sm fw-medium">
-                    {{ item.city?.city1 }}, {{ item.city?.stateCode }}
-                  </p>
+                <div class="meta-item d-flex align-items-center gap-1" *ngIf="item.city?.city1">
+                  <span class="material-symbols-outlined meta-icon">location_on</span>
+                  <span class="meta-text">{{ item.city?.city1 }}, {{ item.city?.stateCode }}</span>
                 </div>
-                <div class="item d-flex align-items-center">
-                  <span
-                    class="material-symbols-outlined text-base text-dark-500 me-1"
-                    >attach_money</span
-                  >
-                  <p class="text-sm fw-medium">
-                    {{ item.fromAmt }} - {{ item.toAmt }}
-                  </p>
+                <div class="meta-item d-flex align-items-center gap-1" *ngIf="item.fromAmt || item.toAmt">
+                  <span class="material-symbols-outlined meta-icon text-success">payments</span>
+                  <span class="meta-text fw-semibold text-success">${{ item.fromAmt }} - {{ item.toAmt }}</span>
                 </div>
               </div>
 
-              <div class="others d-md-flex">
-                <p class="me-3 text-sm text-dark-400 left">Availability</p>
-                <p class="text-sm">
-                  {{ getAvailability(item.availability) }}
-                </p>
+              <!-- Availability & Relocation Info -->
+              <div class="info-row d-flex align-items-center mb-1">
+                <span class="info-label">Availability</span>
+                <span class="info-value">{{ getAvailability(item.availability) || 'Immediate' }}</span>
               </div>
-              <div class="others d-md-flex">
-                <p class="me-3 text-sm text-dark-400 left">Relocation</p>
-                <p class="text-sm">
-                  {{ getRelocation(item) }}
-                </p>
+              <div class="info-row d-flex align-items-center mb-0">
+                <span class="info-label">Relocation</span>
+                <span class="info-value">{{ getRelocation(item) || 'Any Location' }}</span>
               </div>
             </div>
           </div>
 
-          <div class="col-3 col-md-4 d-flex flex-column justify-md-content-end">
-            <label class="switch flex-shrink-0">
+          <!-- Right Column: Marketing Status Switch -->
+          <div class="col-4 col-md-3 d-flex flex-column align-items-end justify-content-start">
+            <label class="switch flex-shrink-0" title="Toggle Marketing Status">
               <input
                 type="checkbox"
                 [(ngModel)]="item.status"
@@ -80,90 +59,79 @@
               />
               <span class="slider round"></span>
             </label>
-            <div class="d-flex d-md-none options">
+            <div class="d-flex d-md-none options mt-2 gap-2">
               <div
-                class="pointer me-2 d-flex text-primary-500"
+                class="pointer p-1 text-primary-500"
                 (click)="editCandidate(item.id)"
+                title="Edit Candidate"
               >
-                <span class="material-symbols-outlined text-base">edit</span>
+                <span class="material-symbols-outlined fs-5">edit</span>
               </div>
-
               <div
-                class="pointer d-flex text-danger-500"
+                class="pointer p-1 text-danger-500"
                 (click)="deleteCandidate(item)"
+                title="Delete Candidate"
               >
-                <span class="material-symbols-outlined text-base">delete</span>
+                <span class="material-symbols-outlined fs-5">delete</span>
               </div>
             </div>
           </div>
         </div>
 
-        <div class="row">
-          <div class="col-sm-12 col-md-8">
-            <div
-              class="skills mt-4"
-              *ngIf="isSkills(item.candidateProfileSkills)"
-            >
-              <span
-                class="item text-primary-800 bg-primary-50 text-smr fw-medium"
-                *ngFor="let skillItem of item.candidateProfileSkills"
-                >{{ skillItem.name }}</span
-              >
+        <!-- Bottom Row: Skills on left, Update Button on right -->
+        <div class="row align-items-center mt-2 pt-2 border-top">
+          <div class="col-8 col-md-9">
+            <div class="skills-wrap d-flex flex-wrap gap-2" *ngIf="isSkills(item.candidateProfileSkills)">
+              <span class="skill-tag" *ngFor="let skillItem of item.candidateProfileSkills">
+                {{ skillItem.name }}
+              </span>
             </div>
-            <div
-              class="skills mt-4"
-              *ngIf="!isSkills(item.candidateProfileSkills)"
-            >
-              <span class="item text-danger-800 bg-danger-50 text-smr fw-medium"
-                >No Skills Available</span
-              >
+            <div class="skills-wrap" *ngIf="!isSkills(item.candidateProfileSkills)">
+              <span class="skill-tag text-muted bg-light border-0">No Skills Available</span>
             </div>
           </div>
 
-          <div class="col-5 col-md-4 d-none d-md-flex justify-content-end">
-            <div class="d-flex options mt-2">
-              <div
+          <div class="col-4 col-md-3 d-none d-md-flex justify-content-end">
+            <div class="dropdown">
+              <button
+                type="button"
                 data-bs-toggle="dropdown"
                 aria-expanded="false"
-                class="btn btn-secondary btn-sm px-3 d-inline-flex align-items-center"
+                class="btn btn-update-action d-inline-flex align-items-center gap-1"
               >
-                Update<span class="material-symbols-outlined ms-1">
-                  expand_more
-                </span>
-              </div>
-              <div class="dropdown-menu" aria-labelledby="optionsBtn">
-                <div
-                  class="px-3 py-2 d-flex align-items-center pointer"
+                <span class="material-symbols-outlined action-lead-icon">tune</span>
+                <span>Update</span>
+                <span class="material-symbols-outlined chevron-icon ms-1">expand_more</span>
+              </button>
+              <div class="dropdown-menu dropdown-menu-end custom-action-dropdown">
+                <button
+                  type="button"
+                  class="dropdown-item d-flex align-items-center gap-2"
                   (click)="editCandidate(item.id)"
                 >
-                  <span class="material-symbols-outlined text-base text-dark-600 me-1"
-                    >edit</span
-                  >
-                  <h6 class="ms-1 text-sm text-dark-600">Edit</h6>
-                </div>
-                <div
-                  class="px-3 py-2 d-flex align-items-center pointer"
+                  <span class="material-symbols-outlined text-base item-icon text-purple">edit</span>
+                  <span class="item-label">Edit Candidate</span>
+                </button>
+                <div class="dropdown-divider"></div>
+                <button
+                  type="button"
+                  class="dropdown-item d-flex align-items-center gap-2 text-danger-item"
                   (click)="deleteCandidate(item)"
                 >
-                  <span class="material-symbols-outlined text-base text-danger me-1"
-                    >delete</span
-                  >
-                  <h6 class="ms-1 text-sm text-danger">Delete</h6>
-                </div>
+                  <span class="material-symbols-outlined text-base item-icon text-danger">delete</span>
+                  <span class="item-label text-danger">Delete Candidate</span>
+                </button>
               </div>
             </div>
           </div>
         </div>
 
-        <div class="row" *ngIf="item?.candidateDocuments.length != 0 || item?.candidateDocuments.length != 0">
+        <!-- Resume Attachments -->
+        <div class="row mt-2" *ngIf="item?.candidateDocuments && item?.candidateDocuments.length > 0">
           <div class="col-sm-12">
-            <div class="bottom-box my-2 d-flex">
-              <view-resume
-                [doc]="item?.candidateDocuments[0]?.doc"
-              ></view-resume>
-              <download-resume
-                [doc]="item?.candidateDocuments[0]?.doc"
-              ></download-resume>
+            <div class="bottom-box pt-2 d-flex gap-2">
+              <view-resume [doc]="item?.candidateDocuments[0]?.doc"></view-resume>
+              <download-resume [doc]="item?.candidateDocuments[0]?.doc"></download-resume>
             </div>
           </div>
         </div>

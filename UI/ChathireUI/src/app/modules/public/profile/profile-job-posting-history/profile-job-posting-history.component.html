@@ -5,7 +5,7 @@
   <ng-container *ngIf="isJobLoaded && isJobAvailable">
 
     <div class="title-box">
-      <fancy-page-search (outputData)="handleSearch($event)" placeholder="Search by job, location" ></fancy-page-search>
+      <page-search (outputData)="handleSearch($event)" placeholder="Search by job, location" [maxlength]="20"></page-search>
     </div>
 
     

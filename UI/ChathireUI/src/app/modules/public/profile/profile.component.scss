@@ -15,11 +15,16 @@ $verified-green: #2E8B57;
 $linkedin-blue: #0A66C2;
 $linkedin-hover: #084E96;
 
+:host {
+  display: block;
+  margin-top: -40px;
+}
+
 .profile-wrapper {
   background-color: $page-bg;
-  min-height: calc(100vh - 70px);
-  padding-top: 24px;
-  padding-bottom: 48px;
+  min-height: calc(100vh - 66px);
+  padding-top: 16px;
+  padding-bottom: 40px;
 
   .max-width-lg {
     max-width: 1140px;
@@ -200,26 +205,49 @@ $linkedin-hover: #084E96;
 
     // Shareable Link Card Column
     .share-link-col {
-      min-width: 280px;
+      min-width: 320px;
+      max-width: 380px;
 
       @include hires-breakpoint("lt-lg") {
         min-width: 100%;
+        max-width: 100%;
       }
 
       .public-link-card {
-        background-color: #FAF9FA;
-        border: 1px solid $border-color;
-        border-radius: 10px;
-        padding: 12px 14px;
+        background-color: #FAF6FB;
+        border: 1px solid #EBE0EC;
+        border-radius: 14px;
+        padding: 16px 18px;
+        box-shadow: 0 1px 3px rgba(103, 50, 96, 0.04);
 
-        .link-label {
-          display: block;
-          font-size: 0.75rem;
-          font-weight: 600;
-          color: $muted-text;
-          margin-bottom: 6px;
-          text-transform: uppercase;
-          letter-spacing: 0.04em;
+        .card-top-header {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          margin-bottom: 12px;
+
+          .link-icon-badge {
+            width: 34px;
+            height: 34px;
+            background-color: #F1E3F2;
+            border-radius: 9px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+
+            svg {
+              color: $primary-plum;
+              stroke: $primary-plum;
+            }
+          }
+
+          .link-card-title {
+            font-size: 0.9375rem;
+            font-weight: 700;
+            color: #1F1625;
+            letter-spacing: -0.01em;
+          }
         }
 
         .link-input-group {
@@ -227,38 +255,63 @@ $linkedin-hover: #084E96;
           align-items: center;
           justify-content: space-between;
           background-color: #FFFFFF;
-          border: 1px solid $border-color;
-          border-radius: 6px;
-          padding: 4px 8px 4px 12px;
+          border: 1px solid #E2D7E3;
+          border-radius: 8px;
+          padding: 3px 4px 3px 12px;
           gap: 8px;
+          transition: border-color 0.15s ease;
+
+          &:focus-within {
+            border-color: $primary-plum;
+          }
 
           .link-url-text {
             font-size: 0.8125rem;
-            color: $body-text;
+            color: #374151;
+            font-weight: 500;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
-            max-width: 170px;
+            flex: 1;
           }
 
           .btn-copy-url {
             display: inline-flex;
             align-items: center;
-            gap: 4px;
-            background: none;
-            border: none;
-            padding: 4px 8px;
+            gap: 5px;
+            background-color: #F5EDF6;
+            border: 1px solid #EADBEC;
+            padding: 6px 12px;
             color: $primary-plum;
-            font-size: 0.75rem;
+            font-size: 0.8125rem;
             font-weight: 600;
             cursor: pointer;
-            border-radius: 4px;
-            transition: background-color 0.15s ease;
+            border-radius: 6px;
+            flex-shrink: 0;
+            transition: all 0.15s ease;
+
+            svg {
+              color: $primary-plum;
+              stroke: $primary-plum;
+            }
 
             &:hover {
-              background-color: $light-plum;
+              background-color: #ECE0EE;
+              color: $primary-hover;
+            }
+
+            &:active {
+              transform: scale(0.97);
             }
           }
+        }
+
+        .link-hint-text {
+          font-size: 0.75rem;
+          color: #7B7382;
+          margin-top: 9px;
+          margin-bottom: 0;
+          line-height: 1.4;
         }
       }
     }
@@ -367,15 +420,27 @@ $linkedin-hover: #084E96;
           font-size: 0.9375rem;
           font-weight: 600;
           padding: 10px 4px 14px 4px;
+          cursor: pointer;
+          user-select: none;
           transition: all 0.15s ease;
 
-          &:hover {
+          &:hover:not(.disabled) {
             color: $primary-plum;
           }
 
           &.active {
             color: $primary-plum;
             border-bottom-color: $primary-plum;
+          }
+
+          &.disabled,
+          &.cursor-not-allowed,
+          &[aria-disabled="true"] {
+            color: #9CA3AF !important;
+            cursor: not-allowed !important;
+            pointer-events: none;
+            opacity: 0.55;
+            border-bottom-color: transparent !important;
           }
         }
       }

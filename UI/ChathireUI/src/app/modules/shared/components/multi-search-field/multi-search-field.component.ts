@@ -1,6 +1,7 @@
-import { Component, OnInit, Input, Output, EventEmitter, ElementRef, ViewChild, ChangeDetectorRef, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, OnInit, OnDestroy, Input, Output, EventEmitter, ElementRef, ViewChild, ChangeDetectorRef, OnChanges, SimpleChanges, HostListener } from '@angular/core';
 import { ControlContainer, NgForm } from '@angular/forms';
-
+import { Subject, Subscription } from 'rxjs';
+import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import _ from 'underscore';
 
 
@@ -10,7 +11,14 @@ import _ from 'underscore';
   styleUrls: ['./multi-search-field.component.scss'],
   viewProviders: [ { provide: ControlContainer, useExisting: NgForm } ]
 })
-export class MultiSearchFieldComponent implements OnInit, OnChanges {
+export class MultiSearchFieldComponent implements OnInit, OnChanges, OnDestroy {
+
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: any) {
+    if (!this.element.nativeElement.contains(event.target)) {
+      this.isExpanded = false;
+    }
+  }
 
   @Input() fieldName:string;
   @Input() fieldText:string;
@@ -23,6 +31,8 @@ export class MultiSearchFieldComponent implements OnInit, OnChanges {
   @Input() fieldItemMaxLimit:any = 5;
   @Input() isEdit:any;
   @Input() editValue:any;
+  @Input() allowCustom:boolean = false;
+  @Input() customPromptText:string = 'Add';
 
   selectedItem:any = [];
   isExpanded:boolean = false;
@@ -32,6 +42,9 @@ export class MultiSearchFieldComponent implements OnInit, OnChanges {
 
   forceRequired:any = "";
 
+  private searchSubject = new Subject<string>();
+  private searchSubscription: Subscription;
+
   @Output() queryChange = new EventEmitter();
   @Output() inputChange = new EventEmitter();
 
@@ -39,34 +52,117 @@ export class MultiSearchFieldComponent implements OnInit, OnChanges {
   @ViewChild('badgeListElem') badgeListElem: ElementRef;
 
   constructor(
-    private cdRef : ChangeDetectorRef
+    private cdRef : ChangeDetectorRef,
+    private element: ElementRef
   ) { }
 
   isFieldRequired(){
     return this.fieldRequired;
   }
 
-  getItemData(item:any) {
-    let newData = this.fieldType.split(',')
-    let finalData = ""
-    newData.forEach((typeItem, index) => {
-      finalData = `${finalData + item[typeItem]}${(index !== newData.length-1) ? ', ' : ''}`
+  getItemData(item: any): string {
+    if (!item) return '';
+    if (!this.fieldType) return '';
+    const fields = this.fieldType.split(',');
+    const parts: string[] = [];
+    fields.forEach((typeItem: string) => {
+      const key = typeItem.trim();
+      const val = item[key];
+      if (val !== undefined && val !== null && String(val).trim() !== '') {
+        parts.push(String(val).trim());
+      }
     });
-    return finalData
+    return parts.join(', ');
   }
 
   handleModelChange() {
-    if(this.fieldModel.length > 1) {
-      this.isExpanded = true
-      this.queryChange.emit(this.fieldModel);
+    if(this.fieldModel && this.fieldModel.length > 1) {
+      this.isExpanded = true;
+      this.searchSubject.next(this.fieldModel.trim());
+    }
+    else if (this.allowCustom && this.fieldModel && this.fieldModel.trim().length > 0) {
+      this.isExpanded = true;
     }
     else {
-      this.isExpanded = false
+      this.isExpanded = false;
+    }
+  }
+
+  hasExactMatch(value: string): boolean {
+    if (!value || !value.trim()) return false;
+    const clean = value.trim().toLowerCase();
+    const primaryKey = this.splitFieldType(this.fieldType);
+
+    const inList = (this.fieldList || []).some((item: any) => {
+      const v = item && item[primaryKey];
+      return v && String(v).trim().toLowerCase() === clean;
+    });
+
+    const inSelected = (this.selectedItem || []).some((item: any) => {
+      const v = item && item[primaryKey];
+      return v && String(v).trim().toLowerCase() === clean;
+    });
+
+    return inList || inSelected;
+  }
+
+  createCustomItem(event?: Event, value?: string) {
+    if (event) {
+      event.preventDefault();
+      event.stopPropagation();
+    }
+    const targetValue = value || this.fieldModel;
+    if (!targetValue || !targetValue.trim()) return;
+    const clean = targetValue.trim();
+
+    const primaryKey = this.splitFieldType(this.fieldType);
+    const inSelected = (this.selectedItem || []).some((item: any) => {
+      const v = item && item[primaryKey];
+      return v && String(v).trim().toLowerCase() === clean.toLowerCase();
+    });
+    if (inSelected) {
+      this.fieldModel = '';
+      this.isExpanded = false;
+      return;
+    }
+
+    const newObj: any = {
+      id: 0,
+      skillId: 0,
+      isUserDefined: true
+    };
+    newObj[primaryKey] = clean;
+
+    this.handleSelectedItem(newObj);
+  }
+
+  handleEnterKey(event: Event) {
+    if (event) {
+      event.preventDefault();
+      event.stopPropagation();
+    }
+    if (this.allowCustom && this.fieldModel && this.fieldModel.trim()) {
+      const clean = this.fieldModel.trim().toLowerCase();
+      const primaryKey = this.splitFieldType(this.fieldType);
+      const matched = (this.fieldList || []).find((item: any) => {
+        const v = item && item[primaryKey];
+        return v && String(v).trim().toLowerCase() === clean;
+      });
+
+      if (matched) {
+        this.handleSelectedItem(matched);
+      } else {
+        this.createCustomItem(event, this.fieldModel);
+      }
     }
   }
 
   compareObj(obj1, obj2) {
-    return JSON.stringify(obj1[this.splitFieldType(this.fieldType)]) === JSON.stringify(obj2[this.splitFieldType(this.fieldType)]);
+    if (!obj1 || !obj2) return false;
+    const key = this.splitFieldType(this.fieldType);
+    const v1 = String(obj1[key] || '').trim().toLowerCase();
+    const v2 = String(obj2[key] || '').trim().toLowerCase();
+    return v1 === v2;
   }
 
   splitFieldType(fieldType) {
@@ -83,15 +179,17 @@ export class MultiSearchFieldComponent implements OnInit, OnChanges {
 
   handleInputHeight() {
 
-    let inputElement = this.multiInputElem.nativeElement;
-    let badgeElement = this.badgeListElem.nativeElement;
+    let inputElement = this.multiInputElem?.nativeElement;
+    let badgeElement = this.badgeListElem?.nativeElement;
+
+    if (!inputElement || !badgeElement) return;
 
     let badgeListHeight = badgeElement.clientHeight;
 
     inputElement.style.height = `${badgeListHeight+10}px`;
 
-    const childElements = badgeElement.children[0].children;
-    const lastChild = childElements[childElements.length - 1];
+    const childElements = badgeElement.children[0]?.children;
+    const lastChild = childElements ? childElements[childElements.length - 1] : null;
 
     if(lastChild) {
       const offsetLeft = lastChild.offsetLeft+lastChild.clientWidth+12;
@@ -141,19 +239,18 @@ export class MultiSearchFieldComponent implements OnInit, OnChanges {
   }
 
   getSelectedItemData(badge, fieldType) {
-    let newData = fieldType.split(',')
-    let finalData = ""
-    newData.forEach((item, index) => {
-      finalData = `${finalData + badge[item]}${(index !== newData.length-1) ? ', ' : ''}`
-    });
-    return finalData
+    return this.getItemData(badge);
   }
 
   removeBadge(item:any) {
     this.fieldModel = ""
-    this.selectedItem = this.selectedItem.filter((listItem, index) => {
-      let newFieldType = this.fieldType.split(',')
-      return listItem[newFieldType[0]] !== item[newFieldType[0]]
+    const newFieldType = this.fieldType.split(',')
+    const key = newFieldType[0];
+    const targetVal = String(item[key] || '').trim().toLowerCase();
+
+    this.selectedItem = this.selectedItem.filter((listItem: any) => {
+      const listVal = String(listItem[key] || '').trim().toLowerCase();
+      return listVal !== targetVal;
     })
     this.inputChange.emit(this.selectedItem)
     setTimeout(() => {
@@ -177,7 +274,18 @@ export class MultiSearchFieldComponent implements OnInit, OnChanges {
   }
 
   ngOnInit(): void {
+    this.searchSubscription = this.searchSubject.pipe(
+      debounceTime(250),
+      distinctUntilChanged()
+    ).subscribe((term: string) => {
+      this.queryChange.emit(term);
+    });
+  }
 
+  ngOnDestroy(): void {
+    if (this.searchSubscription) {
+      this.searchSubscription.unsubscribe();
+    }
   }
 
   ngOnChanges(changes: SimpleChanges) {

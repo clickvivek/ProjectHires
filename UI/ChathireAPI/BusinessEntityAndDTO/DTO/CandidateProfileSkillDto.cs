@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -28,6 +28,8 @@ namespace BusinessEntityAndDTO.DTO
     {
         public int? SkillId { get; set; }
 
+        public string? Name { get; set; }
+
         public bool? Active { get; set; }
 
         public short? ProficiencyLevel { get; set; }
@@ -43,6 +45,8 @@ namespace BusinessEntityAndDTO.DTO
         public long? CandidateProfileid { get; set; }
 
         public int? SkillId { get; set; }
+
+        public string? Name { get; set; }
 
         public bool? Active { get; set; }
 

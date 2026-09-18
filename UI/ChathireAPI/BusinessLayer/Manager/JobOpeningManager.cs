@@ -1,4 +1,4 @@
-﻿using AutoMapper;
+using AutoMapper;
 using BusinessEntityAndDTO.Common;
 using BusinessEntityAndDTO.DTO;
 using BusinessEntityAndDTO.Models;
@@ -14,10 +14,12 @@ using Microsoft.IdentityModel.Tokens;
 using SendGrid.Helpers.Mail;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Utility.Configuration;
+using BusinessLayer.Services;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace BusinessLayer.Manager
@@ -53,6 +55,7 @@ namespace BusinessLayer.Manager
         Task DeleteJobProfileComment(long Id, UserContext userContext);
 
         Task<List<JobOpeningCandidateProfileDetailMapDto>> GetAllResumeReceivedByJobId(long JobOpeningId, UserContext userContext);
+        Task<RecruiterStatsDto> GetRecruiterStats(long consultancyUserId, UserContext userContext);
         Task<List<JobOpeningProfileMapSummary1>> GetJobOpeningProfileMapSummary(long ConsultancyUserId, UserContext userContext);
         Task<JobOpeningDto> ActivateDeactivateJob(long Id, bool ActiveDeactive, UserContext userContext);
 
@@ -146,6 +149,8 @@ namespace BusinessLayer.Manager
         {
             var result = await ExecuteAsync<JobOpening>(async () =>
             {
+                await ResolveCustomSkillsForInsert(jobOpening, userContext);
+
                 var date = DateTime.UtcNow;
                 var _jobOpening = mapper.Map<JobOpening>(jobOpening);
 
@@ -204,6 +209,8 @@ namespace BusinessLayer.Manager
         {
             var result = await ExecuteAsync<JobOpening>(async () =>
             {
+                await ResolveCustomSkillsForUpdate(jobOpening, userContext);
+
                 var date = DateTime.UtcNow;
                 var _jobOpeningUpdate = mapper.Map<JobOpening>(jobOpening);
 
@@ -305,25 +312,23 @@ namespace BusinessLayer.Manager
                 return await repo.Post(_jobOpeningCandidateProfile, true);
             }, "ApplyJob", userContext);
 
-            var r = await GetJobOpeningCandidateProfileMapById(result.Id, userContext); 
-
-            if (r.JobOpening.NotifyWithResume.HasValue && r.JobOpening.NotifyWithResume.Value
-                && (!jobOpeningCandidateProfile.Doc.IsNullOrEmpty() || !r.CandidateProfile.CandidateDocuments.FirstOrDefault().Doc.IsNullOrEmpty()))
+            try
             {
-                string fileName = "";
-                if (!jobOpeningCandidateProfile.Doc.IsNullOrEmpty())
-                    fileName = jobOpeningCandidateProfile.Doc;
-                else if(r.CandidateProfile.CandidateDocuments.FirstOrDefault().Doc.IsNullOrEmpty())
-                    fileName = r.CandidateProfile.CandidateDocuments.FirstOrDefault().Doc;
-
-                if(fileName != "")
+                var r = await GetJobOpeningCandidateProfileMapById(result.Id, userContext);
+                if (r != null && r.JobOpening != null)
                 {
-                    string email = r.ConsultancyUser.User.Email;
-                    string subject = "Resume For JobId:" + result.JobOpeningId.ToString() ;
-                    string plainTextFormat = r.JobOpeningId.ToString() + r.JobOpening.Description;
-                    var mgr = managerFactory.Get<ICommonManager>();
-                    mgr.SendEmailWithAttachment(email, fileName, "resumes", authValueProvider, subject, "", plainTextFormat, userContext);
+                    bool notifyWithResume = r.JobOpening.NotifyWithResume == true;
+                    bool notifyOnMap = r.JobOpening.NotifyOnCandidateProfileMap == true;
+
+                    if (notifyWithResume || notifyOnMap)
+                    {
+                        await SendCandidateApplicationNotification(r, jobOpeningCandidateProfile, includeAttachment: notifyWithResume);
+                    }
                 }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Failed to send email notification for JobOpeningCandidateProfileMap Id: {Id}", result.Id);
             }
 
             return mapper.Map<JobOpeningCandidateProfileMapDto>(result);
@@ -458,16 +463,29 @@ namespace BusinessLayer.Manager
         {
             var repo = repositoryFactory.Get<IJobOpeningRepository>();
             var locationRepo = repositoryFactory.Get<IJobOpeningLocationsRepository>();
-            var details =  repo.GetJobOpeningProfileMapSummary(ConsultancyUserId);
-            var rtn = new List<JobOpeningProfileMapSummary1>();
+            var details = repo.GetJobOpeningProfileMapSummary(ConsultancyUserId);
 
-            foreach (var item in details)
+            if (details != null && details.Count > 0)
             {
-                item.JobOpeningLocation = mapper.Map<List<JobOpeningLocationDto>>(await locationRepo.GetJobOpeningLocationByJobId(item.JobOpeningId));
-                rtn.Add(item);
+                var jobIds = details.Select(x => x.JobOpeningId).Distinct().ToList();
+                var locations = await locationRepo.GetJobOpeningLocationsByJobIds(jobIds);
+                var locationDtos = mapper.Map<List<JobOpeningLocationDto>>(locations);
+                var locationLookup = locationDtos.GroupBy(x => x.JobOpeningId).ToDictionary(g => g.Key, g => g.ToList());
+
+                foreach (var item in details)
+                {
+                    if (locationLookup.TryGetValue(item.JobOpeningId, out var locs))
+                    {
+                        item.JobOpeningLocation = locs;
+                    }
+                    else
+                    {
+                        item.JobOpeningLocation = new List<JobOpeningLocationDto>();
+                    }
+                }
             }
 
-            return rtn;
+            return details ?? new List<JobOpeningProfileMapSummary1>();
         }
 
         public async Task<List<JobOpeningSummary>> GetCountJobsPostedByConsultancyUserId(long ConsultancyUserId, DateTime FromDate, DateTime ToDate, UserContext userContext)
@@ -578,6 +596,183 @@ namespace BusinessLayer.Manager
                 var skillRepo = repositoryFactory.Get<IJobOpeningJobTypesRepository>();
                 return await skillRepo.AddRange(jobOpeningJobTypes, userContext);
             }, "AddJobOpeningJobTypes", userContext);
+        }
+
+        public async Task<RecruiterStatsDto> GetRecruiterStats(long consultancyUserId, UserContext userContext)
+        {
+            return await ExecuteAsync(async () =>
+            {
+                var repo = repositoryFactory.Get<IJobOpeningRepository>();
+                return await repo.GetRecruiterStats(consultancyUserId, userContext);
+            }, "GetRecruiterStats", userContext);
+        }
+
+        private async Task ResolveCustomSkillsForInsert(JobOpeningForInsertDto jobOpening, UserContext userContext)
+        {
+            if (jobOpening.JobOpeningSkills == null || !jobOpening.JobOpeningSkills.Any()) return;
+            var skillsRepo = repositoryFactory.Get<ISkillsRepository>();
+            foreach (var skillDto in jobOpening.JobOpeningSkills)
+            {
+                if ((skillDto.SkillId == null || skillDto.SkillId == 0) && !string.IsNullOrWhiteSpace(skillDto.Name))
+                {
+                    var skill = await skillsRepo.EnsureSkillExists(skillDto.Name, userContext.UserId);
+                    skillDto.SkillId = (int)skill.Id;
+                }
+            }
+        }
+
+        private async Task ResolveCustomSkillsForUpdate(JobOpeningDtoForUpdate jobOpening, UserContext userContext)
+        {
+            if (jobOpening.JobOpeningSkills == null || !jobOpening.JobOpeningSkills.Any()) return;
+            var skillsRepo = repositoryFactory.Get<ISkillsRepository>();
+            foreach (var skillDto in jobOpening.JobOpeningSkills)
+            {
+                if ((skillDto.SkillId == null || skillDto.SkillId == 0) && !string.IsNullOrWhiteSpace(skillDto.Name))
+                {
+                    var skill = await skillsRepo.EnsureSkillExists(skillDto.Name, userContext.UserId);
+                    skillDto.SkillId = (int)skill.Id;
+                }
+            }
+        }
+
+        private async Task SendCandidateApplicationNotification(JobOpeningCandidateProfileMap r, JobOpeningCandidateProfileMapDtoForInsert? insertDto, bool includeAttachment)
+        {
+            var emailService = serviceProvider?.GetService<IResendEmailService>();
+            if (emailService == null) return;
+
+            string? recruiterEmail = r.ConsultancyUser?.User?.Email;
+            if (string.IsNullOrWhiteSpace(recruiterEmail)) return;
+
+            string jobTitle = !string.IsNullOrWhiteSpace(r.JobOpening?.Name) ? r.JobOpening.Name : $"Job #{r.JobOpeningId}";
+            string candidateName = r.CandidateProfile != null && !string.IsNullOrWhiteSpace(r.CandidateProfile.CandidateName)
+                ? r.CandidateProfile.CandidateName
+                : "A Candidate";
+
+            byte[]? resumeBytes = null;
+            string? attachmentName = null;
+
+            if (includeAttachment)
+            {
+                // Resolve resume file name safely
+                string fileName = "";
+                if (insertDto != null && !string.IsNullOrWhiteSpace(insertDto.Doc))
+                {
+                    fileName = insertDto.Doc;
+                }
+                else if (r.CandidateProfile?.CandidateDocuments != null && r.CandidateProfile.CandidateDocuments.Any())
+                {
+                    var doc = r.CandidateProfile.CandidateDocuments.FirstOrDefault(d => !string.IsNullOrWhiteSpace(d.Doc));
+                    if (doc != null && !string.IsNullOrWhiteSpace(doc.Doc))
+                    {
+                        fileName = doc.Doc;
+                    }
+                }
+                else if (!string.IsNullOrWhiteSpace(r.CandidateProfile?.Resume))
+                {
+                    fileName = r.CandidateProfile.Resume;
+                }
+
+                if (!string.IsNullOrWhiteSpace(fileName))
+                {
+                    try
+                    {
+                        var fileManager = managerFactory.Get<IFileManager>();
+                        using var stream = await fileManager.Get(fileName, "resumes");
+                        if (stream != null)
+                        {
+                            using var ms = new MemoryStream();
+                            await stream.CopyToAsync(ms);
+                            resumeBytes = ms.ToArray();
+
+                            string ext = Path.GetExtension(fileName);
+                            if (string.IsNullOrWhiteSpace(ext)) ext = ".pdf";
+                            string sanitizedCandidate = string.Join("_", candidateName.Split(Path.GetInvalidFileNameChars()));
+                            attachmentName = $"{sanitizedCandidate}_Resume{ext}";
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.LogWarning(ex, "Could not fetch resume file '{FileName}' for candidate application notification.", fileName);
+                    }
+                }
+            }
+
+            string totalExp = r.CandidateProfile?.TotalExp != null ? $"{r.CandidateProfile.TotalExp} years" : "Not specified";
+            string candidateTitle = !string.IsNullOrWhiteSpace(r.CandidateProfile?.Title) ? r.CandidateProfile.Title : "Applicant";
+
+            // Build skills list
+            string skillsHtml = "";
+            if (r.CandidateProfile?.CandidateProfileSkills != null && r.CandidateProfile.CandidateProfileSkills.Any())
+            {
+                var skillBadges = r.CandidateProfile.CandidateProfileSkills
+                    .Where(s => s.Skill != null && !string.IsNullOrWhiteSpace(s.Skill.Name))
+                    .Select(s => $"<span style='display:inline-block; background:#EEF2FF; color:#4F46E5; padding:4px 10px; border-radius:12px; font-size:12px; font-weight:600; margin:2px;'>{s.Skill.Name}</span>");
+
+                if (skillBadges.Any())
+                {
+                    skillsHtml = string.Join(" ", skillBadges);
+                }
+            }
+
+            string subject = $"New Candidate Application: {candidateName} for {jobTitle}";
+
+            string statusBannerHtml;
+            if (includeAttachment && resumeBytes != null && resumeBytes.Length > 0)
+            {
+                statusBannerHtml = $@"
+                    <div style='background-color: #ecfdf5; border: 1px solid #a7f3d0; padding: 12px 16px; border-radius: 6px; margin-bottom: 20px; color: #065f46; font-size: 14px;'>
+                        <strong>📎 Resume Attached:</strong> The candidate's resume (<code>{attachmentName}</code>) is attached to this email for your review.
+                    </div>";
+            }
+            else
+            {
+                statusBannerHtml = $@"
+                    <div style='background-color: #eff6ff; border: 1px solid #bfdbfe; padding: 12px 16px; border-radius: 6px; margin-bottom: 20px; color: #1e40af; font-size: 14px;'>
+                        <strong>🔔 Application Update:</strong> A new candidate has applied to your job posting. Log in to your ChatHire portal to view their full profile and download their resume.
+                    </div>";
+            }
+
+            string htmlContent = $@"
+                <div style='font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 24px; border: 1px solid #e5e7eb; border-radius: 8px; color: #1f2937;'>
+                    <div style='border-bottom: 2px solid #4F46E5; padding-bottom: 12px; margin-bottom: 20px;'>
+                        <h2 style='color: #4F46E5; margin: 0;'>New Job Application Received</h2>
+                        <p style='color: #6b7280; font-size: 14px; margin: 4px 0 0 0;'>Application for <strong>{jobTitle}</strong> (Job ID: #{r.JobOpeningId})</p>
+                    </div>
+
+                    <div style='background-color: #f9fafb; padding: 16px; border-radius: 6px; margin-bottom: 20px;'>
+                        <h3 style='margin-top: 0; color: #111827; font-size: 16px;'>Candidate Summary</h3>
+                        <table style='width: 100%; border-collapse: collapse; font-size: 14px;'>
+                            <tr>
+                                <td style='padding: 6px 0; color: #6b7280; width: 140px;'><strong>Name:</strong></td>
+                                <td style='padding: 6px 0; color: #111827;'>{candidateName}</td>
+                            </tr>
+                            <tr>
+                                <td style='padding: 6px 0; color: #6b7280;'><strong>Current Title:</strong></td>
+                                <td style='padding: 6px 0; color: #111827;'>{candidateTitle}</td>
+                            </tr>
+                            <tr>
+                                <td style='padding: 6px 0; color: #6b7280;'><strong>Experience:</strong></td>
+                                <td style='padding: 6px 0; color: #111827;'>{totalExp}</td>
+                            </tr>
+                            {(string.IsNullOrEmpty(skillsHtml) ? "" : $@"
+                            <tr>
+                                <td style='padding: 6px 0; color: #6b7280; vertical-align: top;'><strong>Skills:</strong></td>
+                                <td style='padding: 6px 0;'>{skillsHtml}</td>
+                            </tr>")}
+                        </table>
+                    </div>
+
+                    {statusBannerHtml}
+
+                    <div style='color: #6b7280; font-size: 13px; line-height: 1.5;'>
+                        <p>You can review this candidate and manage your job postings directly on your <a href='https://chathire.com' style='color: #4F46E5; text-decoration: underline;'>ChatHire Dashboard</a>.</p>
+                    </div>
+
+                    <hr style='border: none; border-top: 1px solid #e5e7eb; margin: 24px 0 16px 0;' />
+                    <p style='color: #9ca3af; font-size: 12px; text-align: center; margin: 0;'>&copy; {DateTime.UtcNow.Year} ChatHire. All rights reserved.</p>
+                </div>";
+
+            await emailService.SendEmailWithAttachmentAsync(recruiterEmail, subject, htmlContent, attachmentName ?? "", resumeBytes);
         }
     }
 }

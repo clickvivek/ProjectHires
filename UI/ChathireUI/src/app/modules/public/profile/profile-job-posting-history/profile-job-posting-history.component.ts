@@ -138,6 +138,7 @@ export class ProfileJobPostingHistoryComponent {
             this.isJobAvailable = false;
             this.isError = true;
             this.error = "Some error occured";
+            this.outParams.emit(false);
           }
         });
     }

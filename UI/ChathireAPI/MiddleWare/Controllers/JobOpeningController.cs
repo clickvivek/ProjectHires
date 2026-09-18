@@ -408,6 +408,16 @@ namespace MiddleWare.Controllers
             });
         }
 
+        [HttpGet]
+        [Route("GetRecruiterStats")]
+        public Task<Result<RecruiterStatsDto>> GetRecruiterStats(long consultancyUserId)
+        {
+            return ExecuteAsync<RecruiterStatsDto>(async () =>
+            {
+                var mgr = managerFactory.Get<IJobOpeningManager>();
+                return await mgr.GetRecruiterStats(consultancyUserId, GetDummyUserContext());
+            });
+        }
 
     }
 

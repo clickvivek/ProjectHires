@@ -1,5 +1,7 @@
-import { Component } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 
 import _ from 'underscore';
 
@@ -11,7 +13,9 @@ import { SessionService } from 'src/app/core/session/session.service';
   templateUrl: './posting-history.component.html',
   styleUrls: ['./posting-history.component.scss']
 })
-export class PostingHistoryComponent {
+export class PostingHistoryComponent implements OnInit, OnDestroy {
+
+  private destroy$ = new Subject<void>();
 
   user:any;
   profileId:any;
@@ -36,8 +40,6 @@ export class PostingHistoryComponent {
     private jobOpeningService: JobOpeningService,
     private sessionService: SessionService
   ) {
-
-
   }
 
   handleSearch(event:any) {
@@ -114,17 +116,32 @@ export class PostingHistoryComponent {
   }
 
   fetchUser() {
-    this.sessionService.userdetailscast.subscribe((res: any) => {
-      this.user = res
-      this.profileId = this.user?.consultancyUsers[0].publicProfileUserName
-      this.fetchData()
-    })
+    const cachedUser: any = this.sessionService.getUserDetails();
+    if (cachedUser && cachedUser.consultancyUsers?.length) {
+      this.user = cachedUser;
+      this.profileId = this.user.consultancyUsers[0].publicProfileUserName;
+      this.fetchData();
+      return;
+    }
+
+    this.sessionService.userdetailscast
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((res: any) => {
+        if (res && res.consultancyUsers?.length) {
+          this.user = res;
+          this.profileId = this.user.consultancyUsers[0].publicProfileUserName;
+          this.fetchData();
+        }
+      });
   }
 
   ngOnInit() {
+    this.fetchUser();
+  }
 
-    this.fetchUser()
-
+  ngOnDestroy() {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
 }

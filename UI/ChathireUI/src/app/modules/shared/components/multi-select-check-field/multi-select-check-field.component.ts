@@ -42,8 +42,11 @@ export class MultiSelectCheckFieldComponent {
     return this.fieldRequired;
   }
 
-  showFieldItems() {
-    this.isExpanded = true
+  showFieldItems(event?: Event) {
+    if (event) {
+      event.stopPropagation();
+    }
+    this.isExpanded = !this.isExpanded;
   }
 
   compareObj(obj1, obj2) {
@@ -135,18 +138,11 @@ export class MultiSelectCheckFieldComponent {
   
 
   @HostListener('document:click', ['$event'])
-    onDocumentClick(event:any) {
-
-      event.stopPropagation();
-
-      var el = this.element.nativeElement.querySelector('.select');
-      var arrowElement = this.element.nativeElement.querySelector('.select-arrow');
-
-      if (!el.contains(event.target) && !arrowElement.contains(event.target)) {
-        this.isExpanded = false
-      }
-
-   }
+  onDocumentClick(event: any) {
+    if (!this.element.nativeElement.contains(event.target)) {
+      this.isExpanded = false;
+    }
+  }
 
   getItemData(item:any) {
     let newData = this.fieldType.split(',')

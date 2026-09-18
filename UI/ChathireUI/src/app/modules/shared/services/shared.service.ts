@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { BehaviorSubject, Observable, Subject } from 'rxjs';
 
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 
@@ -15,6 +15,9 @@ const httpOptions = {
 
 
 export class SharedService {
+
+  private refreshInbox = new Subject<void>();
+  refreshinboxcast = this.refreshInbox.asObservable();
 
   private passwordreset = new BehaviorSubject<boolean>(false);
   passwordresetcast = this.passwordreset.asObservable();
@@ -43,6 +46,10 @@ export class SharedService {
   constructor(
     private http: HttpClient
   ) { }
+
+  triggerInboxRefresh() {
+    this.refreshInbox.next();
+  }
 
   isResetPassword(value:any) {
     this.passwordreset.next(value);

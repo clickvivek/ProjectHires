@@ -1,54 +1,52 @@
-<div class="profile-available-resources-item-wrapper">
-    
-    <div class="list-group-item d-flex align-items-start">
-        <div class="left flex-grow-1">
-            <div class="d-flex align-items-center">
-                <p class="text-secondary-800 fw-medium">{{ job.candidateName }}</p>
-                <p class="text-dark-600 ms-2">{{ job.title }}</p>
-            </div>
-            <div class="d-flex additional mt-1">
-              <div class="item d-flex align-items-center">
-                <span
-                  class="material-symbols-outlined text-base text-dark-500 me-2"
-                  >trip</span
-                >
-                <p class="text-sm fw-medium">{{ job.totalExp }} years</p>
-              </div>
-              <div class="item d-flex align-items-center">
-                <span
-                  class="material-symbols-outlined text-base text-dark-500 me-2"
-                  >airplane_ticket</span
-                >
-                <p class="text-sm fw-medium">
-                  {{ getVisa(job.visaId) }}
-                </p>
-              </div>
-              <div class="item d-flex align-items-center">
-                <span
-                  class="material-symbols-outlined text-base text-dark-500 me-1"
-                  >location_on</span
-                >
-                <p class="text-sm fw-medium">
-                  {{ job.city?.city1 }}, {{ job.city?.stateCode }}
-                </p>
-              </div>
-              <div class="item d-flex align-items-center" *ngIf=" job.fromAmt != 0 && job.toAmt != 0 ">
-                <span
-                  class="material-symbols-outlined text-base text-dark-500 me-1"
-                  >attach_money</span
-                >
-                <p class="text-sm fw-medium">
-                  {{ job.fromAmt }}-{{ job.toAmt }}
-                </p>
-              </div>
-           </div>
-           <div class="d-flex mt-3">
-            <p class="me-3 text-sm text-dark-400 left">Relocation</p>
-            <p class="text-sm">
-              {{ getRelocation(job) }}
-            </p>
-          </div>
-        </div>
-        
+<div class="profile-candidate-card bg-white border rounded-3 p-3 px-4 shadow-sm mb-3">
+  <div class="d-flex flex-column gap-2">
+    <!-- Top: Candidate Name & Title -->
+    <div class="d-md-flex align-items-baseline flex-wrap gap-2">
+      <h5 class="candidate-name mb-0 fw-bold">
+        {{ job.candidateName }}
+      </h5>
+      <span class="candidate-title text-muted fw-semibold">
+        {{ job.title }}
+      </span>
     </div>
+
+    <!-- Metadata Icons Row -->
+    <div class="d-flex additional align-items-center flex-wrap gap-3 my-1">
+      <div class="meta-item d-flex align-items-center gap-1" *ngIf="job.totalExp">
+        <span class="material-symbols-outlined meta-icon">work_history</span>
+        <span class="meta-text">{{ job.totalExp }} years</span>
+      </div>
+      <div class="meta-item d-flex align-items-center gap-1" *ngIf="getVisa(job.visaId)">
+        <span class="material-symbols-outlined meta-icon">badge</span>
+        <span class="meta-text">{{ getVisa(job.visaId) }}</span>
+      </div>
+      <div class="meta-item d-flex align-items-center gap-1" *ngIf="job.city?.city1 || job.city?.stateCode">
+        <span class="material-symbols-outlined meta-icon">location_on</span>
+        <span class="meta-text">{{ job.city?.city1 ? job.city?.city1 + ', ' : '' }}{{ job.city?.stateCode || 'USA' }}</span>
+      </div>
+      <div class="meta-item d-flex align-items-center gap-1" *ngIf="job.fromAmt || job.toAmt">
+        <span class="material-symbols-outlined meta-icon text-success">payments</span>
+        <span class="meta-text fw-semibold text-success">${{ job.fromAmt }} - {{ job.toAmt }}</span>
+      </div>
+    </div>
+
+    <!-- Availability & Relocation Rows -->
+    <div class="candidate-info-box d-flex flex-column gap-1">
+      <div class="info-row d-flex align-items-center">
+        <span class="info-label text-muted">Availability</span>
+        <span class="info-value fw-medium ms-3">{{ getAvailability(job.availability) || 'Immediate' }}</span>
+      </div>
+      <div class="info-row d-flex align-items-center">
+        <span class="info-label text-muted">Relocation</span>
+        <span class="info-value fw-medium ms-3">{{ getRelocation(job) || 'Any Location' }}</span>
+      </div>
+    </div>
+
+    <!-- Skills Row -->
+    <div class="skills-wrap d-flex flex-wrap gap-2 pt-2 mt-1 border-top" *ngIf="isSkills(job.candidateProfileSkills)">
+      <span class="skill-tag" *ngFor="let skillItem of job.candidateProfileSkills">
+        {{ skillItem.name }}
+      </span>
+    </div>
+  </div>
 </div>

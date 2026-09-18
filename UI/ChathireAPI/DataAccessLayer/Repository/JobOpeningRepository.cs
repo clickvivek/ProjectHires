@@ -1,4 +1,4 @@
-﻿using BusinessEntityAndDTO.Common;
+using BusinessEntityAndDTO.Common;
 using BusinessEntityAndDTO.DTO;
 using BusinessEntityAndDTO.Models;
 using DataAccessLayer.Common;
@@ -29,6 +29,8 @@ namespace DataAccessLayer.Repository
 
         Task<List<JobOpeningSummary>> GetCountJobsPostedByConsultancyUserId(long ConsultancyUserId, DateTime FromDate, DateTime ToDate);
         Task<List<JobOpeningSummary>> GetCountActiveJobsAsOfToday(long ConsultancyUserId, UserContext userContext);
+        Task<int> ExpireOldJobOpeningsAsync(int daysThreshold = 30);
+        Task<RecruiterStatsDto> GetRecruiterStats(long consultancyUserId, UserContext userContext);
 
     }
 
@@ -284,154 +286,73 @@ namespace DataAccessLayer.Repository
         }
         public List<JobOpeningProfileMapSummary1> GetJobOpeningProfileMapSummary(long ConsultancyUserId)
         {
-            var list = (from o in _context.JobOpenings
-                        join p in _context.JobOpeningCandidateProfileMaps on o.Id equals p.JobOpeningId into pr
-                        from prresult in pr.DefaultIfEmpty()
-                        join s in _context.CandidateProfileMappingStatuses on prresult.CandidateProfileMappingStatusId equals s.Id into statusr
-                        from statusresult in statusr.DefaultIfEmpty()
-                        where o.ConsultancyUserId == ConsultancyUserId
-                        group prresult.Id by new { o.Id, prresult.CandidateProfileMappingStatusId, o.Name, o.Description, statusname= statusresult.Name, o.PostedDate, o.Active  } into g
-                        //join jo in _context.JobOpenings on g.Key.JobOpeningId equals jo.Id
-                        //join jopm in _context.CandidateProfileMappingStatuses on g.Key.CandidateProfileMappingStatusId equals jopm.Id
-                        select new JobOpeningProfileMapSummary { 
-                            JobOpeningId = g.Key.Id, 
-                            CandidateProfileMappingStatusId = g.Key.CandidateProfileMappingStatusId, 
-                            Count = g.Count(), 
-                            Name = g.Key.Name , 
-                            Description = g.Key.Description, 
-                            CandidateProfileMappingStatusName = g.Key.statusname 
-                            ,PostDate = g.Key.PostedDate, 
-                            Active = g.Key.Active ,
-                        });
-            var summaryList = list.ToList();
-
-            //var details = (from g in summaryList
-            //               join jo in _context.JobOpenings on g.JobOpeningId equals jo.Id
-            //               join jopm in _context.CandidateProfileMappingStatuses on g.CandidateProfileMappingStatusId equals jopm.Id into jopmr
-            //               from jopmresult in jopmr.DefaultIfEmpty()
-            //               select new JobOpeningProfileMapSummary
-            //               {
-            //                   JobOpeningId = g.JobOpeningId,
-            //                   CandidateProfileMappingStatusId = g.CandidateProfileMappingStatusId,
-            //                   Count = g.Count,
-            //                   Name = jo.Name,
-            //                   Description = jo.Description,
-            //                   CandidateProfileMappingStatusName = jopmresult.Name
-            //               ,
-            //                   PostDate = jo.PostedDate,
-            //                   JobLocation = jo.JobLocation,
-            //                   Active = jo.Active
-            //               }).ToList();
-
-            var result = new List<JobOpeningProfileMapSummary1>();
-            var candidateProfileMappingStatuses = _context.CandidateProfileMappingStatuses.ToList();
-
-            foreach (var item in summaryList)
-            {
-                if (item != null)
+            var jobOpenings = _context.JobOpenings
+                .AsNoTracking()
+                .Where(o => o.ConsultancyUserId == ConsultancyUserId)
+                .Select(o => new
                 {
-                    var resultItem = result.Where(r => r.JobOpeningId == item.JobOpeningId).FirstOrDefault();
+                    o.Id,
+                    o.Name,
+                    o.Description,
+                    o.PostedDate,
+                    o.JobLocation,
+                    o.Active
+                })
+                .ToList();
 
-                    if (resultItem == null && item.CandidateProfileMappingStatusId != null)
-                    {
-                        resultItem = new JobOpeningProfileMapSummary1
-                        {
-                            JobOpeningId = item.JobOpeningId,
-                            JobLocation = item.JobLocation,
-                            Active = item.Active,
-                            Name = item.Name,
-                            Description = item.Description,
-                            PostDate = item.PostDate,
-                            profileCountSummary = new List<ProfileCountSummary>() { new ProfileCountSummary()
-                                        { CandidateProfileMappingStatusId = item.CandidateProfileMappingStatusId,
-                                            CandidateProfileMappingStatusName = item.CandidateProfileMappingStatusName,
-                                            Count = item.Count} },
-                        };
-
-                        result.Add(resultItem);
-                    }
-                    else if (item.CandidateProfileMappingStatusId != null)
-                    {
-                        resultItem.profileCountSummary.Add(new ProfileCountSummary()
-                        {
-                            CandidateProfileMappingStatusId = item.CandidateProfileMappingStatusId,
-                            CandidateProfileMappingStatusName = item.CandidateProfileMappingStatusName,
-                            Count = item.Count
-                        });
-                    }
-                    else
-                    {
-                        resultItem = new JobOpeningProfileMapSummary1
-                        {
-                            JobOpeningId = item.JobOpeningId,
-                            JobLocation = item.JobLocation,
-                            Active = item.Active,
-                            Name = item.Name,
-                            Description = item.Description,
-                            PostDate = item.PostDate,
-                            //profileCountSummary = new List<ProfileCountSummary>() { new ProfileCountSummary()
-                            //            { CandidateProfileMappingStatusId = item.CandidateProfileMappingStatusId,
-                            //                CandidateProfileMappingStatusName = item.CandidateProfileMappingStatusName,
-                            //                Count = item.Count} },
-                        };
-
-                        result.Add(resultItem);
-                    }
-                }
+            if (!jobOpenings.Any())
+            {
+                return new List<JobOpeningProfileMapSummary1>();
             }
 
-            foreach(var item in result)
+            var jobIds = jobOpenings.Select(o => o.Id).ToList();
+
+            var statusCounts = (from p in _context.JobOpeningCandidateProfileMaps.AsNoTracking()
+                                join s in _context.CandidateProfileMappingStatuses.AsNoTracking() on p.CandidateProfileMappingStatusId equals s.Id
+                                where jobIds.Contains(p.JobOpeningId)
+                                group p.Id by new { p.JobOpeningId, p.CandidateProfileMappingStatusId, s.Name } into g
+                                select new
+                                {
+                                    JobOpeningId = g.Key.JobOpeningId,
+                                    CandidateProfileMappingStatusId = g.Key.CandidateProfileMappingStatusId,
+                                    CandidateProfileMappingStatusName = g.Key.Name,
+                                    Count = g.Count()
+                                }).ToList();
+
+            var candidateProfileMappingStatuses = _context.CandidateProfileMappingStatuses
+                .AsNoTracking()
+                .OrderBy(s => s.Id)
+                .ToList();
+
+            var result = new List<JobOpeningProfileMapSummary1>();
+
+            foreach (var jo in jobOpenings)
             {
-                if(item.profileCountSummary == null)
+                var summaryList = new List<ProfileCountSummary>();
+                foreach (var status in candidateProfileMappingStatuses)
                 {
-                    var ProfileCountSummary = new List<ProfileCountSummary>();
-                    
-                    foreach (var i in candidateProfileMappingStatuses)
+                    var match = statusCounts.FirstOrDefault(x => x.JobOpeningId == jo.Id && x.CandidateProfileMappingStatusId == status.Id);
+                    summaryList.Add(new ProfileCountSummary
                     {
-                        if(item.profileCountSummary == null)
-                        {
-                            item.profileCountSummary = new List<ProfileCountSummary>(){ new ProfileCountSummary()
-                            {
-                                CandidateProfileMappingStatusId = i.Id,
-                                CandidateProfileMappingStatusName = i.Name,
-                                Count = 0
-                            } };
-                        }
-                        else
-                        {
-                            var profileCountSummary = new ProfileCountSummary()
-                            {
-                                CandidateProfileMappingStatusId = i.Id,
-                                CandidateProfileMappingStatusName = i.Name,
-                                Count = 0
-                            };
-                            item.profileCountSummary.Add(profileCountSummary);
-                        }
-                        
-                    }
+                        CandidateProfileMappingStatusId = status.Id,
+                        CandidateProfileMappingStatusName = status.Name,
+                        Count = match?.Count ?? 0
+                    });
                 }
-                else
+
+                result.Add(new JobOpeningProfileMapSummary1
                 {
-                    foreach (var i in candidateProfileMappingStatuses)
-                    {
-                        if(item.profileCountSummary.Where(x=>x.CandidateProfileMappingStatusId==i.Id).Count()==0)
-                        {
-                            var profileCountSummary = new ProfileCountSummary()
-                            {
-                                CandidateProfileMappingStatusId = i.Id,
-                                CandidateProfileMappingStatusName = i.Name,
-                                Count = 0
-                            };
-                            item.profileCountSummary.Add( profileCountSummary);
-                        }
-                    }
-                }
+                    JobOpeningId = jo.Id,
+                    Name = jo.Name,
+                    Description = jo.Description,
+                    PostDate = jo.PostedDate,
+                    JobLocation = jo.JobLocation,
+                    Active = jo.Active,
+                    profileCountSummary = summaryList
+                });
             }
 
             return result;
-
-
-
         }
 
         public async Task<JobOpening> GetJobOpeningsById(long? Id, UserContext userContext)
@@ -450,6 +371,53 @@ namespace DataAccessLayer.Repository
            .ThenInclude(o => o.JobType)
            .Where(c => c.Id == Id);
             return await jobOpenings.FirstOrDefaultAsync();
+        }
+
+        public async Task<int> ExpireOldJobOpeningsAsync(int daysThreshold = 30)
+        {
+            var cutoffDate = DateTime.UtcNow.AddDays(-daysThreshold);
+            return await _context.JobOpenings
+                .Where(j => (j.IsExpired == null || j.IsExpired == false) && j.PostedDate != null && j.PostedDate < cutoffDate)
+                .ExecuteUpdateAsync(setter => setter
+                    .SetProperty(j => j.IsExpired, true)
+                    .SetProperty(j => j.Updated, DateTime.UtcNow));
+        }
+
+        public async Task<RecruiterStatsDto> GetRecruiterStats(long consultancyUserId, UserContext userContext)
+        {
+            var cutoffDate = DateTime.UtcNow.AddDays(-30);
+
+            var jobOpenings = await _context.JobOpenings
+                .AsNoTracking()
+                .Where(j => j.ConsultancyUserId == consultancyUserId)
+                .Select(j => new { j.Id, j.Active, j.IsExpired, j.PostedDate })
+                .ToListAsync();
+
+            if (!jobOpenings.Any())
+            {
+                return new RecruiterStatsDto
+                {
+                    JobRequirementPosted = 0,
+                    ExpiredPostings = 0,
+                    ResumesReceived = 0
+                };
+            }
+
+            var jobIds = jobOpenings.Select(j => j.Id).ToList();
+
+            var resumesReceivedCount = await _context.JobOpeningCandidateProfileMaps
+                .AsNoTracking()
+                .CountAsync(m => jobIds.Contains(m.JobOpeningId));
+
+            var activeJobsCount = jobOpenings.Count(j => (j.Active == null || j.Active == true) && (j.IsExpired == null || j.IsExpired == false));
+            var expiredJobsCount = jobOpenings.Count(j => j.IsExpired == true || (j.PostedDate != null && j.PostedDate < cutoffDate));
+
+            return new RecruiterStatsDto
+            {
+                JobRequirementPosted = activeJobsCount,
+                ExpiredPostings = expiredJobsCount,
+                ResumesReceived = resumesReceivedCount
+            };
         }
     }
 

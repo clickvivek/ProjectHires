@@ -1,7 +1,9 @@
-import { Component, ViewChild, HostListener, ElementRef } from '@angular/core';
-import {  Router, ActivatedRoute, NavigationEnd } from '@angular/router';
+import { Component, ViewChild, HostListener, ElementRef, OnInit, OnDestroy } from '@angular/core';
+import {  Router, ActivatedRoute } from '@angular/router';
 import * as moment from 'moment';
 import _ from 'underscore';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 
 import { profileInitialCountSummary } from 'src/app/data/various';
 import { JobOpeningService } from 'src/app/api';
@@ -14,7 +16,9 @@ import { SharedService } from '../../shared/services/shared.service';
   templateUrl: './inbox.component.html',
   styleUrls: ['./inbox.component.scss']
 })
-export class InboxComponent {
+export class InboxComponent implements OnInit, OnDestroy {
+
+  private destroy$ = new Subject<void>();
 
   isLoaded:boolean = false;
   isError:boolean = true;
@@ -51,13 +55,6 @@ export class InboxComponent {
     private toastr: ToastrService,
     private jobOpeningService: JobOpeningService
   ) {
-
-    router.events.subscribe((event: any) => {
-      if (event instanceof NavigationEnd) {
-        this.fetchProfiles();
-      }
-    });
-
   }
 
   getDate(date) {
@@ -129,25 +126,22 @@ export class InboxComponent {
   }
 
  
-  fetchProfiles() {
+  fetchProfiles(showLoader: boolean = true) {
+    if (showLoader) {
+      this.isLoaded = false;
+    }
 
     this.jobOpeningService.apiJobOpeningGetJobOpeningProfileMapSummaryGet(this.sessionService.consultancyUserId).subscribe({
       next:(res:any) => {
-
-
-        this.isLoaded = true
-        
-        this.isError = false
+        this.isLoaded = true;
+        this.isError = false;
 
         if(!_.isEmpty(res)) {
-
-          this.initialData = res
-          this.filteredData = this.initialData
+          this.initialData = res;
   
           this.initialData.forEach((item:any) => {
-            
-            let profileFilteredCountSummary:any = []
-            let existingProfileCountSummary = item.profileCountSummary
+            let profileFilteredCountSummary:any = [];
+            let existingProfileCountSummary = item.profileCountSummary;
 
             this.profileInitialCountSummary.forEach((profileOne:any) => {
               let matchObj = existingProfileCountSummary.find(profileTwo => profileTwo.candidateProfileMappingStatusId === profileOne.candidateProfileMappingStatusId);
@@ -157,41 +151,60 @@ export class InboxComponent {
               else {
                 profileFilteredCountSummary.push(profileOne);
               }
-            })
+            });
 
-            item.profileCountSummary = profileFilteredCountSummary
+            item.profileCountSummary = profileFilteredCountSummary;
+          });
 
-          })
-
-          this.totalItems = this.filteredData.length;
+          this.filterSearchData();
         }
         else {
-          this.totalItems = this.filteredData.length;
+          this.initialData = [];
+          this.filteredData = [];
+          this.totalItems = 0;
         }
-       
       },
       error:(error:any) => {
-        this.isError = true
-        this.isLoaded = true
+        this.isError = true;
+        this.isLoaded = true;
         this.error = 'Some error occured';
       }
-    })
-
+    });
   }
  
   ngOnInit() {
-    
     this.sortList = [
       { id: 1, name: "Posted Date" },
       { id: 2, name: "Title" }
-    ]
+    ];
     
     this.orderList = [
       { id: 1, name: "Ascending" },
       { id: 2, name: "Descending" }
-    ]
+    ];
 
+    this.sharedService.refreshinboxcast
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(() => {
+        this.fetchProfiles(false);
+      });
 
+    if (this.sessionService.consultancyUserId) {
+      this.fetchProfiles();
+    } else {
+      this.sessionService.userdetailscast
+        .pipe(takeUntil(this.destroy$))
+        .subscribe((user: any) => {
+          if (user && this.sessionService.consultancyUserId) {
+            this.fetchProfiles();
+          }
+        });
+    }
+  }
+
+  ngOnDestroy() {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   getTotalCandidates(item: any): number {
@@ -205,10 +218,11 @@ export class InboxComponent {
     switch (id) {
       case 1: return 'New';
       case 2: return 'On Hold';
-      case 3: return 'Selected';
+      case 3: return 'Shortlisted';
       case 4: return 'No Response';
       case 5: return 'Interview';
       case 6: return 'Rejected';
+      case 7: return 'Submitted';
       default: return profile.candidateProfileMappingStatusName || '';
     }
   }
@@ -218,12 +232,72 @@ export class InboxComponent {
     switch (statusId) {
       case 1: return 'tile-new';
       case 2: return 'tile-on-hold';
-      case 3: return 'tile-selected';
+      case 3: return 'tile-shortlisted';
       case 4: return 'tile-no-response';
       case 5: return 'tile-interview';
       case 6: return 'tile-rejected';
+      case 7: return 'tile-submitted';
       default: return 'tile-default';
     }
+  }
+
+  getStatusTooltip(statusId: number | any): string {
+    const id = typeof statusId === 'object' ? statusId?.candidateProfileMappingStatusId : statusId;
+    switch (id) {
+      case 1:
+        return 'New candidate received and awaiting review';
+      case 2:
+        return 'Application is paused temporarily';
+      case 3:
+        return 'Candidate passed screening and is shortlisted';
+      case 4:
+        return 'Waiting for candidate response';
+      case 6:
+        return 'Candidate is not moving forward';
+      case 7:
+        return 'Profile submitted to client or hiring manager';
+      case 5:
+        return 'Interview is scheduled or in progress';
+      default:
+        return '';
+    }
+  }
+
+  getActiveJobsCount(): number {
+    if (!this.initialData) return 0;
+    return this.initialData.filter((j: any) => j.active).length;
+  }
+
+  getNewCandidatesCount(): number {
+    if (!this.initialData) return 0;
+    return this.initialData.reduce((acc, job) => {
+      const match = job.profileCountSummary?.find((p: any) => p.candidateProfileMappingStatusId === 1);
+      return acc + (match?.count || 0);
+    }, 0);
+  }
+
+  getShortlistedCount(): number {
+    if (!this.initialData) return 0;
+    return this.initialData.reduce((acc, job) => {
+      const match = job.profileCountSummary?.find((p: any) => p.candidateProfileMappingStatusId === 3);
+      return acc + (match?.count || 0);
+    }, 0);
+  }
+
+  getSubmittedCount(): number {
+    if (!this.initialData) return 0;
+    return this.initialData.reduce((acc, job) => {
+      const match = job.profileCountSummary?.find((p: any) => p.candidateProfileMappingStatusId === 7);
+      return acc + (match?.count || 0);
+    }, 0);
+  }
+
+  getTotalCandidatesCount(): number {
+    if (!this.initialData) return 0;
+    return this.initialData.reduce((acc, job) => {
+      if (!job.profileCountSummary) return acc;
+      return acc + job.profileCountSummary.reduce((subAcc: number, p: any) => subAcc + (p.count || 0), 0);
+    }, 0);
   }
 
 }

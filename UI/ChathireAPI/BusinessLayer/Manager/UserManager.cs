@@ -42,12 +42,28 @@ namespace BusinessLayer.Manager
         {
         }
 
+        private static string FormatTitleCase(string? str)
+        {
+            if (string.IsNullOrWhiteSpace(str)) return string.Empty;
+            str = str.Trim();
+            return System.Globalization.CultureInfo.CurrentCulture.TextInfo.ToTitleCase(str.ToLower());
+        }
+
         public async Task<List<UserDto>> GetUserByUserName(string email, UserContext userContext)
         {
             return await ExecuteAsync<List<UserDto>>(async () =>
             {
                 var repo = repositoryFactory.Get<IUserRepository>();
-                return mapper.Map<List<UserDto>>(await repo.GetUserByUserName(email));
+                var list = mapper.Map<List<UserDto>>(await repo.GetUserByUserName(email));
+                if (list != null)
+                {
+                    foreach (var u in list)
+                    {
+                        u.Fname = FormatTitleCase(u.Fname);
+                        u.Lname = FormatTitleCase(u.Lname);
+                    }
+                }
+                return list;
             }, "GetUserByUserName", userContext);
 
         }
@@ -57,7 +73,16 @@ namespace BusinessLayer.Manager
             return await ExecuteAsync<List<UserDtoForReturn>>(async () =>
             {
                 var repo = repositoryFactory.Get<IUserRepository>();
-                return mapper.Map<List<UserDtoForReturn>>(await repo.GetUserByPublicProfileId(publicProfileId));
+                var list = mapper.Map<List<UserDtoForReturn>>(await repo.GetUserByPublicProfileId(publicProfileId));
+                if (list != null)
+                {
+                    foreach (var u in list)
+                    {
+                        u.Fname = FormatTitleCase(u.Fname);
+                        u.Lname = FormatTitleCase(u.Lname);
+                    }
+                }
+                return list;
             }, "GetUserByUserName", userContext);
 
         }
@@ -98,8 +123,8 @@ namespace BusinessLayer.Manager
                     _user.EmailVerified = false;
                     _user.Otpemail = otpCode;
                     _user.OtpemailDate = date.AddMinutes(10);
-                    if (string.IsNullOrEmpty(user.Fname))
-                        _user.Fname = "";
+                    _user.Fname = FormatTitleCase(user.Fname);
+                    _user.Lname = FormatTitleCase(user.Lname);
 
                     targetUser = await repo.Post(_user, true);
                 }
@@ -199,6 +224,8 @@ namespace BusinessLayer.Manager
                 var repo = repositoryFactory.Get<IUserRepository>();
                 _user.Updated = date;
                 _user.UpdatedBy = userContext.UserId;
+                _user.Fname = FormatTitleCase(user?.Fname);
+                _user.Lname = FormatTitleCase(user?.Lname);
                 return await repo.Post(_user, true);
             }, "AddUserWithConsultacy", userContext);
 
@@ -302,10 +329,10 @@ namespace BusinessLayer.Manager
                     _user.UserName = user.UserDtoForUpdate.UserName;
 
                 if (user.UserDtoForUpdate.Lname != null)
-                    _user.Lname = user.UserDtoForUpdate.Lname;
+                    _user.Lname = FormatTitleCase(user.UserDtoForUpdate.Lname);
 
                 if (user.UserDtoForUpdate.Fname != null)
-                    _user.Fname = user.UserDtoForUpdate.Fname;
+                    _user.Fname = FormatTitleCase(user.UserDtoForUpdate.Fname);
 
                 if (user.UserDtoForUpdate.Linkedin != null)
                     _user.Linkedin = user.UserDtoForUpdate.Linkedin;
@@ -354,6 +381,12 @@ namespace BusinessLayer.Manager
 
                 if (user.UserDtoForUpdate.ProfilePic != null)
                     _user.ProfilePic = user.UserDtoForUpdate.ProfilePic;
+
+                if (user.UserDtoForUpdate.RoleRecruiter != null)
+                    _user.RoleRecruiter = user.UserDtoForUpdate.RoleRecruiter;
+
+                if (user.UserDtoForUpdate.RoleBenchSales != null)
+                    _user.RoleBenchSales = user.UserDtoForUpdate.RoleBenchSales;
 
                 _user.Updated = date;
                 _user.UpdatedBy = userContext.UserId;

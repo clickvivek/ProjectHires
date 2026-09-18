@@ -1,44 +1,98 @@
-<div class="hotlist-box table-box">
-  <table class="table table-bordered">
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>Technology</th>
-        <th>Years</th>
-        <th>Visa</th>
-        <th>Location</th>
-        <th>Preference</th>
-        <th>Actions</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr *ngFor="let item of list">
-        <td class="fw-semibold">{{ item.candidateName }}</td>
-        <td>{{ item.title }}</td>
-        <td>{{ item.totalExp }} years</td>
-        <td>{{ getVisa(item.visaId) }}</td>
-        <td>{{ item.city?.stateCode }}</td>
-        <td>
-          <span class="overflow"> {{ getRelocation(item) }}</span>
-        </td>
-        <td class="text-center">
-          <div class="d-inline-block">
-            <div
-              class="pointer mt-2 me-2 d-inline-flex text-primary-500"
-              (click)="editCandidate(item.id)"
-            >
-              <span class="material-symbols-outlined text-base">edit</span>
+<div class="hotlist-table-card bg-white border rounded-3 overflow-hidden shadow-sm">
+  <div class="table-responsive mb-0">
+    <table class="table table-hover align-middle mb-0 custom-hotlist-table">
+      <thead>
+        <tr>
+          <th scope="col" class="th-candidate">Candidate</th>
+          <th scope="col" class="th-tech">Technology / Role</th>
+          <th scope="col" class="th-exp text-center">Experience</th>
+          <th scope="col" class="th-visa text-center">Visa</th>
+          <th scope="col" class="th-loc">Location</th>
+          <th scope="col" class="th-pref">Preference</th>
+          <th scope="col" class="th-actions text-end pe-4">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let item of list">
+          <!-- Candidate Name with Avatar -->
+          <td class="td-candidate">
+            <div class="d-flex align-items-center gap-2">
+              <div class="candidate-avatar rounded-circle d-flex align-items-center justify-content-center flex-shrink-0">
+                {{ item.candidateName ? item.candidateName.charAt(0).toUpperCase() : 'C' }}
+              </div>
+              <span class="candidate-name fw-semibold">
+                {{ item.candidateName }}
+              </span>
             </div>
+          </td>
 
-            <div
-              class="pointer mt-2 d-inline-flex text-danger-500"
-              (click)="deleteCandidate(item)"
-            >
-              <span class="material-symbols-outlined text-base">delete</span>
+          <!-- Technology / Title -->
+          <td class="td-tech">
+            <span class="tech-title text-dark-800">{{ item.title }}</span>
+          </td>
+
+          <!-- Experience -->
+          <td class="td-exp text-center">
+            <span class="badge exp-badge" *ngIf="item.totalExp">
+              {{ item.totalExp }} yrs
+            </span>
+            <span class="text-muted" *ngIf="!item.totalExp">-</span>
+          </td>
+
+          <!-- Visa -->
+          <td class="td-visa text-center">
+            <span class="badge visa-badge" *ngIf="getVisa(item.visaId)">
+              {{ getVisa(item.visaId) }}
+            </span>
+            <span class="text-muted" *ngIf="!getVisa(item.visaId)">-</span>
+          </td>
+
+          <!-- Location -->
+          <td class="td-loc">
+            <span class="location-text d-inline-flex align-items-center gap-1">
+              <span class="material-symbols-outlined loc-icon">location_on</span>
+              {{ item.city?.city1 ? item.city?.city1 + ', ' : '' }}{{ item.city?.stateCode || 'USA' }}
+            </span>
+          </td>
+
+          <!-- Relocation Preference -->
+          <td class="td-pref">
+            <span class="pref-text" [title]="getRelocation(item)">
+              {{ getRelocation(item) }}
+            </span>
+          </td>
+
+          <!-- Action Buttons (Edit, Delete) -->
+          <td class="td-actions text-end pe-4">
+            <div class="d-inline-flex align-items-center gap-2">
+              <button
+                type="button"
+                class="btn-table-action btn-table-edit"
+                (click)="editCandidate(item.id)"
+                title="Edit Candidate"
+              >
+                <span class="material-symbols-outlined fs-6">edit</span>
+              </button>
+
+              <button
+                type="button"
+                class="btn-table-action btn-table-delete"
+                (click)="deleteCandidate(item)"
+                title="Delete Candidate"
+              >
+                <span class="material-symbols-outlined fs-6">delete</span>
+              </button>
             </div>
-          </div>
-        </td>
-      </tr>
-    </tbody>
-  </table>
+          </td>
+        </tr>
+
+        <tr *ngIf="!list || list.length === 0">
+          <td colspan="7" class="text-center py-5 text-muted">
+            <span class="material-symbols-outlined fs-2 text-muted mb-2 d-block">search_off</span>
+            No candidates found in hotlist.
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
 </div>

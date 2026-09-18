@@ -43,23 +43,51 @@ namespace MiddleWare.Controllers
             });
         }
 
+        [HttpPost]
+        [Route("BulkAdd")]
+        public Task<Result<List<ConsultancyDto>>> BulkAddConsultancies([FromBody] List<ConsultancyForInsertDto> consultancies)
+        {
+            return ExecuteAsync<List<ConsultancyDto>>(async () =>
+            {
+                var mgr = managerFactory.Get<IConsultancyManager>();
+                return await mgr.BulkAddConsultancies(consultancies, GetDummyUserContext());
+            });
+        }
+
+        [HttpPost]
+        [Route("UploadCompanyLogo")]
+        public Task<Result<string>> UploadCompanyLogo([FromForm] FileModel model, [FromQuery] string? websiteUrl = null)
+        {
+            return ExecuteAsync<string>(async () =>
+            {
+                if (model == null || model.ImageFile == null)
+                {
+                    throw new ArgumentException("No image file provided");
+                }
+
+                string target = websiteUrl;
+                if (string.IsNullOrWhiteSpace(target) && Request.HasFormContentType && Request.Form.ContainsKey("websiteUrl"))
+                {
+                    target = Request.Form["websiteUrl"].ToString();
+                }
+
+                var fileManager = managerFactory.Get<IFileManager>();
+                string targetName = !string.IsNullOrWhiteSpace(target) ? target : "company_logo";
+                string uploadedFileName = await fileManager.UploadWithName(model, targetName, "profilepic");
+                return uploadedFileName;
+            });
+        }
+
        
         [HttpPut]
         [Route("Update")]
         //[ApiAuthorize("UpdateConsultancy")]
-        public Task<Result<ConsultancyDto>> UpdateConsultancy(ConsultancyDto consultancy, [FromForm] FileModel model)
+        public Task<Result<ConsultancyDto>> UpdateConsultancy([FromBody] ConsultancyDto consultancy)
         {
             return ExecuteAsync<ConsultancyDto>(async () =>
             {
                 var ConsultancyManager = managerFactory.Get<IConsultancyManager>();
-                if (model.ImageFile != null)
-                {
-                    string fileName = "";
-                    var fileManager = managerFactory.Get<IFileManager>();
-                    fileName = await fileManager.Upload(model, "profilepic");
-                    consultancy.Logo = fileName;
-                }
-                return await ConsultancyManager.UpdateConsultancy(consultancy, GetUserContext());
+                return await ConsultancyManager.UpdateConsultancy(consultancy, GetDummyUserContext());
             });
         }
 

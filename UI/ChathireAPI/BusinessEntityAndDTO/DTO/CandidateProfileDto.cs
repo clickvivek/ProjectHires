@@ -1,4 +1,4 @@
-﻿using BusinessEntityAndDTO.Models;
+using BusinessEntityAndDTO.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -311,5 +311,22 @@ namespace BusinessEntityAndDTO.DTO
         public VisaDto? visa { get; set; } = new VisaDto();
 
 
+    }
+
+    public class BenchSalesStatsDto
+    {
+        public int TotalHotlistCandidates { get; set; }
+        public int ResumesSubmittedLast30Days { get; set; }
+        public List<BenchSalesCandidateSummaryDto> Candidates { get; set; } = new List<BenchSalesCandidateSummaryDto>();
+    }
+
+    public class BenchSalesCandidateSummaryDto
+    {
+        public long Id { get; set; }
+        public string Name { get; set; } = string.Empty;
+        public string Title { get; set; } = string.Empty;
+        public string PrimarySkill { get; set; } = string.Empty;
+        public int AppliedJobs { get; set; }
+        public int NewMatchingJobs { get; set; }
     }
 }

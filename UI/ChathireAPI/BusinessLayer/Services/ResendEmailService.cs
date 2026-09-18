@@ -82,5 +82,74 @@ namespace BusinessLayer.Services
                 return false;
             }
         }
+
+        public async Task<bool> SendEmailWithAttachmentAsync(string toEmail, string subject, string htmlContent, string attachmentFilename, byte[]? attachmentBytes)
+        {
+            try
+            {
+                var apiKey = _configuration["Resend:ApiKey"];
+                var fromEmail = _configuration["Resend:FromEmail"] ?? "no-reply@notifications.chathire.com";
+                var fromName = _configuration["Resend:FromName"] ?? "ChatHire";
+
+                if (string.IsNullOrWhiteSpace(apiKey) || apiKey == "YOUR_RESEND_API_KEY")
+                {
+                    _logger.LogWarning("Resend API key is not configured in appsettings.json [Resend:ApiKey]. Email with subject '{Subject}' not sent to {Email}", subject, toEmail);
+                    return true;
+                }
+
+                object payload;
+                if (attachmentBytes != null && attachmentBytes.Length > 0 && !string.IsNullOrWhiteSpace(attachmentFilename))
+                {
+                    payload = new
+                    {
+                        from = $"{fromName} <{fromEmail}>",
+                        to = new[] { toEmail },
+                        subject = subject,
+                        html = htmlContent,
+                        attachments = new[]
+                        {
+                            new
+                            {
+                                filename = attachmentFilename,
+                                content = Convert.ToBase64String(attachmentBytes)
+                            }
+                        }
+                    };
+                }
+                else
+                {
+                    payload = new
+                    {
+                        from = $"{fromName} <{fromEmail}>",
+                        to = new[] { toEmail },
+                        subject = subject,
+                        html = htmlContent
+                    };
+                }
+
+                var request = new HttpRequestMessage(HttpMethod.Post, "https://api.resend.com/emails");
+                request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", apiKey);
+                request.Content = new StringContent(JsonConvert.SerializeObject(payload), Encoding.UTF8, "application/json");
+
+                var response = await _httpClient.SendAsync(request);
+                var responseContent = await response.Content.ReadAsStringAsync();
+
+                if (response.IsSuccessStatusCode)
+                {
+                    _logger.LogInformation("Email with attachment sent successfully via Resend to {Email} | Subject: {Subject}", toEmail, subject);
+                    return true;
+                }
+                else
+                {
+                    _logger.LogError("Failed to send email via Resend to {Email}. Status: {Status}, Error: {Response}", toEmail, response.StatusCode, responseContent);
+                    return false;
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Exception occurred while sending email with attachment via Resend to {Email}", toEmail);
+                return false;
+            }
+        }
     }
 }

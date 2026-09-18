@@ -1,4 +1,4 @@
-﻿using AutoMapper;
+using AutoMapper;
 using BusinessEntityAndDTO.Common;
 using BusinessEntityAndDTO.DTO;
 using BusinessEntityAndDTO.Models;
@@ -100,13 +100,17 @@ namespace MiddleWare.Controllers
         }
 
 
-        //getcounthotlistactive by consultancy userID
         [HttpGet]
-        public async Task<int> GetActiveCountHotListByConsultancyUserID(long ConsultancyUserId, UserContext userContext)
+        [Route("GetBenchSalesStats")]
+        public Task<Result<BenchSalesStatsDto>> GetBenchSalesStats(long userId, long? consultancyUserId)
         {
-            var mgr = managerFactory.Get<ICandidateProfileManager>();
-            return await mgr.GetActiveCountHotListByConsultancyUserID(ConsultancyUserId, GetDummyUserContext());
+            return ExecuteAsync<BenchSalesStatsDto>(async () =>
+            {
+                var mgr = managerFactory.Get<ICandidateProfileManager>();
+                return await mgr.GetBenchSalesStats(userId, consultancyUserId, GetDummyUserContext());
+            });
         }
+
         [HttpPost]
         [Route("Add")]
         //[ApiAuthorize("AddCandidateProfile")]

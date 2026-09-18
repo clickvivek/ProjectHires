@@ -35,6 +35,7 @@ var config = new AutoMapper.MapperConfiguration(
 builder.Services.AddSingleton(config.CreateMapper());
 builder.Services.AddHttpClient<BusinessLayer.Services.IResendEmailService, BusinessLayer.Services.ResendEmailService>();
 DependancyManager.ConfigureAPI(builder.Services);
+builder.Services.AddHostedService<MiddleWare.BackgroundServices.JobExpirationBackgroundService>();
 
 //builder.Services.AddScoped(_ =>
 //{

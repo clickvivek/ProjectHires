@@ -8,6 +8,7 @@ import { MyhotlistRoutingModule } from './myhotlist-routing.module';
 import { MyhotlistComponent } from './myhotlist.component';
 import { HotlistSwitchConfirmationModalComponent } from './hotlist-switch-confirmation-modal/hotlist-switch-confirmation-modal.component';
 import { HotlistDeleteConfirmationModalComponent } from './hotlist-delete-confirmation-modal/hotlist-delete-confirmation-modal.component';
+import { HotlistShareModalComponent } from './hotlist-share-modal/hotlist-share-modal.component';
 import { MyhotlistListviewComponent } from './myhotlist-listview/myhotlist-listview.component';
 import { MyhotlistTableviewComponent } from './myhotlist-tableview/myhotlist-tableview.component';
 
@@ -17,6 +18,7 @@ import { MyhotlistTableviewComponent } from './myhotlist-tableview/myhotlist-tab
     MyhotlistComponent,
     HotlistSwitchConfirmationModalComponent,
     HotlistDeleteConfirmationModalComponent,
+    HotlistShareModalComponent,
     MyhotlistListviewComponent,
     MyhotlistTableviewComponent
   ],

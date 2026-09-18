@@ -39,5 +39,7 @@ export interface UserDtoForInsert {
     updatedBy?: number | null;
     otppwdReset?: string | null;
     otppwdDateTime?: string | null;
+    roleRecruiter?: boolean | null;
+    roleBenchSales?: boolean | null;
 }
 

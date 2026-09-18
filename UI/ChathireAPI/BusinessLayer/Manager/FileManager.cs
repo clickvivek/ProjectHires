@@ -1,4 +1,4 @@
-﻿using AutoMapper;
+using AutoMapper;
 using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Specialized;
 using BusinessEntityAndDTO.Models;
@@ -12,6 +12,7 @@ namespace BusinessLayer.Manager
     public interface IFileManager
     {
         Task<string> Upload(FileModel fileModel, string containerName);
+        Task<string> UploadWithName(FileModel fileModel, string customFileName, string containerName);
         Task<Stream> Get(string imageName, string containerName);
         Task Delete(string imageName, string containerName);
         BlobClient GetBlobClient(string imageName, string containerName);
@@ -33,6 +34,27 @@ namespace BusinessLayer.Manager
             var blobClient = blobContainer.GetBlobClient(NewFileName(fileModel.ImageFile.FileName));
 
             await blobClient.UploadAsync(fileModel.ImageFile.OpenReadStream());
+
+            return blobClient.Name;
+        }
+
+        public async Task<string> UploadWithName(FileModel fileModel, string customFileName, string containerName)
+        {
+            var blobContainer = _blobServiceClient.GetBlobContainerClient(containerName);
+            string ext = Path.GetExtension(fileModel.ImageFile.FileName);
+            if (string.IsNullOrEmpty(ext)) ext = ".png";
+            
+            string cleanName = customFileName.Replace("http://", "").Replace("https://", "").Replace("www.", "").Trim('/', ' ', '\\');
+            foreach (char c in Path.GetInvalidFileNameChars())
+            {
+                cleanName = cleanName.Replace(c, '_');
+            }
+            if (string.IsNullOrEmpty(cleanName)) cleanName = "company_logo";
+
+            string finalFileName = cleanName.EndsWith(ext, StringComparison.OrdinalIgnoreCase) ? cleanName : cleanName + ext;
+            var blobClient = blobContainer.GetBlobClient(finalFileName);
+
+            await blobClient.UploadAsync(fileModel.ImageFile.OpenReadStream(), overwrite: true);
 
             return blobClient.Name;
         }

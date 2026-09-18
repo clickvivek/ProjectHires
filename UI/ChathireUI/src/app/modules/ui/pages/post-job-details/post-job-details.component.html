@@ -205,13 +205,14 @@
           </div>
         </div>
 
-        <div class="col-sm-6">
+        <div class="col-sm-12">
           <div class="input-box search-box">
             <app-multi-search-field
               fieldName="skillId"
               fieldText="Skills ( Add maximum 5 skills)"
               fieldType="name"
               fieldPlaceholder="Skill"
+              [allowCustom]="true"
               [fieldRequired]="false"
               [fieldList]="selectSkillList"
               fieldItemMaxLimit="5"

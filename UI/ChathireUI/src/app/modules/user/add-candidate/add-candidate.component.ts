@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { Router, NavigationEnd, ActivatedRoute } from '@angular/router';
 
@@ -8,6 +8,8 @@ import { CandidateProfileForInsertDto } from '../../../api/model/candidate-profi
 import { SessionService } from 'src/app/core/session/session.service';
 import { CommonService } from 'src/app/api';
 import { ToastrService } from 'ngx-toastr';
+import { forkJoin, Subject, of } from 'rxjs';
+import { switchMap, catchError } from 'rxjs/operators';
 
 import _ from 'underscore';
 
@@ -16,7 +18,7 @@ import _ from 'underscore';
   templateUrl: './add-candidate.component.html',
   styleUrls: ['./add-candidate.component.scss']
 })
-export class AddCandidateComponent implements OnInit {
+export class AddCandidateComponent implements OnInit, OnDestroy {
 
   formData:any = {
     candidateName: '',
@@ -43,6 +45,11 @@ export class AddCandidateComponent implements OnInit {
   selectAvailabilityList:any;
 
   selectReLocationList:any;
+
+  private locationSearch$ = new Subject<string>();
+  private skillSearch$ = new Subject<string>();
+  private reLocationSearch$ = new Subject<string>();
+  private searchSubscriptions: any[] = [];
 
   selectBillingList:Array<any> = [
     { id: 1, range: "Less than 50"},
@@ -233,13 +240,8 @@ export class AddCandidateComponent implements OnInit {
     this.formData.availability = event.id
   }
 
-  onLocationQuery(event:any) {
-    this.commonService.apiCommonCityGet(event,undefined,false).subscribe({
-      next: (res : any) => {
-        this.selectLocationList = res.value
-      },
-      error: (error:any) => { }
-    })
+  onLocationQuery(event: any) {
+    this.locationSearch$.next(event);
   }
 
   onLocationChange(event:any){
@@ -247,12 +249,7 @@ export class AddCandidateComponent implements OnInit {
   }
 
   onSkillQuery(event:any){
-    this.commonService.apiCommonSkillsGet(event).subscribe({
-      next: (res : any) => {
-        this.selectSkillList = res.value
-      },
-      error: (error:any) => { }
-    })
+    this.skillSearch$.next(event);
   }
 
   onRemoteChange(value): void {
@@ -267,12 +264,7 @@ export class AddCandidateComponent implements OnInit {
   }
 
   onReLocationQuery(event:any) {
-    this.commonService.apiCommonCityGet(event,undefined,true).subscribe({
-      next: (res : any) => {
-        this.selectReLocationList = res.value
-      },
-      error: (error:any) => { }
-    })
+    this.reLocationSearch$.next(event);
   }
 
   getRelocationRequired() {
@@ -286,7 +278,8 @@ export class AddCandidateComponent implements OnInit {
         let itemData = {
             id: index,
             candidateProfileid: this.formData.id,
-            skillId: item.skillId || item.id,
+            skillId: item.skillId || item.id || 0,
+            name: item.name || '',
             active: true,
             proficiencyLevel: 0,
             yearsOfExp: 0
@@ -294,7 +287,7 @@ export class AddCandidateComponent implements OnInit {
         newData.push(itemData)
       });
       this.formData.candidateProfileSkills = newData;
-      this.formData.skillId = event[0].id;
+      this.formData.skillId = event[0].skillId || event[0].id || 0;
     }
     else {
       this.formData.candidateProfileSkills = []
@@ -502,6 +495,63 @@ export class AddCandidateComponent implements OnInit {
       error: (error:any) => { }
     })
 
+    const locSub = this.locationSearch$.pipe(
+      switchMap((term: string) => {
+        if (!term || term.trim().length < 2) {
+          return of({ cities: { value: [] }, states: { value: [] } });
+        }
+        const cleanTerm = term.trim();
+        return forkJoin({
+          cities: this.commonService.apiCommonCityGet(cleanTerm, undefined, false),
+          states: this.commonService.apiCommonCityGet(cleanTerm, undefined, true)
+        }).pipe(
+          catchError(() => of({ cities: { value: [] }, states: { value: [] } }))
+        );
+      })
+    ).subscribe((res: any) => {
+      const stateList = res.states?.value || [];
+      const cityList = res.cities?.value || [];
+      const combined = [...stateList, ...cityList];
+      this.selectLocationList = _.uniq(combined, (item: any) => item.id);
+    });
+    this.searchSubscriptions.push(locSub);
+
+    const skillSub = this.skillSearch$.pipe(
+      switchMap((term: string) => {
+        if (!term || term.trim().length < 2) {
+          return of({ value: [] });
+        }
+        return this.commonService.apiCommonSkillsGet(term.trim()).pipe(
+          catchError(() => of({ value: [] }))
+        );
+      })
+    ).subscribe((res: any) => {
+      this.selectSkillList = res?.value || [];
+    });
+    this.searchSubscriptions.push(skillSub);
+
+    const reLocSub = this.reLocationSearch$.pipe(
+      switchMap((term: string) => {
+        if (!term || term.trim().length < 2) {
+          return of({ value: [] });
+        }
+        return this.commonService.apiCommonCityGet(term.trim(), undefined, true).pipe(
+          catchError(() => of({ value: [] }))
+        );
+      })
+    ).subscribe((res: any) => {
+      this.selectReLocationList = res?.value || [];
+    });
+    this.searchSubscriptions.push(reLocSub);
+
+  }
+
+  ngOnDestroy(): void {
+    this.searchSubscriptions.forEach(sub => {
+      if (sub && typeof sub.unsubscribe === 'function') {
+        sub.unsubscribe();
+      }
+    });
   }
 
 }

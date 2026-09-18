@@ -26,6 +26,8 @@ export interface UserDtoForReturn {
     userTypeId?: number | null;
     lname?: string | null;
     consultancyUserId?: number | null;
+    roleRecruiter?: boolean | null;
+    roleBenchSales?: boolean | null;
     consultancyUsers?: Array<ConsultancyUserDto> | null;
 }
 

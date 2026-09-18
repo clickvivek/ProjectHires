@@ -42,6 +42,8 @@ export interface UserDto {
     otppwdReset?: string | null;
     otppwdDateTime?: string | null;
     consultancyUserId?: number | null;
+    roleRecruiter?: boolean | null;
+    roleBenchSales?: boolean | null;
     consultancyUsers?: Array<ConsultancyUserDtoForReturn> | null;
 }
 

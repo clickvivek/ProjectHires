@@ -1,4 +1,4 @@
-﻿namespace BusinessEntityAndDTO.DTO
+namespace BusinessEntityAndDTO.DTO
 {
     public partial class JobOpeningDto
     {
@@ -322,4 +322,11 @@
         public List<JobOpeningEmploymentTypeForUpdateDto>? JobOpeningEmploymentTypes { get; set; } = new List<JobOpeningEmploymentTypeForUpdateDto>();
         public List<JobOpeningJobTypeForUpdateDto>? JobOpeningJobTypes { get; set; } = new List<JobOpeningJobTypeForUpdateDto>();
     }
+
+    public class RecruiterStatsDto
+    {
+        public int JobRequirementPosted { get; set; }
+        public int ExpiredPostings { get; set; }
+        public int ResumesReceived { get; set; }
     }
+}

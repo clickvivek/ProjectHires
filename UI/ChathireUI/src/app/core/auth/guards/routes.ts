@@ -11,7 +11,9 @@ export const authRoutes = [
     '/myhotlist?view=table',
     '/myhotlist?view=list',
     '/addcandidate',
-    '/chat' 
+    '/chat',
+    '/Adminsetup',
+    '/adminsetup'
 ];
 
 export const publicRoutes = [ 

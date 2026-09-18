@@ -1,5 +1,5 @@
 <div class="form-group">
-	<label for="{{fieldName}}">{{fieldText}}<span *ngIf="isFieldRequired()" class="ms-2 font-medium">*</span></label>
+	<label for="{{fieldName}}" class="form-label">{{fieldText}}<span *ngIf="isFieldRequired()" class="req text-danger font-medium ms-1">*</span></label>
 	<input type="text"
 		class="form-control search"
 		placeholder="{{fieldPlaceholder}}"
@@ -15,8 +15,35 @@
   </span>
 	<div class="dropdown-wrapper show" *ngIf="isExpanded">
 		<div class="list-group dropdown">
-			<ng-container *ngFor="let item of fieldList">
-				<li class="list-group-item" (click)="getSelectedItem(item)">{{getItemData(item)}}</li>
+			<ng-container *ngFor="let item of fieldList; let i = index">
+				<li class="list-group-item search-suggestion-item" (click)="getSelectedItem(item)">
+					<!-- Company Search Item with Logo -->
+					<div *ngIf="isCompanyItem(item)" class="d-flex align-items-center gap-2 w-100">
+						<div class="company-logo-avatar flex-shrink-0">
+							<img
+								*ngIf="item.logo && !hasLogoError(item.id || i)"
+								[src]="getLogoUrl(item.logo)"
+								[alt]="getItemData(item)"
+								class="company-logo-img rounded border"
+								(error)="onLogoError(item.id || i)"
+							/>
+							<div *ngIf="!item.logo || hasLogoError(item.id || i)" class="company-logo-fallback rounded">
+								<span>{{ getInitials(getItemData(item)) }}</span>
+							</div>
+						</div>
+						<div class="company-details flex-grow-1 min-w-0">
+							<div class="company-name text-truncate fw-medium">{{ getItemData(item) }}</div>
+							<div class="company-domain text-muted text-xs text-truncate" *ngIf="item.domainname || item.website">
+								{{ item.domainname || item.website }}
+							</div>
+						</div>
+					</div>
+
+					<!-- Standard / Location Item -->
+					<div *ngIf="!isCompanyItem(item)" class="d-flex align-items-center gap-2">
+						<span>{{ getItemData(item) }}</span>
+					</div>
+				</li>
 			</ng-container>
 			<div *ngIf="showCreateOption && (!fieldList || fieldList.length === 0)" class="p-3 text-center bg-white border-top">
 				<p class="text-muted text-xs mb-2">No matching company found</p>

@@ -9,6 +9,7 @@
                     id="searchData"
                     name="searchData"
                     [placeholder]="placeholder"
+                    [attr.maxlength]="maxlength || null"
                     [(ngModel)]="searchData"
                     (input)="onSearchData()"
                 />

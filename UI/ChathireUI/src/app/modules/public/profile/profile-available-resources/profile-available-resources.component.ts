@@ -71,52 +71,54 @@ export class ProfileAvailableResourcesComponent {
   }
 
 
-  ngOnChanges(changes: SimpleChanges) {
-    if(this.consultancyUserId && this.profileId) {
+  fetchCandidates() {
+    if (this.consultancyUserId && this.profileId) {
       this.candidateProfileService.apiCandidateProfileGetByConsultancyUserGet(this.consultancyUserId, this.profileId).subscribe({
         next:(res:any) => {
-          
-          this.initialDataList = res.value
-          this.filteredDataList = this.initialDataList
-          this.isJobLoaded = true
+          this.initialDataList = res.value || [];
+          this.filteredDataList = this.initialDataList;
+          this.isJobLoaded = true;
 
           if (!_.isEmpty(this.initialDataList)) {
-            this.isJobAvailable = true
-            this.outParams.emit(true)
+            this.isJobAvailable = true;
+            this.outParams.emit(true);
           }
           else {
-            this.isJobAvailable = false
-            this.outParams.emit(false)
+            this.isJobAvailable = false;
+            this.outParams.emit(false);
           }
-
         },
         error:(error:any) => {
-          this.isJobLoaded = true
-          this.isJobAvailable = false
-          this.isError = true
-          this.error = "Some error occured"
+          this.isJobLoaded = true;
+          this.isJobAvailable = false;
+          this.isError = true;
+          this.error = "Some error occured";
+          this.outParams.emit(false);
         }
-      })
+      });
     }
+  }
 
+  ngOnChanges(changes: SimpleChanges) {
+    this.fetchCandidates();
   }
 
   ngOnInit() {
+    this.fetchCandidates();
 
     this.commonService.apiCommonVisaGet().subscribe({
       next: (res : any) => {
-        this.visaList = res.value
+        this.visaList = res.value;
       },
       error: (error:any) => { }
-    })
+    });
 
     this.commonService.apiCommonCandidateAvailabilityGet().subscribe({
       next: (res: any) => {
-        this.selectAvailabilityList = res.value
+        this.selectAvailabilityList = res.value;
       },
       error: (error:any) => { }
-    })
-
+    });
   }
 
 }

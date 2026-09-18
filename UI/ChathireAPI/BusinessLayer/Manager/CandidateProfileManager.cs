@@ -1,4 +1,4 @@
-﻿using AutoMapper;
+using AutoMapper;
 using BusinessEntityAndDTO.Common;
 using BusinessEntityAndDTO.DTO;
 using BusinessEntityAndDTO.Models;
@@ -41,6 +41,7 @@ namespace BusinessLayer.Manager
         Task<int> GetCountResumesReceivedByDateByConsultancyUserID(long ConsultancyUserId, DateTime FromDate, DateTime ToDate, UserContext userContext);
         Task<int> GetCountUnreadResumesByConsultancyUserID(long ConsultancyUserId, UserContext userContext);
         Task<int> GetActiveCountHotListByConsultancyUserID(long ConsultancyUserId, UserContext userContext);
+        Task<BenchSalesStatsDto> GetBenchSalesStats(long userId, long? consultancyUserId, UserContext userContext);
     }
     public class CandidateProfileManager : BaseManager<CandidateProfileManager>, ICandidateProfileManager
     {
@@ -98,6 +99,24 @@ namespace BusinessLayer.Manager
             return result;
         }
 
+        public async Task<BenchSalesStatsDto> GetBenchSalesStats(long userId, long? consultancyUserId, UserContext userContext)
+        {
+            return await ExecuteAsync<BenchSalesStatsDto>(async () =>
+            {
+                var repo = repositoryFactory.Get<ICandidateProfileRepository>();
+                var activeHotlistCount = await repo.GetActiveCountHotListByUser(userId, consultancyUserId, userContext);
+                var resumesSubmittedCount = await repo.GetCountResumesSubmittedLast30Days(userId, consultancyUserId, userContext);
+                var recentCandidates = await repo.GetRecentBenchSalesCandidates(userId, consultancyUserId, 50, userContext);
+
+                return new BenchSalesStatsDto
+                {
+                    TotalHotlistCandidates = activeHotlistCount,
+                    ResumesSubmittedLast30Days = resumesSubmittedCount,
+                    Candidates = recentCandidates
+                };
+            }, "GetBenchSalesStats", userContext);
+        }
+
         public async Task<List<CandidateProfileDto>> GetByConsultancyUserID(long? Id, string? publicprofileID, UserContext userContext)
         {
             var result = await ExecuteAsync<List<CandidateProfile>>(async () =>
@@ -145,6 +164,8 @@ namespace BusinessLayer.Manager
         {
             var result = await ExecuteAsync<CandidateProfile>(async () =>
             {
+                await ResolveCustomSkillsForInsert(profile, userContext);
+
                 var date = DateTime.UtcNow;
                 var _profile = mapper.Map<CandidateProfile>(profile);
 
@@ -167,6 +188,8 @@ namespace BusinessLayer.Manager
         {
             var result = await ExecuteAsync<CandidateProfile>(async () =>
             {
+                await ResolveCustomSkillsForUpdate(profile, userContext);
+
                 var date = DateTime.UtcNow;
                 var _profileUpdate = mapper.Map<CandidateProfile>(profile);
                 long profileId = 0;
@@ -451,6 +474,34 @@ namespace BusinessLayer.Manager
             }, "AddCandidateProfile", userContext);
 
             return true;
+        }
+
+        private async Task ResolveCustomSkillsForInsert(CandidateProfileForInsertDto profile, UserContext userContext)
+        {
+            if (profile.CandidateProfileSkills == null || !profile.CandidateProfileSkills.Any()) return;
+            var skillsRepo = repositoryFactory.Get<ISkillsRepository>();
+            foreach (var skillDto in profile.CandidateProfileSkills)
+            {
+                if ((skillDto.SkillId == null || skillDto.SkillId == 0) && !string.IsNullOrWhiteSpace(skillDto.Name))
+                {
+                    var skill = await skillsRepo.EnsureSkillExists(skillDto.Name, userContext.UserId);
+                    skillDto.SkillId = skill.Id;
+                }
+            }
+        }
+
+        private async Task ResolveCustomSkillsForUpdate(CandidateProfileDtoForUpdate profile, UserContext userContext)
+        {
+            if (profile.CandidateProfileSkills == null || !profile.CandidateProfileSkills.Any()) return;
+            var skillsRepo = repositoryFactory.Get<ISkillsRepository>();
+            foreach (var skillDto in profile.CandidateProfileSkills)
+            {
+                if ((skillDto.SkillId == null || skillDto.SkillId == 0) && !string.IsNullOrWhiteSpace(skillDto.Name))
+                {
+                    var skill = await skillsRepo.EnsureSkillExists(skillDto.Name, userContext.UserId);
+                    skillDto.SkillId = skill.Id;
+                }
+            }
         }
     }
 }

@@ -65,6 +65,10 @@ public partial class User
 
     public DateTime? OtppwdDateTime { get; set; }
 
+    public bool? RoleRecruiter { get; set; }
+
+    public bool? RoleBenchSales { get; set; }
+
     public virtual ICollection<CandidateProfile> CandidateProfiles { get; } = new List<CandidateProfile>();
 
     public virtual City? City { get; set; }

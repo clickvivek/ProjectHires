@@ -93,6 +93,7 @@ export class InboxResumeTypesComponent {
     this.jobOpeningService.apiJobOpeningChangeCandidateProfileMappingStatusIdPut(jobOpeningId, selectedItem.candidateProfileMappingStatusId)
     .subscribe({
       next:(res:any) => {
+        this.sharedService.triggerInboxRefresh();
         this.fetchResumes()
         this.toastr.success('Resume status updated successfully', '' , {
           timeOut: 3000,

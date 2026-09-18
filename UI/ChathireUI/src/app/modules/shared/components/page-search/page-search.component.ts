@@ -8,6 +8,7 @@ import { Component, Input, Output, EventEmitter } from '@angular/core';
 export class PageSearchComponent {
 
   @Input() placeholder;
+  @Input() maxlength: number;
 
   searchData:string = ""
 

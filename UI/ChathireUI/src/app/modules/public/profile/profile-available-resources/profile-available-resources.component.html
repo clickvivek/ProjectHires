@@ -4,31 +4,49 @@
 
     <ng-container *ngIf="isJobLoaded && isJobAvailable">
 
-          <div class="title-box">
-            <div class="d-flex">
-                <fancy-page-search (outputData)="handleSearch($event)" placeholder="Search by name, skills, job title" ></fancy-page-search>
-                <div class="d-none d-lg-block ms-3">
-                  <div class="btn view-btn d-inline-flex align-items-center me-3" [ngClass]=" !isListView ? 'btn-secondary no-pointer' : 'btn-outline-secondary text-secondary-500'" (click)="isListView = !isListView">
-                    <span class="material-symbols-outlined me-2">table_chart</span>View table
-                  </div>
-                  <div class="btn view-btn d-inline-flex align-items-center" [ngClass]=" isListView ? 'btn-secondary no-pointer' : 'btn-outline-secondary text-secondary-500'" (click)="isListView = !isListView">
-                    <span class="material-symbols-outlined me-2">data_table</span>Detailed List
-                  </div>
+          <div class="title-box mb-3">
+            <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
+                <div class="search-box-wrap">
+                  <page-search (outputData)="handleSearch($event)" placeholder="Search by name, skills" [maxlength]="20"></page-search>
+                </div>
+                
+                <!-- Modern Segmented Control Switcher -->
+                <div class="view-segmented-control d-none d-lg-inline-flex">
+                  <button
+                    type="button"
+                    class="segmented-btn"
+                    [class.active]="!isListView"
+                    (click)="isListView = false"
+                  >
+                    <span class="material-symbols-outlined icon">table_chart</span>
+                    <span>View table</span>
+                  </button>
+                  <button
+                    type="button"
+                    class="segmented-btn"
+                    [class.active]="isListView"
+                    (click)="isListView = true"
+                  >
+                    <span class="material-symbols-outlined icon">data_table</span>
+                    <span>Detailed List</span>
+                  </button>
                 </div>
             </div>
           </div>
 
         <ng-container *ngIf="isListView">
-          <profile-available-resources-item *ngFor="let job of filteredDataList" [job]="job" [visaList]="visaList" [availabilityList]="selectAvailabilityList" ></profile-available-resources-item>
+          <div class="profile-list-container d-flex flex-column gap-3">
+            <profile-available-resources-item *ngFor="let job of filteredDataList" [job]="job" [visaList]="visaList" [availabilityList]="selectAvailabilityList" ></profile-available-resources-item>
+          </div>
         </ng-container>
 
         <ng-container *ngIf="!isListView">
           <profile-available-resources-table 
-          [list]="filteredDataList"
-          [visaList]="visaList"
-          [availabilityList]="selectAvailabilityList"
+            [list]="filteredDataList"
+            [visaList]="visaList"
+            [availabilityList]="selectAvailabilityList"
           >
-        </profile-available-resources-table>
+          </profile-available-resources-table>
         </ng-container>
 
     </ng-container>

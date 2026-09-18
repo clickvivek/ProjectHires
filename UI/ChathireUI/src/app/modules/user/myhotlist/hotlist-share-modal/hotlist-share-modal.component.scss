@@ -1,0 +1,172 @@
+@import "src/@hires/scss/utilities/all";
+
+$primary-plum: #673260;
+$light-plum: #F6EFF5;
+$linkedin-blue: #0A66C2;
+$linkedin-hover: #084E96;
+
+.hotlist-share-modal-wrapper {
+  background-color: #FFFFFF;
+  border-radius: 16px;
+  overflow: hidden;
+  max-width: 900px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  max-height: 88vh;
+
+  .modal-header-bar {
+    flex-shrink: 0;
+    .linkedin-icon-box {
+      width: 36px;
+      height: 36px;
+      background-color: #E8F3FF;
+    }
+
+    .modal-title {
+      color: #111827;
+      font-size: 1.15rem;
+    }
+
+    .fs-7 {
+      font-size: 0.8125rem;
+    }
+
+    .btn-close-modal {
+      cursor: pointer;
+      color: #6B7280;
+      transition: color 0.15s ease;
+      &:hover {
+        color: #111827;
+      }
+    }
+  }
+
+  .modal-body {
+    flex: 1 1 auto;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: 20px 24px 28px 24px;
+
+    /* Custom smooth vertical scrollbar */
+    &::-webkit-scrollbar {
+      width: 7px;
+    }
+    &::-webkit-scrollbar-track {
+      background: #F3EDF2;
+      border-radius: 4px;
+    }
+    &::-webkit-scrollbar-thumb {
+      background: #C4B5C3;
+      border-radius: 4px;
+    }
+    &::-webkit-scrollbar-thumb:hover {
+      background: $primary-plum;
+    }
+  }
+
+  .text-plum {
+    color: $primary-plum !important;
+  }
+
+  .theme-picker-section {
+    background-color: #FAF8FA !important;
+    border: 1px solid #EFE4EE !important;
+
+    .theme-swatch-btn {
+      width: 24px;
+      height: 24px;
+      cursor: pointer;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+      transition: all 0.15s ease;
+
+      &:hover:not(:disabled) {
+        transform: scale(1.15);
+      }
+
+      &.active {
+        box-shadow: 0 0 0 2px #FFFFFF, 0 0 0 4px $primary-plum;
+        transform: scale(1.1);
+      }
+
+      .active-check {
+        font-size: 14px;
+        font-weight: bold;
+      }
+
+      &:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+      }
+    }
+  }
+
+  .image-preview-frame {
+    max-height: 380px;
+    overflow-y: auto;
+    background-color: #F9FAFB;
+    border: 1px solid #E5E7EB;
+
+    .banner-img {
+      width: 100%;
+      height: auto;
+      object-fit: contain;
+    }
+  }
+
+  .btn-copy-caption {
+    font-size: 0.775rem;
+    padding: 3px 8px;
+    border-radius: 6px;
+  }
+
+  .caption-preview-box {
+    background-color: #F8F9FA;
+    border: 1px solid #EAECF0;
+    max-height: 140px;
+    overflow-y: auto;
+
+    .caption-text {
+      font-size: 0.8125rem;
+      color: #374151;
+      line-height: 1.5;
+    }
+  }
+
+  .instructions-card {
+    background-color: #FAF5FA;
+    border: 1px solid #EFE4EE;
+
+    .bg-plum-subtle {
+      background-color: $light-plum;
+      border: 1px solid #E6D8E3;
+      border-radius: 50%;
+      width: 20px;
+      height: 20px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.75rem;
+      flex-shrink: 0;
+    }
+
+    .fs-7 {
+      font-size: 0.8125rem;
+      line-height: 1.45;
+    }
+  }
+
+  .btn-linkedin-primary {
+    background-color: $linkedin-blue;
+    color: #FFFFFF !important;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.9375rem;
+    transition: background-color 0.15s ease;
+
+    &:hover {
+      background-color: $linkedin-hover;
+      color: #FFFFFF !important;
+    }
+  }
+}

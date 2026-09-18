@@ -1,23 +1,144 @@
 @import "src/@hires/scss/utilities/all";
+@import "src/@hires/scss/helpers/typography";
+
+$primary-plum: #673260;
+$primary-hover: #52274c;
+$light-plum: #F6EFF5;
+$plum-border: #E6D8E3;
+
+:host {
+  display: block;
+  margin-top: -40px;
+}
 
 .my-hotlist-wrapper {
-  min-height: calc(100vh - 100px);
+  padding-top: 20px;
+  padding-bottom: 40px;
+  min-height: calc(100vh - 66px);
 
-  .btn-add-candidate {
-    background-color: #673260;
-    color: #ffffff;
+  .hotlist-header-bar {
+    .text-dark-heading {
+      color: #111827;
+      font-size: 1.35rem;
+      letter-spacing: -0.02em;
+    }
+
+    .hotlist-count-pill {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background-color: $light-plum;
+      color: $primary-plum;
+      border: 1px solid $plum-border;
+      padding: 2px 10px;
+      border-radius: 999px;
+      font-size: 1.15rem;
+      font-weight: 700;
+      line-height: 1.2;
+    }
+  }
+
+  .btn-linkedin-share {
+    background-color: #0A66C2;
+    color: #ffffff !important;
     font-weight: 600;
-    padding: 8px 18px;
+    font-size: 0.9375rem;
+    padding: 9px 18px;
     border-radius: 8px;
     border: none;
-    transition: all 0.2s ease-in-out;
+    transition: all 0.15s ease-in-out;
+    box-shadow: 0 2px 6px rgba(10, 102, 194, 0.25);
+
+    svg, span {
+      color: #ffffff !important;
+    }
+
+    &:hover:not(:disabled) {
+      background-color: #084E96;
+      color: #ffffff !important;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 10px rgba(10, 102, 194, 0.35);
+    }
+
+    &:disabled {
+      opacity: 0.65;
+      cursor: not-allowed;
+    }
+  }
+
+  .btn-add-candidate {
+    background-color: $primary-plum;
+    color: #ffffff !important;
+    font-weight: 600;
+    font-size: 0.9375rem;
+    padding: 9px 20px;
+    border-radius: 8px;
+    border: none;
+    transition: all 0.15s ease-in-out;
     box-shadow: 0 2px 6px rgba(103, 50, 96, 0.2);
 
+    span {
+      color: #ffffff !important;
+    }
+
     &:hover {
-      background-color: #52274c;
-      color: #ffffff;
+      background-color: $primary-hover;
+      color: #ffffff !important;
       transform: translateY(-1px);
       box-shadow: 0 4px 10px rgba(103, 50, 96, 0.3);
+    }
+  }
+
+  .hotlist-controls-bar {
+    .search-box-container {
+      max-width: 300px;
+      width: 100%;
+    }
+
+    .view-segmented-control {
+      background-color: #EDE8EE;
+      padding: 4px;
+      border-radius: 10px;
+      gap: 3px;
+
+      .segmented-btn {
+        background: transparent;
+        border: none;
+        border-radius: 7px;
+        padding: 7px 16px;
+        font-size: 0.875rem;
+        font-weight: 600;
+        color: #5F5962;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        transition: all 0.15s ease-in-out;
+
+        .icon {
+          font-size: 18px;
+          color: #7A747E;
+          transition: color 0.15s ease-in-out;
+        }
+
+        &:hover:not(.active) {
+          color: $primary-plum;
+          background-color: rgba(255, 255, 255, 0.5);
+          .icon {
+            color: $primary-plum;
+          }
+        }
+
+        &.active {
+          background-color: #FFFFFF;
+          color: $primary-plum;
+          box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+
+          .icon {
+            color: $primary-plum;
+          }
+        }
+      }
     }
   }
 
