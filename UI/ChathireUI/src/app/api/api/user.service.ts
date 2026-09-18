@@ -824,4 +824,56 @@ export class UserService {
         });
     }
 
+    public apiUserForgotPasswordPost(forgotPasswordModel?: { email?: string }, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext}): Observable<any> {
+        let localVarHeaders = this.defaultHeaders;
+        let localVarCredential = this.configuration.lookupCredential('Bearer');
+        if (localVarCredential) {
+            localVarHeaders = localVarHeaders.set('Authorization', localVarCredential);
+        }
+        localVarHeaders = localVarHeaders.set('Content-Type', 'application/json');
+        localVarHeaders = localVarHeaders.set('Accept', 'application/json');
+
+        return this.httpClient.request<any>('post', `${this.configuration.basePath}/api/User/ForgotPassword`, {
+            body: forgotPasswordModel,
+            headers: localVarHeaders,
+            observe: observe,
+            reportProgress: reportProgress
+        });
+    }
+
+    public apiUserResetPasswordWithOtpPost(resetModel?: { email?: string, otp?: string, newPassword?: string }, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext}): Observable<any> {
+        let localVarHeaders = this.defaultHeaders;
+        let localVarCredential = this.configuration.lookupCredential('Bearer');
+        if (localVarCredential) {
+            localVarHeaders = localVarHeaders.set('Authorization', localVarCredential);
+        }
+        localVarHeaders = localVarHeaders.set('Content-Type', 'application/json');
+        localVarHeaders = localVarHeaders.set('Accept', 'application/json');
+
+        return this.httpClient.request<any>('post', `${this.configuration.basePath}/api/User/ResetPasswordWithOtp`, {
+            body: resetModel,
+            headers: localVarHeaders,
+            observe: observe,
+            reportProgress: reportProgress
+        });
+    }
+
+    public apiUserResendForgotPasswordOtpPost(forgotPasswordModel?: { email?: string }, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext}): Observable<any> {
+        let localVarHeaders = this.defaultHeaders;
+        let localVarCredential = this.configuration.lookupCredential('Bearer');
+        if (localVarCredential) {
+            localVarHeaders = localVarHeaders.set('Authorization', localVarCredential);
+        }
+        localVarHeaders = localVarHeaders.set('Content-Type', 'application/json');
+        localVarHeaders = localVarHeaders.set('Accept', 'application/json');
+
+        return this.httpClient.request<any>('post', `${this.configuration.basePath}/api/User/ResendForgotPasswordOtp`, {
+            body: forgotPasswordModel,
+            headers: localVarHeaders,
+            observe: observe,
+            reportProgress: reportProgress
+        });
+    }
+
 }
+

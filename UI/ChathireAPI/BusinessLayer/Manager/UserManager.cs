@@ -35,6 +35,8 @@ namespace BusinessLayer.Manager
         Task<bool> UpdateProfilePic(string email, string? filename, UserContext userContext);
         Task<bool> VerifyOtp(string email, string otp, UserContext userContext);
         Task<bool> ResendOtp(string email, UserContext userContext);
+        Task<bool> SendForgotPasswordOtp(string email, UserContext userContext);
+        Task<bool> ResetPasswordWithOtp(string email, string otp, string newPassword, UserContext userContext);
     }
     public class UserManager : BaseManager<UserManager>, IUserManager
     {
@@ -213,6 +215,93 @@ namespace BusinessLayer.Manager
 
                 return true;
             }, "ResendOtp", userContext);
+        }
+
+        public async Task<bool> SendForgotPasswordOtp(string email, UserContext userContext)
+        {
+            return await ExecuteAsync<bool>(async () =>
+            {
+                if (string.IsNullOrWhiteSpace(email))
+                {
+                    throw new ArgumentException("Please enter a valid email address.");
+                }
+
+                var repo = repositoryFactory.Get<IUserRepository>();
+                var users = await repo.GetUserByUserName(email.Trim());
+                var user = users?.FirstOrDefault();
+
+                if (user == null)
+                {
+                    throw new ArgumentException("No account found with this email address.");
+                }
+
+                var otpCode = RandomNumberGenerator.GetInt32(100000, 999999).ToString();
+                user.OtppwdReset = otpCode;
+                user.OtppwdDateTime = DateTime.UtcNow.AddMinutes(10);
+                user.Updated = DateTime.UtcNow;
+
+                await repo.Put(user.Id, user, true);
+
+                var emailService = serviceProvider?.GetService<IResendEmailService>();
+                if (emailService != null)
+                {
+                    await emailService.SendPasswordResetOtpEmailAsync(user.Email, otpCode);
+                }
+
+                return true;
+            }, "SendForgotPasswordOtp", userContext);
+        }
+
+        public async Task<bool> ResetPasswordWithOtp(string email, string otp, string newPassword, UserContext userContext)
+        {
+            return await ExecuteAsync<bool>(async () =>
+            {
+                if (string.IsNullOrWhiteSpace(email))
+                {
+                    throw new ArgumentException("Email is required.");
+                }
+
+                if (string.IsNullOrWhiteSpace(otp))
+                {
+                    throw new ArgumentException("Please enter the 6-digit verification code.");
+                }
+
+                if (string.IsNullOrWhiteSpace(newPassword) || newPassword.Length < 6)
+                {
+                    throw new ArgumentException("New password must be at least 6 characters long.");
+                }
+
+                var repo = repositoryFactory.Get<IUserRepository>();
+                var users = await repo.GetUserByUserName(email.Trim());
+                var user = users?.FirstOrDefault();
+
+                if (user == null)
+                {
+                    throw new ArgumentException("No account found with this email address.");
+                }
+
+                if (string.IsNullOrWhiteSpace(user.OtppwdReset) || user.OtppwdReset.Trim() != otp.Trim())
+                {
+                    throw new ArgumentException("Invalid verification code. Please check your code and try again.");
+                }
+
+                if (user.OtppwdDateTime.HasValue && user.OtppwdDateTime.Value < DateTime.UtcNow)
+                {
+                    throw new ArgumentException("Verification code has expired. Please request a new code.");
+                }
+
+                user.Password = newPassword;
+                user.OtppwdReset = null;
+                user.OtppwdDateTime = null;
+                user.ResetPassword = false;
+                user.EmailVerified = true;
+                user.Active = true;
+                user.Updated = DateTime.UtcNow;
+
+                await repo.Put(user.Id, user, true);
+
+                return true;
+            }, "ResetPasswordWithOtp", userContext);
         }
 
         public async Task<UserDto> AddUserWithConsultacy(UserDtoForInsert? user, long? consultacyId, UserContext userContext)

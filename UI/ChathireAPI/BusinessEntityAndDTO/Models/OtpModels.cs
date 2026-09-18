@@ -10,4 +10,16 @@ namespace BusinessEntityAndDTO.Models
     {
         public string Email { get; set; } = null!;
     }
+
+    public class ForgotPasswordModel
+    {
+        public string Email { get; set; } = null!;
+    }
+
+    public class ResetPasswordWithOtpModel
+    {
+        public string Email { get; set; } = null!;
+        public string Otp { get; set; } = null!;
+        public string NewPassword { get; set; } = null!;
+    }
 }

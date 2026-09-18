@@ -67,6 +67,39 @@ namespace MiddleWare.Controllers
             });
         }
 
+        [HttpPost]
+        [Route("ForgotPassword")]
+        public Task<Result<bool>> ForgotPassword([FromBody] ForgotPasswordModel model)
+        {
+            return ExecuteAsync<bool>(async () =>
+            {
+                var mgr = managerFactory.Get<IUserManager>();
+                return await mgr.SendForgotPasswordOtp(model.Email, GetDummyUserContext());
+            });
+        }
+
+        [HttpPost]
+        [Route("ResetPasswordWithOtp")]
+        public Task<Result<bool>> ResetPasswordWithOtp([FromBody] ResetPasswordWithOtpModel model)
+        {
+            return ExecuteAsync<bool>(async () =>
+            {
+                var mgr = managerFactory.Get<IUserManager>();
+                return await mgr.ResetPasswordWithOtp(model.Email, model.Otp, model.NewPassword, GetDummyUserContext());
+            });
+        }
+
+        [HttpPost]
+        [Route("ResendForgotPasswordOtp")]
+        public Task<Result<bool>> ResendForgotPasswordOtp([FromBody] ForgotPasswordModel model)
+        {
+            return ExecuteAsync<bool>(async () =>
+            {
+                var mgr = managerFactory.Get<IUserManager>();
+                return await mgr.SendForgotPasswordOtp(model.Email, GetDummyUserContext());
+            });
+        }
+
         [HttpGet]
         //[ApiAuthorize("UpdateUser")]
         [Route("GetUserByUserName")]

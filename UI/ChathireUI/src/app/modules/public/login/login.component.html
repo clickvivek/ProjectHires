@@ -1,127 +1,346 @@
 <section class="login-page-wrapper">
   <div class="row g-0 align-items-stretch min-vh-login">
     
-    <!-- Left Column: Login Form (45% Desktop) -->
+    <!-- Left Column: Login / Forgot Password Form (45% Desktop) -->
     <div class="col-12 col-lg-5 d-flex flex-column justify-content-center p-4 p-md-5 bg-white login-left-panel">
       
       <!-- Main Form Container -->
       <div class="form-container mx-auto my-auto w-100">
         
-        <!-- Header / Welcome Text -->
-        <div class="mb-4">
-          <h1 class="login-title">Welcome Back!</h1>
-          <p class="login-subtitle">Sign in to access your dashboard and continue optimizing your recruitment process.</p>
-        </div>
-
-        <!-- Alert Error Message -->
-        <div class="alert alert-danger d-flex align-items-center py-2 px-3 mb-4 rounded-3 small" *ngIf="error">
-          <span class="material-symbols-outlined me-2 fs-5">error</span>
-          <div>{{ error }}</div>
-        </div>
-
-        <form #loginForm="ngForm" (ngSubmit)="login()" novalidate>
-          
-          <!-- Email Input Field -->
-          <div class="mb-3.5">
-            <label for="email" class="form-label input-label">Email</label>
-            <div class="position-relative">
-              <span class="material-symbols-outlined input-icon-left position-absolute top-50 translate-middle-y ms-3">mail</span>
-              <input
-                type="email"
-                class="form-control custom-input ps-5"
-                id="email"
-                name="email"
-                placeholder="Enter your email"
-                [(ngModel)]="formData.email"
-                pattern="[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,4}$"
-                required
-                email
-              />
-            </div>
-            <!-- Validation errors -->
-            <div class="mt-1" *ngIf="loginForm.submitted && loginForm.controls['email']?.invalid">
-              <div class="text-danger small" *ngIf="loginForm.controls['email'].errors?.['required']">
-                Please enter your email address.
-              </div>
-              <div class="text-danger small" *ngIf="loginForm.controls['email'].errors?.['email']">
-                Please enter a valid email address.
-              </div>
-            </div>
+        <!-- ================= STEP 1: STANDARD LOGIN ================= -->
+        <ng-container *ngIf="step === 'login'">
+          <!-- Header / Welcome Text -->
+          <div class="mb-4">
+            <h1 class="login-title">Welcome Back!</h1>
+            <p class="login-subtitle">Sign in to access your dashboard and continue optimizing your recruitment process.</p>
           </div>
 
-          <!-- Password Input Field -->
-          <div class="mb-2">
-            <label for="password" class="form-label input-label">Password</label>
-            <div class="position-relative">
-              <span class="material-symbols-outlined input-icon-left position-absolute top-50 translate-middle-y ms-3">lock</span>
-              <input
-                [type]="showPassword ? 'text' : 'password'"
-                class="form-control custom-input ps-5 pe-5"
-                id="password"
-                name="password"
-                placeholder="Enter your password"
-                [(ngModel)]="formData.password"
-                required
-                minlength="6"
-              />
-              <span
-                class="material-symbols-outlined password-toggle position-absolute top-50 translate-middle-y end-0 me-3 cursor-pointer"
-                (click)="handleTogglePassword()"
-                title="Toggle password visibility"
-              >
-                {{ showPassword ? "visibility_off" : "visibility" }}
+          <!-- Alert Error Message -->
+          <div class="alert alert-danger d-flex align-items-center py-2 px-3 mb-4 rounded-3 small" *ngIf="error">
+            <span class="material-symbols-outlined me-2 fs-5">error</span>
+            <div>{{ error }}</div>
+          </div>
+
+          <form #loginForm="ngForm" (ngSubmit)="login()" novalidate>
+            
+            <!-- Email Input Field -->
+            <div class="mb-3.5">
+              <label for="email" class="form-label input-label">Email</label>
+              <div class="position-relative">
+                <span class="material-symbols-outlined input-icon-left position-absolute top-50 translate-middle-y ms-3">mail</span>
+                <input
+                  type="email"
+                  class="form-control custom-input ps-5"
+                  id="email"
+                  name="email"
+                  placeholder="Enter your email"
+                  [(ngModel)]="formData.email"
+                  pattern="[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,4}$"
+                  required
+                  email
+                />
+              </div>
+              <!-- Validation errors -->
+              <div class="mt-1" *ngIf="loginForm.submitted && loginForm.controls['email']?.invalid">
+                <div class="text-danger small" *ngIf="loginForm.controls['email'].errors?.['required']">
+                  Please enter your email address.
+                </div>
+                <div class="text-danger small" *ngIf="loginForm.controls['email'].errors?.['email']">
+                  Please enter a valid email address.
+                </div>
+              </div>
+            </div>
+
+            <!-- Password Input Field -->
+            <div class="mb-2">
+              <label for="password" class="form-label input-label">Password</label>
+              <div class="position-relative">
+                <span class="material-symbols-outlined input-icon-left position-absolute top-50 translate-middle-y ms-3">lock</span>
+                <input
+                  [type]="showPassword ? 'text' : 'password'"
+                  class="form-control custom-input ps-5 pe-5"
+                  id="password"
+                  name="password"
+                  placeholder="Enter your password"
+                  [(ngModel)]="formData.password"
+                  required
+                  minlength="6"
+                />
+                <span
+                  class="material-symbols-outlined password-toggle position-absolute top-50 translate-middle-y end-0 me-3 cursor-pointer"
+                  (click)="handleTogglePassword()"
+                  title="Toggle password visibility"
+                >
+                  {{ showPassword ? "visibility_off" : "visibility" }}
+                </span>
+              </div>
+              <!-- Validation errors -->
+              <div class="mt-1" *ngIf="loginForm.submitted && loginForm.controls['password']?.invalid">
+                <div class="text-danger small" *ngIf="loginForm.controls['password'].errors?.['required']">
+                  Please enter your password.
+                </div>
+                <div class="text-danger small" *ngIf="loginForm.controls['password'].errors?.['minlength']">
+                  Password must be at least 6 characters long.
+                </div>
+              </div>
+            </div>
+
+            <!-- Forgot Password Link -->
+            <div class="d-flex justify-content-end mb-4 pt-1">
+              <button type="button" class="btn btn-link forgot-link p-0 text-decoration-none" (click)="startForgotPassword()">
+                Forgot Password?
+              </button>
+            </div>
+
+            <!-- Sign In Submit Button -->
+            <button type="submit" class="btn btn-signin w-100 shadow-sm mb-4" [disabled]="isFormSubmitted">
+              <span *ngIf="!isFormSubmitted">Sign In</span>
+              <span *ngIf="isFormSubmitted" class="d-flex align-items-center justify-content-center">
+                <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                Signing In...
               </span>
+            </button>
+
+            <!-- Divider -->
+            <div class="d-flex align-items-center my-4">
+              <hr class="flex-grow-1 my-0 text-muted opacity-25">
+              <span class="px-3 text-muted extra-small fw-semibold text-uppercase divider-text">OR</span>
+              <hr class="flex-grow-1 my-0 text-muted opacity-25">
             </div>
-            <!-- Validation errors -->
-            <div class="mt-1" *ngIf="loginForm.submitted && loginForm.controls['password']?.invalid">
-              <div class="text-danger small" *ngIf="loginForm.controls['password'].errors?.['required']">
-                Please enter your password.
+
+            <!-- Google Login Button -->
+            <button type="button" class="btn btn-google w-100 mb-4" (click)="loginWithGoogle()">
+              <svg class="google-icon" width="20" height="20" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+                <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+                <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z" fill="#FBBC05"/>
+                <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z" fill="#EA4335"/>
+              </svg>
+              <span class="btn-google-text">Continue with Google</span>
+            </button>
+
+            <!-- Don't have an Account Link -->
+            <div class="text-center signup-prompt">
+              Don't have an account?
+              <a routerLink="/signup" class="signup-link ms-1">Sign Up</a>
+            </div>
+
+          </form>
+        </ng-container>
+
+        <!-- ================= STEP 2: FORGOT PASSWORD - ENTER EMAIL ================= -->
+        <ng-container *ngIf="step === 'forgot_email'">
+          <div class="mb-4">
+            <button type="button" class="btn btn-sm btn-outline-secondary rounded-pill px-3 py-1 mb-3 d-inline-flex align-items-center gap-1" (click)="backToLogin()">
+              <span class="material-symbols-outlined fs-6">arrow_back</span> Back to Sign In
+            </button>
+            <h1 class="login-title">Forgot Password?</h1>
+            <p class="login-subtitle">Enter your registered email address and we'll send you a 6-digit verification code to reset your password.</p>
+          </div>
+
+          <!-- Alert Error Message -->
+          <div class="alert alert-danger d-flex align-items-center py-2 px-3 mb-4 rounded-3 small" *ngIf="forgotErrorMsg">
+            <span class="material-symbols-outlined me-2 fs-5 flex-shrink-0">error</span>
+            <div>{{ forgotErrorMsg }}</div>
+          </div>
+
+          <form #forgotEmailForm="ngForm" (ngSubmit)="sendForgotPasswordOtp(forgotEmailForm)" novalidate>
+            <!-- Email Input Field -->
+            <div class="mb-4">
+              <label for="forgotEmail" class="form-label input-label">Email Address</label>
+              <div class="position-relative">
+                <span class="material-symbols-outlined input-icon-left position-absolute top-50 translate-middle-y ms-3">mail</span>
+                <input
+                  type="email"
+                  class="form-control custom-input ps-5"
+                  id="forgotEmail"
+                  name="forgotEmail"
+                  placeholder="Enter your registered email"
+                  [(ngModel)]="forgotEmail"
+                  pattern="[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,4}$"
+                  required
+                  email
+                  autocomplete="email"
+                />
               </div>
-              <div class="text-danger small" *ngIf="loginForm.controls['password'].errors?.['minlength']">
-                Password must be at least 6 characters long.
+              <div class="mt-1" *ngIf="forgotEmailForm.submitted && forgotEmailForm.controls['forgotEmail']?.invalid">
+                <div class="text-danger small" *ngIf="forgotEmailForm.controls['forgotEmail'].errors?.['required']">
+                  Please enter your email address.
+                </div>
+                <div class="text-danger small" *ngIf="forgotEmailForm.controls['forgotEmail'].errors?.['email']">
+                  Please enter a valid email address.
+                </div>
               </div>
             </div>
+
+            <!-- Submit Button -->
+            <button type="submit" class="btn btn-signin w-100 shadow-sm mb-4" [disabled]="isSendingOtp">
+              <span *ngIf="!isSendingOtp">Send Verification Code</span>
+              <span *ngIf="isSendingOtp" class="d-flex align-items-center justify-content-center">
+                <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                Sending Code...
+              </span>
+            </button>
+
+            <!-- Back to Sign In Link -->
+            <div class="text-center signup-prompt">
+              Remember your password?
+              <a href="javascript:void(0)" (click)="backToLogin()" class="signup-link ms-1">Sign In</a>
+            </div>
+          </form>
+        </ng-container>
+
+        <!-- ================= STEP 3: OTP VERIFICATION & NEW PASSWORD SETUP ================= -->
+        <ng-container *ngIf="step === 'forgot_otp_password'">
+          <div class="mb-4">
+            <button type="button" class="btn btn-sm btn-outline-secondary rounded-pill px-3 py-1 mb-3 d-inline-flex align-items-center gap-1" (click)="backToForgotEmail()">
+              <span class="material-symbols-outlined fs-6">arrow_back</span> Change Email
+            </button>
+            <h1 class="login-title">Reset Your Password</h1>
+            <p class="login-subtitle">
+              We've sent a 6-digit verification code to <strong class="text-dark">{{ forgotEmail }}</strong>. Enter the code and choose your new password.
+            </p>
           </div>
 
-          <!-- Forgot Password Link -->
-          <div class="d-flex justify-content-end mb-4 pt-1">
-            <a routerLink="/support" class="forgot-link">Forgot Password?</a>
+          <!-- Alert Success Notice -->
+          <div class="alert alert-success d-flex align-items-center py-2 px-3 mb-3 rounded-3 small" *ngIf="forgotSuccessMsg">
+            <span class="material-symbols-outlined me-2 fs-5 flex-shrink-0">check_circle</span>
+            <div>{{ forgotSuccessMsg }}</div>
           </div>
 
-          <!-- Sign In Submit Button -->
-          <button type="submit" class="btn btn-signin w-100 shadow-sm mb-4" [disabled]="isFormSubmitted">
-            <span *ngIf="!isFormSubmitted">Sign In</span>
-            <span *ngIf="isFormSubmitted" class="d-flex align-items-center justify-content-center">
-              <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
-              Signing In...
-            </span>
-          </button>
-
-          <!-- Divider -->
-          <div class="d-flex align-items-center my-4">
-            <hr class="flex-grow-1 my-0 text-muted opacity-25">
-            <span class="px-3 text-muted extra-small fw-semibold text-uppercase divider-text">OR</span>
-            <hr class="flex-grow-1 my-0 text-muted opacity-25">
+          <!-- Alert Error Message -->
+          <div class="alert alert-danger d-flex align-items-center py-2 px-3 mb-3 rounded-3 small" *ngIf="forgotErrorMsg">
+            <span class="material-symbols-outlined me-2 fs-5 flex-shrink-0">error</span>
+            <div>{{ forgotErrorMsg }}</div>
           </div>
 
-          <!-- Google Login Button -->
-          <button type="button" class="btn btn-google w-100 mb-4" (click)="loginWithGoogle()">
-            <svg class="google-icon" width="20" height="20" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-              <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
-              <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
-              <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z" fill="#FBBC05"/>
-              <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z" fill="#EA4335"/>
-            </svg>
-            <span class="btn-google-text">Continue with Google</span>
-          </button>
+          <form #resetPasswordForm="ngForm" (ngSubmit)="resetPasswordWithOtp(resetPasswordForm)" novalidate>
+            <!-- 6-digit OTP Field -->
+            <div class="mb-3.5">
+              <div class="d-flex align-items-center justify-content-between mb-1">
+                <label for="forgotOtp" class="form-label input-label mb-0">6-Digit Verification Code</label>
+                <div>
+                  <span *ngIf="resendCountdown > 0" class="text-muted extra-small">
+                    Resend in {{ resendCountdown }}s
+                  </span>
+                  <button
+                    *ngIf="resendCountdown <= 0"
+                    type="button"
+                    class="btn btn-link p-0 text-decoration-none forgot-link extra-small"
+                    (click)="resendOtp()"
+                    [disabled]="isSendingOtp"
+                  >
+                    Resend Code
+                  </button>
+                </div>
+              </div>
+              <div class="position-relative">
+                <span class="material-symbols-outlined input-icon-left position-absolute top-50 translate-middle-y ms-3">key</span>
+                <input
+                  type="text"
+                  class="form-control custom-input ps-5 letter-spacing-otp font-monospace"
+                  id="forgotOtp"
+                  name="forgotOtp"
+                  placeholder="123456"
+                  [(ngModel)]="forgotOtp"
+                  maxlength="6"
+                  pattern="^[0-9]{6}$"
+                  required
+                  autocomplete="one-time-code"
+                />
+              </div>
+              <div class="mt-1" *ngIf="resetPasswordForm.submitted && resetPasswordForm.controls['forgotOtp']?.invalid">
+                <div class="text-danger small" *ngIf="resetPasswordForm.controls['forgotOtp'].errors?.['required']">
+                  Please enter the 6-digit code.
+                </div>
+                <div class="text-danger small" *ngIf="resetPasswordForm.controls['forgotOtp'].errors?.['pattern']">
+                  Code must be 6 numeric digits.
+                </div>
+              </div>
+            </div>
 
-          <!-- Don't have an Account Link -->
-          <div class="text-center signup-prompt">
-            Don't have an account?
-            <a routerLink="/signup" class="signup-link ms-1">Sign Up</a>
-          </div>
+            <!-- New Password Field -->
+            <div class="mb-3.5">
+              <label for="newPassword" class="form-label input-label">New Password</label>
+              <div class="position-relative">
+                <span class="material-symbols-outlined input-icon-left position-absolute top-50 translate-middle-y ms-3">lock_reset</span>
+                <input
+                  [type]="showNewPassword ? 'text' : 'password'"
+                  class="form-control custom-input ps-5 pe-5"
+                  id="newPassword"
+                  name="newPassword"
+                  placeholder="Enter new password"
+                  [(ngModel)]="newPassword"
+                  required
+                  minlength="6"
+                  autocomplete="new-password"
+                />
+                <span
+                  class="material-symbols-outlined password-toggle position-absolute top-50 translate-middle-y end-0 me-3 cursor-pointer"
+                  (click)="showNewPassword = !showNewPassword"
+                  title="Toggle password visibility"
+                >
+                  {{ showNewPassword ? "visibility_off" : "visibility" }}
+                </span>
+              </div>
+              <div class="mt-1" *ngIf="resetPasswordForm.submitted && resetPasswordForm.controls['newPassword']?.invalid">
+                <div class="text-danger small" *ngIf="resetPasswordForm.controls['newPassword'].errors?.['required']">
+                  Please enter your new password.
+                </div>
+                <div class="text-danger small" *ngIf="resetPasswordForm.controls['newPassword'].errors?.['minlength']">
+                  Password must be at least 6 characters.
+                </div>
+              </div>
+            </div>
 
-        </form>
+            <!-- Confirm New Password Field -->
+            <div class="mb-4">
+              <label for="confirmPassword" class="form-label input-label">Confirm New Password</label>
+              <div class="position-relative">
+                <span class="material-symbols-outlined input-icon-left position-absolute top-50 translate-middle-y ms-3">lock_check</span>
+                <input
+                  [type]="showConfirmPassword ? 'text' : 'password'"
+                  class="form-control custom-input ps-5 pe-5"
+                  id="confirmPassword"
+                  name="confirmPassword"
+                  placeholder="Confirm new password"
+                  [(ngModel)]="confirmPassword"
+                  required
+                  minlength="6"
+                  autocomplete="new-password"
+                />
+                <span
+                  class="material-symbols-outlined password-toggle position-absolute top-50 translate-middle-y end-0 me-3 cursor-pointer"
+                  (click)="showConfirmPassword = !showConfirmPassword"
+                  title="Toggle password visibility"
+                >
+                  {{ showConfirmPassword ? "visibility_off" : "visibility" }}
+                </span>
+              </div>
+              <div class="mt-1" *ngIf="resetPasswordForm.submitted && (newPassword !== confirmPassword)">
+                <div class="text-danger small">
+                  Passwords do not match.
+                </div>
+              </div>
+            </div>
+
+            <!-- Submit Button -->
+            <button type="submit" class="btn btn-signin w-100 shadow-sm mb-4" [disabled]="isResettingPassword">
+              <span *ngIf="!isResettingPassword">Reset Password & Sign In</span>
+              <span *ngIf="isResettingPassword" class="d-flex align-items-center justify-content-center">
+                <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                Resetting & Signing In...
+              </span>
+            </button>
+
+            <!-- Cancel / Back Link -->
+            <div class="text-center signup-prompt">
+              Back to
+              <a href="javascript:void(0)" (click)="backToLogin()" class="signup-link ms-1">Sign In</a>
+            </div>
+          </form>
+        </ng-container>
+
       </div>
 
     </div>
@@ -185,4 +404,5 @@
 
   </div>
 </section>
+
 

@@ -83,6 +83,69 @@ namespace BusinessLayer.Services
             }
         }
 
+        public async Task<bool> SendPasswordResetOtpEmailAsync(string toEmail, string otpCode)
+        {
+            try
+            {
+                var apiKey = _configuration["Resend:ApiKey"];
+                var fromEmail = _configuration["Resend:FromEmail"] ?? "no-reply@notifications.chathire.com";
+                var fromName = _configuration["Resend:FromName"] ?? "ChatHire";
+
+                if (string.IsNullOrWhiteSpace(apiKey) || apiKey == "YOUR_RESEND_API_KEY")
+                {
+                    _logger.LogWarning("Resend API key is not configured in appsettings.json [Resend:ApiKey]. Password Reset OTP code generated: {OtpCode} for {Email}", otpCode, toEmail);
+                    Console.WriteLine($"[RESEND DEV PASSWORD RESET OTP LOG] Email: {toEmail} | OTP: {otpCode}");
+                    return true;
+                }
+
+                var htmlBody = $@"
+                    <div style='font-family: Arial, sans-serif; max-width: 500px; margin: 0 auto; padding: 28px; border: 1px solid #E9D8E8; border-radius: 12px; background-color: #ffffff;'>
+                        <div style='text-align: center; margin-bottom: 20px;'>
+                            <h2 style='color: #72246C; margin: 0; font-size: 22px;'>Reset Your Password</h2>
+                            <p style='color: #667085; font-size: 14px; margin-top: 6px;'>ChatHire Account Security</p>
+                        </div>
+                        <p style='color: #344054; font-size: 15px; line-height: 1.5;'>We received a request to reset the password for your ChatHire account. Please use the 6-digit verification code below to set a new password:</p>
+                        <div style='background-color: #F7EFF7; border: 1px solid #E9D8E8; padding: 18px; border-radius: 10px; text-align: center; margin: 24px 0;'>
+                            <span style='font-size: 32px; font-weight: 700; letter-spacing: 8px; color: #72246C;'>{otpCode}</span>
+                        </div>
+                        <p style='color: #667085; font-size: 13px; line-height: 1.5;'>This code is valid for <strong>10 minutes</strong>. If you did not request a password reset, you can safely ignore this email — your password will remain unchanged.</p>
+                        <hr style='border: none; border-top: 1px solid #E4E7EC; margin: 24px 0;' />
+                        <p style='color: #98A2B3; font-size: 12px; text-align: center; margin: 0;'>&copy; {DateTime.UtcNow.Year} ChatHire. All rights reserved.</p>
+                    </div>";
+
+                var payload = new
+                {
+                    from = $"{fromName} <{fromEmail}>",
+                    to = new[] { toEmail },
+                    subject = $"{otpCode} is your ChatHire password reset code",
+                    html = htmlBody
+                };
+
+                var request = new HttpRequestMessage(HttpMethod.Post, "https://api.resend.com/emails");
+                request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", apiKey);
+                request.Content = new StringContent(JsonConvert.SerializeObject(payload), Encoding.UTF8, "application/json");
+
+                var response = await _httpClient.SendAsync(request);
+                var responseContent = await response.Content.ReadAsStringAsync();
+
+                if (response.IsSuccessStatusCode)
+                {
+                    _logger.LogInformation("Password Reset OTP Email sent successfully via Resend to {Email}", toEmail);
+                    return true;
+                }
+                else
+                {
+                    _logger.LogError("Failed to send Password Reset OTP email via Resend to {Email}. Status: {Status}, Error: {Response}", toEmail, response.StatusCode, responseContent);
+                    return false;
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Exception occurred while sending Password Reset OTP email via Resend to {Email}", toEmail);
+                return false;
+            }
+        }
+
         public async Task<bool> SendEmailWithAttachmentAsync(string toEmail, string subject, string htmlContent, string attachmentFilename, byte[]? attachmentBytes)
         {
             try

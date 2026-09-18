@@ -54,7 +54,7 @@
       <div class="mb-2">
         <div class="d-flex align-items-center justify-content-between mb-1">
           <label for="modalPassword" class="form-label modal-input-label mb-0">Password</label>
-          <a routerLink="/support" (click)="close()" class="forgot-link text-xs">Forgot?</a>
+          <a [routerLink]="['/login']" [queryParams]="{mode: 'forgot'}" (click)="close()" class="forgot-link text-xs">Forgot?</a>
         </div>
         <div class="position-relative">
           <span class="material-symbols-outlined input-icon-left position-absolute top-50 translate-middle-y ms-3 text-muted">lock</span>
