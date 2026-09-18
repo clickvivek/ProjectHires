@@ -55,6 +55,57 @@
       padding: 3px 10px;
       display: inline-block;
     }
+
+    .dashboard-company-badge {
+      .company-label {
+        font-size: 11px;
+        font-weight: 600;
+        color: #98A2B3;
+        letter-spacing: 0.04em;
+        line-height: 1.2;
+      }
+
+      .company-title {
+        font-size: 14.5px;
+        font-weight: 700;
+        color: #101828;
+        line-height: 1.3;
+      }
+
+      .dashboard-company-logo-box {
+        width: 48px;
+        height: 48px;
+        border-radius: 10px;
+        border: 1px solid #E4E7EC;
+        background-color: #FFFFFF;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+        flex-shrink: 0;
+        box-shadow: 0 1px 3px rgba(16, 24, 40, 0.05);
+
+        .dashboard-company-logo-img {
+          width: 100%;
+          height: 100%;
+          object-fit: contain;
+          padding: 4px;
+        }
+
+        .dashboard-company-logo-fallback {
+          width: 100%;
+          height: 100%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          background-color: #F7EFF7;
+          color: #72246C;
+          font-weight: 700;
+          font-size: 1.2rem;
+          user-select: none;
+        }
+      }
+    }
   }
 
   /* Section Headings */

@@ -26,40 +26,33 @@
                   <div class="profile-name-row d-flex align-items-center gap-2 mb-1">
                     <h1 class="profile-name text-capitalize mb-0">{{ user?.fname }} {{ user?.lname }}</h1>
                     <span class="verified-recruiter-icon" title="Verified Recruiter">
-                      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M10.5213 2.62368C11.3147 1.75257 12.6853 1.75257 13.4787 2.62368L14.4989 3.74378C14.9323 4.2196 15.5494 4.47547 16.1843 4.44208L17.6766 4.36361C18.8373 4.30259 19.8026 5.26787 19.7416 6.42858L19.6631 7.9209C19.6297 8.55577 19.8856 9.17288 20.3614 9.60627L21.4815 10.6265C22.3526 11.4199 22.3526 12.7904 21.4815 13.5838L20.3614 14.604C19.8856 15.0374 19.6297 15.6545 19.6631 16.2893L19.7416 17.7817C19.8026 18.9424 18.8373 19.9076 17.6766 19.8466L16.1843 19.7682C15.5494 19.7348 14.9323 19.9906 14.4989 20.4665L13.4787 21.5866C12.6853 22.4577 11.3147 22.4577 10.5213 21.5866L9.50113 20.4665C9.06774 19.9906 8.45063 19.7348 7.81576 19.7682L6.32344 19.8466C5.16273 19.9076 4.19745 18.9424 4.25847 17.7817L4.33694 16.2893C4.37033 15.6545 4.11446 15.0374 3.63864 14.604L2.51854 13.5838C1.64743 12.7904 1.64743 11.4199 2.51854 10.6265L3.63864 9.60627C4.11446 9.17288 4.37033 8.55577 4.33694 7.9209L4.25847 6.42858C4.19745 5.26787 5.16273 4.30259 6.32344 4.36361L7.81576 4.44208C8.45063 4.47547 9.06774 4.2196 9.50113 3.74378L10.5213 2.62368Z" fill="url(#recruiterVerifiedGrad)"/>
+                      <svg width="19" height="19" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M10.5213 2.62368C11.3147 1.75257 12.6853 1.75257 13.4787 2.62368L14.4989 3.74378C14.9323 4.2196 15.5494 4.47547 16.1843 4.44208L17.6766 4.36361C18.8373 4.30259 19.8026 5.26787 19.7416 6.42858L19.6631 7.9209C19.6297 8.55577 19.8856 9.17288 20.3614 9.60627L21.4815 10.6265C22.3526 11.4199 22.3526 12.7904 21.4815 13.5838L20.3614 14.604C19.8856 15.0374 19.6297 15.6545 19.6631 16.2893L19.7416 17.7817C19.8026 18.9424 18.8373 19.9076 17.6766 19.8466L16.1843 19.7682C15.5494 19.7348 14.9323 19.9906 14.4989 20.4665L13.4787 21.5866C12.6853 22.4577 11.3147 22.4577 10.5213 21.5866L9.50113 20.4665C9.06774 19.9906 8.45063 19.7348 7.81576 19.7682L6.32344 19.8466C5.16273 19.9076 4.19745 18.9424 4.25847 17.7817L4.33694 16.2893C4.37033 15.6545 4.11446 15.0374 3.63864 14.604L2.51854 13.5838C1.64743 12.7904 1.64743 11.4199 2.51854 10.6265L3.63864 9.60627C4.11446 9.17288 4.37033 8.55577 4.33694 7.9209L4.25847 6.42858C4.19745 5.26787 5.16273 4.30259 6.32344 4.36361L7.81576 4.44208C8.45063 4.47547 9.06774 4.2196 9.50113 3.74378L10.5213 2.62368Z" fill="#1677FF"/>
                         <path d="M8.5 12.2L11 14.7L15.8 9.5" stroke="#FFFFFF" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
-                        <defs>
-                          <linearGradient id="recruiterVerifiedGrad" x1="2" y1="2" x2="22" y2="22" gradientUnits="userSpaceOnUse">
-                            <stop stop-color="#00D2FF"/>
-                            <stop offset="50%" stop-color="#0066FF"/>
-                            <stop offset="100%" stop-color="#8B5CF6"/>
-                          </linearGradient>
-                        </defs>
                       </svg>
                     </span>
                   </div>
                   
                   <div class="mb-2">
-                    <span class="role-badge-yellow">{{ getRoleBadgeText() }}</span>
+                    <span class="role-badge-gold">{{ getRoleBadgeText() }}</span>
                   </div>
 
                   <!-- Actions Group (LinkedIn + Chat) -->
                   <div class="action-buttons-group">
                     <!-- LinkedIn Action -->
                     <a *ngIf="getLinkedInUrl()" [href]="getLinkedInUrl()" target="_blank" class="btn-linkedin-square" title="View LinkedIn Profile">
-                      <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                      <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor">
                         <path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.28 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.75M6.46 10.9v8.37H9.25V10.9H6.46M7.86 6.78a1.6 1.6 0 1 0 1.6 1.6 1.6 1.6 0 0 0-1.6-1.6z"/>
                       </svg>
                     </a>
                     <a *ngIf="!getLinkedInUrl()" href="https://www.linkedin.com" target="_blank" class="btn-linkedin-square" title="LinkedIn Profile">
-                      <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                      <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor">
                         <path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.28 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.75M6.46 10.9v8.37H9.25V10.9H6.46M7.86 6.78a1.6 1.6 0 1 0 1.6 1.6 1.6 1.6 0 0 0-1.6-1.6z"/>
                       </svg>
                     </a>
 
                     <!-- Chat Action -->
-                    <div class="btn-chat-green chat-btn" [chatUser]="chatUser" [isProfile]="true">
+                    <div class="btn-chat-teal chat-btn" [chatUser]="chatUser" [isProfile]="true">
                       <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" class="chat-icon">
                         <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/>
                       </svg>
@@ -109,8 +102,11 @@
 
             </div>
 
+            <!-- Divider -->
+            <hr class="profile-section-divider">
+
             <!-- About Section -->
-            <div class="about-section mt-4 mb-4">
+            <div class="about-section mb-4">
               <h3 class="section-title">About</h3>
               <p class="about-body">
                 Experienced talent acquisition partner specializing in enterprise IT hiring, contract staffing, and C2C recruitment across SAP, Java, DevOps, Cloud Infrastructure, and Salesforce ecosystems.
@@ -121,13 +117,13 @@
             <div class="specializations-section">
               <h3 class="section-title">Specializations</h3>
               <div class="chips-flex">
-                <span class="plum-chip">SAP</span>
-                <span class="plum-chip">Java</span>
-                <span class="plum-chip">.NET</span>
-                <span class="plum-chip">Cloud</span>
-                <span class="plum-chip">DevOps</span>
-                <span class="plum-chip">Salesforce</span>
-                <span class="plum-chip">Contract / C2C</span>
+                <span class="purple-chip">SAP</span>
+                <span class="purple-chip">Java</span>
+                <span class="purple-chip">.NET</span>
+                <span class="purple-chip">Cloud</span>
+                <span class="purple-chip">DevOps</span>
+                <span class="purple-chip">Salesforce</span>
+                <span class="purple-chip">Contract / C2C</span>
               </div>
             </div>
 
