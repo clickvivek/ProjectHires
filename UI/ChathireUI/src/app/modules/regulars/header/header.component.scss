@@ -115,8 +115,8 @@ header {
     }
 
     .header-public-link-strip {
-      background-color: #FAF6FB;
-      border: 1px solid #EBE0EC;
+      background-color: #FAF5FA;
+      border: 1px solid #E9D8E8;
       border-radius: 10px;
       padding: 4px 6px 4px 10px;
       display: flex;
@@ -126,7 +126,7 @@ header {
       .link-icon-badge {
         width: 28px;
         height: 28px;
-        background-color: #F1E3F2;
+        background-color: #F1E3F0;
         border-radius: 7px;
         display: flex;
         align-items: center;
@@ -134,8 +134,8 @@ header {
         flex-shrink: 0;
 
         svg {
-          color: #673260;
-          stroke: #673260;
+          color: #72246C;
+          stroke: #72246C;
         }
       }
 
@@ -144,7 +144,7 @@ header {
         align-items: center;
         justify-content: space-between;
         background-color: #FFFFFF;
-        border: 1px solid #E2D7E3;
+        border: 1px solid #E9D8E8;
         border-radius: 6px;
         padding: 2px 4px 2px 10px;
         gap: 8px;
@@ -153,12 +153,12 @@ header {
         transition: border-color 0.15s ease;
 
         &:focus-within {
-          border-color: #673260;
+          border-color: #72246C;
         }
 
         .link-url-text {
           font-size: 0.75rem;
-          color: #374151;
+          color: #344054;
           font-weight: 500;
           white-space: nowrap;
           overflow: hidden;
@@ -170,25 +170,25 @@ header {
           display: inline-flex;
           align-items: center;
           gap: 4px;
-          background-color: #F5EDF6;
-          border: 1px solid #EADBEC;
+          background-color: transparent;
+          border: 1px solid transparent;
           padding: 3px 10px;
-          color: #673260;
+          color: #72246C;
           font-size: 0.75rem;
           font-weight: 600;
           cursor: pointer;
-          border-radius: 4px;
+          border-radius: 6px;
           flex-shrink: 0;
           transition: all 0.15s ease;
 
           svg {
-            color: #673260;
-            stroke: #673260;
+            color: #72246C;
+            stroke: #72246C;
           }
 
           &:hover {
-            background-color: #ECE0EE;
-            color: #51264C;
+            background-color: #F1E3F0;
+            color: #5D1D58;
           }
 
           &:active {
