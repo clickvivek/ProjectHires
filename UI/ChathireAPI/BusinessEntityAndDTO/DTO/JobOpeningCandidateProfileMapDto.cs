@@ -1,4 +1,4 @@
-﻿using BusinessEntityAndDTO.Models;
+using BusinessEntityAndDTO.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -55,6 +55,7 @@ namespace BusinessEntityAndDTO.DTO
 
         public long? CandidateUserId { get; set; }
         public string? Doc { get; set; }
+        public string? OriginalDocName { get; set; }
 
         public string? CandidateName { get; set; }
 

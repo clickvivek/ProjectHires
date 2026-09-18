@@ -48,6 +48,7 @@ import { SliderLargeComponent } from './components/slider-large/slider-large.com
 import { MultiSelectCheckFieldComponent } from './components/multi-select-check-field/multi-select-check-field.component';
 import { SubmitBtnComponent } from './components/submit-btn/submit-btn.component';
 import { FancyPageSearchComponent } from './components/fancy-page-search/fancy-page-search.component';
+import { LoginModalComponent } from './components/login-modal/login-modal.component';
 
 @NgModule({
   declarations: [
@@ -84,7 +85,8 @@ import { FancyPageSearchComponent } from './components/fancy-page-search/fancy-p
     SliderLargeComponent,
     MultiSelectCheckFieldComponent,
     SubmitBtnComponent,
-    FancyPageSearchComponent
+    FancyPageSearchComponent,
+    LoginModalComponent
 ],
   imports: [
     CommonModule,
@@ -122,6 +124,7 @@ import { FancyPageSearchComponent } from './components/fancy-page-search/fancy-p
     ProfilePicComponent,
     SubmitBtnComponent,
     FancyPageSearchComponent,
+    LoginModalComponent,
     SimpleSearchPipe,
     EscapeHtmlPipe,
     subStringPipe,

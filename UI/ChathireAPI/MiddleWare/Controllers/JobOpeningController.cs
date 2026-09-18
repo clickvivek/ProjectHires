@@ -37,8 +37,12 @@ namespace MiddleWare.Controllers
                 {
                     var fileManager = managerFactory.Get<IFileManager>();
                     fileNameResume = await fileManager.Upload(jobOpeningCandidateProfile.resume, "resumes");
+                    if (jobOpeningCandidateProfile.jobOpeningCandidateProfileMapDtoForInsert != null)
+                    {
+                        jobOpeningCandidateProfile.jobOpeningCandidateProfileMapDtoForInsert.OriginalDocName = jobOpeningCandidateProfile.resume.ImageFile?.FileName;
+                    }
                 }
-                if (jobOpeningCandidateProfile.jobOpeningCandidateProfileMapDtoForInsert != null && (fileNameResume != null || fileNameResume != string.Empty))
+                if (jobOpeningCandidateProfile.jobOpeningCandidateProfileMapDtoForInsert != null && !string.IsNullOrEmpty(fileNameResume))
                 {
                     jobOpeningCandidateProfile.jobOpeningCandidateProfileMapDtoForInsert.Doc = fileNameResume;
                 }

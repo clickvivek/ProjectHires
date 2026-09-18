@@ -8,7 +8,7 @@
   >
     <div class="form-box">
       <div class="row">
-        <div class="col-sm-6">
+        <div class="col-sm-12">
           <div class="input-box">
             <div class="form-group">
               <label for="name"
@@ -43,61 +43,28 @@
 
         <div class="col-sm-6">
           <div class="input-box select-box">
-            <app-multi-select-field
-              fieldName="jobTypeId"
-              fieldText="Position Type"
-              [fieldRequired]="true"
-              fieldPlaceholder="Position type"
-              fieldType="description"
-              [fieldList]="selectJobPositionTypeList"
-              fieldItemMinLimit="1"
-              [isEdit]="isEdit"
-              [editValue]="formData.jobOpeningJobTypes"
-              (inputChange)="onPositionTypeChange($event)"
-            >
-            </app-multi-select-field>
-            <div
-              class="my-3"
-              *ngIf="
-                postJobsForm.submitted &&
-                postJobsForm.controls['jobTypeId'].invalid
-              "
-            >
-              <div
-                class="input-field-message"
-                *ngIf="postJobsForm.controls['jobTypeId'].errors?.['required']"
-              >
-                Position type required
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="col-sm-6">
-          <div class="input-box select-box">
-            <app-multi-select-field
+            <app-select-field
               fieldName="employmentTypeId"
               fieldText="Job Type"
-              [fieldRequired]="true"
-              fieldPlaceholder="Job type"
               fieldType="description"
+              fieldPlaceholder="Job type"
+              [fieldRequired]="true"
               [fieldList]="selectEmploymentTypeList"
-              fieldItemMinLimit="1"
               [isEdit]="isEdit"
-              [editValue]="formData.jobOpeningEmploymentTypes"
+              [editValue]="formData.employmentTypeId"
               (inputChange)="onEmploymentTypeChange($event)"
             >
-            </app-multi-select-field>
+            </app-select-field>
             <div
               class="my-3"
               *ngIf="
                 postJobsForm.submitted &&
-                postJobsForm.controls['employmentTypeId'].invalid
+                postJobsForm.controls['employmentTypeId']?.invalid
               "
             >
               <div
                 class="input-field-message"
-                *ngIf="postJobsForm.controls['employmentTypeId'].errors?.['required']"
+                *ngIf="postJobsForm.controls['employmentTypeId']?.errors?.['required']"
               >
                 Job type required
               </div>
@@ -105,46 +72,14 @@
           </div>
         </div>
 
-        <div class="col-sm-6">
-          <div class="input-box select-box">
-            <app-multi-select-field
-              fieldName="visaId"
-              fieldText="Visa Applicable"
-              [fieldRequired]="true"
-              fieldPlaceholder="Visa"
-              fieldType="name"
-              [fieldList]="selectVisaMapsList"
-              fieldItemMinLimit="1"
-              [isEdit]="isEdit"
-              [editValue]="formData.jobOpeningVisaMaps"
-              (inputChange)="onVisaMapChange($event)"
-            >
-            </app-multi-select-field>
-            <div
-              class="my-3"
-              *ngIf="
-                postJobsForm.submitted &&
-                postJobsForm.controls['visaId'].invalid
-              "
-            >
-              <div
-                class="input-field-message"
-                *ngIf="postJobsForm.controls['visaId'].errors?.['required']"
-              >
-                Visa required
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="col-sm-6">
+        <div class="col-sm-6" *ngIf="!isRemoteJob()">
           <div class="input-box search-box">
             <app-multi-search-field
               fieldName="cityId"
               fieldText="Job Location"
-              fieldType="city1,stateName,stateCode"
-              fieldPlaceholder="Enter"
-              [fieldRequired]="true"
+              fieldType="city1,stateName,stateCode,zip,countryName"
+              fieldPlaceholder="Enter Zipcode or City Name"
+              [fieldRequired]="!isRemoteJob()"
               [fieldList]="selectLocationList"
               fieldItemMaxLimit="5"
               [isEdit]="isEdit"
@@ -157,14 +92,110 @@
               class="my-3"
               *ngIf="
                 postJobsForm.submitted &&
-                postJobsForm.controls['cityId'].invalid
+                postJobsForm.controls['cityId']?.invalid
               "
             >
               <div
                 class="input-field-message"
-                *ngIf="postJobsForm.controls['cityId'].errors?.['required']"
+                *ngIf="postJobsForm.controls['cityId']?.errors?.['required']"
               >
                 Job location required
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-sm-6" *ngIf="isRemoteJob()">
+          <div class="input-box select-box">
+            <app-multi-select-field
+              fieldName="country"
+              fieldText="Candidate Country"
+              [fieldRequired]="true"
+              fieldPlaceholder="Select Country"
+              fieldType="name"
+              [fieldList]="selectCountryList"
+              fieldItemMinLimit="1"
+              [isEdit]="isEdit"
+              [editValue]="selectedCountryItems"
+              (inputChange)="onCountryChange($event)"
+            >
+            </app-multi-select-field>
+            <div
+              class="my-3"
+              *ngIf="
+                postJobsForm.submitted &&
+                postJobsForm.controls['country']?.invalid
+              "
+            >
+              <div
+                class="input-field-message"
+                *ngIf="postJobsForm.controls['country']?.errors?.['required']"
+              >
+                Candidate country required
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-sm-12">
+          <div class="position-type-chips-wrapper">
+            <label class="form-label"
+              >Position Type <span class="req text-danger font-medium ms-1">*</span></label
+            >
+            <div class="chips-container">
+              <button
+                type="button"
+                *ngFor="let item of selectJobPositionTypeList"
+                class="chip-btn"
+                [class.selected]="isPositionTypeSelected(item)"
+                (click)="togglePositionType(item)"
+              >
+                <span class="chip-text">{{ item.description }}</span>
+                <span class="chip-icon" *ngIf="isPositionTypeSelected(item)">✓</span>
+                <span class="chip-icon" *ngIf="!isPositionTypeSelected(item)">+</span>
+              </button>
+            </div>
+            <div
+              class="mt-2"
+              *ngIf="
+                postJobsForm.submitted &&
+                isPositionTypeRequired()
+              "
+            >
+              <div class="input-field-message text-danger text-sm">
+                Position type required
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-sm-12">
+          <div class="visa-chips-wrapper">
+            <label class="form-label"
+              >Visa Applicable <span class="req text-danger font-medium ms-1">*</span></label
+            >
+            <div class="chips-container">
+              <button
+                type="button"
+                *ngFor="let item of selectVisaMapsList"
+                class="chip-btn"
+                [class.selected]="isVisaSelected(item)"
+                (click)="toggleVisa(item)"
+              >
+                <span class="chip-text">{{ item.name }}</span>
+                <span class="chip-icon" *ngIf="isVisaSelected(item)">✓</span>
+                <span class="chip-icon" *ngIf="!isVisaSelected(item)">+</span>
+              </button>
+            </div>
+            <div
+              class="mt-2"
+              *ngIf="
+                postJobsForm.submitted &&
+                isVisaRequired()
+              "
+            >
+              <div class="input-field-message text-danger text-sm">
+                Visa required
               </div>
             </div>
           </div>
@@ -254,21 +285,24 @@
                 [(ngModel)]="formData.totalExp"
                 name="totalExp"
                 autocomplete="off"
-                max="49"
+                min="0"
+                max="50"
+                (keypress)="onExpKeyPress($event)"
+                (input)="onExpInput($event)"
               />
               
               <div
                 class="mt-2"
                 *ngIf="
                   postJobsForm.submitted &&
-                  postJobsForm.controls['totalExp'].invalid
+                  postJobsForm.controls['totalExp']?.invalid
                 "
               >
                 <div
                   class="input-field-message"
-                  *ngIf="postJobsForm.controls['totalExp'].errors?.['max']"
+                  *ngIf="postJobsForm.controls['totalExp']?.errors?.['max']"
                 >
-                Expereince must be less than 50
+                  Experience cannot exceed 50 years
                 </div>
               </div>
 

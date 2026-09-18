@@ -55,12 +55,21 @@ namespace DataAccessLayer.Repository
 
             if (job.searchStrings != null)
             {
-                SqlParameter param = new SqlParameter("@SearchString", SqlDbType.Structured)
+                var cleanSearchStrings = job.searchStrings
+                    .Where(s => !string.IsNullOrWhiteSpace(s))
+                    .Select(s => s.Trim())
+                    .Cast<object>()
+                    .ToList();
+
+                if (cleanSearchStrings.Any())
                 {
-                    TypeName = "[dbo].[UDT_StringType]",
-                    Value = Util.PopulateDataTable(job.searchStrings.Cast<object>().ToList(), typeof(string))
-                };
-                parameters.Add(param);
+                    SqlParameter param = new SqlParameter("@SearchString", SqlDbType.Structured)
+                    {
+                        TypeName = "[dbo].[UDT_StringType]",
+                        Value = Util.PopulateDataTable(cleanSearchStrings, typeof(string))
+                    };
+                    parameters.Add(param);
+                }
             }
 
             if (job.cityIds != null)
@@ -198,11 +207,48 @@ namespace DataAccessLayer.Repository
 
                 while (reader.Read())
                 {
+                    // Check IsExpired column if present
+                    if (HasColumn(reader, "IsExpired") && reader["IsExpired"] != DBNull.Value && Convert.ToBoolean(reader["IsExpired"]))
+                    {
+                        continue;
+                    }
+
+                    // Check Active column if present
+                    if (HasColumn(reader, "Active") && reader["Active"] != DBNull.Value && !Convert.ToBoolean(reader["Active"]))
+                    {
+                        continue;
+                    }
+
+                    string postedDateStr = reader["PostedDate"]?.ToString() ?? "";
+                    string lastDateStr = reader["LastDate"]?.ToString() ?? "";
+
+                    // Expiration check: LastDate in the past
+                    if (DateTime.TryParse(lastDateStr, out DateTime lastDate) && lastDate.Date < DateTime.Today)
+                    {
+                        continue;
+                    }
+
+                    // Expiration check: PostedDate older than 30 days (unless custom search start date specified)
+                    if (DateTime.TryParse(postedDateStr, out DateTime postedDate))
+                    {
+                        if (job.PostedStartDate.HasValue && job.PostedStartDate.Value > DateTime.MinValue)
+                        {
+                            if (postedDate.Date < job.PostedStartDate.Value.Date)
+                            {
+                                continue;
+                            }
+                        }
+                        else if (postedDate.Date < DateTime.Today.AddDays(-30))
+                        {
+                            continue;
+                        }
+                    }
+
                     JobOpeningForSearchResultsDto result = new JobOpeningForSearchResultsDto();
 
                     result.JobOpeningId = reader["JobOpeningId"].ToString();
-                    result.PostedDate = reader["PostedDate"].ToString();
-                    result.LastDate = reader["LastDate"].ToString();
+                    result.PostedDate = postedDateStr;
+                    result.LastDate = lastDateStr;
                     result.JobOpeningName = reader["JobOpeningName"].ToString();
                     result.CompanyName = reader["CompanyName"].ToString();
                     result.Joiningdays = reader["Joiningdays"].ToString();
@@ -214,6 +260,7 @@ namespace DataAccessLayer.Repository
                     result.UserLName = reader["UserLName"].ToString();
                     result.UserName = reader["UserName"].ToString();
                     result.ProfilePic = reader["ProfilePic"].ToString();
+                    result.CompanyLogo = HasColumn(reader, "CompanyLogo") && reader["CompanyLogo"] != DBNull.Value ? reader["CompanyLogo"].ToString() : null;
                     result.Skills = reader["Skills"].ToString().Split('|').ToList();
                     result.Locations = reader["Locations"].ToString().Split('|').ToList();
                     result.Visas = reader["Visas"].ToString().Split('|').ToList();
@@ -225,6 +272,16 @@ namespace DataAccessLayer.Repository
                 return rtn;
             }
 
+        }
+
+        private static bool HasColumn(IDataRecord dr, string columnName)
+        {
+            for (int i = 0; i < dr.FieldCount; i++)
+            {
+                if (dr.GetName(i).Equals(columnName, StringComparison.OrdinalIgnoreCase))
+                    return true;
+            }
+            return false;
         }
 
         public async Task<List<JobOpening>> GetJobOpeningsByConsultancyID(long ConsultancyId)
@@ -376,10 +433,13 @@ namespace DataAccessLayer.Repository
         public async Task<int> ExpireOldJobOpeningsAsync(int daysThreshold = 30)
         {
             var cutoffDate = DateTime.UtcNow.AddDays(-daysThreshold);
+            var today = DateTime.UtcNow.Date;
             return await _context.JobOpenings
-                .Where(j => (j.IsExpired == null || j.IsExpired == false) && j.PostedDate != null && j.PostedDate < cutoffDate)
+                .Where(j => (j.IsExpired == null || j.IsExpired == false) &&
+                            ((j.PostedDate != null && j.PostedDate < cutoffDate) || (j.LastDate != null && j.LastDate < today)))
                 .ExecuteUpdateAsync(setter => setter
                     .SetProperty(j => j.IsExpired, true)
+                    .SetProperty(j => j.Active, false)
                     .SetProperty(j => j.Updated, DateTime.UtcNow));
         }
 

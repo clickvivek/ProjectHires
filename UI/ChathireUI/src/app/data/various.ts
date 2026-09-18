@@ -15,24 +15,6 @@ export const profileInitialCountSummary = [
 
 export const defaultPostJobVisas = [
     {
-        "id": 1,
-        "name": "H1B",
-        "description": "H1B Visa",
-        "updatedBy": null
-    },
-    {
-        "id": 2,
-        "name": "OPT",
-        "description": "OPT  Visa",
-        "updatedBy": null
-    },
-    {
-        "id": 3,
-        "name": "GCEAD",
-        "description": "GC EAD Visa",
-        "updatedBy": null
-    },
-    {
         "id": 4,
         "name": "GC",
         "description": "GreenCard Holder",
@@ -43,5 +25,23 @@ export const defaultPostJobVisas = [
         "name": "USC",
         "description": "US Citizen",
         "updatedBy": null
+    }
+]
+
+export const defaultPostJobPositionTypes = [
+    {
+        "id": 7,
+        "jobTypeId": 7,
+        "description": "C2C - Contract"
+    },
+    {
+        "id": 8,
+        "jobTypeId": 8,
+        "description": "W2 - Contract"
+    },
+    {
+        "id": 11,
+        "jobTypeId": 11,
+        "description": "W2 - Full time"
     }
 ]

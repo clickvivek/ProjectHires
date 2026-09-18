@@ -15,13 +15,14 @@
   --color-error: #D92D20;
 
   display: block;
+  margin-top: -40px;
   background-color: var(--bg-page);
   min-height: calc(100vh - 70px);
 }
 
 .add-candidate-wrapper {
   background-color: var(--bg-page);
-  padding: 24px 0 60px 0;
+  padding: 20px 0 60px 0;
   min-height: calc(100vh - 70px);
 
   .card {

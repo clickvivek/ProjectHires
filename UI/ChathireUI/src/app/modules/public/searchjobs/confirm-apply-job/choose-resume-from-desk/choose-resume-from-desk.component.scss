@@ -3,46 +3,89 @@
 @import "src/@hires/scss/helpers/typography";
 
 .choose-resume-from-desk-wrapper {
-    margin: 20px 0 0 0;
+    margin: 16px 0 0 0;
+
     .resume-lists {
         .item {
             display: flex;
-            border: 1px solid pick-color(dark, 300);
-            border-radius: 4px;
+            align-items: center;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            background: #f8fafc;
+            overflow: hidden;
+            margin-bottom: 16px;
             .type {
-              background-color: $danger;
+              background-color: #dc2626;
               text-transform: uppercase;
               color: white;
-              padding: 18px 10px;
+              padding: 10px 14px;
+              font-weight: 600;
+              font-size: 12px;
             }
             .name {
-              padding: 8px;
+              padding: 10px 14px;
               flex-grow: 1;
+              color: #1e293b;
+              font-size: 14px;
             }
             .delete {
               margin: 0 14px 0 0;
               display: flex;
               align-items: center;
+              color: #64748b;
+              cursor: pointer;
+              transition: color 0.15s;
+              &:hover {
+                color: #ef4444;
+              }
             }
         }
     }
+
     .upload-area {
-        margin: 20px 0;
+        margin: 16px 0;
         input[type="file"] {
           display: none;
         }
         .custom-file-upload {
-          border: 2px solid $secondary;
+          border: 1.5px solid $secondary;
           color: $secondary;
           border-radius: 20px;
           padding: 6px 20px;
           cursor: pointer;
           display: inline-block;
-          @extend .text-regular;
-          @extend .fw-medium;
+          font-weight: 500;
+          font-size: 14px;
+          transition: all 0.15s ease-in-out;
           &:hover {
             background-color: pick-color(secondary, 50);
           }
         }
+    }
+
+    .input-box {
+      margin-bottom: 16px;
+      .form-group {
+        margin-bottom: 0;
+      }
+      .form-label, label {
+        font-weight: 500;
+        font-size: 13px;
+        color: #334155;
+        margin-bottom: 6px;
+        .req {
+          color: #dc2626;
+        }
+      }
+      .form-control {
+        border-radius: 6px;
+        border: 1px solid #cbd5e1;
+        padding: 8px 12px;
+        font-size: 14px;
+        &:focus {
+          border-color: #2563eb;
+          box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+        }
+      }
     }
 }

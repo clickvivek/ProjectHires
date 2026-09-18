@@ -1,5 +1,6 @@
 import { Directive, OnInit, Input, ElementRef, Output, EventEmitter, HostListener} from '@angular/core';
 import {  Router } from '@angular/router';
+import { MatDialog } from '@angular/material/dialog';
 import Talk from 'talkjs';
 import { environment } from 'src/environments/environment';
 
@@ -10,6 +11,7 @@ import { AuthService } from 'src/app/core/auth/auth.service';
 import { SessionService } from 'src/app/core/session/session.service';
 import { SharedService } from '../shared/services/shared.service';
 import { TalkService } from './talk.service';
+import { LoginModalComponent } from '../shared/components/login-modal/login-modal.component';
 
 declare var $:JQueryStatic;
 
@@ -38,7 +40,8 @@ export class ChatButtonDirective  {
     private router: Router,
     private authService: AuthService,
     private sessionService: SessionService,
-    private talkService: TalkService
+    private talkService: TalkService,
+    public dialog: MatDialog
     ) {
   }
 
@@ -46,17 +49,7 @@ export class ChatButtonDirective  {
     return Math.floor(Math.random() * (99 - 10 + 1)) + 10;
   }
 
-  @HostListener("click", ["$event"])
-   onClick(event:any) {
-    if(this.popup) {
-      this.popup.destroy()
-    }
-
-    if(!this.authService.isLoggedIn()) {
-      this.router.navigate(['/login']);
-      return;
-    }
-
+  private openChatPopup() {
     this.initChat(this.chatUser);
 
     this.popup = this.session?.createPopup();
@@ -64,16 +57,37 @@ export class ChatButtonDirective  {
     this.popup?.mount();
     
     setTimeout(() => {
-      
-      this.talkElementLanucher = document.querySelector('#__talkjs_launcher')
+      this.talkElementLanucher = document.querySelector('#__talkjs_launcher');
 
       this.talkElementLanucher?.addEventListener("click", (e) => {
-        const parent = this.talkElementLanucher.parentNode
-        parent.remove()
+        const parent = this.talkElementLanucher?.parentNode;
+        parent?.remove();
+      });
+    }, 1000);
+  }
+
+  @HostListener("click", ["$event"])
+  onClick(event:any) {
+    if(this.popup) {
+      this.popup.destroy();
+    }
+
+    if(!this.authService.isLoggedIn()) {
+      const dialogRef = this.dialog.open(LoginModalComponent, {
+        width: '440px',
+        panelClass: 'login-modal-panel',
+        data: { actionText: 'send a message' }
       });
 
-    }, 1000)
+      dialogRef.afterClosed().subscribe(res => {
+        if (res && res.success) {
+          this.openChatPopup();
+        }
+      });
+      return;
+    }
 
+    this.openChatPopup();
   }
 
   

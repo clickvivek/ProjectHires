@@ -70,7 +70,30 @@ export class HeaderComponent implements OnInit {
   }
 
   isNotProfile() {
-    return !this._router.url.includes('profile')
+    return !this._router.url.includes('profile');
+  }
+
+  isCopied: boolean = false;
+
+  getProfileUrl(): string {
+    const url = this._router.url;
+    const match = url.match(/\/profile\/([^\/\?#]+)/);
+    if (match && match[1]) {
+      return `www.chathire.com/profile/${match[1]}`;
+    }
+    if (this.profileId) {
+      return `www.chathire.com/profile/${this.profileId}`;
+    }
+    return 'www.chathire.com/profile';
+  }
+
+  copyURL(text: string) {
+    if (!text) return;
+    navigator.clipboard.writeText(text);
+    this.isCopied = true;
+    setTimeout(() => {
+      this.isCopied = false;
+    }, 2000);
   }
 
   logout() {

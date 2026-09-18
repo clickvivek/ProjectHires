@@ -271,11 +271,11 @@ namespace MiddleWare.Controllers
 
         [HttpGet]
         [Route("SearchCandidateProfiles")]
-        public List<CandidateProfileForSearchResultsDto> SearchCandidateProfile([FromQuery] CandidateProfileForSearchDto candidateProfile)
+        public List<CandidateProfileForSearchResultsDto> SearchCandidateProfile([FromQuery] CandidateProfileForSearchDto? candidateProfile)
         {
             var mgr = managerFactory.Get<ICandidateProfileManager>();
 
-            return mgr.SearchCandidateProfile(candidateProfile, GetDummyUserContext());
+            return mgr.SearchCandidateProfile(candidateProfile ?? new CandidateProfileForSearchDto(), GetDummyUserContext());
 
         }
 

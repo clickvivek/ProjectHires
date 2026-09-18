@@ -1,8 +1,8 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { MaterialModule } from 'src/app/material';
 import { ChatButtonDirective } from './talk.directive';
 import { InboxDirective } from './talk.directive';
-
 
 @NgModule({
   declarations: [
@@ -10,7 +10,8 @@ import { InboxDirective } from './talk.directive';
     InboxDirective
   ],
   imports: [
-    CommonModule
+    CommonModule,
+    MaterialModule
   ],
   exports: [
     ChatButtonDirective,

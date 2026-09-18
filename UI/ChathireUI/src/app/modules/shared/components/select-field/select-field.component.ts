@@ -70,8 +70,10 @@ export class SelectFieldComponent implements OnInit, DoCheck {
       let newData = this.fieldList?.filter(item => {
         return item.id == this.editValue
       })
-      this.fieldModel = newData[0][this.fieldType]
-      this.inputChange.emit(newData[0]);
+      if (newData && newData.length > 0) {
+        this.fieldModel = newData[0][this.fieldType]
+        this.inputChange.emit(newData[0]);
+      }
     }
 
   }

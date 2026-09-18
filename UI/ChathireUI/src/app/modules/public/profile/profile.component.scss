@@ -38,199 +38,285 @@ $linkedin-hover: #084E96;
     border-radius: 16px;
     box-shadow: 0 2px 10px rgba(17, 24, 39, 0.05);
 
-    .profile-header-grid {
-      display: grid;
-      grid-template-columns: auto 1fr auto;
-      gap: 28px;
+    .profile-header-card-layout {
+      display: flex;
+      justify-content: space-between;
       align-items: center;
+      gap: 28px;
+      flex-wrap: wrap;
 
-      @include hires-breakpoint("lt-lg") {
-        grid-template-columns: 1fr;
+      @include hires-breakpoint("lt-md") {
+        flex-direction: column;
+        align-items: flex-start;
         gap: 20px;
       }
     }
 
-    // Avatar Column
-    .avatar-col {
+    // Left: Avatar + User Info
+    .profile-left-section {
+      display: flex;
+      align-items: center;
+      gap: 24px;
+      flex: 1;
+      min-width: 280px;
+
+      @include hires-breakpoint("lt-sm") {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 16px;
+      }
+
       .avatar-wrap {
         position: relative;
-        width: 124px;
-        height: 124px;
+        width: 104px;
+        height: 104px;
+        flex-shrink: 0;
 
         ::ng-deep img,
         ::ng-deep .profile-pic {
-          width: 124px !important;
-          height: 124px !important;
+          width: 104px !important;
+          height: 104px !important;
           border-radius: 50% !important;
-          border: 4px solid #FFFFFF;
-          box-shadow: 0 4px 16px rgba(17, 24, 39, 0.10);
+          border: 3px solid #FFFFFF;
+          box-shadow: 0 4px 14px rgba(17, 24, 39, 0.10);
           object-fit: cover;
         }
+      }
 
-        .verified-dot {
-          position: absolute;
-          bottom: 4px;
-          right: 4px;
-          width: 24px;
-          height: 24px;
-          background-color: $verified-green;
-          border: 2px solid #FFFFFF;
-          border-radius: 50%;
+      .user-info-wrap {
+        .profile-name-row {
           display: flex;
           align-items: center;
-          justify-content: center;
-          box-shadow: 0 2px 6px rgba(46, 139, 87, 0.3);
-        }
-      }
-    }
-
-    // Identity Column
-    .identity-col {
-      .profile-name {
-        font-size: 1.5rem;
-        font-weight: 700;
-        color: $dark-heading;
-        letter-spacing: -0.02em;
-      }
-
-      .role-badge {
-        display: inline-flex;
-        align-items: center;
-        padding: 4px 12px;
-        background-color: $light-plum;
-        color: $primary-plum;
-        border: 1px solid $plum-border;
-        border-radius: 999px;
-        font-size: 0.8125rem;
-        font-weight: 600;
-      }
-
-      .profile-headline {
-        font-size: 0.9375rem;
-        color: $body-text;
-      }
-
-      .profile-location {
-        font-size: 0.875rem;
-        color: $body-text;
-        display: inline-flex;
-        align-items: center;
-        gap: 4px;
-
-        .location-icon {
-          color: $muted-text;
-        }
-      }
-
-      // Action Buttons
-      .action-buttons-group {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        flex-wrap: wrap;
-
-        .btn-message {
-          display: inline-flex;
-          align-items: center;
-          gap: 8px;
-          height: 42px;
-          padding: 0 20px;
-          background-color: #397774 !important;
-          color: #FFFFFF !important;
-          border: none;
-          border-radius: 8px;
-          font-size: 0.875rem;
-          font-weight: 600;
-          cursor: pointer;
-          transition: all 0.15s ease;
-
-          span, div {
-            color: #FFFFFF !important;
-          }
-
-          svg {
-            color: #FFFFFF !important;
-            stroke: #FFFFFF !important;
-            fill: none !important;
-            path {
-              fill: none !important;
-              stroke: #FFFFFF !important;
-            }
-          }
-
-          &:hover {
-            background-color: #2F6663 !important;
-            color: #FFFFFF !important;
-            span, div {
-              color: #FFFFFF !important;
-            }
-            svg {
-              color: #FFFFFF !important;
-              stroke: #FFFFFF !important;
-              path {
-                fill: none !important;
-                stroke: #FFFFFF !important;
-              }
-            }
-          }
-
-          &:focus-visible {
-            outline: none;
-            box-shadow: 0 0 0 3px rgba(57, 119, 116, 0.25);
-          }
-        }
-
-        .btn-linkedin {
-          display: inline-flex;
-          align-items: center;
           gap: 6px;
-          height: 42px;
-          padding: 0 18px;
-          background-color: $linkedin-blue;
-          color: #FFFFFF;
-          border: none;
-          border-radius: 8px;
-          font-size: 0.875rem;
-          font-weight: 600;
-          text-decoration: none;
-          transition: background-color 0.15s ease;
+          flex-wrap: wrap;
 
-          &:hover {
-            background-color: $linkedin-hover;
-            color: #FFFFFF;
+          .profile-name {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: $dark-heading;
+            letter-spacing: -0.02em;
+            margin: 0;
+            line-height: 1.2;
+          }
+
+          .verified-recruiter-icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            filter: drop-shadow(0 2px 4px rgba(0, 102, 255, 0.28));
+            transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), filter 0.2s ease;
+
+            svg {
+              display: block;
+            }
+
+            &:hover {
+              transform: scale(1.2) rotate(6deg);
+              filter: drop-shadow(0 4px 10px rgba(0, 102, 255, 0.45));
+            }
           }
         }
-      }
-    }
 
-    // Shareable Link Card Column
-    .share-link-col {
-      min-width: 320px;
-      max-width: 380px;
+        .role-badge-yellow {
+          display: inline-block;
+          background-color: #FCD34D;
+          color: #78350F;
+          font-size: 0.75rem;
+          font-weight: 700;
+          padding: 2px 10px;
+          border-radius: 4px;
+          letter-spacing: 0.2px;
+        }
 
-      @include hires-breakpoint("lt-lg") {
-        min-width: 100%;
-        max-width: 100%;
-      }
-
-      .public-link-card {
-        background-color: #FAF6FB;
-        border: 1px solid #EBE0EC;
-        border-radius: 14px;
-        padding: 16px 18px;
-        box-shadow: 0 1px 3px rgba(103, 50, 96, 0.04);
-
-        .card-top-header {
+        .action-buttons-group {
           display: flex;
           align-items: center;
           gap: 10px;
-          margin-bottom: 12px;
+          margin-top: 4px;
 
+          .btn-linkedin-square {
+            width: 30px;
+            height: 30px;
+            background-color: #0A66C2;
+            border-radius: 4px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            color: #FFFFFF;
+            text-decoration: none;
+            transition: background-color 0.15s ease, transform 0.15s ease;
+            cursor: pointer;
+
+            svg {
+              fill: #FFFFFF;
+            }
+
+            &:hover {
+              background-color: #084E96;
+              transform: translateY(-1px);
+            }
+          }
+
+          .btn-chat-green,
+          .btn-chat-outline {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            height: 30px;
+            padding: 0 12px;
+            background-color: #397774 !important;
+            border: none !important;
+            border-radius: 4px !important;
+            color: #FFFFFF !important;
+            font-size: 0.8125rem !important;
+            font-weight: 600 !important;
+            cursor: pointer;
+            transition: all 0.15s ease-in-out;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
+
+            span, div, .chat-btn-text {
+              color: #FFFFFF !important;
+              font-weight: 600 !important;
+              font-size: 0.8125rem !important;
+              line-height: 1 !important;
+            }
+
+            svg, .chat-icon {
+              color: #FFFFFF !important;
+              fill: #FFFFFF !important;
+              stroke: none !important;
+              flex-shrink: 0;
+              path {
+                fill: #FFFFFF !important;
+                stroke: none !important;
+              }
+            }
+
+            &:hover {
+              background-color: #2F6663 !important;
+              color: #FFFFFF !important;
+              transform: translateY(-1px);
+              box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
+
+              span, div, .chat-btn-text {
+                color: #FFFFFF !important;
+              }
+              svg, .chat-icon {
+                color: #FFFFFF !important;
+                fill: #FFFFFF !important;
+                path {
+                  fill: #FFFFFF !important;
+                }
+              }
+            }
+          }
+        }
+
+        .profile-designation-text {
+          font-size: 0.875rem;
+          color: #374151;
+          font-weight: 600;
+        }
+      }
+    }
+
+    // Right: Company Name, Website, Logo
+    .profile-right-section {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-left: auto;
+
+      @include hires-breakpoint("lt-md") {
+        margin-left: 0;
+        text-align: left;
+      }
+
+      .company-text-col {
+        .company-name-title {
+          font-size: 1.2rem;
+          font-weight: 700;
+          color: $dark-heading;
+          letter-spacing: -0.01em;
+        }
+
+        .company-website-link,
+        .company-email-link {
+          font-size: 0.8125rem;
+          color: #9CA3AF;
+          font-weight: 500;
+          text-decoration: none;
+          display: inline-block;
+          line-height: 1.4;
+          transition: color 0.15s ease;
+
+          &:hover {
+            color: $primary-plum;
+            text-decoration: underline;
+          }
+        }
+      }
+
+      .company-brand-box {
+        width: 58px;
+        height: 58px;
+        border-radius: 8px;
+        border: 1px solid #E5E7EB;
+        background-color: #FFFFFF;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+        flex-shrink: 0;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+
+        .company-brand-img {
+          width: 100%;
+          height: 100%;
+          object-fit: contain;
+          padding: 4px;
+        }
+
+        .company-brand-fallback {
+          width: 100%;
+          height: 100%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          background-color: #F3F4F6;
+          color: #4B5563;
+          font-weight: 700;
+          font-size: 1.25rem;
+        }
+      }
+    }
+
+    // Public Link Strip (Moved Down)
+    .public-link-strip {
+      .public-link-strip-inner {
+        background-color: #FAF6FB;
+        border: 1px solid #EBE0EC;
+        border-radius: 12px;
+        padding: 14px 18px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        flex-wrap: wrap;
+
+        @include hires-breakpoint("lt-md") {
+          flex-direction: column;
+          align-items: stretch;
+        }
+
+        .link-title-group {
           .link-icon-badge {
-            width: 34px;
-            height: 34px;
+            width: 32px;
+            height: 32px;
             background-color: #F1E3F2;
-            border-radius: 9px;
+            border-radius: 8px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -243,10 +329,16 @@ $linkedin-hover: #084E96;
           }
 
           .link-card-title {
-            font-size: 0.9375rem;
+            font-size: 0.875rem;
             font-weight: 700;
             color: #1F1625;
-            letter-spacing: -0.01em;
+          }
+
+          .link-hint-text {
+            font-size: 0.75rem;
+            color: #7B7382;
+            margin: 0;
+            display: block;
           }
         }
 
@@ -259,7 +351,14 @@ $linkedin-hover: #084E96;
           border-radius: 8px;
           padding: 3px 4px 3px 12px;
           gap: 8px;
+          min-width: 280px;
+          max-width: 440px;
+          flex-grow: 1;
           transition: border-color 0.15s ease;
+
+          @include hires-breakpoint("lt-md") {
+            max-width: 100%;
+          }
 
           &:focus-within {
             border-color: $primary-plum;
@@ -281,7 +380,7 @@ $linkedin-hover: #084E96;
             gap: 5px;
             background-color: #F5EDF6;
             border: 1px solid #EADBEC;
-            padding: 6px 12px;
+            padding: 5px 12px;
             color: $primary-plum;
             font-size: 0.8125rem;
             font-weight: 600;
@@ -304,14 +403,6 @@ $linkedin-hover: #084E96;
               transform: scale(0.97);
             }
           }
-        }
-
-        .link-hint-text {
-          font-size: 0.75rem;
-          color: #7B7382;
-          margin-top: 9px;
-          margin-bottom: 0;
-          line-height: 1.4;
         }
       }
     }
@@ -337,16 +428,24 @@ $linkedin-hover: #084E96;
       .info-box {
         display: flex;
         flex-direction: column;
+        justify-content: center;
         background-color: #FAF9FA;
         border: 1px solid $border-color;
-        border-radius: 8px;
-        padding: 12px 16px;
+        border-radius: 10px;
+        padding: 14px 18px;
+        min-height: 84px;
 
         .info-label {
           font-size: 0.8125rem;
           font-weight: 600;
           color: $muted-text;
-          margin-bottom: 2px;
+          margin-bottom: 6px;
+        }
+
+        .info-value-row {
+          display: flex;
+          align-items: center;
+          min-height: 42px;
         }
 
         .info-value {
@@ -361,6 +460,55 @@ $linkedin-hover: #084E96;
             &:hover {
               text-decoration: underline;
             }
+          }
+        }
+
+        .company-detail-row {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+          min-height: 42px;
+
+          .company-logo-badge {
+            width: 42px;
+            height: 42px;
+            min-width: 42px;
+            min-height: 42px;
+            border-radius: 8px;
+            background-color: #FFFFFF;
+            border: 1px solid $plum-border;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+
+            .company-logo-img {
+              width: 100%;
+              height: 100%;
+              object-fit: contain;
+              padding: 3px;
+            }
+
+            .company-logo-fallback {
+              width: 100%;
+              height: 100%;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              background-color: $light-plum;
+              color: $primary-plum;
+              font-weight: 700;
+              font-size: 16px;
+              user-select: none;
+            }
+          }
+
+          .company-name-text {
+            font-size: 1rem;
+            font-weight: 600;
+            color: $dark-heading;
+            line-height: 1.3;
           }
         }
       }

@@ -644,9 +644,11 @@ namespace BusinessLayer.Manager
             if (string.IsNullOrWhiteSpace(recruiterEmail)) return;
 
             string jobTitle = !string.IsNullOrWhiteSpace(r.JobOpening?.Name) ? r.JobOpening.Name : $"Job #{r.JobOpeningId}";
-            string candidateName = r.CandidateProfile != null && !string.IsNullOrWhiteSpace(r.CandidateProfile.CandidateName)
+            string candidateName = !string.IsNullOrWhiteSpace(r.CandidateProfile?.CandidateName)
                 ? r.CandidateProfile.CandidateName
-                : "A Candidate";
+                : (!string.IsNullOrWhiteSpace(insertDto?.CandidateName)
+                    ? insertDto.CandidateName
+                    : "A Candidate");
 
             byte[]? resumeBytes = null;
             string? attachmentName = null;
@@ -686,8 +688,24 @@ namespace BusinessLayer.Manager
 
                             string ext = Path.GetExtension(fileName);
                             if (string.IsNullOrWhiteSpace(ext)) ext = ".pdf";
-                            string sanitizedCandidate = string.Join("_", candidateName.Split(Path.GetInvalidFileNameChars()));
-                            attachmentName = $"{sanitizedCandidate}_Resume{ext}";
+
+                            // If original uploaded filename was captured, retain it
+                            if (insertDto != null && !string.IsNullOrWhiteSpace(insertDto.OriginalDocName))
+                            {
+                                string originalName = Path.GetFileName(insertDto.OriginalDocName);
+                                if (!string.IsNullOrWhiteSpace(originalName))
+                                {
+                                    attachmentName = string.Join("_", originalName.Split(Path.GetInvalidFileNameChars(), StringSplitOptions.RemoveEmptyEntries));
+                                }
+                            }
+
+                            // Fallback to sanitized candidate resume name if original name is not available
+                            if (string.IsNullOrWhiteSpace(attachmentName))
+                            {
+                                string sanitizedCandidate = string.Join("_", candidateName.Split(Path.GetInvalidFileNameChars(), StringSplitOptions.RemoveEmptyEntries));
+                                if (string.IsNullOrWhiteSpace(sanitizedCandidate)) sanitizedCandidate = "Candidate";
+                                attachmentName = $"{sanitizedCandidate}_Resume{ext}";
+                            }
                         }
                     }
                     catch (Exception ex)
@@ -697,8 +715,47 @@ namespace BusinessLayer.Manager
                 }
             }
 
-            string totalExp = r.CandidateProfile?.TotalExp != null ? $"{r.CandidateProfile.TotalExp} years" : "Not specified";
-            string candidateTitle = !string.IsNullOrWhiteSpace(r.CandidateProfile?.Title) ? r.CandidateProfile.Title : "Applicant";
+            string totalExp = r.CandidateProfile?.TotalExp != null
+                ? $"{r.CandidateProfile.TotalExp} years"
+                : (insertDto?.TotalYearsOfExp != null
+                    ? $"{insertDto.TotalYearsOfExp} years"
+                    : "Not specified");
+
+            string candidateTitle = !string.IsNullOrWhiteSpace(r.CandidateProfile?.Title)
+                ? r.CandidateProfile.Title
+                : (!string.IsNullOrWhiteSpace(r.JobOpening?.Name)
+                    ? $"{r.JobOpening.Name} Applicant"
+                    : "Applicant");
+
+            string locationText = "";
+            if (r.CandidateProfile?.City != null)
+            {
+                var cityObj = r.CandidateProfile.City;
+                var locParts = new[] { cityObj.City1, cityObj.IdStateNavigation?.StateName ?? cityObj.IdStateNavigation?.StateCode, cityObj.IdStateNavigation?.CountryCode }
+                    .Where(p => !string.IsNullOrWhiteSpace(p));
+                locationText = string.Join(", ", locParts);
+            }
+            else if (insertDto?.CurrentLocationCityid != null && insertDto.CurrentLocationCityid > 0)
+            {
+                try
+                {
+                    var cityRepo = repositoryFactory.Get<ICityRepository>();
+                    var cityObj = await cityRepo.Get((int)insertDto.CurrentLocationCityid.Value);
+                    if (cityObj != null)
+                    {
+                        var locParts = new[] { cityObj.City1, cityObj.IdStateNavigation?.StateName ?? cityObj.IdStateNavigation?.StateCode, cityObj.IdStateNavigation?.CountryCode }
+                            .Where(p => !string.IsNullOrWhiteSpace(p));
+                        locationText = string.Join(", ", locParts);
+                    }
+                }
+                catch { }
+            }
+
+            string linkedIn = !string.IsNullOrWhiteSpace(r.CandidateProfile?.LinkedIn)
+                ? r.CandidateProfile.LinkedIn
+                : (!string.IsNullOrWhiteSpace(insertDto?.LinkedIn)
+                    ? insertDto.LinkedIn
+                    : "");
 
             // Build skills list
             string skillsHtml = "";
@@ -744,7 +801,7 @@ namespace BusinessLayer.Manager
                         <table style='width: 100%; border-collapse: collapse; font-size: 14px;'>
                             <tr>
                                 <td style='padding: 6px 0; color: #6b7280; width: 140px;'><strong>Name:</strong></td>
-                                <td style='padding: 6px 0; color: #111827;'>{candidateName}</td>
+                                <td style='padding: 6px 0; color: #111827; font-weight: 600;'>{candidateName}</td>
                             </tr>
                             <tr>
                                 <td style='padding: 6px 0; color: #6b7280;'><strong>Current Title:</strong></td>
@@ -754,6 +811,16 @@ namespace BusinessLayer.Manager
                                 <td style='padding: 6px 0; color: #6b7280;'><strong>Experience:</strong></td>
                                 <td style='padding: 6px 0; color: #111827;'>{totalExp}</td>
                             </tr>
+                            {(string.IsNullOrEmpty(locationText) ? "" : $@"
+                            <tr>
+                                <td style='padding: 6px 0; color: #6b7280;'><strong>Location:</strong></td>
+                                <td style='padding: 6px 0; color: #111827;'>{locationText}</td>
+                            </tr>")}
+                            {(string.IsNullOrEmpty(linkedIn) ? "" : $@"
+                            <tr>
+                                <td style='padding: 6px 0; color: #6b7280;'><strong>LinkedIn:</strong></td>
+                                <td style='padding: 6px 0;'><a href='{linkedIn}' style='color: #4F46E5; text-decoration: underline;'>{linkedIn}</a></td>
+                            </tr>")}
                             {(string.IsNullOrEmpty(skillsHtml) ? "" : $@"
                             <tr>
                                 <td style='padding: 6px 0; color: #6b7280; vertical-align: top;'><strong>Skills:</strong></td>

@@ -25,10 +25,10 @@
             {{ error }}
           </div>
 
-          <ng-container *ngIf="isDataAvailable">
+          <ng-container *ngIf="isDataAvailable && !isError">
 
-            <div class="options-box">
-              <h6>{{ totalItems }} resume(s) found</h6>
+            <div class="options-box mb-3 d-flex align-items-center justify-content-between">
+              <h6 class="results-count fw-bold text-dark mb-0">{{ totalItems }} resume(s) found</h6>
             </div>
 
             <div class="list-container">
@@ -43,108 +43,82 @@
                 <adv-filter-reset></adv-filter-reset>
               </adv-filter-card>
 
-              <div class="content" *ngIf="filteredHotListData.length > 0">
+              <div class="content mt-3" *ngIf="filteredHotListData.length > 0">
 
-                <li class="list-group-item shadow" *ngFor=" let item of filteredHotListData | slice : ItemStartIndex : ItemEndIndex">
-                  <div class="content-area">
-                    <div class="row">
-                      <div class="col-sm-12 col-lg-8 top">
-                        <div class="left">
-                          <div class="mb-1 d-md-flex align-items-center">
-                            <h6
-                              class="text-secondary-600 text-uppercase text-normal fw-medium me-3"
-                            >
-                              {{ item.candidateName }}
-                            </h6>
-                            <p
-                              class="ft-head text-dark-500 fw-medium text-capitalizel"
-                            >
-                              {{ item.title }}
-                            </p>
-                          </div>
+                <div class="candidate-card" *ngFor="let item of filteredHotListData | slice : ItemStartIndex : ItemEndIndex">
+                  <div class="row align-items-center g-3">
+                    
+                    <!-- Left / Main Details -->
+                    <div class="col-12 col-lg-8">
+                      <!-- Candidate Name & Title -->
+                      <div class="d-flex align-items-center flex-wrap gap-2 mb-2">
+                        <h5 class="candidate-name mb-0 fw-bold">
+                          {{ item.candidateName }}
+                        </h5>
+                        <span class="candidate-title fw-semibold">
+                          {{ item.title }}
+                        </span>
+                      </div>
 
-                          <div class="d-md-flex additional align-items-center">
-                            <div class="item d-flex align-items-center">
-                              <span
-                                class="material-symbols-outlined text-base text-dark-500 me-2"
-                                >trip</span
-                              >
-                              <p class="text-sm fw-medium">
-                                {{ item.totalExp }} years
-                              </p>
-                            </div>
-                            <div class="item d-flex align-items-center">
-                              <span
-                                class="material-symbols-outlined text-base text-dark-500 me-2"
-                                >airplane_ticket</span
-                              >
-                              <p class="text-sm fw-medium">
-                                {{ getVisa(item.visaId) }}
-                              </p>
-                            </div>
-                            <div class="item d-flex align-items-center">
-                              <span
-                                class="material-symbols-outlined text-base text-dark-500 me-1"
-                                >location_on</span
-                              >
-                              <p class="text-sm fw-medium">
-                                {{ item.currentLocationCity }},
-                                {{ item.currentLocationState }}
-                              </p>
-                            </div>
-                            <div></div>
-                          </div>
-
-                          <div class="others d-md-flex">
-                            <p class="me-3 text-sm text-dark-500 left">
-                              Availability
-                            </p>
-                            <p class="fw-medium text-sm">
-                              {{ item.candidateAvailability }}
-                            </p>
-                          </div>
-                          <div class="d-md-flex others">
-                            <p class="me-3 text-sm text-dark-500 left">
-                              Preferred location
-                            </p>
-                            <p class="fw-medium text-sm">
-                              <span *ngIf="item.remoteOnly != 'True'">{{ getRelocation(item.locations) }}</span>
-                              <span *ngIf="item.remoteOnly == 'True'">Remote only</span>
-                            </p>
-                          </div>
-
-                          <div class="skills mt-4" *ngIf="isSkills(item.skills)">
-                            <span
-                              class="item text-primary-800 bg-primary-50 text-smr fw-medium"
-                              *ngFor="let skill of item.skills"
-                              >{{ skill }}</span
-                            >
-                          </div>
-                          <div class="skills mt-4" *ngIf="!isSkills(item.skills)">
-                            <span
-                              class="item text-danger-800 bg-danger-50 text-smr fw-medium"
-                              >No Skills Available</span
-                            >
-                          </div>
-                          <div class="bottom-box my-2 d-flex">
-                            <view-resume
-                              *ngIf="item?.resume"
-                              [doc]="item.resume"
-                            ></view-resume>
-                            <download-resume
-                              *ngIf="item?.resume"
-                              [doc]="item.resume"
-                            ></download-resume>
-                          </div>
+                      <!-- Metadata Row (Exp, Visa, Location) -->
+                      <div class="candidate-meta d-flex align-items-center flex-wrap gap-3 my-2">
+                        <div class="meta-item d-flex align-items-center gap-1" *ngIf="item.totalExp">
+                          <span class="material-symbols-outlined meta-icon">work_history</span>
+                          <span class="meta-text">{{ item.totalExp }} years</span>
+                        </div>
+                        <div class="meta-item d-flex align-items-center gap-1" *ngIf="getVisa(item.visaId)">
+                          <span class="material-symbols-outlined meta-icon">badge</span>
+                          <span class="meta-text">{{ getVisa(item.visaId) }}</span>
+                        </div>
+                        <div class="meta-item d-flex align-items-center gap-1" *ngIf="item.currentLocationCity || item.currentLocationState">
+                          <span class="material-symbols-outlined meta-icon text-danger-icon">location_on</span>
+                          <span class="meta-text">{{ item.currentLocationCity }}{{ item.currentLocationCity && item.currentLocationState ? ', ' : '' }}{{ item.currentLocationState }}</span>
                         </div>
                       </div>
 
-                      <div class="col-sm-12 col-lg-4">
-                        <search-hotlist-chat [item]="item"></search-hotlist-chat>
+                      <!-- Candidate Info Box (Availability & Preferred Location) -->
+                      <div class="candidate-info-box d-flex flex-column gap-1 my-2">
+                        <div class="info-row d-flex align-items-baseline" *ngIf="item.candidateAvailability">
+                          <span class="info-label text-muted">Availability</span>
+                          <span class="info-value fw-medium">{{ item.candidateAvailability }}</span>
+                        </div>
+                        <div class="info-row d-flex align-items-baseline">
+                          <span class="info-label text-muted">Preferred location</span>
+                          <span class="info-value fw-medium">
+                            <span *ngIf="item.remoteOnly != 'True'">{{ getRelocation(item.locations) || 'Any Location' }}</span>
+                            <span *ngIf="item.remoteOnly == 'True'" class="badge-remote">Remote only</span>
+                          </span>
+                        </div>
+                      </div>
+
+                      <!-- Skills Badges -->
+                      <div class="skills-wrap d-flex flex-wrap gap-2 mt-3" *ngIf="isSkills(item.skills)">
+                        <ng-container *ngFor="let skill of item.skills">
+                          <span
+                            *ngIf="skill && skill.trim()"
+                            class="skill-tag"
+                            >{{ skill.trim() }}</span
+                          >
+                        </ng-container>
+                      </div>
+                      <div class="skills-wrap mt-3" *ngIf="!isSkills(item.skills)">
+                        <span class="no-skills-tag">No Skills Available</span>
+                      </div>
+
+                      <!-- Resume Actions -->
+                      <div class="bottom-box mt-3 d-flex align-items-center gap-2" *ngIf="item?.resume">
+                        <view-resume [doc]="item.resume"></view-resume>
+                        <download-resume [doc]="item.resume"></download-resume>
                       </div>
                     </div>
+
+                    <!-- Right / Recruiter Contact Box -->
+                    <div class="col-12 col-lg-4">
+                      <search-hotlist-chat [item]="item"></search-hotlist-chat>
+                    </div>
+
                   </div>
-                </li>
+                </div>
 
                 <app-pagination-box
                   [totalItems]="totalItems"

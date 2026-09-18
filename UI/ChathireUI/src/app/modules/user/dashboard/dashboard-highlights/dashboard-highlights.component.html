@@ -1,13 +1,10 @@
 <div class="dashboard-highlights-wrapper py-3">
 
-  <!-- Collapsible Dashboard Card Container -->
+  <!-- Dashboard Card Container -->
   <div class="card dashboard-collapsible-card border rounded-3 bg-white mb-4">
     
-    <!-- Collapsible Card Header -->
-    <div
-      class="card-header border-0 bg-transparent p-3 p-md-4 d-flex align-items-center justify-content-between cursor-pointer user-select-none"
-      (click)="toggleCollapse()"
-    >
+    <!-- Dashboard Card Header -->
+    <div class="card-header border-0 bg-transparent p-3 p-md-4">
       <div class="d-flex align-items-center gap-3">
         <div>
           <div class="d-flex align-items-center gap-2 mb-1">
@@ -21,19 +18,10 @@
           </p>
         </div>
       </div>
-
-      <div class="d-flex align-items-center gap-2">
-        <button type="button" class="btn btn-subtle-purple btn-sm d-inline-flex align-items-center gap-1">
-          <span>{{ isCollapsed ? 'View Dashboard Highlights' : 'Hide Dashboard Highlights' }}</span>
-          <span class="material-symbols-outlined fs-5 transition-transform" [class.rotated]="!isCollapsed">
-            expand_more
-          </span>
-        </button>
-      </div>
     </div>
 
-    <!-- Collapsible Card Body (Collapsed by default) -->
-    <div class="card-body px-3 px-md-4 pb-4 pt-0 border-top" *ngIf="!isCollapsed">
+    <!-- Dashboard Card Body (Always Visible) -->
+    <div class="card-body px-3 px-md-4 pb-4 pt-0 border-top">
       
       <!-- SECTION 1: RECRUITMENT -->
       <div class="data-section mt-4 mb-4" *ngIf="showRecruitmentSection()">

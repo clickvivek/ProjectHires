@@ -159,6 +159,11 @@ export class MultiSearchFieldComponent implements OnInit, OnChanges, OnDestroy {
 
   compareObj(obj1, obj2) {
     if (!obj1 || !obj2) return false;
+    const id1 = obj1.id || obj1.cityId || obj1.skillId;
+    const id2 = obj2.id || obj2.cityId || obj2.skillId;
+    if (id1 && id2 && id1 !== 0 && id2 !== 0) {
+      return id1 === id2;
+    }
     const key = this.splitFieldType(this.fieldType);
     const v1 = String(obj1[key] || '').trim().toLowerCase();
     const v2 = String(obj2[key] || '').trim().toLowerCase();

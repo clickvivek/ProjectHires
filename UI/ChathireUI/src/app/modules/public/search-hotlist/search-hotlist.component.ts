@@ -163,8 +163,9 @@ export class SearchHotlistComponent implements OnInit {
       return defaultProfilePic
   }
 
-  isSkills(item) {
-    return _.isEmpty(item) ? false : true
+  isSkills(item: any) {
+    if (!item || !Array.isArray(item)) return false;
+    return item.some(skill => skill && typeof skill === 'string' && skill.trim().length > 0);
   }
 
   onVisaFilter(event) {
@@ -200,26 +201,30 @@ export class SearchHotlistComponent implements OnInit {
 
   }
 
-  handleHotlistSearch(skill, undefined, cityArr, stateArr, visaArr, expArr) {
+  handleHotlistSearch(skill: any, undefinedParam: any, cityArr: any, stateArr: any, visaArr: any, expArr: any) {
 
-    const searchStrings = [skill]
+    const searchStrings = (skill && typeof skill === 'string' && skill.trim().length > 0) ? [skill.trim()] : undefined;
+    const cityIds = (cityArr !== undefined && cityArr !== null && !isNaN(Number(cityArr))) ? [Number(cityArr)] : undefined;
+    const stateIds = (stateArr !== undefined && stateArr !== null && !isNaN(Number(stateArr))) ? [Number(stateArr)] : undefined;
+    const visaList = (visaArr && Array.isArray(visaArr) && visaArr.length > 0) ? visaArr.map(v => Number(v)).filter(v => !isNaN(v)) : undefined;
 
-    const cityIds = [cityArr];
-    const stateIds = [stateArr];
-
-    let startYearsOfExpInput:any = undefined;
+    let startYearsOfExpInput: any = undefined;
     let endYearsOfExpInput: any = undefined;
 
     let filteredExps: Array<any> = [];
 
-    expArr.forEach(item => {
-      let filteredObject = filterexperienceLevel.filter(obj => obj.id === parseInt(item));
-      let data = {
-        start: filteredObject[0].start,
-        end: filteredObject[0].end
-      }
-      filteredExps.push(data)
-    });
+    if (expArr && Array.isArray(expArr)) {
+      expArr.forEach(item => {
+        let filteredObject = filterexperienceLevel.filter(obj => obj.id === parseInt(item));
+        if (filteredObject && filteredObject[0]) {
+          let data = {
+            start: filteredObject[0].start,
+            end: filteredObject[0].end
+          };
+          filteredExps.push(data);
+        }
+      });
+    }
 
     if (!_.isEmpty(filteredExps)) {
       let minStartValue = Number.POSITIVE_INFINITY;
@@ -228,22 +233,29 @@ export class SearchHotlistComponent implements OnInit {
         minStartValue = Math.min(minStartValue, item.start);
         maxEndValue = Math.max(maxEndValue, item.end);
       }
-      startYearsOfExpInput = minStartValue
-      endYearsOfExpInput = maxEndValue
+      startYearsOfExpInput = minStartValue;
+      endYearsOfExpInput = maxEndValue;
     }
 
     this.isLoaded = false;
+    this.isError = false;
+    this.error = '';
 
-    //passed undefined for city and stateid as of now ( untill api gets fixed)
-    this.candidateProfileService.apiCandidateProfileSearchCandidateProfilesGet(searchStrings, undefined, cityIds, stateIds, visaArr, startYearsOfExpInput, endYearsOfExpInput).subscribe({
+    this.candidateProfileService.apiCandidateProfileSearchCandidateProfilesGet(searchStrings, undefined, cityIds, stateIds, visaList, startYearsOfExpInput, endYearsOfExpInput).subscribe({
       next: (res: any) => {
+        this.isLoaded = true;
+        this.isDataAvailable = true;
+        this.isError = false;
         
-        this.isLoaded = true
-        this.isDataAvailable = true
-        this.isError = false
-        
-        this.initialHotListData = res
-        this.filteredHotListData = this.initialHotListData
+        this.initialHotListData = res || [];
+        if (Array.isArray(this.initialHotListData)) {
+          this.initialHotListData.forEach((cand: any) => {
+            if (cand.skills && Array.isArray(cand.skills)) {
+              cand.skills = cand.skills.map((s: any) => typeof s === 'string' ? s.trim() : s).filter((s: any) => s && s.length > 0);
+            }
+          });
+        }
+        this.filteredHotListData = this.initialHotListData;
 
         this.totalItems = this.filteredHotListData.length;
 
@@ -256,12 +268,12 @@ export class SearchHotlistComponent implements OnInit {
 
       },
       error: (error: any) => { 
-        this.isError = true
-        this.isLoaded = true
-        this.isDataAvailable = true
+        this.isError = true;
+        this.isLoaded = true;
+        this.isDataAvailable = false;
         this.error = 'Some error occured';
       }
-    })
+    });
 
   }
 

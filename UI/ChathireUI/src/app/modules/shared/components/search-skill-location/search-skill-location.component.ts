@@ -136,12 +136,27 @@ export class SearchSkillLocationComponent  {
 
   getSkill(name, id) {
     this.skill = name;
+    if (this.skillSearchDropdown) {
+      this.renderer.removeClass(this.skillSearchDropdown, 'show');
+    }
   }
 
-  getLocation(city, state, country, cityId, stateId) {
-    this.location = city+" ,"+state+" ,"+country;
-    this.cityId = cityId;
-    this.stateId = stateId
+  formatLocation(item: any): string {
+    if (!item) return '';
+    const state = item.stateName || item.stateCode || '';
+    const parts = [item.city1, state, item.zip, item.countryName].filter(
+      p => !!p && String(p).trim().length > 0
+    );
+    return parts.join(', ');
+  }
+
+  getLocation(item: any) {
+    this.location = this.formatLocation(item);
+    this.cityId = item?.id;
+    this.stateId = item?.idState;
+    if (this.locationSearchDropdown) {
+      this.renderer.removeClass(this.locationSearchDropdown, 'show');
+    }
   }
 
   ngOnInit() {

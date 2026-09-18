@@ -56,6 +56,9 @@ export class MultiSelectFieldComponent {
   }
 
   compareObj(obj1, obj2) {
+    if (obj1 && obj2 && obj1.id !== undefined && obj2.id !== undefined) {
+      return obj1.id === obj2.id;
+    }
     return JSON.stringify(obj1) === JSON.stringify(obj2);
   }
 
@@ -65,7 +68,7 @@ export class MultiSelectFieldComponent {
     }
   }
 
-  handleSelectedItem(item:any) {
+  handleSelectedItem(item:any, shouldFocus: boolean = true) {
 
     if(this.selectedItem.length < this.fieldItemMaxLimit) {
       this.pushObj(this.selectedItem, item)
@@ -74,22 +77,25 @@ export class MultiSelectFieldComponent {
       this.isExpanded = false
 
       setTimeout(() => {
-        this.handleInputHeight()
+        this.handleInputHeight(shouldFocus)
       }, 100)
     }
 
     if(this.selectedItem.length == this.fieldItemMaxLimit) {
       setTimeout(() => {
         this.fieldModel = ""
-        const inputElement = this.multiInputElem.nativeElement;
-        inputElement.blur();
+        if (this.multiInputElem?.nativeElement) {
+          const inputElement = this.multiInputElem.nativeElement;
+          inputElement.blur();
+        }
       }, 100)
     }
 
   }
 
-  handleInputHeight() {
+  handleInputHeight(shouldFocus: boolean = true) {
 
+    if (!this.multiInputElem?.nativeElement || !this.badgeListElem?.nativeElement) return;
     let inputElement = this.multiInputElem.nativeElement;
     let badgeElement = this.badgeListElem.nativeElement;
 
@@ -97,7 +103,12 @@ export class MultiSelectFieldComponent {
 
     inputElement.style.height = `${badgeListHeight+10}px`;
 
-    const childElements = badgeElement.children[0].children;
+    const childElements = badgeElement.children[0]?.children;
+    if (!childElements || childElements.length === 0) {
+      this.leftPadding = 10;
+      this.topPadding = 4;
+      return;
+    }
     const lastChild = childElements[childElements.length - 1];
 
     if(lastChild) {
@@ -111,7 +122,9 @@ export class MultiSelectFieldComponent {
       this.topPadding = 4
     }
 
-    inputElement.focus();
+    if (shouldFocus) {
+      inputElement.focus();
+    }
 
   }
 
@@ -124,7 +137,7 @@ export class MultiSelectFieldComponent {
     this.inputChange.emit(this.selectedItem)
     setTimeout(() => {
       
-      this.handleInputHeight()
+      this.handleInputHeight(true)
 
 
     }, 100)
@@ -168,18 +181,34 @@ export class MultiSelectFieldComponent {
   }
 
 
+  getBadgeLabel(badge: any): string {
+    if (badge && badge[this.fieldType]) {
+      return badge[this.fieldType];
+    }
+    const sourceList = (this.initialfilterList && this.initialfilterList.length > 0) ? this.initialfilterList : this.fieldList;
+    if (sourceList && sourceList.length > 0) {
+      const badgeId = badge?.id || badge?.[this.fieldName];
+      const match = sourceList.find((item: any) => item.id === badgeId);
+      if (match && match[this.fieldType]) {
+        return match[this.fieldType];
+      }
+    }
+    return '';
+  }
+
   ngOnChanges(changes: SimpleChanges) {
 
-    
+    if (!_.isEmpty(this.editValue) && !this.fieldModel) {
+      const currentIds = this.selectedItem.map((item: any) => item.id || item[this.fieldName]);
+      const newIds = this.editValue.map((item: any) => item.id || item[this.fieldName]);
+      const isDifferent = currentIds.length !== newIds.length || !newIds.every((id: any) => currentIds.includes(id));
 
-    //if (!_.isEmpty(this.editValue) && this.isEdit && !this.fieldModel && _.isEmpty(this.selectedItem)) {
-
-    if (!_.isEmpty(this.editValue) && !this.fieldModel && _.isEmpty(this.selectedItem)) {
-      
-      this.selectedItem = []
-      this.editValue.forEach(item => {
-        this.handleSelectedItem(item)
-      })
+      if (isDifferent) {
+        this.selectedItem = []
+        this.editValue.forEach(item => {
+          this.handleSelectedItem(item, false)
+        })
+      }
     }
 
     // if item selected, item will be removed from the inital list and vice versa
@@ -191,7 +220,7 @@ export class MultiSelectFieldComponent {
       }
       let initialfilterList = [...this.initialfilterList]
       this.fieldList = initialfilterList.filter(item => {
-        return !this.editValue.find(item2 => item2[this.fieldName] === item.id);
+        return !this.editValue?.find(item2 => (item2[this.fieldName] || item2.id) === item.id);
       });
 
     }

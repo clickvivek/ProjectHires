@@ -33,6 +33,9 @@ export class ChooseFromHotlistComponent {
   applyJobModel: JobOpeningCandidateProfileMapDtoForInsert;
 
   @Output() outParams = new EventEmitter();
+  @Output() appliedSuccess = new EventEmitter<any>();
+
+  isSubmitting: boolean = false;
 
   constructor(
     @Inject(MAT_DIALOG_DATA) public job: any,
@@ -107,7 +110,9 @@ export class ChooseFromHotlistComponent {
   }
 
   applyJob() {
-    
+    if (this.isSubmitting || !this.selectedHotlistType) return;
+    this.isSubmitting = true;
+
     this.applyJobModel = {
       jobOpeningId: parseInt(this.job.jobOpeningId),
       candidateProfileId: parseInt(this.selectedHotlistType),
@@ -116,27 +121,25 @@ export class ChooseFromHotlistComponent {
       candidateProfileMappingStatusId: 1,
       comment: "",
       consultancyUserId: this.sessionService.consultancyUserId,
-      //candidateUserId: this.selectedCandidate.id,
       candidateUserId: null,
-      doc: this.selectedCandidate.candidateDocuments.length != 0 ? this.selectedCandidate.candidateDocuments[0].doc : ""
+      doc: this.selectedCandidate?.candidateDocuments?.length ? this.selectedCandidate.candidateDocuments[0].doc : ""
     }
 
     this.jobOpeningService.apiJobOpeningApplyPost(this.applyJobModel).subscribe({
       next: (res: any) => {
-        
-        this.selectedHotlistType = ""
-        this.fetchData()
-        setTimeout(() => {
-          this.toastr.success('Job applied successfully', '', {
-            timeOut: 2000,
-            positionClass: 'toast-top-center'
-          });
-        }, 100);
-        this.dialogRef.close()
+        this.isSubmitting = false;
+        const candidateName = this.selectedCandidate?.candidateName || '';
+        this.selectedHotlistType = "";
+        this.appliedSuccess.emit({
+          candidateName: candidateName,
+          jobTitle: this.job?.jobOpeningName,
+          companyName: this.job?.companyName
+        });
       },
       error: (error:any) => {
+        this.isSubmitting = false;
         setTimeout(() => {
-          this.toastr.error('Some error occured', '', {
+          this.toastr.error('Some error occured while submitting', '', {
             timeOut: 2000,
             positionClass: 'toast-top-center'
           });

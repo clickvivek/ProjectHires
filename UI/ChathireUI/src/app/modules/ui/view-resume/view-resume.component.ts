@@ -1,4 +1,7 @@
 import { Component, Input, ViewChild, ElementRef, SimpleChanges  } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
+import { AuthService } from 'src/app/core/auth/auth.service';
+import { LoginModalComponent } from 'src/app/modules/shared/components/login-modal/login-modal.component';
 
 @Component({
   selector: 'view-resume',
@@ -20,7 +23,8 @@ export class ViewResumeComponent {
   
 
   constructor(
-   
+    private authService: AuthService,
+    public dialog: MatDialog
   ) {
 
   }
@@ -29,11 +33,29 @@ export class ViewResumeComponent {
     return true
   }
 
-  handleResume() {
-    this.isViewer = !this.isViewer
+  private openViewer() {
+    this.isViewer = true;
     setTimeout(() => {
-      this.loadDoc = true
-    })
+      this.loadDoc = true;
+    });
+  }
+
+  handleResume() {
+    if (this.authService.isLoggedIn()) {
+      this.openViewer();
+    } else {
+      const dialogRef = this.dialog.open(LoginModalComponent, {
+        width: '440px',
+        panelClass: 'login-modal-panel',
+        data: { actionText: 'view this resume' }
+      });
+
+      dialogRef.afterClosed().subscribe(res => {
+        if (res && res.success) {
+          this.openViewer();
+        }
+      });
+    }
   }
 
   isDoc() {

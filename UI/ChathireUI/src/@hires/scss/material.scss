@@ -59,6 +59,21 @@
       }
     }
   }
+
+  &.confirm-apply-modal-panel {
+    border-radius: 8px !important;
+    overflow: hidden !important;
+    .mat-dialog-container {
+      max-height: 90vh !important;
+      overflow: hidden !important;
+      display: flex !important;
+      flex-direction: column !important;
+      border-radius: 8px !important;
+      @include hires-breakpoint("gt-sm") {
+        width: 620px;
+      }
+    }
+  }
 }
 
 .mat-drawer-container {
@@ -86,5 +101,17 @@
   overflow: hidden;
   .navbar {
     z-index: 1 !important;
+  }
+}
+
+.login-modal-panel {
+  .mat-dialog-container {
+    padding: 0 !important;
+    border-radius: 16px !important;
+    overflow: hidden !important;
+    background: #ffffff !important;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2), 0 10px 10px -5px rgba(0, 0, 0, 0.08) !important;
+    max-width: 440px !important;
+    width: 100% !important;
   }
 }

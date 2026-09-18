@@ -1,16 +1,9 @@
 <div class="profile-job-posting-history-item-wrapper">
     <div class="list-group-item pointer {{last ? 'border-0' :''}}" [ngClass]="isSelected(job.jobOpeningId)"  (click)="showJobDescription(job)">
         <p class="text-secondary-800 fw-medium">{{ job.jobOpeningName }}</p>
-        <p class="text-dark-500 fw-medium">
-            <span
-              *ngFor="
-                let location of job.locations;
-                let lastItem = last
-              "
-              >{{ location
-              }}<span *ngIf="!lastItem">, &nbsp;</span></span
-            >
-         </p>
+        <p class="text-dark-500 fw-medium" *ngIf="getFormattedLocations(job?.locations)">
+            {{ getFormattedLocations(job?.locations) }}
+        </p>
         <p class="text-dark-400 text-sm mt-2">posted on {{getDate(job?.postedDate)}}</p>
     </div>
 </div>

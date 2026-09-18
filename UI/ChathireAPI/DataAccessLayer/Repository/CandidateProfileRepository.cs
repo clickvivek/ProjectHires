@@ -261,55 +261,48 @@ namespace DataAccessLayer.Repository
 
             List<SqlParameter> parameters = new List<SqlParameter>();
 
-            if (candidateProfile.SearchString != null)
-            {
-                SqlParameter param = new SqlParameter("@SearchString", SqlDbType.Structured)
-                {
-                    TypeName = "[dbo].[UDT_StringType]",
-                    Value = Util.PopulateDataTable(candidateProfile.SearchString.Cast<object>().ToList(), typeof(string))
-                };
-                parameters.Add(param);
-            }
+            var searchStringList = candidateProfile.SearchString?
+                .Where(s => !string.IsNullOrWhiteSpace(s) && s != "undefined")
+                .Cast<object>().ToList() ?? new List<object>();
 
-            if (candidateProfile.cityIds != null)
+            SqlParameter paramSearch = new SqlParameter("@SearchString", SqlDbType.Structured)
             {
-                SqlParameter param = new SqlParameter("@CityId", SqlDbType.Structured)
-                {
-                    TypeName = "[dbo].[UDT_IntType]",
-                    Value = Util.PopulateDataTable(candidateProfile.cityIds.Cast<object>().ToList(), typeof(int))
-                };
-                parameters.Add(param);
-            }
+                TypeName = "[dbo].[UDT_StringType]",
+                Value = Util.PopulateDataTable(searchStringList, typeof(string))
+            };
+            parameters.Add(paramSearch);
 
-            if (candidateProfile.stateIds != null)
+            var skillsList = candidateProfile.skills?.Cast<object>().ToList() ?? new List<object>();
+            SqlParameter paramSkills = new SqlParameter("@Skills", SqlDbType.Structured)
             {
-                SqlParameter param = new SqlParameter("@StateId", SqlDbType.Structured)
-                {
-                    TypeName = "[dbo].[UDT_IntType]",
-                    Value = Util.PopulateDataTable(candidateProfile.stateIds.Cast<object>().ToList(), typeof(int))
-                };
-                parameters.Add(param);
-            }
+                TypeName = "[dbo].[UDT_IntType]",
+                Value = Util.PopulateDataTable(skillsList, typeof(int))
+            };
+            parameters.Add(paramSkills);
 
-            if (candidateProfile.skills != null)
+            var cityList = candidateProfile.cityIds?.Cast<object>().ToList() ?? new List<object>();
+            SqlParameter paramCity = new SqlParameter("@CityId", SqlDbType.Structured)
             {
-                SqlParameter param = new SqlParameter("@Skills", SqlDbType.Structured)
-                {
-                    TypeName = "[dbo].[UDT_IntType]",
-                    Value = Util.PopulateDataTable(candidateProfile.skills.Cast<object>().ToList(), typeof(int))
-                };
-                parameters.Add(param);
-            }
+                TypeName = "[dbo].[UDT_IntType]",
+                Value = Util.PopulateDataTable(cityList, typeof(int))
+            };
+            parameters.Add(paramCity);
 
-            if (candidateProfile.visas != null)
+            var stateList = candidateProfile.stateIds?.Cast<object>().ToList() ?? new List<object>();
+            SqlParameter paramState = new SqlParameter("@StateId", SqlDbType.Structured)
             {
-                SqlParameter param = new SqlParameter("@Visa", SqlDbType.Structured)
-                {
-                    TypeName = "[dbo].[UDT_IntType]",
-                    Value = Util.PopulateDataTable(candidateProfile.visas.Cast<object>().ToList(), typeof(int))
-                };
-                parameters.Add(param);
-            }
+                TypeName = "[dbo].[UDT_IntType]",
+                Value = Util.PopulateDataTable(stateList, typeof(int))
+            };
+            parameters.Add(paramState);
+
+            var visaList = candidateProfile.visas?.Cast<object>().ToList() ?? new List<object>();
+            SqlParameter paramVisa = new SqlParameter("@Visa", SqlDbType.Structured)
+            {
+                TypeName = "[dbo].[UDT_IntType]",
+                Value = Util.PopulateDataTable(visaList, typeof(int))
+            };
+            parameters.Add(paramVisa);
 
             //if (candidateProfile.employmentTypes != null)
             //{
@@ -417,8 +410,12 @@ namespace DataAccessLayer.Repository
                     result.ConsultancyUserFName = reader["ConsultancyUserFName"].ToString();
                     result.ConsultancyUserLName = reader["ConsultancyUserLName"].ToString();
                     result.ConsultancyName = reader["ConsultancyName"].ToString();
-                    result.Skills = reader["Skills"].ToString().Split('|').ToList();
-                    result.Locations = reader["Locations"].ToString().Split('|').ToList();
+                    result.Skills = (reader["Skills"] != DBNull.Value && !string.IsNullOrWhiteSpace(reader["Skills"].ToString()))
+                        ? reader["Skills"].ToString().Split('|', StringSplitOptions.RemoveEmptyEntries).Select(s => s.Trim()).Where(s => !string.IsNullOrEmpty(s)).ToList()
+                        : new List<string>();
+                    result.Locations = (reader["Locations"] != DBNull.Value && !string.IsNullOrWhiteSpace(reader["Locations"].ToString()))
+                        ? reader["Locations"].ToString().Split('|', StringSplitOptions.RemoveEmptyEntries).Select(s => s.Trim()).Where(s => !string.IsNullOrEmpty(s)).ToList()
+                        : new List<string>();
                     result.EmploymentTypeName = (reader != null && reader["EmploymentTypeName"] != null) ? reader["EmploymentTypeName"].ToString() : String.Empty;
                     result.JobTypeName = (reader != null && reader["JobTypename"] != null) ? reader["JobTypename"].ToString() : String.Empty;
 

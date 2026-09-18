@@ -1,9 +1,9 @@
-<div class="search-job-wrapper adv-filter-wrapper py-4">
+<div class="search-job-wrapper adv-filter-wrapper pb-4 pt-0">
   <div class="container">
     <div class="row justify-content-center">
 
-      <div class="col-12 col-lg-10 col-xl-8 text-center pt-4 pb-3">
-        <h2 class="fw-bold mb-3" style="color: #11111D; letter-spacing: -0.5px;">Search from thousands of tech Jobs posted everyday</h2>
+      <div class="col-12 col-lg-10 col-xl-8 text-center pt-0 pb-3">
+        <h2 class="fw-bold mb-3" style="color: #11111D; letter-spacing: -0.5px; font-size: 1.35rem;">Search from thousands of tech Jobs posted everyday</h2>
         <div class="mb-4">
           <search-skill-location
             [skill]="skill"
@@ -65,9 +65,20 @@
                           [ngClass]="isSelected(job.jobOpeningId)"
                         >
                           <div class="holder">
-                            <span class="text-h5">{{
-                              job.jobOpeningName | subStr : 1
-                            }}</span>
+                            <img
+                              *ngIf="job.companyLogo"
+                              [src]="getCompanyLogoUrl(job.companyLogo)"
+                              [alt]="job.companyName || 'Company Logo'"
+                              class="company-logo-img"
+                              (error)="$any($event.target).style.display='none'; holderFallback.style.display='flex'"
+                            />
+                            <div
+                              #holderFallback
+                              class="holder-fallback"
+                              [style.display]="job.companyLogo ? 'none' : 'flex'"
+                            >
+                              <span class="text-h5">{{ getCompanyInitial(job.companyName) }}</span>
+                            </div>
                           </div>
                           <div class="right">
                             <h5

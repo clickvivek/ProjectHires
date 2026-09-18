@@ -70,21 +70,28 @@ export class JobDetailSheetComponent implements OnInit {
  
 
   getPostedDays(date) {
-    const targetDate = moment(date).toDate();
-    const currentDate = new Date();
-    const differenceInDays = moment(currentDate).diff(targetDate, 'days');
-    if (differenceInDays > 30) {
-      const differenceInMonths = moment(currentDate).diff(targetDate, 'months');
-      return `${differenceInMonths} months `;
+    if (!date) return '';
+    const target = moment(date);
+    if (!target.isValid()) return '';
+    const current = moment();
+    const differenceInDays = current.clone().startOf('day').diff(target.clone().startOf('day'), 'days');
+    if (differenceInDays <= 0) {
+      return 'Posted today';
+    }
+    else if (differenceInDays > 30) {
+      const differenceInMonths = current.diff(target, 'months');
+      return `Posted ${differenceInMonths} months ago`;
     }
     else if (differenceInDays === 1) {
-      const differenceInHours = moment(currentDate).diff(targetDate, 'hours');
-      return `${differenceInHours} hours `;
+      const differenceInHours = current.diff(target, 'hours');
+      if (differenceInHours > 0 && differenceInHours < 24) {
+        return `Posted ${differenceInHours} hours ago`;
+      }
+      return `Posted 1 day ago`;
     }
     else {
-      return `${differenceInDays} days`;
+      return `Posted ${differenceInDays} days ago`;
     }
-    
   }
 
   dialogClose(){
@@ -96,7 +103,8 @@ export class JobDetailSheetComponent implements OnInit {
 
     if(this.authService.isLoggedIn()) {
       const applyJobDialogRef = this.dialog.open(ConfirmApplyJobComponent, {
-        panelClass: 'material',
+        panelClass: ['material', 'confirm-apply-modal-panel'],
+        maxHeight: '90vh',
         disableClose: true,
         data: this.selectedJob
       });
@@ -238,6 +246,17 @@ export class JobDetailSheetComponent implements OnInit {
     
 
     
+  }
+
+  getCompanyLogoUrl(logo: string | null | undefined): string {
+    if (!logo) return '';
+    if (logo.startsWith('http://') || logo.startsWith('https://') || logo.startsWith('data:image')) return logo;
+    return `${picUrl}${logo}`;
+  }
+
+  getCompanyInitial(name: string | null | undefined): string {
+    if (!name) return 'C';
+    return name.trim().charAt(0).toUpperCase();
   }
 
 }

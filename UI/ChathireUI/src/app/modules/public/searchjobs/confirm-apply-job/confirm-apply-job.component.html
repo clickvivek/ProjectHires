@@ -1,26 +1,23 @@
 <div class="confirm-apply-wrapper">
-  <div class="d-flex bg-secondary align-items-center border-bottom px-4 py-3">
-    <h6 class="ft-head text-white">Apply to this job</h6>
+  <div class="modal-header-bar d-flex bg-secondary align-items-center border-bottom px-4 py-3">
+    <h6 class="ft-head text-white mb-0">{{ isAppliedSuccess ? 'Application Status' : 'Apply to this job' }}</h6>
     <div
-      class="material-symbols-outlined ms-auto text-white"
+      class="material-symbols-outlined ms-auto text-white close-btn"
       mat-button
-      [mat-dialog-close]="false"
+      [mat-dialog-close]="isAppliedSuccess ? true : false"
     >
       close
     </div>
   </div>
 
-  <div class="content">
+  <div class="content" *ngIf="!isAppliedSuccess">
     
     <div class="desp-area">
-      <p class="text-base fw-medium mb-1">{{ job.jobOpeningName }}</p>
-      <div class="info">
-        <div class="text-dark-500 sub-title">
-          {{ job.companyName }}
-        </div>
-        <div class="text-dark-500 sub-title">
-          {{ job.locations[0] }}, {{ job.locations[1] }}
-        </div>
+      <h6 class="text-base fw-bold text-dark mb-1">{{ job?.jobOpeningName }}</h6>
+      <div class="info d-flex align-items-center flex-wrap gap-2 text-dark-500 sub-title mb-2">
+        <span *ngIf="job?.companyName" class="fw-medium">{{ job.companyName }}</span>
+        <span *ngIf="job?.companyName && getLocationsText()">•</span>
+        <span *ngIf="getLocationsText()">{{ getLocationsText() }}</span>
       </div>
       
       <ng-container *ngIf="optionSelected == ''">
@@ -39,12 +36,54 @@
         </div>
       </ng-container>
 
-      <choose-from-hotlist *ngIf="optionSelected == 'hotlist'" (outParams)="onOptionTypeChange($event)"></choose-from-hotlist>
+      <choose-from-hotlist *ngIf="optionSelected == 'hotlist'" (outParams)="onOptionTypeChange($event)" (appliedSuccess)="onAppliedSuccess($event)"></choose-from-hotlist>
 
-      <choose-resume-from-desk *ngIf="optionSelected == 'upload'" (outParams)="onOptionTypeChange($event)"></choose-resume-from-desk>
+      <choose-resume-from-desk *ngIf="optionSelected == 'upload'" (outParams)="onOptionTypeChange($event)" (appliedSuccess)="onAppliedSuccess($event)"></choose-resume-from-desk>
 
     </div>
 
+  </div>
+
+  <!-- Animated Success Screen -->
+  <div class="success-screen text-center py-5 px-4" *ngIf="isAppliedSuccess">
+    <div class="success-animation-box mb-4">
+      <div class="pulse-ring"></div>
+      <div class="pulse-ring delayed"></div>
+      <div class="checkmark-circle">
+        <svg class="checkmark-svg" viewBox="0 0 52 52">
+          <circle class="checkmark-circle-bg" cx="26" cy="26" r="23" fill="none" />
+          <circle class="checkmark-circle-outline" cx="26" cy="26" r="23" fill="none" />
+          <path class="checkmark-check" fill="none" d="M15 27 l8 8 l16 -17" />
+        </svg>
+      </div>
+
+      <span class="particle p1">✨</span>
+      <span class="particle p2">🎉</span>
+      <span class="particle p3">✨</span>
+      <span class="particle p4">⭐</span>
+    </div>
+
+    <h4 class="success-title fw-bold mb-2">Application Submitted!</h4>
+    <p class="success-subtitle mb-4">
+      Your application has been successfully submitted to <span class="fw-semibold text-dark">{{ job?.companyName || 'the employer' }}</span>.
+    </p>
+
+    <div class="application-summary p-3 rounded-3 mb-4 mx-auto text-start">
+      <div class="d-flex justify-content-between align-items-center mb-2 pb-2 border-bottom">
+        <span class="text-muted text-xs text-uppercase fw-semibold">Job Title</span>
+        <span class="text-dark fw-semibold text-sm text-end">{{ job?.jobOpeningName }}</span>
+      </div>
+      <div class="d-flex justify-content-between align-items-center" *ngIf="appliedData?.candidateName">
+        <span class="text-muted text-xs text-uppercase fw-semibold">Candidate</span>
+        <span class="text-dark fw-semibold text-sm">{{ appliedData.candidateName }}</span>
+      </div>
+    </div>
+
+    <div class="success-actions">
+      <button type="button" class="btn btn-primary px-5 py-2 fw-medium" [mat-dialog-close]="true">
+        Done
+      </button>
+    </div>
   </div>
 
 </div>

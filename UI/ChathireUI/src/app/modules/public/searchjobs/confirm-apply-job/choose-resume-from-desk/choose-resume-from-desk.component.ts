@@ -33,6 +33,9 @@ export class ChooseResumeFromDeskComponent {
   @ViewChild('applyJobsForm', {static: false}) applyJobsForm: NgForm;
 
   @Output() outParams = new EventEmitter();
+  @Output() appliedSuccess = new EventEmitter<any>();
+
+  isSubmitting: boolean = false;
 
   constructor(
     @Inject(MAT_DIALOG_DATA) public job: any,
@@ -109,8 +112,8 @@ export class ChooseResumeFromDeskComponent {
     }
 
 
-    if (this.applyJobsForm.valid && this.selectedResume ) {
-      
+    if (this.applyJobsForm.valid && this.selectedResume && !this.isSubmitting) {
+      this.isSubmitting = true;
       this.jobOpeningService.apiJobOpeningApplyWithResumePost(
         this.selectedResume,
         parseInt(this.job.jobOpeningId),
@@ -128,17 +131,17 @@ export class ChooseResumeFromDeskComponent {
         this.formData.cityId
       ).subscribe({
         next:(res:any) => {
-          setTimeout(() => {
-            this.toastr.success('Job applied successfully', '', {
-              timeOut: 2000,
-              positionClass: 'toast-top-center'
-            });
-          }, 100);
-          this.dialogRef.close()
+          this.isSubmitting = false;
+          this.appliedSuccess.emit({
+            candidateName: this.formData.name,
+            jobTitle: this.job?.jobOpeningName,
+            companyName: this.job?.companyName
+          });
         },
         error:(error:any) => {
+          this.isSubmitting = false;
           setTimeout(() => {
-            this.toastr.error('Some error occured', '', {
+            this.toastr.error('Some error occured while submitting', '', {
               timeOut: 2000,
               positionClass: 'toast-top-center'
             });

@@ -255,7 +255,8 @@ namespace BusinessEntityAndDTO.DTO
         public string UserName { get; set; }
         public string UserFName { get; set; }
         public string UserLName { get; set; }
-        public string ProfilePic { get; set; }
+        public string? ProfilePic { get; set; }
+        public string? CompanyLogo { get; set; }
         public List<string> Skills { get; set; }
         public List<string> Locations { get; set; }
         public List<string> Visas { get; set; }

@@ -13,12 +13,7 @@
     transition: all 0.2s ease-in-out;
 
     .card-header {
-      transition: background-color 0.15s ease-in-out;
       border-radius: 12px;
-
-      &:hover {
-        background-color: #FAF7FA !important;
-      }
     }
 
     .cursor-pointer {

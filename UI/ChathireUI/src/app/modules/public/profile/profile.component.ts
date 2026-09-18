@@ -5,7 +5,7 @@ import { Router, ActivatedRoute, NavigationEnd } from '@angular/router';
 import { ConsultancyService, UserService } from 'src/app/api';
 import { AuthService } from 'src/app/core/auth/auth.service';
 import { SessionService } from 'src/app/core/session/session.service';
-import { publicProfileUrlPrefix } from 'src/app/data/various';
+import { publicProfileUrlPrefix, picUrl } from 'src/app/data/various';
 
 import _ from 'underscore';
 
@@ -97,11 +97,57 @@ export class ProfileComponent implements OnInit {
     return this.user.userTypeId === 2 ? 'Bench Sales Recruiter / Manager' : 'Recruiter';
   }
 
+  getRoleBadgeText(): string {
+    if (!this.user) return 'Recruiter';
+    if (this.user.roleBenchSales && this.user.roleRecruiter) return 'Recruiter / Bench Sales';
+    if (this.user.roleBenchSales) return 'Bench Sales';
+    if (this.user.roleRecruiter) return 'Recruiter';
+    return this.user.userTypeId === 2 ? 'Bench Sales' : 'Recruiter';
+  }
+
+  getTitleText(): string {
+    if (!this.user) return 'Recruiter';
+    if (this.user.title) return this.user.title;
+    if (this.user.roleBenchSales && this.user.roleRecruiter) return 'Manager, Recruiter & Bench Sales';
+    if (this.user.roleBenchSales) return 'Manager, Bench Sales';
+    if (this.user.roleRecruiter) return 'Senior Technical Recruiter';
+    return this.user.userTypeId === 2 ? 'Manager, Bench Sales' : 'Technical Recruiter';
+  }
+
+  getCleanWebsite(url: string): string {
+    if (!url) return '';
+    return url.replace(/^https?:\/\//i, '').replace(/\/$/, '');
+  }
+
+  getLinkedInUrl(): string {
+    const link = this.user?.linkedin || this.company?.linkedin;
+    if (!link) return '';
+    if (link.startsWith('http://') || link.startsWith('https://')) {
+      return link;
+    }
+    return `https://${link}`;
+  }
+
   getUserInitials(): string {
     if (!this.user) return 'CH';
     const first = (this.user.fname || '').charAt(0).toUpperCase();
     const last = (this.user.lname || '').charAt(0).toUpperCase();
     return `${first}${last}` || 'CH';
+  }
+
+  getCompanyLogoUrl(logo: string | null | undefined): string {
+    if (!logo) {
+      return '';
+    }
+    if (logo.startsWith('http://') || logo.startsWith('https://') || logo.startsWith('data:image')) {
+      return logo;
+    }
+    return `${picUrl}${logo}`;
+  }
+
+  getCompanyInitial(): string {
+    const name = this.company?.name || 'C';
+    return name.charAt(0).toUpperCase();
   }
 
   isLoggedIn() {

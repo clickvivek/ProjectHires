@@ -275,7 +275,7 @@
                             fieldName="cityId"
                             fieldText="City & State or Zipcode"
                             fieldType="city1,stateName,countryName"
-                            fieldPlaceholder="enter Zipcode or City name"
+                            fieldPlaceholder="Enter Zipcode or City Name"
                             [fieldRequired]="true"
                             [fieldList]="selectLocationList"
                             (queryChange)="onLocationQuery($event)"
@@ -363,7 +363,7 @@
                             fieldName="cityId"
                             fieldText="City & State or Zipcode"
                             fieldType="city1,stateName,countryName"
-                            fieldPlaceholder="enter Zipcode or City name"
+                            fieldPlaceholder="Enter Zipcode or City Name"
                             [fieldRequired]="true"
                             [fieldList]="selectLocationList"
                             (queryChange)="onLocationQuery($event)"
@@ -560,7 +560,7 @@
 <!-- CREATE NEW COMPANY MODAL -->
 <div class="modal fade show d-block" tabindex="-1" *ngIf="showCreateCompanyModal" style="background: rgba(0,0,0,0.5); z-index: 1060;">
   <div class="modal-dialog modal-dialog-centered modal-lg">
-    <div class="modal-content border-0 shadow-lg rounded-4 overflow-hidden">
+    <div class="modal-content border-0 shadow-lg rounded-4" style="overflow: visible;">
       
       <!-- Modal Header -->
       <div class="modal-header px-4 py-3 bg-light border-bottom d-flex align-items-center justify-content-between">
@@ -579,7 +579,7 @@
       <form #newCompanyForm="ngForm" (ngSubmit)="submitCreateCompany()" novalidate class="d-flex flex-column m-0">
         
         <!-- Modal Body -->
-        <div class="modal-body p-4" style="max-height: 60vh; overflow-y: auto;">
+        <div class="modal-body p-4" style="overflow: visible;">
           <div class="row g-3">
             <!-- Company Name -->
             <div class="col-12 col-md-6">
@@ -642,7 +642,7 @@
                   fieldName="newCompCityId"
                   fieldText="City & State or Zipcode"
                   fieldType="city1,stateName,countryName"
-                  fieldPlaceholder="enter Zipcode or City name"
+                  fieldPlaceholder="Enter Zipcode or City Name"
                   [fieldRequired]="true"
                   [fieldList]="selectNewCompanyLocationList"
                   (queryChange)="onNewCompanyLocationQuery($event)"

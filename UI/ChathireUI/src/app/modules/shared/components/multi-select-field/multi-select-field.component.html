@@ -23,7 +23,7 @@
         <div class="badge-list" #badgeListElem>
             <ul class="list-inline">
                 <li class="list-inline-item" *ngFor="let badge of selectedItem">
-                    <span>{{badge[fieldType]}}</span>
+                    <span>{{getBadgeLabel(badge)}}</span>
                     <i class="fa fa-times pointer" aria-hidden="true" (click)="removeBadge(badge)"></i>
                 </li>
             </ul>

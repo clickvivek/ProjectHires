@@ -239,15 +239,15 @@ namespace BusinessEntityAndDTO.DTO
 
     public partial class CandidateProfileForSearchDto
     {
-        public List<string> SearchString { get; set; }
-        public List<int> skills { get; set; } = new List<int>();
-        public List<int> cityIds { get; set; } = new List<int>();
-        public List<int> stateIds { get; set; } = new List<int>();
-        public List<int> visas { get; set; } = new List<int>();
+        public List<string>? SearchString { get; set; } = new List<string>();
+        public List<int>? skills { get; set; } = new List<int>();
+        public List<int>? cityIds { get; set; } = new List<int>();
+        public List<int>? stateIds { get; set; } = new List<int>();
+        public List<int>? visas { get; set; } = new List<int>();
         //public List<string> searchStrings { get; set; } = new List<string>();
-        public int startYearsOfExp { get; set; }
-        public int endYearsOfExp { get; set; }
-        public int RowsOfPage { get; set; }
+        public int? startYearsOfExp { get; set; }
+        public int? endYearsOfExp { get; set; }
+        public int? RowsOfPage { get; set; }
         public int PageNumber { get; set; }
         //public DateTime PostedStartDate { get; set; }
         //public DateTime PostedEndDate { get; set; }
