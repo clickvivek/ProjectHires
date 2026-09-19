@@ -25,10 +25,11 @@
     }
 
     .job-card-title {
-      font-size: 16.5px;
-      color: #111827;
-      letter-spacing: -0.2px;
-      line-height: 1.35;
+      font-size: 17px !important;
+      font-weight: 700 !important;
+      color: #111827 !important;
+      letter-spacing: -0.2px !important;
+      line-height: 1.35 !important;
       transition: color 0.15s ease;
 
       &:hover {
@@ -84,45 +85,85 @@
     }
 
     .btn-public-preview {
-      color: #72246C;
-      font-weight: 500;
+      color: #72246C !important;
+      font-weight: 600 !important;
       transition: all 0.15s ease;
 
+      span {
+        color: #72246C !important;
+      }
+
       &:hover {
-        color: #51264C;
+        color: #51264C !important;
         text-decoration: underline !important;
+
+        span {
+          color: #51264C !important;
+        }
       }
     }
 
     .btn-action-edit {
-      background-color: #F9FAFB;
-      border: 1px solid #E5E7EB;
-      color: #374151;
-      font-weight: 500;
-      border-radius: 8px;
-      padding: 6px 14px;
-      transition: all 0.15s ease;
+      background-color: #F7EFF7 !important;
+      border: 1px solid #D6BBDA !important;
+      color: #72246C !important;
+      font-weight: 600 !important;
+      font-size: 13.5px !important;
+      border-radius: 8px !important;
+      padding: 6px 14px !important;
+      display: inline-flex !important;
+      align-items: center !important;
+      gap: 6px !important;
+      box-shadow: 0 1px 2px rgba(114, 36, 108, 0.06) !important;
+      transition: all 0.15s ease-in-out !important;
+
+      span, .material-symbols-outlined {
+        color: #72246C !important;
+        font-size: 17px !important;
+        line-height: 1 !important;
+        display: inline-block !important;
+      }
 
       &:hover {
-        background-color: #F7EFF7;
-        border-color: #E9D8E8;
-        color: #72246C;
+        background-color: #72246C !important;
+        border-color: #72246C !important;
+        color: #ffffff !important;
+
+        span, .material-symbols-outlined {
+          color: #ffffff !important;
+        }
       }
     }
 
     .btn-action-delete {
-      background-color: #FEF3F2;
-      border: 1px solid #FECDCA;
-      color: #B42318;
-      font-weight: 500;
-      border-radius: 8px;
-      padding: 6px 14px;
-      transition: all 0.15s ease;
+      background-color: #FEF3F2 !important;
+      border: 1px solid #FECDCA !important;
+      color: #B42318 !important;
+      font-weight: 600 !important;
+      font-size: 13.5px !important;
+      border-radius: 8px !important;
+      padding: 6px 14px !important;
+      display: inline-flex !important;
+      align-items: center !important;
+      gap: 6px !important;
+      box-shadow: 0 1px 2px rgba(180, 35, 24, 0.06) !important;
+      transition: all 0.15s ease-in-out !important;
+
+      span, .material-symbols-outlined {
+        color: #B42318 !important;
+        font-size: 17px !important;
+        line-height: 1 !important;
+        display: inline-block !important;
+      }
 
       &:hover {
-        background-color: #FEE4E2;
-        border-color: #FDA29B;
-        color: #912018;
+        background-color: #D92D20 !important;
+        border-color: #D92D20 !important;
+        color: #ffffff !important;
+
+        span, .material-symbols-outlined {
+          color: #ffffff !important;
+        }
       }
     }
 
