@@ -2,7 +2,20 @@
 
     <loader *ngIf="!isLoaded"></loader>
 
-    <div class="container" *ngIf="isLoaded">
+    <div class="container py-5" *ngIf="isLoaded && !selectedJob">
+        <div class="card p-5 text-center shadow-sm" style="border-radius: 12px; border: 1px solid #E9D8E8; background: #fff;">
+            <div class="mb-3">
+                <span class="material-symbols-outlined text-secondary-500" style="font-size: 48px;">work_off</span>
+            </div>
+            <h4 class="fw-semibold text-dark-500 mb-2">Job Opening Not Found</h4>
+            <p class="text-secondary-500 mb-4">The job opening you are looking for may have expired or is no longer available.</p>
+            <div>
+                <a routerLink="/search-jobs" class="btn btn-primary px-4 py-2" style="background-color: #72246C; border-color: #72246C; color: #fff; border-radius: 8px;">Browse All Jobs</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="container" *ngIf="isLoaded && selectedJob">
         <div class="row">
             <div class="col-sm-12">
                 <div class="card">
