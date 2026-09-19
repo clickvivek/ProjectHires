@@ -107,3 +107,177 @@
     }
   }
 }
+
+/* 30-Day Rolling Window Quota Card */
+.quota-status-card {
+  background: linear-gradient(135deg, #F8FAFC 0%, #F1F5F9 100%);
+  border: 1px solid #E2E8F0;
+  border-radius: 12px;
+  padding: 14px 18px;
+  transition: all 0.2s ease-in-out;
+
+  &.quota-normal {
+    border-color: #E2E8F0;
+    background: #F8FAFC;
+
+    .quota-plan-badge {
+      background-color: #EDE9FE;
+      color: #6D28D9;
+    }
+  }
+
+  &.quota-warning {
+    border-color: #FDE68A;
+    background: #FFFBEB;
+
+    .quota-plan-badge {
+      background-color: #FEF3C7;
+      color: #B45309;
+    }
+  }
+
+  &.quota-exceeded {
+    border-color: #FECACA;
+    background: #FEF2F2;
+
+    .quota-plan-badge {
+      background-color: #FEE2E2;
+      color: #B91C1C;
+    }
+  }
+
+  &.quota-collapsed {
+    padding: 10px 16px;
+  }
+
+  .quota-card-header {
+    cursor: pointer;
+    user-select: none;
+    border-radius: 8px;
+    transition: opacity 0.15s ease-in-out;
+
+    &:hover {
+      opacity: 0.88;
+    }
+  }
+
+  .quota-toggle-btn {
+    width: 32px;
+    height: 32px;
+    background-color: #673260;
+    border: none;
+    color: #FFFFFF;
+    box-shadow: 0 2px 6px rgba(103, 50, 96, 0.35);
+    transition: all 0.2s ease-in-out;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+
+    .material-symbols-outlined {
+      color: #FFFFFF !important;
+      font-size: 20px;
+      font-weight: 700;
+      line-height: 1;
+    }
+
+    &:hover {
+      background-color: #50214B;
+      box-shadow: 0 4px 12px rgba(103, 50, 96, 0.5);
+      transform: scale(1.08);
+    }
+  }
+
+  .transition-transform {
+    transition: transform 0.25s ease-in-out;
+    display: inline-block;
+  }
+
+  .rotate-180 {
+    transform: rotate(180deg);
+  }
+
+  .quota-plan-badge {
+    display: inline-flex;
+    align-items: center;
+    font-size: 12px;
+    font-weight: 700;
+    padding: 3px 10px;
+    border-radius: 9999px;
+    letter-spacing: 0.3px;
+  }
+
+  .quota-title {
+    font-size: 13.5px;
+    font-weight: 600;
+    color: #1E293B;
+  }
+
+  .small-badge {
+    font-size: 11px;
+    font-weight: 500;
+    border-radius: 6px;
+  }
+
+  .quota-reset-countdown {
+    font-size: 12.5px;
+  }
+
+  .quota-progress-bar {
+    background-color: #E2E8F0;
+    overflow: hidden;
+  }
+
+  .extra-small {
+    font-size: 11.5px;
+  }
+}
+
+.quota-loading-card {
+  border: 1px dashed #cbd5e1 !important;
+  background-color: #f8fafc !important;
+  animation: pulse-border 1.5s infinite ease-in-out;
+
+  .quota-skeleton-pill,
+  .quota-skeleton-circle {
+    animation: skeleton-shimmer 1.5s infinite linear;
+    background: linear-gradient(90deg, #e2e8f0 0%, #f1f5f9 50%, #e2e8f0 100%);
+    background-size: 200% 100%;
+  }
+}
+
+.text-purple {
+  color: #673260 !important;
+}
+
+.spin-icon {
+  animation: spin-animation 1s linear infinite;
+  display: inline-block;
+}
+
+@keyframes spin-animation {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes skeleton-shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+@keyframes pulse-border {
+  0%, 100% {
+    border-color: #cbd5e1;
+  }
+  50% {
+    border-color: #a855f7;
+  }
+}

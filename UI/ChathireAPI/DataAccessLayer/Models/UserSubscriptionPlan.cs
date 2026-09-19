@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 
 namespace DataAccessLayer.Models;
@@ -38,6 +38,8 @@ public partial class UserSubscriptionPlan
     public DateTime? Updated { get; set; }
 
     public long? UpdatedBy { get; set; }
+
+    public int? DailyChatLimit { get; set; }
 
     public virtual SubscriptionPlan? SubscriptionPlan { get; set; }
 

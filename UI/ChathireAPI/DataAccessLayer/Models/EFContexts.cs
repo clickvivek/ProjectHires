@@ -447,13 +447,11 @@ public partial class EFContexts : DbContext
         {
             entity.ToTable("Consultancy");
 
-            entity.HasIndex(e => e.Domainname, "UQ__Consulta__42C1D19DCCC72905").IsUnique();
-
             entity.Property(e => e.Address)
                 .HasMaxLength(50)
                 .IsUnicode(false);
             entity.Property(e => e.Domainname)
-                .HasMaxLength(30)
+                .HasMaxLength(255)
                 .IsUnicode(false);
             entity.Property(e => e.Email)
                 .HasMaxLength(100)

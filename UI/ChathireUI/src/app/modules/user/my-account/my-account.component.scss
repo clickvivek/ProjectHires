@@ -1,10 +1,93 @@
-@import "src/@hires/scss/utilities/all";
-@import "src/@hires/scss/helpers/typography";
+.my-account-page {
+  min-height: calc(100vh - 80px);
+  background-color: #f8fafc;
 
-.my-account-wrapper {
-  .panel {
-    .tab-content {
-      padding: 24px;
+  .profile-hero-card {
+    border: 1px solid #edf2f7;
+    background: #ffffff;
+  }
+
+  .profile-avatar-wrap {
+    cursor: pointer;
+    display: inline-block;
+
+    img {
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
     }
+
+    &:hover img {
+      transform: scale(1.04);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12) !important;
+    }
+
+    .avatar-edit-badge {
+      position: absolute;
+      bottom: -2px;
+      right: -2px;
+      width: 22px;
+      height: 22px;
+      background: #39756F;
+      color: #ffffff;
+      border-radius: 50%;
+      border: 2px solid #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+  }
+
+  .bg-teal-subtle {
+    background-color: #e6f4f1;
+  }
+
+  .text-teal {
+    color: #39756F;
+    font-weight: 600;
+  }
+
+  .border-teal-subtle {
+    border-color: #b2dfdb !important;
+  }
+
+  .account-tab-pills {
+    background: #f1f5f9;
+    padding: 5px;
+    border-radius: 12px;
+
+    .nav-link {
+      color: #64748b;
+      font-weight: 600;
+      font-size: 0.88rem;
+      border-radius: 9px;
+      padding: 8px 18px;
+      border: none;
+      transition: all 0.2s ease;
+
+      &:hover:not(.active) {
+        color: #1e293b;
+        background: rgba(255, 255, 255, 0.6);
+      }
+
+      &.active {
+        background-color: #ffffff;
+        color: #39756F;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+      }
+    }
+  }
+
+  .tab-content-card {
+    border: 1px solid #edf2f7;
+  }
+
+  .icon-circle {
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .bg-teal-light {
+    background-color: #e6f4f1;
   }
 }

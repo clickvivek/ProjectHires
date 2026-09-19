@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -37,6 +37,8 @@ namespace BusinessEntityAndDTO.DTO
         public bool? IsFree { get; set; }
 
         public bool? Active { get; set; }
+
+        public int? DailyChatLimit { get; set; }
 
         public SubscriptionPlanDto? SubscriptionPlan { get; set; } = new SubscriptionPlanDto();
         

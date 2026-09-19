@@ -1,4 +1,4 @@
-﻿using AutoMapper;
+using AutoMapper;
 using BusinessEntityAndDTO.Common;
 using BusinessEntityAndDTO.DTO;
 using BusinessLayer.Common;
@@ -14,6 +14,9 @@ namespace BusinessLayer.Manager
         Task<List<BusinessEntityAndDTO.DTO.UserSubscriptionPlanDto>> GetUserSubscriptionPlanById(long Id, UserContext userContext);
         Task<List<UserSubscriptionPlanDto>> GetUserSubscriptionPlanByUserId(long? Id, UserContext userContext);
         Task<UserSubscriptionPlanDto> AssignSubscriptionToUser(AssignSubscriptionDto assignSubscription, UserContext userContext);
+        Task<UserQuotaStatusDto> GetUserQuotaStatus(long userId, UserContext userContext);
+        Task<UserQuotaListResponseDto> GetAllUsersQuotas(int page, int pageSize, string? search, string? filter, UserContext userContext);
+        Task<bool> UpdateUserQuota(UpdateUserQuotaDto dto, UserContext userContext);
     }
     public class SubscriptionManager : BaseManager<SubscriptionManager>, ISubscriptionManager
     {
@@ -89,7 +92,8 @@ namespace BusinessLayer.Manager
                     _userSubscriptionPlan.ActualJobPosting = subscriptionPlan.NoOfJobPosting;
                     _userSubscriptionPlan.NoOfUsedDownloads = 0;
                     _userSubscriptionPlan.NoOfUsedJobPosting = 0;
-                    _userSubscriptionPlan.NoOfUsers = subscriptionPlan.NoOfUsers;
+                    _userSubscriptionPlan.NoOfUsers = subscriptionPlan.NoOfUsers ?? 1;
+                    _userSubscriptionPlan.DailyChatLimit = subscriptionPlan.Amount > 0 ? 500 : 20;
                     _userSubscriptionPlan.Amount = subscriptionPlan.Amount;
                     _userSubscriptionPlan.DiscountAmount = subscriptionPlan.DiscountAmount;
                     _userSubscriptionPlan.StartDate = date;
@@ -101,6 +105,37 @@ namespace BusinessLayer.Manager
             }
             else
                 return mapper.Map<UserSubscriptionPlanDto>(_userSubscriptionPlan);
+        }
+
+        public async Task<UserQuotaStatusDto> GetUserQuotaStatus(long userId, UserContext userContext)
+        {
+            return await ExecuteAsync<UserQuotaStatusDto>(async () =>
+            {
+                var repo = repositoryFactory.Get<IUserSubscriptionPlanRepository>();
+                if (userId <= 0 && userContext != null)
+                {
+                    userId = userContext.UserId;
+                }
+                return await repo.GetUserQuotaStatus(userId, userContext);
+            }, "GetUserQuotaStatus", userContext);
+        }
+
+        public async Task<UserQuotaListResponseDto> GetAllUsersQuotas(int page, int pageSize, string? search, string? filter, UserContext userContext)
+        {
+            return await ExecuteAsync<UserQuotaListResponseDto>(async () =>
+            {
+                var repo = repositoryFactory.Get<IUserSubscriptionPlanRepository>();
+                return await repo.GetAllUsersQuotas(page, pageSize, search, filter, userContext);
+            }, "GetAllUsersQuotas", userContext);
+        }
+
+        public async Task<bool> UpdateUserQuota(UpdateUserQuotaDto dto, UserContext userContext)
+        {
+            return await ExecuteAsync<bool>(async () =>
+            {
+                var repo = repositoryFactory.Get<IUserSubscriptionPlanRepository>();
+                return await repo.UpdateUserQuota(dto, userContext);
+            }, "UpdateUserQuota", userContext);
         }
     }
 }

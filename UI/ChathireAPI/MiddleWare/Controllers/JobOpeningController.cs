@@ -155,29 +155,23 @@ namespace MiddleWare.Controllers
         //[ApiAuthorize("AddJobOpening")]
         public Task<Result<JobOpeningDto>> AddJobOpening(JobOpeningForInsertDto jobOpening)
         {
-            UserContext user = GetUserContext();
-            //List<UserSubscriptionPlanDto> subDetail = new List<UserSubscriptionPlanDto>();
-            //subDetail = ExecuteAsync<UserSubscriptionPlanDto>(async () =>
-            //{
-            //    var subscriptionManager = managerFactory.Get<ISubscriptionManager>();
-
-            //    return await (List<UserSubscriptionPlanDto>)subscriptionManager.GetUserSubscriptionPlanByUserId(user.UserId, user);
-            //});
-            var subscriptionManager = managerFactory.Get<ISubscriptionManager>();
-            var subDetail = subscriptionManager.GetUserSubscriptionPlanByUserId(user.UserId, user);
-
-            if (subDetail != null && subDetail.Result.Count > 0)
-            {
-                if (subDetail.Result[0].ActualJobPosting <= subDetail.Result[0].NoOfUsedJobPosting)
-                {
-                    throw new Exception("Subscription Plan Exceeded Limit: Your current subscription plan has exceeded its allocated limit. Please upgrade your plan to continue accessing this service.");
-                }
-            }
             return ExecuteAsync<JobOpeningDto>(async () =>
             {
+                UserContext user = GetUserContext();
+                var subscriptionManager = managerFactory.Get<ISubscriptionManager>();
+
+                if (user != null && user.UserId > 0)
+                {
+                    var quota = await subscriptionManager.GetUserQuotaStatus(user.UserId, user);
+                    if (quota != null && quota.RemainingJobPostings <= 0)
+                    {
+                        throw new Exception($"Job Posting Limit Reached: You have reached your limit of {quota.MaxJobPostings} job postings for this 30-day period. Your quota resets on {quota.CycleEndDate:MMM dd, yyyy} ({quota.DaysRemainingInCycle} days remaining). Please upgrade your plan to post more jobs.");
+                    }
+                }
+
                 var jobOpeningManager = managerFactory.Get<IJobOpeningManager>();
 
-                return await jobOpeningManager.AddJobOpening(jobOpening, subDetail.Result, GetUserContext());
+                return await jobOpeningManager.AddJobOpening(jobOpening, null, user ?? GetDummyUserContext());
             });
         }
 

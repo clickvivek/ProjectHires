@@ -1,50 +1,109 @@
-<div class="my-account-wrapper">
-	<div class="container">
-		<div class="row">
-			<div class="col-sm-12">
-				<div class="panel rounded">
-					<ul class="nav nav-tabs" role="tablist">
-						<li class="nav-item">
-							<a
-							  class="nav-link active"
-							  href="#profile-pic"
-							  role="tab"
-							  data-bs-toggle="tab"
-							  >Profile Picture</a
-							>
-						  </li>
-						<li class="nav-item">
-							<a
-							  class="nav-link"
-							  href="#profile-details"
-							  role="tab"
-							  data-bs-toggle="tab"
-							  >Personal Details</a
-							>
-						  </li>
-						  <li class="nav-item">
-							<a
-							  class="nav-link"
-							  href="#profile-password"
-							  role="tab"
-							  data-bs-toggle="tab"
-							  >Change Password</a
-							>
-						  </li>
-					</ul>
-					<div class="tab-content">
-						<div role="tabpanel" class="tab-pane fade show active" id="profile-pic">
-							<profile-pic [user]="user"></profile-pic>
-						</div>
-						<div role="tabpanel" class="tab-pane fade show" id="profile-details">
-							<personal-details></personal-details>
-						</div>
-						<div role="tabpanel" class="tab-pane fade" id="profile-password">
-							<change-password></change-password>
-						</div>
-					</div>
-				</div>
-			</div>
-		</div>
-	</div>
+<div class="my-account-page py-4">
+  <div class="container">
+
+    <!-- Hero Profile Header Card -->
+    <div class="card border-0 shadow-sm rounded-4 p-4 mb-4 bg-white profile-hero-card">
+      <div class="d-flex flex-column flex-lg-row align-items-start align-items-lg-center justify-content-between gap-3">
+        <div class="d-flex align-items-center gap-3">
+          <!-- Avatar Wrap with quick edit badge -->
+          <div class="position-relative profile-avatar-wrap pointer" (click)="setTab('profile-pic')" title="Change profile picture">
+            <img
+              [src]="user?.profilePic ? (picBase + user?.profilePic) : 'assets/images/profile-placehoder-img.png'"
+              class="rounded-circle border border-3 border-white shadow-sm object-fit-cover"
+              style="width: 64px; height: 64px;"
+              alt="Avatar"
+            />
+            <span class="avatar-edit-badge">
+              <span class="material-symbols-outlined" style="font-size: 13px;">photo_camera</span>
+            </span>
+          </div>
+
+          <div>
+            <div class="d-flex align-items-center gap-2 flex-wrap">
+              <h3 class="mb-0 fw-bold text-dark fs-4">
+                {{ user?.fname || 'My' }} {{ user?.lname || 'Account' }}
+              </h3>
+              <span class="badge bg-teal-subtle text-teal border border-teal-subtle px-2 py-1">
+                {{ user?.roleName || (user?.userTypeId === 7 ? 'Super Admin' : (user?.userTypeId === 1 ? 'Recruiter / Employer' : 'User')) }}
+              </span>
+            </div>
+            <div class="text-muted small mt-1 d-flex align-items-center gap-3 flex-wrap">
+              <span class="d-flex align-items-center gap-1" *ngIf="user?.email">
+                <span class="material-symbols-outlined fs-6 text-muted">mail</span>
+                {{ user?.email }}
+              </span>
+              <span *ngIf="user?.phone" class="d-flex align-items-center gap-1">
+                <span class="material-symbols-outlined fs-6 text-muted">phone</span>
+                {{ user?.phone }}
+              </span>
+              <span *ngIf="user?.companyName" class="d-flex align-items-center gap-1">
+                <span class="material-symbols-outlined fs-6 text-muted">business</span>
+                {{ user?.companyName }}
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Navigation Tab Pills -->
+        <div class="nav nav-pills account-tab-pills mt-2 mt-lg-0" role="tablist">
+          <button
+            class="nav-link d-flex align-items-center gap-2"
+            [class.active]="activeTab === 'profile-details'"
+            (click)="setTab('profile-details')"
+            type="button"
+          >
+            <span class="material-symbols-outlined fs-5">badge</span>
+            <span>Personal Details</span>
+          </button>
+          <button
+            class="nav-link d-flex align-items-center gap-2"
+            [class.active]="activeTab === 'profile-pic'"
+            (click)="setTab('profile-pic')"
+            type="button"
+          >
+            <span class="material-symbols-outlined fs-5">account_circle</span>
+            <span>Profile Picture</span>
+          </button>
+          <button
+            class="nav-link d-flex align-items-center gap-2"
+            [class.active]="activeTab === 'profile-password'"
+            (click)="setTab('profile-password')"
+            type="button"
+          >
+            <span class="material-symbols-outlined fs-5">lock_reset</span>
+            <span>Change Password</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tab Contents -->
+    <div class="card border-0 shadow-sm rounded-4 p-4 p-md-5 bg-white tab-content-card">
+      <div *ngIf="activeTab === 'profile-details'">
+        <personal-details></personal-details>
+      </div>
+      <div *ngIf="activeTab === 'profile-pic'" class="py-4 text-center">
+        <div class="mx-auto" style="max-width: 480px;">
+          <div class="icon-circle bg-teal-light text-teal mx-auto mb-3" style="width: 52px; height: 52px;">
+            <span class="material-symbols-outlined fs-3">add_a_photo</span>
+          </div>
+          <h5 class="fw-bold text-dark mb-1">Update Profile Picture</h5>
+          <p class="text-muted small mb-4">Click the edit button on your avatar to select a new image.</p>
+          <div class="d-flex justify-content-center mb-4">
+            <profile-pic [user]="user"></profile-pic>
+          </div>
+          <div class="p-3 bg-light rounded-3 border text-muted small">
+            <div class="d-flex align-items-center justify-content-center gap-2">
+              <span class="material-symbols-outlined fs-5 text-primary">info</span>
+              <span>Supported formats: <strong>JPG, PNG, GIF</strong>. Recommended square ratio, max 5MB.</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div *ngIf="activeTab === 'profile-password'">
+        <change-password></change-password>
+      </div>
+    </div>
+
+  </div>
 </div>

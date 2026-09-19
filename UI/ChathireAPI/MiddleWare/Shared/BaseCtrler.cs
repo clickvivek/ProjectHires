@@ -1,4 +1,4 @@
-﻿using BusinessLayer.Common;
+using BusinessLayer.Common;
 //using BusinessEntityAndDTO.AuditEntity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
@@ -174,7 +174,7 @@ namespace Middleware.Shared
                 }
             }
         }
-        private long? TryGetUserId
+        protected long? TryGetUserId
         {
             get
             {

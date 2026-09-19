@@ -1,4 +1,5 @@
 using AutoMapper;
+using BusinessEntityAndDTO.Common;
 using BusinessEntityAndDTO.DTO;
 using BusinessEntityAndDTO.Models;
 using BusinessLayer.Manager;
@@ -39,7 +40,10 @@ namespace MiddleWare.Controllers
                     consultancy.consultancyForInsertDto.Logo = fileName;
                 }
 
-                return await ConsultancyManager.AddConsultancy(consultancy.consultancyForInsertDto, GetDummyUserContext());
+                UserContext context = null;
+                try { context = GetUserContext(); } catch { }
+
+                return await ConsultancyManager.AddConsultancy(consultancy.consultancyForInsertDto, context ?? GetDummyUserContext());
             });
         }
 

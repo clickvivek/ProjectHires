@@ -45,6 +45,36 @@
           <span>Manage Companies</span>
           <span *ngIf="allCompanies.length > 0" class="badge rounded-pill bg-secondary ms-1">{{ allCompanies.length }}</span>
         </button>
+        <button
+          class="nav-link d-flex align-items-center gap-2"
+          [class.active]="activeTab === 'review-companies'"
+          (click)="setTab('review-companies')"
+          type="button"
+        >
+          <span class="material-symbols-outlined fs-5">fact_check</span>
+          <span>Review Company</span>
+          <span *ngIf="userAddedCompanies.length > 0" class="badge rounded-pill bg-warning text-dark ms-1">{{ userAddedCompanies.length }}</span>
+        </button>
+        <button
+          class="nav-link d-flex align-items-center gap-2"
+          [class.active]="activeTab === 'user-quotas'"
+          (click)="setTab('user-quotas')"
+          type="button"
+        >
+          <span class="material-symbols-outlined fs-5">tune</span>
+          <span>User Quotas</span>
+          <span *ngIf="quotaTotalCount > 0" class="badge rounded-pill bg-primary ms-1">{{ quotaTotalCount }}</span>
+        </button>
+        <button
+          class="nav-link d-flex align-items-center gap-2"
+          [class.active]="activeTab === 'admin-users'"
+          (click)="setTab('admin-users')"
+          type="button"
+        >
+          <span class="material-symbols-outlined fs-5">admin_panel_settings</span>
+          <span>Admin Users</span>
+          <span *ngIf="adminUsers.length > 0" class="badge rounded-pill bg-danger ms-1">{{ adminUsers.length }}</span>
+        </button>
       </div>
     </div>
 
@@ -314,8 +344,8 @@
           </div>
 
           <!-- Drilldown Table -->
-          <div class="table-responsive border rounded-3 mb-3">
-            <table class="table table-hover align-middle mb-0 custom-admin-table">
+          <div class="table-responsive border rounded-2 thin-table-container mb-3">
+            <table class="table table-hover align-middle mb-0 super-thin-table">
               <thead class="table-light">
                 <tr>
                   <th scope="col" style="width: 40px;">#</th>
@@ -329,14 +359,15 @@
                 </tr>
               </thead>
               <tbody>
-                <tr *ngFor="let item of paginatedUserActivities; let i = index">
-                  <td class="text-muted small">
+                <tr *ngFor="let item of paginatedUserActivities; let i = index" class="thin-row">
+                  <td class="text-muted text-center row-idx">
                     {{ (activityCurrentPage - 1) * activityPageSize + i + 1 }}
                   </td>
                   <td>
                     <div class="d-flex align-items-center gap-2">
                       <div
-                        class="activity-user-avatar"
+                        class="mini-avatar"
+                        style="width: 24px; height: 24px; font-size: 0.68rem;"
                         [ngClass]="{
                           'bg-primary-subtle text-primary': item.roleName === 'Recruiter',
                           'bg-purple-subtle text-purple': item.roleName === 'Bench Sales',
@@ -345,15 +376,15 @@
                       >
                         {{ getUserInitials(item.fullName || item.userName) }}
                       </div>
-                      <div class="d-flex flex-column">
-                        <span class="fw-semibold text-dark small">{{ item.fullName || item.userName }}</span>
-                        <span class="text-muted" style="font-size: 0.75rem;">{{ item.email || item.userName }}</span>
+                      <div class="d-flex flex-column" style="line-height: 1.15;">
+                        <span class="fw-semibold text-dark" style="font-size: 0.8125rem;">{{ item.fullName || item.userName }}</span>
+                        <span class="text-muted" style="font-size: 0.70rem;">{{ item.email || item.userName }}</span>
                       </div>
                     </div>
                   </td>
                   <td>
                     <span
-                      class="badge"
+                      class="badge mini-role-badge"
                       [ngClass]="{
                         'bg-primary-subtle text-primary border border-primary-subtle': item.roleName === 'Recruiter',
                         'bg-purple-subtle text-purple border border-purple-subtle': item.roleName === 'Bench Sales',
@@ -367,27 +398,33 @@
                   <td>
                     <div class="d-flex align-items-center gap-1">
                       <span [class]="item.isOnline ? 'pulse-online' : 'dot-offline'"></span>
-                      <span class="small" [ngClass]="item.isOnline ? 'text-success fw-semibold' : 'text-muted'">
+                      <span style="font-size: 0.75rem;" [ngClass]="item.isOnline ? 'text-success fw-semibold' : 'text-muted'">
                         {{ item.isOnline ? 'Online' : getRelativeTime(item.lastActiveTime) }}
                       </span>
                     </div>
                   </td>
                   <td>
-                    <div class="small text-dark fw-medium">{{ formatDateDisplay(item.lastActiveTime) }}</div>
-                    <div class="text-muted" style="font-size: 0.72rem;">{{ getRelativeTime(item.lastActiveTime) }}</div>
-                  </td>
-                  <td class="small text-muted">
-                    {{ formatDateDisplay(item.loginTime) }}
+                    <div class="text-dark fw-medium" style="font-size: 0.75rem; line-height: 1.2;">
+                      {{ formatDateDisplay(item.lastActiveTime) }}
+                    </div>
+                    <div class="text-muted" style="font-size: 0.68rem; line-height: 1.1;">
+                      {{ getRelativeTime(item.lastActiveTime) }}
+                    </div>
                   </td>
                   <td>
-                    <code class="small text-dark bg-light px-2 py-1 rounded border">{{ item.ipAddress || '::1' }}</code>
+                    <span class="text-muted" style="font-size: 0.75rem; line-height: 1.2;">
+                      {{ formatDateDisplay(item.loginTime) }}
+                    </span>
                   </td>
-                  <td class="small text-muted">
-                    <span *ngIf="item.location" class="d-flex align-items-center gap-1">
-                      <span class="material-symbols-outlined fs-6 text-muted">location_on</span>
+                  <td>
+                    <code class="text-dark bg-light px-1 py-0 rounded border" style="font-size: 0.72rem;">{{ item.ipAddress || '::1' }}</code>
+                  </td>
+                  <td>
+                    <span *ngIf="item.location" class="d-flex align-items-center gap-1 text-muted" style="font-size: 0.75rem;">
+                      <span class="material-symbols-outlined" style="font-size: 13px;">location_on</span>
                       {{ item.location }}
                     </span>
-                    <span *ngIf="!item.location">—</span>
+                    <span *ngIf="!item.location" class="text-muted" style="font-size: 0.75rem;">—</span>
                   </td>
                 </tr>
 
@@ -732,25 +769,28 @@
           </span>
         </div>
 
-        <div class="table-responsive border rounded-3">
-          <table class="table table-hover align-middle mb-0 custom-admin-table">
+        <div class="table-responsive border rounded-2 thin-table-container">
+          <table class="table table-hover align-middle mb-0 super-thin-table company-thin-table">
             <thead class="table-light">
               <tr>
-                <th scope="col" style="width: 60px;">Logo</th>
-                <th scope="col">Company Name</th>
-                <th scope="col">Website</th>
-                <th scope="col">LinkedIn</th>
-                <th scope="col">Contact Info</th>
-                <th scope="col">Address</th>
-                <th scope="col" class="text-center">Active Status</th>
-                <th scope="col" class="text-end" style="width: 100px;">Actions</th>
+                <th scope="col" style="width: 45px;">#</th>
+                <th scope="col" style="width: 45px;">Logo</th>
+                <th scope="col" style="min-width: 260px;">Company Name</th>
+                <th scope="col" style="min-width: 220px;">Contact Info</th>
+                <th scope="col" class="text-center" style="width: 110px;">Status</th>
+                <th scope="col" class="text-end" style="width: 80px;">Action</th>
               </tr>
             </thead>
             <tbody>
-              <tr *ngFor="let comp of paginatedCompanies">
+              <tr *ngFor="let comp of paginatedCompanies; let i = index" class="thin-row">
+                <!-- Index -->
+                <td class="text-muted text-center row-idx">
+                  {{ (currentPage - 1) * pageSize + i + 1 }}
+                </td>
+
                 <!-- Logo Avatar -->
                 <td>
-                  <div class="company-logo-avatar">
+                  <div class="company-logo-avatar mini-logo">
                     <img
                       [src]="getCompanyLogoUrl(comp.logo)"
                       (error)="onImageError($event)"
@@ -760,81 +800,77 @@
                   </div>
                 </td>
 
-                <!-- Name -->
+                <!-- Name with Hover Links -->
                 <td>
-                  <div class="fw-bold text-dark">{{ comp.name }}</div>
-                  <small class="text-muted" *ngIf="comp.domainname">Domain: {{ comp.domainname }}</small>
-                </td>
+                  <div class="d-flex align-items-center justify-content-between gap-2">
+                    <div class="fw-semibold text-dark user-name text-truncate" [title]="comp.name">
+                      {{ comp.name }}
+                    </div>
 
-                <!-- Website -->
-                <td>
-                  <a
-                    *ngIf="comp.website"
-                    [href]="comp.website.startsWith('http') ? comp.website : 'https://' + comp.website"
-                    target="_blank"
-                    class="text-primary small d-inline-flex align-items-center gap-1 text-truncate"
-                    style="max-width: 160px;"
-                  >
-                    <span>{{ comp.website }}</span>
-                    <span class="material-symbols-outlined fs-6">open_in_new</span>
-                  </a>
-                  <span *ngIf="!comp.website" class="text-muted small">—</span>
-                </td>
-
-                <!-- LinkedIn -->
-                <td>
-                  <a
-                    *ngIf="comp.linkedin"
-                    [href]="comp.linkedin.startsWith('http') ? comp.linkedin : 'https://' + comp.linkedin"
-                    target="_blank"
-                    class="text-info small d-inline-flex align-items-center gap-1 text-truncate"
-                    style="max-width: 140px;"
-                  >
-                    <span>LinkedIn</span>
-                    <span class="material-symbols-outlined fs-6">open_in_new</span>
-                  </a>
-                  <span *ngIf="!comp.linkedin" class="text-muted small">—</span>
+                    <!-- On-Hover Links for Website and LinkedIn -->
+                    <div class="company-hover-links d-flex align-items-center gap-1">
+                      <a
+                        *ngIf="comp.website"
+                        [href]="comp.website.startsWith('http') ? comp.website : 'https://' + comp.website"
+                        target="_blank"
+                        class="badge bg-primary-subtle text-primary border border-primary-subtle hover-link-pill d-inline-flex align-items-center gap-1"
+                        [title]="'Visit website: ' + comp.website"
+                      >
+                        <span class="material-symbols-outlined fs-6">language</span>
+                        <span>Website</span>
+                      </a>
+                      <a
+                        *ngIf="comp.linkedin"
+                        [href]="comp.linkedin.startsWith('http') ? comp.linkedin : 'https://' + comp.linkedin"
+                        target="_blank"
+                        class="badge bg-info-subtle text-info border border-info-subtle hover-link-pill d-inline-flex align-items-center gap-1"
+                        [title]="'View LinkedIn: ' + comp.linkedin"
+                      >
+                        <span class="material-symbols-outlined fs-6">link</span>
+                        <span>LinkedIn</span>
+                      </a>
+                    </div>
+                  </div>
                 </td>
 
                 <!-- Contact Info -->
                 <td>
-                  <div class="small text-dark" *ngIf="comp.email">
-                    <span class="material-symbols-outlined fs-6 align-middle text-muted me-1">mail</span>{{ comp.email }}
+                  <div class="d-flex align-items-center gap-3">
+                    <div class="small text-dark d-flex align-items-center gap-1" *ngIf="comp.email" [title]="comp.email">
+                      <span class="material-symbols-outlined fs-6 text-muted">mail</span>
+                      <span class="user-email text-truncate" style="max-width: 150px;">{{ comp.email }}</span>
+                    </div>
+                    <div class="small text-muted d-flex align-items-center gap-1" *ngIf="comp.phone" [title]="comp.phone">
+                      <span class="material-symbols-outlined fs-6 text-muted">call</span>
+                      <span class="user-email">{{ comp.phone }}</span>
+                    </div>
+                    <span *ngIf="!comp.email && !comp.phone" class="text-muted small">—</span>
                   </div>
-                  <div class="small text-muted" *ngIf="comp.phone">
-                    <span class="material-symbols-outlined fs-6 align-middle text-muted me-1">call</span>{{ comp.phone }}
-                  </div>
-                  <span *ngIf="!comp.email && !comp.phone" class="text-muted small">—</span>
-                </td>
-
-                <!-- Address -->
-                <td>
-                  <span class="small text-truncate d-inline-block" style="max-width: 180px;" [title]="comp.address || ''">
-                    {{ comp.address || '—' }}
-                  </span>
                 </td>
 
                 <!-- Active Status Toggle -->
                 <td class="text-center">
-                  <div class="form-check form-switch d-inline-block">
-                    <input
-                      class="form-check-input custom-switch cursor-pointer"
-                      type="checkbox"
-                      role="switch"
-                      [checked]="comp.active === true || comp.active === 1"
-                      (change)="toggleActive(comp, $event)"
-                      [title]="(comp.active ? 'Active' : 'Inactive') + ' - Click to toggle'"
-                    />
-                  </div>
-                  <div class="small" [ngClass]="comp.active ? 'text-success fw-medium' : 'text-muted'">
-                    {{ comp.active ? 'Active' : 'Inactive' }}
+                  <div class="d-inline-flex align-items-center gap-2">
+                    <div class="form-check form-switch d-inline-block mb-0">
+                      <input
+                        class="form-check-input custom-switch cursor-pointer"
+                        type="checkbox"
+                        role="switch"
+                        [checked]="comp.active === true || comp.active === 1"
+                        (change)="toggleActive(comp, $event)"
+                        [title]="(comp.active ? 'Active' : 'Inactive') + ' - Click to toggle'"
+                      />
+                    </div>
+                    <span class="badge mini-role-badge" [ngClass]="comp.active ? 'bg-success-subtle text-success border border-success-subtle' : 'bg-secondary-subtle text-secondary border border-secondary-subtle'">
+                      {{ comp.active ? 'Active' : 'Inactive' }}
+                    </span>
                   </div>
                 </td>
 
                 <!-- Actions -->
                 <td class="text-end">
                   <button
-                    class="btn btn-sm btn-outline-primary d-inline-flex align-items-center gap-1"
+                    class="btn btn-sm btn-outline-primary py-0 px-2 btn-edit-quota d-inline-flex align-items-center gap-1"
                     (click)="openEditModal(comp)"
                     title="Edit Company Details & Logo"
                   >
@@ -870,6 +906,919 @@
               </li>
             </ul>
           </nav>
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <!-- ==================================================== -->
+    <!-- TAB: REVIEW USER-CREATED COMPANIES -->
+    <!-- ==================================================== -->
+    <div *ngIf="activeTab === 'review-companies'" class="tab-content-area review-companies-area">
+
+      <!-- Search & Filters Toolbar -->
+      <div class="card border-0 shadow-sm p-3 mb-3">
+        <div class="row g-2 align-items-center justify-content-between">
+          <!-- Search input -->
+          <div class="col-md-4 col-lg-3">
+            <div class="input-group input-group-sm">
+              <span class="input-group-text bg-white border-end-0 text-muted">
+                <span class="material-symbols-outlined fs-6">search</span>
+              </span>
+              <input
+                type="text"
+                class="form-control border-start-0 ps-0"
+                placeholder="Search user-added companies..."
+                [(ngModel)]="reviewSearchTerm"
+                (ngModelChange)="onReviewSearchChange()"
+              />
+              <button *ngIf="reviewSearchTerm" class="btn btn-outline-secondary border-start-0" type="button" (click)="reviewSearchTerm = ''; onReviewSearchChange()">
+                <span class="material-symbols-outlined fs-6">close</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Status Filters & Controls -->
+          <div class="col-md-8 col-lg-9 d-flex justify-content-md-end align-items-center gap-2 flex-wrap">
+            <div class="status-filter-pills" role="group" aria-label="Review Status Filters">
+              <button
+                type="button"
+                class="filter-pill"
+                [class.active]="reviewStatusFilter === 'all'"
+                (click)="onReviewStatusFilterChange('all')"
+              >
+                <span>All User Added</span>
+                <span class="badge-count">{{ userAddedCompanies.length }}</span>
+              </button>
+              <button
+                type="button"
+                class="filter-pill"
+                [class.active]="reviewStatusFilter === 'active'"
+                (click)="onReviewStatusFilterChange('active')"
+              >
+                <span>Active</span>
+                <span class="badge-count">{{ reviewActiveCount }}</span>
+              </button>
+              <button
+                type="button"
+                class="filter-pill"
+                [class.active]="reviewStatusFilter === 'inactive'"
+                (click)="onReviewStatusFilterChange('inactive')"
+              >
+                <span>Deactivated</span>
+                <span class="badge-count">{{ reviewInactiveCount }}</span>
+              </button>
+            </div>
+
+            <!-- Page Size Dropdown -->
+            <div class="d-flex align-items-center gap-1">
+              <span class="text-muted small">Per page:</span>
+              <select class="form-select form-select-sm" style="width: 75px;" [(ngModel)]="reviewPageSize" (ngModelChange)="onReviewPageSizeChange($event)">
+                <option *ngFor="let opt of reviewPageSizeOptions" [value]="opt">{{ opt }}</option>
+              </select>
+            </div>
+
+            <!-- Refresh button -->
+            <button class="btn btn-outline-secondary btn-sm d-flex align-items-center gap-1" (click)="loadCompanies()" [disabled]="isLoadingCompanies" title="Refresh List">
+              <span class="material-symbols-outlined fs-6" [class.spin]="isLoadingCompanies">refresh</span>
+              <span>Refresh</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Info Alert Box -->
+      <div class="alert alert-warning-subtle border border-warning-subtle rounded-3 p-3 mb-3 d-flex align-items-center justify-content-between flex-wrap gap-2">
+        <div class="d-flex align-items-center gap-2">
+          <span class="material-symbols-outlined text-warning fs-5">info</span>
+          <span class="small text-dark">
+            Companies submitted by users from the Dashboard / Registration. Verify legitimate business details or click <strong>Deactivate</strong> to disable.
+          </span>
+        </div>
+        <span class="badge bg-warning text-dark">{{ userAddedCompanies.length }} Companies Pending/Reviewed</span>
+      </div>
+
+      <!-- Loading State -->
+      <div *ngIf="isLoadingCompanies" class="text-center py-5">
+        <div class="spinner-border text-primary mb-2" role="status"></div>
+        <p class="text-muted small">Loading user-created companies...</p>
+      </div>
+
+      <!-- Empty State -->
+      <div *ngIf="!isLoadingCompanies && filteredReviewCompanies.length === 0" class="card border-0 shadow-sm text-center py-5 p-4">
+        <div class="icon-circle bg-light text-muted mx-auto mb-3">
+          <span class="material-symbols-outlined fs-2">verified</span>
+        </div>
+        <h5 class="text-dark mb-1">No Companies Found</h5>
+        <p class="text-muted small mb-3">
+          {{ userAddedCompanies.length === 0 ? 'No user-created companies have been submitted yet.' : 'No companies matched your search filter criteria.' }}
+        </p>
+        <button *ngIf="reviewSearchTerm || reviewStatusFilter !== 'all'" class="btn btn-outline-primary btn-sm mx-auto" (click)="reviewSearchTerm = ''; reviewStatusFilter = 'all';">
+          Clear Filters
+        </button>
+      </div>
+
+      <!-- Super Thin Companies Table -->
+      <div *ngIf="!isLoadingCompanies && filteredReviewCompanies.length > 0" class="card border-0 shadow-sm p-3">
+        <div class="d-flex justify-content-between align-items-center mb-2">
+          <span class="text-muted small fw-medium">
+            Showing {{ (reviewCurrentPage - 1) * reviewPageSize + 1 }} to {{ Math.min(reviewCurrentPage * reviewPageSize, filteredReviewCompanies.length) }} of {{ filteredReviewCompanies.length }} user-added companies
+          </span>
+          <span class="badge bg-light text-muted border">
+            User Created Directory
+          </span>
+        </div>
+
+        <div class="table-responsive border rounded-2 thin-table-container">
+          <table class="table table-hover align-middle mb-0 super-thin-table company-thin-table">
+            <thead class="table-light">
+              <tr>
+                <th scope="col" style="width: 45px;">#</th>
+                <th scope="col" style="width: 45px;">Logo</th>
+                <th scope="col" style="min-width: 240px;">Company Name</th>
+                <th scope="col" style="min-width: 200px;">Contact Info</th>
+                <th scope="col" style="min-width: 140px;">Created Date</th>
+                <th scope="col" class="text-center" style="width: 130px;">Active Status</th>
+                <th scope="col" class="text-end" style="width: 170px;">Review Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let comp of paginatedReviewCompanies; let i = index" class="thin-row">
+                <!-- Index -->
+                <td class="text-muted text-center row-idx">
+                  {{ (reviewCurrentPage - 1) * reviewPageSize + i + 1 }}
+                </td>
+
+                <!-- Logo Avatar -->
+                <td>
+                  <div class="company-logo-avatar mini-logo">
+                    <img
+                      [src]="getCompanyLogoUrl(comp.logo)"
+                      (error)="onImageError($event)"
+                      [alt]="comp.name"
+                      class="rounded border"
+                    />
+                  </div>
+                </td>
+
+                <!-- Name with Hover Links -->
+                <td>
+                  <div class="d-flex align-items-center justify-content-between gap-2">
+                    <div class="d-flex align-items-center gap-1">
+                      <span class="fw-semibold text-dark user-name text-truncate" [title]="comp.name">
+                        {{ comp.name }}
+                      </span>
+                      <span class="badge bg-warning-subtle text-warning border border-warning-subtle mini-role-badge" title="Added directly by user">
+                        User Created
+                      </span>
+                    </div>
+
+                    <!-- On-Hover Links for Website and LinkedIn -->
+                    <div class="company-hover-links d-flex align-items-center gap-1">
+                      <a
+                        *ngIf="comp.website"
+                        [href]="comp.website.startsWith('http') ? comp.website : 'https://' + comp.website"
+                        target="_blank"
+                        class="badge bg-primary-subtle text-primary border border-primary-subtle hover-link-pill d-inline-flex align-items-center gap-1"
+                        [title]="'Visit website: ' + comp.website"
+                      >
+                        <span class="material-symbols-outlined fs-6">language</span>
+                        <span>Website</span>
+                      </a>
+                      <a
+                        *ngIf="comp.linkedin"
+                        [href]="comp.linkedin.startsWith('http') ? comp.linkedin : 'https://' + comp.linkedin"
+                        target="_blank"
+                        class="badge bg-info-subtle text-info border border-info-subtle hover-link-pill d-inline-flex align-items-center gap-1"
+                        [title]="'View LinkedIn: ' + comp.linkedin"
+                      >
+                        <span class="material-symbols-outlined fs-6">link</span>
+                        <span>LinkedIn</span>
+                      </a>
+                    </div>
+                  </div>
+                </td>
+
+                <!-- Contact Info -->
+                <td>
+                  <div class="d-flex align-items-center gap-3">
+                    <div class="small text-dark d-flex align-items-center gap-1" *ngIf="comp.email" [title]="comp.email">
+                      <span class="material-symbols-outlined fs-6 text-muted">mail</span>
+                      <span class="user-email text-truncate" style="max-width: 140px;">{{ comp.email }}</span>
+                    </div>
+                    <div class="small text-muted d-flex align-items-center gap-1" *ngIf="comp.phone" [title]="comp.phone">
+                      <span class="material-symbols-outlined fs-6 text-muted">call</span>
+                      <span class="user-email">{{ comp.phone }}</span>
+                    </div>
+                    <span *ngIf="!comp.email && !comp.phone" class="text-muted small">—</span>
+                  </div>
+                </td>
+
+                <!-- Created Date -->
+                <td>
+                  <div class="small text-dark fw-medium">{{ formatDateOnly(comp.updated) }}</div>
+                  <div class="text-muted" style="font-size: 0.7rem;">{{ getRelativeTime(comp.updated) }}</div>
+                </td>
+
+                <!-- Active Status Toggle -->
+                <td class="text-center">
+                  <div class="d-inline-flex align-items-center gap-2">
+                    <div class="form-check form-switch d-inline-block mb-0">
+                      <input
+                        class="form-check-input custom-switch cursor-pointer"
+                        type="checkbox"
+                        role="switch"
+                        [checked]="comp.active === true || comp.active === 1"
+                        (change)="toggleActive(comp, $event)"
+                        [title]="(comp.active ? 'Active' : 'Inactive') + ' - Click to toggle'"
+                      />
+                    </div>
+                    <span class="badge mini-role-badge" [ngClass]="comp.active ? 'bg-success-subtle text-success border border-success-subtle' : 'bg-danger-subtle text-danger border border-danger-subtle'">
+                      {{ comp.active ? 'Active' : 'Deactivated' }}
+                    </span>
+                  </div>
+                </td>
+
+                <!-- Actions -->
+                <td class="text-end">
+                  <div class="d-inline-flex align-items-center gap-1">
+                    <!-- Quick Deactivate/Activate button -->
+                    <button
+                      class="btn btn-sm py-0 px-2 d-inline-flex align-items-center gap-1"
+                      [ngClass]="comp.active ? 'btn-outline-danger' : 'btn-outline-success'"
+                      (click)="toggleActive(comp, $event)"
+                      [title]="comp.active ? 'Deactivate this company' : 'Activate this company'"
+                      style="font-size: 0.72rem; height: 26px;"
+                    >
+                      <span class="material-symbols-outlined" style="font-size: 0.85rem;">
+                        {{ comp.active ? 'block' : 'check_circle' }}
+                      </span>
+                      <span>{{ comp.active ? 'Deactivate' : 'Activate' }}</span>
+                    </button>
+
+                    <!-- Edit / Review Details button -->
+                    <button
+                      class="btn btn-sm btn-outline-primary py-0 px-2 btn-edit-quota d-inline-flex align-items-center gap-1"
+                      (click)="openEditModal(comp)"
+                      title="Review & Edit Company Details"
+                      style="font-size: 0.72rem; height: 26px;"
+                    >
+                      <span class="material-symbols-outlined" style="font-size: 0.85rem;">edit</span>
+                      <span>Edit</span>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Pagination Controls -->
+        <div *ngIf="totalReviewPages > 1" class="d-flex flex-column flex-md-row justify-content-between align-items-center mt-3 pt-2 gap-2">
+          <span class="text-muted small">
+            Page {{ reviewCurrentPage }} of {{ totalReviewPages }} ({{ filteredReviewCompanies.length }} companies)
+          </span>
+          <nav aria-label="Review pagination">
+            <ul class="pagination pagination-sm mb-0">
+              <li class="page-item" [class.disabled]="reviewCurrentPage === 1">
+                <button class="page-link" (click)="onReviewPageChange(reviewCurrentPage - 1)">Previous</button>
+              </li>
+              <li
+                *ngFor="let p of [].constructor(totalReviewPages); let idx = index"
+                class="page-item"
+                [class.active]="reviewCurrentPage === idx + 1"
+                [class.d-none]="idx + 1 > reviewCurrentPage + 3 || idx + 1 < reviewCurrentPage - 3"
+              >
+                <button class="page-link" (click)="onReviewPageChange(idx + 1)">{{ idx + 1 }}</button>
+              </li>
+              <li class="page-item" [class.disabled]="reviewCurrentPage === totalReviewPages">
+                <button class="page-link" (click)="onReviewPageChange(reviewCurrentPage + 1)">Next</button>
+              </li>
+            </ul>
+          </nav>
+        </div>
+
+      </div>
+
+    </div>
+    <div *ngIf="activeTab === 'user-quotas'" class="tab-content-area user-quotas-area">
+
+      <!-- Search & Filters Toolbar -->
+      <div class="card border-0 shadow-sm p-3 mb-3">
+        <div class="row g-2 align-items-center justify-content-between">
+          <!-- Search input -->
+          <div class="col-md-4 col-lg-3">
+            <div class="input-group input-group-sm">
+              <span class="input-group-text bg-white border-end-0 text-muted">
+                <span class="material-symbols-outlined fs-6">search</span>
+              </span>
+              <input
+                type="text"
+                class="form-control border-start-0 ps-0"
+                placeholder="Search user, email, company..."
+                [(ngModel)]="quotaSearch"
+                (ngModelChange)="onQuotaSearchChange()"
+              />
+              <button *ngIf="quotaSearch" class="btn btn-outline-secondary border-start-0" type="button" (click)="quotaSearch = ''; onQuotaSearchChange()">
+                <span class="material-symbols-outlined fs-6">close</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Role / Plan Filters -->
+          <div class="col-md-8 col-lg-9 d-flex justify-content-md-end align-items-center gap-2 flex-wrap">
+            <div class="status-filter-pills" role="group" aria-label="Quota Filters">
+              <button
+                type="button"
+                class="filter-pill"
+                [class.active]="quotaFilter === 'all'"
+                (click)="onQuotaFilterChange('all')"
+              >
+                <span>All Users</span>
+                <span class="badge-count" *ngIf="quotaFilter === 'all'">{{ quotaTotalCount }}</span>
+              </button>
+              <button
+                type="button"
+                class="filter-pill"
+                [class.active]="quotaFilter === 'recruiter'"
+                (click)="onQuotaFilterChange('recruiter')"
+              >
+                <span>Recruiters</span>
+              </button>
+              <button
+                type="button"
+                class="filter-pill"
+                [class.active]="quotaFilter === 'benchsales'"
+                (click)="onQuotaFilterChange('benchsales')"
+              >
+                <span>Bench Sales</span>
+              </button>
+              <button
+                type="button"
+                class="filter-pill"
+                [class.active]="quotaFilter === 'admin'"
+                (click)="onQuotaFilterChange('admin')"
+              >
+                <span>Admins</span>
+              </button>
+              <button
+                type="button"
+                class="filter-pill"
+                [class.active]="quotaFilter === 'free'"
+                (click)="onQuotaFilterChange('free')"
+              >
+                <span>Free Tier</span>
+              </button>
+              <button
+                type="button"
+                class="filter-pill"
+                [class.active]="quotaFilter === 'pro'"
+                (click)="onQuotaFilterChange('pro')"
+              >
+                <span>Pro Tier</span>
+              </button>
+            </div>
+
+            <!-- Page Size Dropdown -->
+            <div class="d-flex align-items-center gap-1">
+              <span class="text-muted small">Per page:</span>
+              <select class="form-select form-select-sm" style="width: 75px;" [(ngModel)]="quotaPageSize" (ngModelChange)="onQuotaPageSizeChange($event)">
+                <option *ngFor="let opt of quotaPageSizeOptions" [value]="opt">{{ opt }}</option>
+              </select>
+            </div>
+
+            <!-- Refresh button -->
+            <button class="btn btn-outline-secondary btn-sm d-flex align-items-center gap-1" (click)="loadUserQuotas()" [disabled]="isLoadingQuotas" title="Refresh Quotas">
+              <span class="material-symbols-outlined fs-6" [class.spin]="isLoadingQuotas">refresh</span>
+              <span>Refresh</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Loading State -->
+      <div *ngIf="isLoadingQuotas" class="text-center py-5">
+        <div class="spinner-border text-primary mb-2" role="status"></div>
+        <p class="text-muted small">Loading user quotas data...</p>
+      </div>
+
+      <!-- Empty State -->
+      <div *ngIf="!isLoadingQuotas && userQuotas.length === 0" class="card border-0 shadow-sm text-center py-5 p-4">
+        <div class="icon-circle bg-light text-muted mx-auto mb-3">
+          <span class="material-symbols-outlined fs-2">person_search</span>
+        </div>
+        <h5 class="text-dark mb-1">No Users Found</h5>
+        <p class="text-muted small mb-3">No user records matched your search or filter criteria.</p>
+        <button *ngIf="quotaSearch || quotaFilter !== 'all'" class="btn btn-outline-primary btn-sm mx-auto" (click)="quotaSearch = ''; quotaFilter = 'all'; onQuotaSearchChange()">
+          Clear Filters
+        </button>
+      </div>
+
+      <!-- Super Thin Card List / Dense Table -->
+      <div *ngIf="!isLoadingQuotas && userQuotas.length > 0" class="card border-0 shadow-sm p-3">
+        <div class="d-flex justify-content-between align-items-center mb-2">
+          <span class="text-muted small fw-medium">
+            Showing {{ (quotaCurrentPage - 1) * quotaPageSize + 1 }} to {{ Math.min(quotaCurrentPage * quotaPageSize, quotaTotalCount) }} of {{ quotaTotalCount }} users
+          </span>
+          <span class="badge bg-light text-muted border">
+            Dense Row View ({{ quotaPageSize }} / page)
+          </span>
+        </div>
+
+        <div class="table-responsive border rounded-2 thin-table-container">
+          <table class="table table-hover align-middle mb-0 super-thin-table">
+            <thead class="table-light">
+              <tr>
+                <th scope="col" style="width: 45px;">#</th>
+                <th scope="col" style="min-width: 220px;">User & Email</th>
+                <th scope="col" style="min-width: 170px;">Role & Company</th>
+                <th scope="col" style="min-width: 130px;">Job Postings</th>
+                <th scope="col" style="min-width: 130px;">Downloads</th>
+                <th scope="col" style="min-width: 110px;">Daily Chat</th>
+                <th scope="col" style="min-width: 140px;">Cycle / Expiry</th>
+                <th scope="col" style="min-width: 90px;">Plan Tier</th>
+                <th scope="col" class="text-end" style="width: 80px;">Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let item of userQuotas; let idx = index" class="thin-row">
+                <!-- Index -->
+                <td class="text-muted text-center row-idx">
+                  {{ (quotaCurrentPage - 1) * quotaPageSize + idx + 1 }}
+                </td>
+
+                <!-- User & Email -->
+                <td>
+                  <div class="d-flex align-items-center gap-2">
+                    <div
+                      class="mini-avatar"
+                      [ngClass]="{
+                        'bg-primary-subtle text-primary': item.roleRecruiter,
+                        'bg-purple-subtle text-purple': item.roleBenchSales && !item.roleRecruiter,
+                        'bg-danger-subtle text-danger': item.userTypeId === 7,
+                        'bg-secondary-subtle text-secondary': !item.roleRecruiter && !item.roleBenchSales && item.userTypeId !== 7
+                      }"
+                    >
+                      {{ getUserInitials(item.fullName || item.email) }}
+                    </div>
+                    <div class="d-flex flex-column text-truncate" style="max-width: 200px;">
+                      <span class="fw-semibold text-dark user-name text-truncate" [title]="item.fullName || item.email">
+                        {{ item.fullName || 'No Name' }}
+                      </span>
+                      <span class="user-email text-muted text-truncate" [title]="item.email">
+                        {{ item.email }}
+                      </span>
+                    </div>
+                  </div>
+                </td>
+
+                <!-- Role & Company -->
+                <td>
+                  <div class="d-flex flex-column">
+                    <div class="d-flex align-items-center gap-1">
+                      <span
+                        class="badge mini-role-badge"
+                        [ngClass]="{
+                          'bg-primary-subtle text-primary border border-primary-subtle': item.roleRecruiter && !item.roleBenchSales,
+                          'bg-purple-subtle text-purple border border-purple-subtle': item.roleBenchSales && !item.roleRecruiter,
+                          'bg-info-subtle text-info border border-info-subtle': item.roleRecruiter && item.roleBenchSales,
+                          'bg-danger-subtle text-danger border border-danger-subtle': item.userTypeId === 7,
+                          'bg-secondary-subtle text-secondary': !item.roleRecruiter && !item.roleBenchSales && item.userTypeId !== 7
+                        }"
+                      >
+                        {{ item.roleName || 'User' }}
+                      </span>
+                    </div>
+                    <span class="text-muted company-text text-truncate mt-0" [title]="item.companyName || 'No Company'">
+                      {{ item.companyName || '—' }}
+                    </span>
+                  </div>
+                </td>
+
+                <!-- Job Postings Quota -->
+                <td>
+                  <div class="d-flex flex-column">
+                    <div class="d-flex align-items-center justify-content-between quota-num-line">
+                      <span class="fw-semibold text-dark">{{ item.usedJobPostings }} / {{ item.actualJobPosting }}</span>
+                      <span
+                        class="badge rounded-pill quota-pill"
+                        [ngClass]="item.remainingJobPostings <= 0 ? 'bg-danger-subtle text-danger' : 'bg-success-subtle text-success'"
+                      >
+                        {{ item.remainingJobPostings }} left
+                      </span>
+                    </div>
+                    <div class="progress mini-progress mt-1">
+                      <div
+                        class="progress-bar"
+                        [ngClass]="item.remainingJobPostings <= 0 ? 'bg-danger' : (item.usedJobPostings / item.actualJobPosting > 0.8 ? 'bg-warning' : 'bg-primary')"
+                        [style.width.%]="item.actualJobPosting > 0 ? Math.min(100, (item.usedJobPostings / item.actualJobPosting) * 100) : 0"
+                      ></div>
+                    </div>
+                  </div>
+                </td>
+
+                <!-- Downloads Quota -->
+                <td>
+                  <div class="d-flex flex-column">
+                    <div class="d-flex align-items-center justify-content-between quota-num-line">
+                      <span class="fw-semibold text-dark">{{ item.usedDownloads }} / {{ item.actualDownloads }}</span>
+                      <span
+                        class="badge rounded-pill quota-pill"
+                        [ngClass]="item.remainingDownloads <= 0 ? 'bg-danger-subtle text-danger' : 'bg-teal-subtle text-teal'"
+                      >
+                        {{ item.remainingDownloads }} left
+                      </span>
+                    </div>
+                    <div class="progress mini-progress mt-1">
+                      <div
+                        class="progress-bar bg-teal"
+                        [style.width.%]="item.actualDownloads > 0 ? Math.min(100, (item.usedDownloads / item.actualDownloads) * 100) : 0"
+                      ></div>
+                    </div>
+                  </div>
+                </td>
+
+                <!-- Daily Chat Limit -->
+                <td>
+                  <div class="d-flex align-items-center gap-1">
+                    <span class="material-symbols-outlined fs-6 text-primary">chat_bubble</span>
+                    <span class="fw-semibold text-dark chat-limit-val">{{ item.dailyChatLimit }}/day</span>
+                  </div>
+                </td>
+
+                <!-- Cycle / Expiry -->
+                <td>
+                  <div class="d-flex flex-column">
+                    <span class="expiry-date text-dark fw-medium">{{ formatDateOnly(item.cycleEndDate) }}</span>
+                    <span
+                      class="days-left-tag small"
+                      [ngClass]="item.daysRemainingInCycle <= 3 ? 'text-danger fw-bold' : 'text-muted'"
+                    >
+                      {{ item.daysRemainingInCycle }}d remaining
+                    </span>
+                  </div>
+                </td>
+
+                <!-- Plan Tier -->
+                <td>
+                  <span
+                    class="badge tier-badge"
+                    [ngClass]="item.isFree ? 'bg-secondary-subtle text-secondary' : 'bg-success-subtle text-success border border-success-subtle'"
+                  >
+                    {{ item.isFree ? 'Free' : 'Pro' }}
+                  </span>
+                </td>
+
+                <!-- Action: Edit Quota -->
+                <td class="text-end">
+                  <button
+                    class="btn btn-sm btn-outline-primary py-0 px-2 btn-edit-quota d-inline-flex align-items-center gap-1"
+                    (click)="openEditQuotaModal(item)"
+                    title="Edit User Quota & Expiry"
+                  >
+                    <span class="material-symbols-outlined fs-6">edit</span>
+                    <span>Edit</span>
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Compact Pagination Controls -->
+        <div *ngIf="quotaTotalPages > 1" class="d-flex flex-column flex-md-row justify-content-between align-items-center mt-3 pt-2 gap-2">
+          <span class="text-muted small">
+            Page {{ quotaCurrentPage }} of {{ quotaTotalPages }} ({{ quotaTotalCount }} total users)
+          </span>
+          <nav aria-label="Quota pagination">
+            <ul class="pagination pagination-sm mb-0">
+              <li class="page-item" [class.disabled]="quotaCurrentPage === 1">
+                <button class="page-link" (click)="onQuotaPageChange(quotaCurrentPage - 1)">Previous</button>
+              </li>
+              <li
+                *ngFor="let p of [].constructor(quotaTotalPages); let idx = index"
+                class="page-item"
+                [class.active]="quotaCurrentPage === idx + 1"
+                [class.d-none]="idx + 1 > quotaCurrentPage + 3 || idx + 1 < quotaCurrentPage - 3"
+              >
+                <button class="page-link" (click)="onQuotaPageChange(idx + 1)">{{ idx + 1 }}</button>
+              </li>
+              <li class="page-item" [class.disabled]="quotaCurrentPage === quotaTotalPages">
+                <button class="page-link" (click)="onQuotaPageChange(quotaCurrentPage + 1)">Next</button>
+              </li>
+            </ul>
+          </nav>
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- ==================================================== -->
+    <!-- TAB: CREATE & MANAGE ADMIN USERS (Type ID: 7) -->
+    <!-- ==================================================== -->
+    <div *ngIf="activeTab === 'admin-users'" class="tab-content-area admin-users-area">
+
+      <!-- Header & Creation Card -->
+      <div class="card border-0 shadow-sm p-4 mb-4">
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center pb-3 mb-4 border-bottom gap-2">
+          <div class="d-flex align-items-center gap-3">
+            <div class="icon-circle bg-danger-light text-danger" style="width: 44px; height: 44px;">
+              <span class="material-symbols-outlined fs-4">admin_panel_settings</span>
+            </div>
+            <div>
+              <div class="d-flex align-items-center gap-2">
+                <h5 class="mb-0 fw-bold text-dark">Create Admin User</h5>
+                <span class="badge bg-danger text-white px-2 py-1">UserTypeId = 7</span>
+              </div>
+              <p class="text-muted small mb-0 mt-1">
+                Enter username/email and password to create or promote an admin account with full elevated access.
+              </p>
+            </div>
+          </div>
+          <button
+            type="button"
+            class="btn btn-sm btn-outline-secondary d-flex align-items-center gap-1"
+            (click)="loadAdminUsers()"
+            [disabled]="isLoadingAdminUsers"
+            title="Refresh Admin Users"
+          >
+            <span class="material-symbols-outlined fs-6" [class.spin-icon]="isLoadingAdminUsers">refresh</span>
+            <span>Refresh List</span>
+          </button>
+        </div>
+
+        <!-- Admin Creation Form -->
+        <form (ngSubmit)="createAdminUser()" #adminForm="ngForm">
+          <div class="row g-3">
+            <!-- Username / Email -->
+            <div class="col-md-4">
+              <label class="form-label fw-semibold small">
+                Username / Email <span class="text-danger">*</span>
+              </label>
+              <div class="input-group">
+                <span class="input-group-text bg-white text-danger">
+                  <span class="material-symbols-outlined fs-6">alternate_email</span>
+                </span>
+                <input
+                  type="text"
+                  class="form-control"
+                  placeholder="e.g. admin@example.com"
+                  [(ngModel)]="createAdminForm.userName"
+                  name="adminUserName"
+                  required
+                  autocomplete="off"
+                />
+              </div>
+              <span class="text-muted" style="font-size: 0.72rem;">User will log in with this username / email</span>
+            </div>
+
+            <!-- Password -->
+            <div class="col-md-4">
+              <label class="form-label fw-semibold small">
+                Password <span class="text-danger">*</span>
+              </label>
+              <div class="input-group">
+                <span class="input-group-text bg-white text-danger">
+                  <span class="material-symbols-outlined fs-6">lock</span>
+                </span>
+                <input
+                  [type]="showAdminPassword ? 'text' : 'password'"
+                  class="form-control"
+                  placeholder="Enter secure password"
+                  [(ngModel)]="createAdminForm.password"
+                  name="adminPassword"
+                  required
+                  autocomplete="new-password"
+                />
+                <button
+                  type="button"
+                  class="btn btn-outline-secondary d-flex align-items-center px-2"
+                  (click)="toggleAdminPasswordVisibility()"
+                  title="Toggle password visibility"
+                >
+                  <span class="material-symbols-outlined fs-6">
+                    {{ showAdminPassword ? 'visibility_off' : 'visibility' }}
+                  </span>
+                </button>
+              </div>
+              <span class="text-muted" style="font-size: 0.72rem;">Password is hashed securely using PBKDF2</span>
+            </div>
+
+            <!-- First Name (Optional) -->
+            <div class="col-md-4">
+              <label class="form-label fw-semibold small">
+                First Name <span class="text-muted fw-normal">(Optional)</span>
+              </label>
+              <div class="input-group">
+                <span class="input-group-text bg-white text-muted">
+                  <span class="material-symbols-outlined fs-6">person</span>
+                </span>
+                <input
+                  type="text"
+                  class="form-control"
+                  placeholder="e.g. Admin"
+                  [(ngModel)]="createAdminForm.fname"
+                  name="adminFname"
+                />
+              </div>
+              <span class="text-muted" style="font-size: 0.72rem;">Defaults to username prefix if left empty</span>
+            </div>
+
+            <!-- Last Name (Optional) -->
+            <div class="col-md-4">
+              <label class="form-label fw-semibold small">
+                Last Name <span class="text-muted fw-normal">(Optional)</span>
+              </label>
+              <div class="input-group">
+                <span class="input-group-text bg-white text-muted">
+                  <span class="material-symbols-outlined fs-6">badge</span>
+                </span>
+                <input
+                  type="text"
+                  class="form-control"
+                  placeholder="e.g. User"
+                  [(ngModel)]="createAdminForm.lname"
+                  name="adminLname"
+                />
+              </div>
+            </div>
+
+            <!-- Phone (Optional) -->
+            <div class="col-md-4">
+              <label class="form-label fw-semibold small">
+                Phone Number <span class="text-muted fw-normal">(Optional)</span>
+              </label>
+              <div class="input-group">
+                <span class="input-group-text bg-white text-muted">
+                  <span class="material-symbols-outlined fs-6">phone</span>
+                </span>
+                <input
+                  type="tel"
+                  class="form-control"
+                  placeholder="e.g. +1 555-0199"
+                  [(ngModel)]="createAdminForm.phone"
+                  name="adminPhone"
+                />
+              </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="col-md-4 d-flex align-items-end gap-2">
+              <button
+                type="submit"
+                class="btn btn-danger flex-grow-1 d-flex align-items-center justify-content-center gap-2 py-2"
+                [disabled]="isCreatingAdmin || !createAdminForm.userName || !createAdminForm.password"
+              >
+                <span *ngIf="isCreatingAdmin" class="spinner-border spinner-border-sm"></span>
+                <span *ngIf="!isCreatingAdmin" class="material-symbols-outlined fs-5">person_add</span>
+                <span>{{ isCreatingAdmin ? 'Creating Admin...' : 'Create Admin User' }}</span>
+              </button>
+              <button
+                type="button"
+                class="btn btn-outline-secondary py-2"
+                (click)="resetCreateAdminForm()"
+                [disabled]="isCreatingAdmin"
+                title="Clear Form"
+              >
+                Reset
+              </button>
+            </div>
+          </div>
+        </form>
+
+        <!-- Information Callout -->
+        <div class="mt-3 p-3 bg-danger-subtle rounded-3 border border-danger-subtle d-flex align-items-center gap-2">
+          <span class="material-symbols-outlined text-danger fs-5">verified_user</span>
+          <span class="text-danger small">
+            Created admin users will have <strong>UserTypeId = 7</strong>, <strong>Active = 1</strong>, and <strong>EmailVerified = 1</strong>. They can immediately log in through the main sign-in page without needing OTP email validation.
+          </span>
+        </div>
+      </div>
+
+      <!-- Admin Users List Card -->
+      <div class="card border-0 shadow-sm p-4">
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-3 gap-3">
+          <div class="d-flex align-items-center gap-2">
+            <h5 class="mb-0 fw-bold text-dark">Existing Admin Users</h5>
+            <span class="badge bg-danger text-white rounded-pill px-2">
+              {{ filteredAdminUsers.length }} {{ filteredAdminUsers.length === 1 ? 'Admin' : 'Admins' }}
+            </span>
+          </div>
+
+          <!-- Search Filter -->
+          <div class="search-input-wrap" style="min-width: 280px;">
+            <div class="input-group input-group-sm">
+              <span class="input-group-text bg-white">
+                <span class="material-symbols-outlined fs-6 text-muted">search</span>
+              </span>
+              <input
+                type="text"
+                class="form-control"
+                placeholder="Search admin name, username, email..."
+                [(ngModel)]="adminUserSearch"
+              />
+              <button
+                *ngIf="adminUserSearch"
+                class="btn btn-outline-secondary"
+                type="button"
+                (click)="adminUserSearch = ''"
+              >
+                <span class="material-symbols-outlined fs-6">close</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Loading State -->
+        <div *ngIf="isLoadingAdminUsers" class="text-center py-5">
+          <div class="spinner-border text-danger" role="status">
+            <span class="visually-hidden">Loading Admin Users...</span>
+          </div>
+          <p class="text-muted small mt-2">Fetching admin users...</p>
+        </div>
+
+        <!-- Admin Table (Super-Thin Modern Layout) -->
+        <div *ngIf="!isLoadingAdminUsers && filteredAdminUsers.length > 0" class="table-responsive border rounded-2 thin-table-container">
+          <table class="table table-hover align-middle mb-0 super-thin-table">
+            <thead class="table-light">
+              <tr>
+                <th scope="col" style="width: 45px;">#</th>
+                <th scope="col" style="min-width: 220px;">Admin Name</th>
+                <th scope="col" style="min-width: 240px;">Username / Email</th>
+                <th scope="col" style="min-width: 140px;">Phone</th>
+                <th scope="col" style="min-width: 140px;">Role / Type</th>
+                <th scope="col" style="min-width: 110px;">Status</th>
+                <th scope="col" style="min-width: 140px;">Last Updated</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let admin of filteredAdminUsers; let idx = index" class="thin-row">
+                <!-- Index -->
+                <td class="text-muted text-center row-idx">
+                  {{ idx + 1 }}
+                </td>
+
+                <!-- Admin Name & Avatar -->
+                <td>
+                  <div class="d-flex align-items-center gap-2">
+                    <div class="mini-avatar bg-danger-light text-danger fw-bold rounded-circle d-flex align-items-center justify-content-center" style="width: 28px; height: 28px; font-size: 0.75rem;">
+                      {{ (admin.fname ? admin.fname[0] : (admin.userName ? admin.userName[0] : 'A')).toUpperCase() }}
+                    </div>
+                    <div>
+                      <span class="fw-semibold text-dark">{{ admin.fname }} {{ admin.lname }}</span>
+                      <span *ngIf="!admin.fname && !admin.lname" class="text-muted small">Admin</span>
+                    </div>
+                  </div>
+                </td>
+
+                <!-- Username / Email -->
+                <td>
+                  <div class="d-flex align-items-center gap-1">
+                    <span class="material-symbols-outlined fs-6 text-muted">mail</span>
+                    <span class="text-dark fw-medium">{{ admin.email || admin.userName }}</span>
+                  </div>
+                </td>
+
+                <!-- Phone -->
+                <td>
+                  <span class="text-muted small">{{ admin.phone || '—' }}</span>
+                </td>
+
+                <!-- Role / Type -->
+                <td>
+                  <span class="badge bg-danger-subtle text-danger border border-danger-subtle px-2 py-1">
+                    Admin (Type {{ admin.userTypeId || 7 }})
+                  </span>
+                </td>
+
+                <!-- Status -->
+                <td>
+                  <span class="badge" [ngClass]="admin.active ? 'bg-success' : 'bg-secondary'">
+                    {{ admin.active ? 'Active' : 'Inactive' }}
+                  </span>
+                </td>
+
+                <!-- Last Updated -->
+                <td>
+                  <span class="text-muted small">{{ formatDateOnly(admin.updated) }}</span>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Empty State -->
+        <div *ngIf="!isLoadingAdminUsers && filteredAdminUsers.length === 0" class="text-center py-5">
+          <div class="icon-circle bg-light text-muted mx-auto mb-3" style="width: 54px; height: 54px;">
+            <span class="material-symbols-outlined fs-3">admin_panel_settings</span>
+          </div>
+          <h6 class="fw-bold text-dark">No Admin Users Found</h6>
+          <p class="text-muted small mb-0">
+            {{ adminUserSearch ? 'No admin users matched your search criteria.' : 'Create an admin user above to get started.' }}
+          </p>
         </div>
 
       </div>
@@ -1064,6 +2013,192 @@
         <span *ngIf="isSavingCompany || isUploadingLogo" class="spinner-border spinner-border-sm"></span>
         <span *ngIf="!isSavingCompany && !isUploadingLogo" class="material-symbols-outlined fs-5">save</span>
         <span>{{ isSavingCompany || isUploadingLogo ? 'Saving...' : 'Save Changes' }}</span>
+      </button>
+    </div>
+
+  </div>
+</div>
+
+
+<!-- ==================================================== -->
+<!-- EDIT USER QUOTA MODAL -->
+<!-- ==================================================== -->
+<div *ngIf="isEditQuotaModalOpen" class="modal-backdrop-custom d-flex align-items-center justify-content-center">
+  <div class="modal-dialog-custom card border-0 shadow-lg p-0" style="max-width: 580px;">
+
+    <!-- Modal Header -->
+    <div class="modal-header-custom p-4 border-bottom d-flex justify-content-between align-items-center">
+      <div class="d-flex align-items-center gap-3">
+        <div class="icon-circle bg-primary-light text-primary" style="width: 42px; height: 42px;">
+          <span class="material-symbols-outlined fs-5">tune</span>
+        </div>
+        <div>
+          <h5 class="modal-title mb-0 fw-bold">Update User Quota</h5>
+          <span class="text-muted small">
+            {{ editingQuotaUser?.fullName }} ({{ editingQuotaUser?.email }})
+          </span>
+        </div>
+      </div>
+      <button type="button" class="btn-close-custom" (click)="closeEditQuotaModal()" [disabled]="isSavingQuota">
+        <span class="material-symbols-outlined">close</span>
+      </button>
+    </div>
+
+    <!-- Modal Body -->
+    <div class="modal-body-custom p-4" *ngIf="editingQuotaUser">
+
+      <!-- User Quick Info Card -->
+      <div class="p-3 bg-light rounded-3 border mb-4 d-flex justify-content-between align-items-center">
+        <div>
+          <div class="fw-semibold text-dark">{{ editingQuotaUser?.fullName || 'User' }}</div>
+          <div class="text-muted small">{{ editingQuotaUser?.companyName || 'No Company' }} • {{ editingQuotaUser?.roleName }}</div>
+        </div>
+        <div class="text-end">
+          <span class="badge" [ngClass]="editQuotaForm.isFree ? 'bg-secondary' : 'bg-success'">
+            {{ editQuotaForm.isFree ? 'Free Plan' : 'Pro Tier' }}
+          </span>
+          <div class="text-muted small mt-1">User ID #{{ editingQuotaUser?.userId }}</div>
+        </div>
+      </div>
+
+      <!-- Form Inputs Grid -->
+      <div class="row g-3">
+        <!-- Total Postings Quota -->
+        <div class="col-md-6">
+          <label class="form-label fw-semibold small d-flex align-items-center justify-content-between">
+            <span>Total Postings Quota</span>
+            <span class="text-muted fw-normal" style="font-size: 0.72rem;">Default: 15</span>
+          </label>
+          <div class="input-group">
+            <span class="input-group-text bg-white text-primary">
+              <span class="material-symbols-outlined fs-6">post_add</span>
+            </span>
+            <input
+              type="number"
+              class="form-control"
+              min="0"
+              [(ngModel)]="editQuotaForm.actualJobPosting"
+              placeholder="e.g. 15, 50, 100"
+              required
+            />
+          </div>
+          <span class="text-muted" style="font-size: 0.72rem;">Currently used: {{ editingQuotaUser?.usedJobPostings }}</span>
+        </div>
+
+        <!-- Total Downloads Quota -->
+        <div class="col-md-6">
+          <label class="form-label fw-semibold small d-flex align-items-center justify-content-between">
+            <span>Total Download Quota</span>
+            <span class="text-muted fw-normal" style="font-size: 0.72rem;">Default: 10</span>
+          </label>
+          <div class="input-group">
+            <span class="input-group-text bg-white text-teal">
+              <span class="material-symbols-outlined fs-6">download</span>
+            </span>
+            <input
+              type="number"
+              class="form-control"
+              min="0"
+              [(ngModel)]="editQuotaForm.actualDownloads"
+              placeholder="e.g. 10, 50, 100"
+              required
+            />
+          </div>
+          <span class="text-muted" style="font-size: 0.72rem;">Currently used: {{ editingQuotaUser?.usedDownloads }}</span>
+        </div>
+
+        <!-- Daily Chat Limit -->
+        <div class="col-md-6">
+          <label class="form-label fw-semibold small d-flex align-items-center justify-content-between">
+            <span>Daily Chat Limit</span>
+            <span class="text-muted fw-normal" style="font-size: 0.72rem;">Free: 20 | Pro: 500</span>
+          </label>
+          <div class="input-group">
+            <span class="input-group-text bg-white text-primary">
+              <span class="material-symbols-outlined fs-6">chat</span>
+            </span>
+            <input
+              type="number"
+              class="form-control"
+              min="0"
+              [(ngModel)]="editQuotaForm.dailyChatLimit"
+              placeholder="e.g. 20, 500"
+              required
+            />
+          </div>
+        </div>
+
+        <!-- Plan Tier Radio / Selector -->
+        <div class="col-md-6">
+          <label class="form-label fw-semibold small">Plan Tier</label>
+          <div class="d-flex gap-2 mt-1">
+            <div class="form-check form-check-inline">
+              <input
+                class="form-check-input"
+                type="radio"
+                id="planTierFree"
+                name="planTier"
+                [value]="true"
+                [(ngModel)]="editQuotaForm.isFree"
+              />
+              <label class="form-check-label small" for="planTierFree">Free Tier</label>
+            </div>
+            <div class="form-check form-check-inline">
+              <input
+                class="form-check-input"
+                type="radio"
+                id="planTierPro"
+                name="planTier"
+                [value]="false"
+                [(ngModel)]="editQuotaForm.isFree"
+              />
+              <label class="form-check-label small" for="planTierPro">Pro Tier</label>
+            </div>
+          </div>
+        </div>
+
+        <!-- Cycle Start Date -->
+        <div class="col-md-6">
+          <label class="form-label fw-semibold small">Cycle Start Date</label>
+          <input
+            type="date"
+            class="form-control"
+            [(ngModel)]="editQuotaForm.startDate"
+          />
+        </div>
+
+        <!-- Cycle Expiry Date -->
+        <div class="col-md-6">
+          <label class="form-label fw-semibold small">Cycle Expiry Date</label>
+          <input
+            type="date"
+            class="form-control"
+            [(ngModel)]="editQuotaForm.endDate"
+          />
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Modal Footer -->
+    <div class="modal-footer-custom p-4 border-top d-flex justify-content-end gap-2 bg-light rounded-bottom">
+      <button
+        type="button"
+        class="btn btn-outline-secondary px-3"
+        (click)="closeEditQuotaModal()"
+        [disabled]="isSavingQuota"
+      >
+        Cancel
+      </button>
+      <button
+        type="button"
+        class="btn btn-primary px-4 d-flex align-items-center gap-2"
+        (click)="saveUserQuota()"
+        [disabled]="isSavingQuota"
+      >
+        <span *ngIf="isSavingQuota" class="spinner-border spinner-border-sm"></span>
+        <span *ngIf="!isSavingQuota" class="material-symbols-outlined fs-5">save</span>
+        <span>{{ isSavingQuota ? 'Saving Quota...' : 'Save Quota' }}</span>
       </button>
     </div>
 

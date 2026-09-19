@@ -7,6 +7,125 @@
     novalidate
   >
     <div class="form-box">
+      <!-- Loading Quota Placeholder Card -->
+      <div class="quota-loading-card mb-4 p-3 rounded-3 border bg-light d-flex align-items-center justify-content-between" *ngIf="isLoadingQuota && !quotaStatus && !isEdit">
+        <div class="d-flex align-items-center gap-2">
+          <div class="spinner-border spinner-border-sm text-purple" style="width: 1.1rem; height: 1.1rem;" role="status">
+            <span class="visually-hidden">Loading Quota...</span>
+          </div>
+          <span class="text-secondary small fw-semibold">Loading posting quota allowance...</span>
+        </div>
+        <div class="d-flex align-items-center gap-2">
+          <div class="quota-skeleton-pill rounded-pill" style="width: 100px; height: 22px; background: #e2e8f0;"></div>
+          <div class="quota-skeleton-circle rounded-circle" style="width: 28px; height: 28px; background: #e2e8f0;"></div>
+        </div>
+      </div>
+
+      <!-- 30-Day Rolling Window Quota Status Banner (Collapsible) -->
+      <div class="quota-status-card mb-4" *ngIf="quotaStatus && !isEdit" [ngClass]="{
+        'quota-normal': quotaStatus.usedJobPostings < 10 && !quotaStatus.isLimitReached,
+        'quota-warning': quotaStatus.usedJobPostings >= 10 && !quotaStatus.isLimitReached,
+        'quota-exceeded': quotaStatus.isLimitReached,
+        'quota-collapsed': isQuotaCollapsed
+      }">
+        <div class="quota-card-header d-flex flex-wrap align-items-center justify-content-between gap-2" 
+             (click)="toggleQuotaCollapse()" 
+             role="button" 
+             tabindex="0" 
+             [attr.aria-expanded]="!isQuotaCollapsed">
+          <div class="d-flex align-items-center flex-wrap gap-2">
+            <span class="quota-plan-badge">
+              <span class="material-symbols-outlined fs-6 align-middle me-1">workspace_premium</span>
+              {{ quotaStatus.planName }}
+            </span>
+            <span class="quota-title">Posting Quota</span>
+            <span class="badge bg-light text-dark border px-2 py-1 small-badge" *ngIf="quotaStatus.isFreeTier && !isQuotaCollapsed">30-Day Rolling Cycle</span>
+            <!-- Collapsed quick summary badge -->
+            <span class="badge bg-white text-secondary border px-2 py-1 small-badge" *ngIf="isQuotaCollapsed">
+              <strong>{{ quotaStatus.usedJobPostings }} / {{ quotaStatus.maxJobPostings }}</strong> used ({{ quotaStatus.remainingJobPostings }} left)
+            </span>
+          </div>
+          <div class="d-flex align-items-center gap-2">
+            <!-- Loading indicator when refreshing -->
+            <span *ngIf="isLoadingQuota" class="spinner-border spinner-border-sm text-purple me-1" style="width: 0.9rem; height: 0.9rem;" role="status" title="Updating quota..."></span>
+
+            <div class="quota-reset-countdown d-flex align-items-center text-muted small">
+              <span class="material-symbols-outlined fs-6 me-1 text-secondary">schedule</span>
+              <span *ngIf="!isQuotaCollapsed">Cycle resets in <strong>{{ quotaStatus.daysRemainingInCycle }} days</strong> ({{ quotaStatus.cycleEndDate | date:'MMM d, yyyy' }})</span>
+              <span *ngIf="isQuotaCollapsed">Resets in <strong>{{ quotaStatus.daysRemainingInCycle }}d</strong></span>
+            </div>
+            
+            <!-- Quick Refresh Quota Button -->
+            <button
+              type="button"
+              class="btn btn-sm btn-link p-0 text-secondary d-inline-flex align-items-center"
+              (click)="$event.stopPropagation(); fetchQuotaStatus()"
+              title="Refresh quota status"
+              [disabled]="isLoadingQuota"
+            >
+              <span class="material-symbols-outlined fs-5" [class.spin-icon]="isLoadingQuota">refresh</span>
+            </button>
+
+            <button type="button" class="quota-toggle-btn rounded-circle border-0" [title]="isQuotaCollapsed ? 'Expand quota details' : 'Collapse quota details'">
+              <span class="material-symbols-outlined transition-transform" [class.rotate-180]="!isQuotaCollapsed">
+                expand_more
+              </span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Collapsible Content -->
+        <div class="quota-card-body mt-2" *ngIf="!isQuotaCollapsed">
+          <!-- Progress Bar & Usage Stats -->
+          <div class="quota-progress-wrapper my-2">
+            <div class="d-flex justify-content-between align-items-center mb-1 small">
+              <span class="fw-semibold">
+                <span class="used-count">{{ quotaStatus.usedJobPostings }}</span> of <span class="max-count">{{ quotaStatus.maxJobPostings }}</span> postings used
+              </span>
+              <span class="text-muted fw-medium">{{ quotaStatus.remainingJobPostings }} remaining</span>
+            </div>
+            <div class="progress quota-progress-bar" style="height: 7px; border-radius: 999px;">
+              <div class="progress-bar rounded-pill" role="progressbar"
+                [style.width.%]="quotaStatus.postingsPercentage"
+                [ngClass]="{
+                  'bg-teal': quotaStatus.usedJobPostings < 10 && !quotaStatus.isLimitReached,
+                  'bg-warning': quotaStatus.usedJobPostings >= 10 && !quotaStatus.isLimitReached,
+                  'bg-danger': quotaStatus.isLimitReached
+                }"
+                [attr.aria-valuenow]="quotaStatus.usedJobPostings"
+                aria-valuemin="0"
+                [attr.aria-valuemax]="quotaStatus.maxJobPostings">
+              </div>
+            </div>
+          </div>
+
+          <!-- Quick Feature Allowance Highlights -->
+          <div class="d-flex flex-wrap align-items-center gap-3 mt-2 pt-2 border-top border-light-subtle extra-small text-muted">
+            <div class="d-inline-flex align-items-center gap-1">
+              <span class="material-symbols-outlined fs-6 text-primary">post_add</span>
+              <span><strong>{{ quotaStatus.remainingJobPostings }}</strong> postings left</span>
+            </div>
+            <div class="d-inline-flex align-items-center gap-1">
+              <span class="material-symbols-outlined fs-6 text-info">download</span>
+              <span><strong>{{ quotaStatus.remainingDownloads }}</strong> / {{ quotaStatus.maxDownloads }} resume downloads left</span>
+            </div>
+            <div class="d-inline-flex align-items-center gap-1">
+              <span class="material-symbols-outlined fs-6 text-success">chat</span>
+              <span><strong>{{ quotaStatus.dailyChatLimit }}</strong> daily candidate chats</span>
+            </div>
+          </div>
+
+          <!-- Limit Exceeded Alert Banner -->
+          <div class="alert alert-danger d-flex align-items-center gap-2 mt-3 mb-0 py-2 px-3 rounded-3" *ngIf="quotaStatus.isLimitReached">
+            <span class="material-symbols-outlined fs-5 text-danger">error</span>
+            <div class="small flex-grow-1">
+              <strong>Posting limit reached:</strong> You have used all 15 job postings for this 30-day window. Your quota resets on <strong>{{ quotaStatus.cycleEndDate | date:'MMM d, yyyy' }}</strong> ({{ quotaStatus.daysRemainingInCycle }} days remaining).
+            </div>
+            <a routerLink="/pricing" class="btn btn-sm btn-danger px-3 rounded-pill text-nowrap">Upgrade Plan</a>
+          </div>
+        </div>
+      </div>
+
       <div class="row">
         <div class="col-sm-12">
           <div class="input-box">

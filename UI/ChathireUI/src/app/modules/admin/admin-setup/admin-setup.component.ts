@@ -28,7 +28,61 @@ export class AdminSetupComponent implements OnInit {
   @ViewChild('fileInput') fileInput!: ElementRef;
   @ViewChild('logoInput') logoInput!: ElementRef;
 
-  activeTab: 'dau-dashboard' | 'bulk-upload' | 'view-edit' = 'dau-dashboard';
+  activeTab: 'dau-dashboard' | 'bulk-upload' | 'view-edit' | 'review-companies' | 'user-quotas' | 'admin-users' = 'dau-dashboard';
+
+  // --- Tab: Admin Users State ---
+  adminUsers: any[] = [];
+  isLoadingAdminUsers = false;
+  isCreatingAdmin = false;
+  adminUserSearch = '';
+  showAdminPassword = false;
+  createAdminForm = {
+    userName: '',
+    password: '',
+    fname: '',
+    lname: '',
+    phone: ''
+  };
+
+  // --- Tab: Review User-Added Companies State ---
+  reviewSearchTerm = '';
+  reviewStatusFilter: 'all' | 'active' | 'inactive' = 'all';
+  reviewCurrentPage = 1;
+  reviewPageSize = 25;
+  reviewPageSizeOptions = [10, 25, 50, 100];
+
+  // --- Tab 3: User Quotas State ---
+  isLoadingQuotas = false;
+  userQuotas: any[] = [];
+  quotaTotalCount = 0;
+  quotaTotalPages = 1;
+  quotaSearch = '';
+  quotaFilter = 'all';
+  quotaCurrentPage = 1;
+  quotaPageSize = 100;
+  quotaPageSizeOptions = [25, 50, 100, 200];
+
+  // Edit Quota Modal State
+  isEditQuotaModalOpen = false;
+  isSavingQuota = false;
+  editingQuotaUser: any = null;
+  editQuotaForm: {
+    userId: number;
+    actualJobPosting: number;
+    actualDownloads: number;
+    dailyChatLimit: number;
+    startDate: string;
+    endDate: string;
+    isFree: boolean;
+  } = {
+    userId: 0,
+    actualJobPosting: 15,
+    actualDownloads: 10,
+    dailyChatLimit: 20,
+    startDate: '',
+    endDate: '',
+    isFree: true
+  };
 
   // --- Tab 0: DAU Dashboard State ---
   dauTimeframe: 'day' | 'week' | 'month' = 'day';
@@ -92,14 +146,19 @@ export class AdminSetupComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadDauStats();
+    this.loadAdminUsers();
   }
 
-  setTab(tab: 'dau-dashboard' | 'bulk-upload' | 'view-edit') {
+  setTab(tab: 'dau-dashboard' | 'bulk-upload' | 'view-edit' | 'review-companies' | 'user-quotas' | 'admin-users') {
     this.activeTab = tab;
     if (tab === 'dau-dashboard' && !this.dauSummary.totalRegisteredUsers) {
       this.loadDauStats();
-    } else if (tab === 'view-edit' && this.allCompanies.length === 0) {
+    } else if ((tab === 'view-edit' || tab === 'review-companies') && this.allCompanies.length === 0) {
       this.loadCompanies();
+    } else if (tab === 'user-quotas' && this.userQuotas.length === 0) {
+      this.loadUserQuotas();
+    } else if (tab === 'admin-users') {
+      this.loadAdminUsers();
     }
   }
 
@@ -457,6 +516,72 @@ export class AdminSetupComponent implements OnInit {
     this.filteredCompanies = list;
   }
 
+  // --- Review User Companies Getters & Handlers ---
+
+  get userAddedCompanies(): any[] {
+    return this.allCompanies.filter(c => c.isDirectCompany === true || c.isDirectCompany === 1 || c.statusId === 1);
+  }
+
+  get reviewActiveCount(): number {
+    return this.userAddedCompanies.filter(c => c.active === true || c.active === 1).length;
+  }
+
+  get reviewInactiveCount(): number {
+    return this.userAddedCompanies.filter(c => c.active === false || c.active === 0 || c.active === null).length;
+  }
+
+  get filteredReviewCompanies(): any[] {
+    let list = this.userAddedCompanies;
+
+    if (this.reviewStatusFilter === 'active') {
+      list = list.filter(c => c.active === true || c.active === 1);
+    } else if (this.reviewStatusFilter === 'inactive') {
+      list = list.filter(c => c.active === false || c.active === 0 || c.active === null);
+    }
+
+    if (this.reviewSearchTerm && this.reviewSearchTerm.trim()) {
+      const term = this.reviewSearchTerm.trim().toLowerCase();
+      list = list.filter(c =>
+        (c.name && c.name.toLowerCase().includes(term)) ||
+        (c.website && c.website.toLowerCase().includes(term)) ||
+        (c.email && c.email.toLowerCase().includes(term)) ||
+        (c.phone && c.phone.toLowerCase().includes(term)) ||
+        (c.address && c.address.toLowerCase().includes(term))
+      );
+    }
+
+    return list;
+  }
+
+  get paginatedReviewCompanies(): any[] {
+    const start = (this.reviewCurrentPage - 1) * this.reviewPageSize;
+    return this.filteredReviewCompanies.slice(start, start + this.reviewPageSize);
+  }
+
+  get totalReviewPages(): number {
+    return Math.ceil(this.filteredReviewCompanies.length / this.reviewPageSize) || 1;
+  }
+
+  onReviewPageChange(page: number) {
+    if (page >= 1 && page <= this.totalReviewPages) {
+      this.reviewCurrentPage = page;
+    }
+  }
+
+  onReviewPageSizeChange(size: number) {
+    this.reviewPageSize = size;
+    this.reviewCurrentPage = 1;
+  }
+
+  onReviewStatusFilterChange(filter: 'all' | 'active' | 'inactive') {
+    this.reviewStatusFilter = filter;
+    this.reviewCurrentPage = 1;
+  }
+
+  onReviewSearchChange() {
+    this.reviewCurrentPage = 1;
+  }
+
   get paginatedCompanies(): any[] {
     const start = (this.currentPage - 1) * this.pageSize;
     return this.filteredCompanies.slice(start, start + this.pageSize);
@@ -633,7 +758,7 @@ export class AdminSetupComponent implements OnInit {
     this.http.get<any>(url).subscribe({
       next: (res: any) => {
         this.isLoadingDau = false;
-        const data = res?.data || res;
+        const data = res?.value || res?.data || res;
         if (data && data.summary) {
           this.dauSummary = data.summary;
           this.dauTrends = data.trends || [];
@@ -810,5 +935,213 @@ export class AdminSetupComponent implements OnInit {
     link.click();
     document.body.removeChild(link);
     this.toastr.success(`Exported ${this.filteredUserActivities.length} user activity records.`, 'Export Success');
+  }
+
+  // ==========================================
+  // TAB 3: USER QUOTAS MANAGEMENT
+  // ==========================================
+
+  loadUserQuotas() {
+    this.isLoadingQuotas = true;
+    const searchParam = encodeURIComponent(this.quotaSearch.trim());
+    const filterParam = encodeURIComponent(this.quotaFilter.trim());
+    const url = `${environment.rootUrl}/api/Subscription/AllUserQuotas?page=${this.quotaCurrentPage}&pageSize=${this.quotaPageSize}&search=${searchParam}&filter=${filterParam}`;
+
+    this.http.get<any>(url).subscribe({
+      next: (res: any) => {
+        this.isLoadingQuotas = false;
+        const data = res?.value || res?.data || res;
+        if (data && data.items) {
+          this.userQuotas = data.items;
+          this.quotaTotalCount = data.totalCount || 0;
+          this.quotaTotalPages = data.totalPages || 1;
+        } else if (Array.isArray(data)) {
+          this.userQuotas = data;
+          this.quotaTotalCount = data.length;
+          this.quotaTotalPages = Math.ceil(data.length / this.quotaPageSize) || 1;
+        } else {
+          this.userQuotas = [];
+          this.quotaTotalCount = 0;
+          this.quotaTotalPages = 1;
+        }
+      },
+      error: (err: any) => {
+        this.isLoadingQuotas = false;
+        const msg = err?.error?.message || (err.status === 0 ? 'Unable to connect to backend API server. Please ensure the API is running.' : err?.message || 'Failed to fetch user quotas.');
+        this.toastr.error(msg, 'Quota Load Error');
+      }
+    });
+  }
+
+  onQuotaSearchChange() {
+    this.quotaCurrentPage = 1;
+    this.loadUserQuotas();
+  }
+
+  onQuotaFilterChange(filter: string) {
+    this.quotaFilter = filter;
+    this.quotaCurrentPage = 1;
+    this.loadUserQuotas();
+  }
+
+  onQuotaPageChange(page: number) {
+    if (page >= 1 && page <= this.quotaTotalPages) {
+      this.quotaCurrentPage = page;
+      this.loadUserQuotas();
+    }
+  }
+
+  onQuotaPageSizeChange(size: number) {
+    this.quotaPageSize = size;
+    this.quotaCurrentPage = 1;
+    this.loadUserQuotas();
+  }
+
+  openEditQuotaModal(user: any) {
+    this.editingQuotaUser = user;
+    const startD = user.cycleStartDate ? new Date(user.cycleStartDate).toISOString().slice(0, 10) : '';
+    const endD = user.cycleEndDate ? new Date(user.cycleEndDate).toISOString().slice(0, 10) : '';
+
+    this.editQuotaForm = {
+      userId: user.userId,
+      actualJobPosting: user.actualJobPosting ?? 15,
+      actualDownloads: user.actualDownloads ?? 10,
+      dailyChatLimit: user.dailyChatLimit ?? (user.isFree ? 20 : 500),
+      startDate: startD,
+      endDate: endD,
+      isFree: user.isFree !== false
+    };
+    this.isEditQuotaModalOpen = true;
+  }
+
+  closeEditQuotaModal() {
+    this.isEditQuotaModalOpen = false;
+    this.editingQuotaUser = null;
+  }
+
+  saveUserQuota() {
+    if (!this.editingQuotaUser) return;
+    this.isSavingQuota = true;
+
+    const payload = {
+      userId: this.editQuotaForm.userId,
+      actualJobPosting: Number(this.editQuotaForm.actualJobPosting),
+      actualDownloads: Number(this.editQuotaForm.actualDownloads),
+      dailyChatLimit: Number(this.editQuotaForm.dailyChatLimit),
+      startDate: this.editQuotaForm.startDate ? new Date(this.editQuotaForm.startDate).toISOString() : null,
+      endDate: this.editQuotaForm.endDate ? new Date(this.editQuotaForm.endDate).toISOString() : null,
+      isFree: this.editQuotaForm.isFree
+    };
+
+    const url = `${environment.rootUrl}/api/Subscription/UpdateUserQuota`;
+    this.http.post<any>(url, payload).subscribe({
+      next: (res: any) => {
+        this.isSavingQuota = false;
+        this.toastr.success(`Quotas updated successfully for ${this.editingQuotaUser.fullName || this.editingQuotaUser.email}!`, 'Quota Saved');
+        this.closeEditQuotaModal();
+        this.loadUserQuotas();
+      },
+      error: (err: any) => {
+        this.isSavingQuota = false;
+        const msg = err?.error?.message || err?.message || 'Failed to update user quota.';
+        this.toastr.error(msg, 'Update Error');
+      }
+    });
+  }
+
+  formatDateOnly(dateVal: any): string {
+    if (!dateVal) return '—';
+    try {
+      const d = new Date(dateVal);
+      return d.toLocaleDateString('en-US', {
+        month: 'short',
+        day: 'numeric',
+        year: 'numeric'
+      });
+    } catch {
+      return String(dateVal);
+    }
+  }
+
+  // ==========================================
+  // TAB: CREATE / MANAGE ADMIN USERS (Type ID = 7)
+  // ==========================================
+
+  get filteredAdminUsers(): any[] {
+    if (!this.adminUserSearch.trim()) return this.adminUsers;
+    const term = this.adminUserSearch.trim().toLowerCase();
+    return this.adminUsers.filter(u =>
+      (u.userName && u.userName.toLowerCase().includes(term)) ||
+      (u.email && u.email.toLowerCase().includes(term)) ||
+      (u.fname && u.fname.toLowerCase().includes(term)) ||
+      (u.lname && u.lname.toLowerCase().includes(term)) ||
+      (u.phone && u.phone.toLowerCase().includes(term))
+    );
+  }
+
+  loadAdminUsers() {
+    this.isLoadingAdminUsers = true;
+    const url = `${environment.rootUrl}/api/User/GetAdminUsers`;
+    this.http.get<any>(url).subscribe({
+      next: (res: any) => {
+        this.isLoadingAdminUsers = false;
+        this.adminUsers = res?.value || res?.data || res || [];
+      },
+      error: (err: any) => {
+        this.isLoadingAdminUsers = false;
+        console.error('Failed to load admin users', err);
+        this.toastr.error('Failed to load admin users.', 'Error');
+      }
+    });
+  }
+
+  createAdminUser() {
+    if (!this.createAdminForm.userName || !this.createAdminForm.userName.trim()) {
+      this.toastr.warning('Please enter a username or email.', 'Validation Error');
+      return;
+    }
+    if (!this.createAdminForm.password || !this.createAdminForm.password.trim()) {
+      this.toastr.warning('Please enter a password.', 'Validation Error');
+      return;
+    }
+
+    this.isCreatingAdmin = true;
+    const payload = {
+      userName: this.createAdminForm.userName.trim(),
+      password: this.createAdminForm.password.trim(),
+      fname: this.createAdminForm.fname?.trim() || null,
+      lname: this.createAdminForm.lname?.trim() || null,
+      phone: this.createAdminForm.phone?.trim() || null
+    };
+
+    const url = `${environment.rootUrl}/api/User/CreateAdminUser`;
+    this.http.post<any>(url, payload).subscribe({
+      next: (res: any) => {
+        this.isCreatingAdmin = false;
+        this.toastr.success(`Admin user "${payload.userName}" (UserTypeId = 7) created / updated successfully!`, 'Admin User Created');
+        this.resetCreateAdminForm();
+        this.loadAdminUsers();
+      },
+      error: (err: any) => {
+        this.isCreatingAdmin = false;
+        const msg = err?.error?.message || err?.message || 'Failed to create admin user.';
+        this.toastr.error(msg, 'Creation Error');
+      }
+    });
+  }
+
+  resetCreateAdminForm() {
+    this.createAdminForm = {
+      userName: '',
+      password: '',
+      fname: '',
+      lname: '',
+      phone: ''
+    };
+    this.showAdminPassword = false;
+  }
+
+  toggleAdminPasswordVisibility() {
+    this.showAdminPassword = !this.showAdminPassword;
   }
 }

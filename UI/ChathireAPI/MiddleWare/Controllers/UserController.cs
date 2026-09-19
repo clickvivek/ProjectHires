@@ -304,5 +304,29 @@ namespace MiddleWare.Controllers
                 return await userManager.GetDauDashboard(timeframe, startDate, endDate, GetDummyUserContext());
             });
         }
+
+        [HttpPost]
+        [Route("CreateAdminUser")]
+        public Task<Result<UserDto>> CreateAdminUser([FromBody] CreateAdminUserModel model)
+        {
+            return ExecuteAsync<UserDto>(async () =>
+            {
+                var mgr = managerFactory.Get<IUserManager>();
+                UserContext context = null;
+                try { context = GetUserContext(); } catch { }
+                return await mgr.CreateAdminUser(model, context ?? GetDummyUserContext());
+            });
+        }
+
+        [HttpGet]
+        [Route("GetAdminUsers")]
+        public Task<Result<List<UserDto>>> GetAdminUsers()
+        {
+            return ExecuteAsync<List<UserDto>>(async () =>
+            {
+                var mgr = managerFactory.Get<IUserManager>();
+                return await mgr.GetUsersByUserType(7, GetDummyUserContext());
+            });
+        }
     }
 }

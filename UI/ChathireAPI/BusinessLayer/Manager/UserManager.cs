@@ -18,6 +18,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using Utility.Configuration;
+using Utility.Security.Hashing;
 using BusinessLayer.Services;
 
 namespace BusinessLayer.Manager
@@ -38,6 +39,8 @@ namespace BusinessLayer.Manager
         Task<bool> SendForgotPasswordOtp(string email, UserContext userContext);
         Task<bool> ResetPasswordWithOtp(string email, string otp, string newPassword, UserContext userContext);
         Task<DauDashboardDto> GetDauDashboard(string timeframe, DateTime? startDate, DateTime? endDate, UserContext userContext);
+        Task<UserDto> CreateAdminUser(CreateAdminUserModel model, UserContext userContext);
+        Task<List<UserDto>> GetUsersByUserType(long userTypeId, UserContext userContext);
     }
     public class UserManager : BaseManager<UserManager>, IUserManager
     {
@@ -627,6 +630,77 @@ namespace BusinessLayer.Manager
                 var repo = repositoryFactory.Get<IUserRepository>();
                 return await repo.GetDauDashboard(timeframe, startDate, endDate);
             }, "GetDauDashboard", userContext);
+        }
+
+        public async Task<UserDto> CreateAdminUser(CreateAdminUserModel model, UserContext userContext)
+        {
+            return await ExecuteAsync<UserDto>(async () =>
+            {
+                if (string.IsNullOrWhiteSpace(model.UserName))
+                {
+                    throw new ArgumentException("Username or Email is required.");
+                }
+                if (string.IsNullOrWhiteSpace(model.Password))
+                {
+                    throw new ArgumentException("Password is required.");
+                }
+
+                var repo = repositoryFactory.Get<IUserRepository>();
+                var existingUsers = await repo.GetUserByUserName(model.UserName.Trim());
+                var existingUser = existingUsers?.FirstOrDefault();
+
+                var date = DateTime.UtcNow;
+                var hashedPassword = SecurePasswordHasher.Hash(model.Password.Trim());
+
+                if (existingUser != null)
+                {
+                    existingUser.UserTypeId = 7;
+                    existingUser.Password = hashedPassword;
+                    existingUser.Active = true;
+                    existingUser.EmailVerified = true;
+                    existingUser.Updated = date;
+                    existingUser.UpdatedBy = userContext.UserId;
+                    if (!string.IsNullOrWhiteSpace(model.Fname)) existingUser.Fname = FormatTitleCase(model.Fname.Trim());
+                    if (!string.IsNullOrWhiteSpace(model.Lname)) existingUser.Lname = FormatTitleCase(model.Lname.Trim());
+                    if (!string.IsNullOrWhiteSpace(model.Phone)) existingUser.Phone = model.Phone.Trim();
+
+                    await repo.Put(existingUser.Id, existingUser, true);
+                    return mapper.Map<UserDto>(existingUser);
+                }
+                else
+                {
+                    var fname = !string.IsNullOrWhiteSpace(model.Fname) ? FormatTitleCase(model.Fname.Trim()) : (model.UserName.Contains("@") ? model.UserName.Split('@')[0] : model.UserName);
+                    var lname = !string.IsNullOrWhiteSpace(model.Lname) ? FormatTitleCase(model.Lname.Trim()) : "";
+
+                    var newUser = new User
+                    {
+                        UserName = model.UserName.Trim(),
+                        Email = model.UserName.Trim(),
+                        Password = hashedPassword,
+                        Fname = fname,
+                        Lname = lname,
+                        Phone = model.Phone?.Trim(),
+                        UserTypeId = 7,
+                        Active = true,
+                        EmailVerified = true,
+                        Updated = date,
+                        UpdatedBy = userContext.UserId
+                    };
+
+                    var createdUser = await repo.Post(newUser, true);
+                    return mapper.Map<UserDto>(createdUser);
+                }
+            }, "CreateAdminUser", userContext);
+        }
+
+        public async Task<List<UserDto>> GetUsersByUserType(long userTypeId, UserContext userContext)
+        {
+            return await ExecuteAsync<List<UserDto>>(async () =>
+            {
+                var repo = repositoryFactory.Get<IUserRepository>();
+                var users = await repo.GetUsersByUserTypeId(userTypeId);
+                return mapper.Map<List<UserDto>>(users);
+            }, "GetUsersByUserType", userContext);
         }
     }
 }

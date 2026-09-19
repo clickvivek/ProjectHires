@@ -16,6 +16,28 @@ import _ from 'underscore';
 
 import { AuthService } from 'src/app/core/auth/auth.service';
 import { TokenService } from 'src/app/api/api/token.service';
+import { HttpClient } from '@angular/common/http';
+import { environment } from 'src/environments/environment';
+
+export interface UserQuotaStatus {
+  cycleStartDate: string;
+  cycleEndDate: string;
+  daysRemainingInCycle: number;
+  maxJobPostings: number;
+  usedJobPostings: number;
+  remainingJobPostings: number;
+  maxDownloads: number;
+  usedDownloads: number;
+  remainingDownloads: number;
+  dailyChatLimit: number;
+  usedChatsToday: number;
+  remainingChatsToday: number;
+  isFreeTier: boolean;
+  planName: string;
+  isLimitReached: boolean;
+  postingsPercentage: number;
+  downloadsPercentage: number;
+}
 
 declare var google: any;
 
@@ -33,6 +55,10 @@ export class PostJobDetailsComponent {
 
   showAuthPromptModal: boolean = false;
   googleClientId: string = '262467975068-u0o6qtjog1o7e1p4jp5kuag34ibhfm1l.apps.googleusercontent.com';
+
+  quotaStatus: UserQuotaStatus | null = null;
+  isLoadingQuota: boolean = false;
+  isQuotaCollapsed: boolean = true;
 
   formData: any = {
     name: "",
@@ -125,7 +151,8 @@ export class PostJobDetailsComponent {
     private toastr: ToastrService,
     private jobOpeningService: JobOpeningService,
     private authService: AuthService,
-    private tokenService: TokenService
+    private tokenService: TokenService,
+    private http: HttpClient
   ) { 
 
     router.events.subscribe((event: any) => {
@@ -663,6 +690,16 @@ export class PostJobDetailsComponent {
         this.isFormSubmitted = false;
         return;
       }
+
+      if (!this.isEdit && this.quotaStatus && this.quotaStatus.isLimitReached) {
+        this.toastr.error(`You have reached your 30-day limit of ${this.quotaStatus.maxJobPostings} job postings. Quota resets on ${new Date(this.quotaStatus.cycleEndDate).toLocaleDateString()} (${this.quotaStatus.daysRemainingInCycle} days remaining).`, 'Limit Reached', {
+          timeOut: 6000,
+          positionClass: 'toast-top-center'
+        });
+        this.scrollToTop();
+        this.isFormSubmitted = false;
+        return;
+      }
        
       this.jobOpeningService.apiJobOpeningAddPost(this.job).subscribe({
           next: (res : any) => {
@@ -671,6 +708,7 @@ export class PostJobDetailsComponent {
               positionClass: 'toast-top-center'
             });
            this.scrollToTop();
+           this.fetchQuotaStatus();
            
            if(this.isEdit) {
             this.outputparams.emit(true)
@@ -683,8 +721,9 @@ export class PostJobDetailsComponent {
 
           },
           error: (error:any) => {
-            this.toastr.error('Some error occured', '' , {
-              timeOut: 3000,
+            const errMsg = error?.error?.errors?.[0]?.message || error?.message || 'Some error occured';
+            this.toastr.error(errMsg, 'Job Posting Failed' , {
+              timeOut: 6000,
               positionClass: 'toast-top-center'
             });
             this.scrollToTop();
@@ -826,6 +865,28 @@ export class PostJobDetailsComponent {
       this.selectSkillList = data;
     })
 
+    this.fetchQuotaStatus();
+
+  }
+
+  fetchQuotaStatus() {
+    this.isLoadingQuota = true;
+    this.http.get<any>(`${environment.rootUrl}/api/Subscription/QuotaStatus`).subscribe({
+      next: (res) => {
+        this.isLoadingQuota = false;
+        if (res && res.value) {
+          this.quotaStatus = res.value;
+        }
+      },
+      error: (err) => {
+        this.isLoadingQuota = false;
+        console.error('Failed to fetch quota status:', err);
+      }
+    });
+  }
+
+  toggleQuotaCollapse() {
+    this.isQuotaCollapsed = !this.isQuotaCollapsed;
   }
 
 }

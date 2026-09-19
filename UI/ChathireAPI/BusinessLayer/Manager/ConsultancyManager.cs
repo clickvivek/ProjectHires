@@ -39,7 +39,14 @@ namespace BusinessLayer.Manager
 
                 var repo = repositoryFactory.Get<IConsultancyRepository>();
                 _consultancy.Updated = date;
-                _consultancy.UpdatedBy = userContext.UserId;
+                _consultancy.UpdatedBy = userContext != null && userContext.UserId > 0 ? userContext.UserId : -1;
+                _consultancy.StatusId = 1;
+                _consultancy.Active = true;
+                _consultancy.IsDirectCompany = true;
+                if (string.IsNullOrWhiteSpace(_consultancy.Domainname))
+                {
+                    _consultancy.Domainname = "IT Services ,Consulting & Staffing";
+                }
                 return await repo.Post(_consultancy, true);
             }, "AddConsultancy", userContext);
 

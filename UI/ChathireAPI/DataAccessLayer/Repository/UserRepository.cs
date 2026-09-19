@@ -25,6 +25,7 @@ namespace DataAccessLayer.Repository
         Task RecordUserLogin(long userId, string ipAddress = null, string location = null);
         Task UpdateUserLastActive(long userId);
         Task<DauDashboardDto> GetDauDashboard(string timeframe, DateTime? startDate = null, DateTime? endDate = null);
+        Task<List<User>> GetUsersByUserTypeId(long userTypeId);
     }
     public class UserRepository : BaseRepository<User, long>, IUserRepository
     {
@@ -343,6 +344,15 @@ namespace DataAccessLayer.Repository
             }
 
             return result;
+        }
+
+        public async Task<List<User>> GetUsersByUserTypeId(long userTypeId)
+        {
+            return await _context.Users
+                .Include(u => u.UserType)
+                .Where(u => u.UserTypeId == userTypeId)
+                .OrderByDescending(u => u.Updated)
+                .ToListAsync();
         }
     }
 }

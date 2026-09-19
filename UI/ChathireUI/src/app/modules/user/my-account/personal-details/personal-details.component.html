@@ -1,355 +1,447 @@
 <div class="personal-details-wrapper">
     
-    <loader *ngIf="!isLoaded"></loader>
+  <loader *ngIf="!isLoaded"></loader>
 
-    <ng-container *ngIf="isLoaded">
+  <ng-container *ngIf="isLoaded">
 
-        <div class="d-flex justify-content-end text-primary mb-3" (click)="isEdit = !isEdit" *ngIf="!isEdit">
-            <div class="d-flex align-items-center pointer ms-auto text-h6">
-              <span class="material-symbols-outlined me-1">edit</span>
-              <span>Edit</span>
-            </div>
+    <!-- Top Action / Title Header -->
+    <div class="d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center pb-3 mb-4 border-bottom gap-2">
+      <div>
+        <h5 class="mb-1 fw-bold text-dark d-flex align-items-center gap-2">
+          <span class="material-symbols-outlined text-teal fs-4">account_circle</span>
+          <span>Personal & Company Information</span>
+        </h5>
+        <p class="text-muted small mb-0">
+          {{ isEdit ? 'Update your personal details, contact numbers, company affiliation, and job role.' : 'Your registered account profile and company details.' }}
+        </p>
+      </div>
+
+      <div>
+        <!-- Edit Profile Button -->
+        <button
+          *ngIf="!isEdit"
+          type="button"
+          class="btn btn-outline-teal d-inline-flex align-items-center gap-2 px-3 py-2 shadow-sm rounded-3"
+          (click)="isEdit = true"
+        >
+          <span class="material-symbols-outlined fs-5">edit</span>
+          <span>Edit Profile</span>
+        </button>
+
+        <!-- Editing Active Indicator -->
+        <span *ngIf="isEdit" class="badge bg-teal-subtle text-teal border border-teal-subtle px-3 py-2 d-inline-flex align-items-center gap-1 rounded-3">
+          <span class="material-symbols-outlined fs-6">edit_note</span>
+          <span>Editing Mode Active</span>
+        </span>
+      </div>
+    </div>
+
+    <!-- Main Profile Form -->
+    <form #myProfileForm="ngForm" name="myProfileForm" (ngSubmit)="submitMyProfileForm()" novalidate>
+      
+      <!-- Section 1: Basic Information -->
+      <div class="form-section-card p-3 p-md-4 rounded-3 border bg-white mb-4">
+        <div class="d-flex align-items-center gap-2 mb-3 pb-2 border-bottom">
+          <span class="material-symbols-outlined text-teal fs-5">person</span>
+          <h6 class="fw-bold mb-0 text-dark">Basic Information</h6>
         </div>
 
-        <form #myProfileForm="ngForm" name="myProfileForm" (ngSubmit)="submitMyProfileForm()" novalidate>
-            <div class="row">
-                <div class="col-md-6">
-                    <div class="input-box">
-                        <div class="form-group">
-                            <label for="firstName"
-                              >First Name <span class="req">*</span></label
-                            >
-                            <input
-                              type="text"
-                              class="form-control"
-                              placeholder="Name"
-                              [(ngModel)]="formData.fname"
-                              (ngModelChange)="onNameChange()"
-                              name="firstName"
-                              required
-                              autocomplete="off"
-                              [disabled]="!isEdit"
-                            />
-                            <div
-                              class="mt-2"
-                              *ngIf="
-                              myProfileForm.submitted &&
-                              myProfileForm.controls['firstName']
-                                  .invalid
-                              "
-                            >
-                              <div
-                                class="input-field-message"
-                                *ngIf="myProfileForm.controls['firstName'].errors?.['required']"
-                              >
-                                First name is required
-                              </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="input-box">
-                        <div class="form-group">
-                            <label for="lastName"
-                              >Last Name <span class="req">*</span></label
-                            >
-                            <input
-                              type="text"
-                              class="form-control"
-                              placeholder="Name"
-                              [(ngModel)]="formData.lname"
-                              (ngModelChange)="onNameChange()"
-                              name="lastName"
-                              required
-                              autocomplete="off"
-                              [disabled]="!isEdit"
-                            />
-                            <div
-                              class="mt-2"
-                              *ngIf="
-                              myProfileForm.submitted &&
-                              myProfileForm.controls['lastName']
-                                  .invalid
-                              "
-                            >
-                              <div
-                                class="input-field-message"
-                                *ngIf="myProfileForm.controls['lastName'].errors?.['required']"
-                              >
-                              Last name is required
-                              </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-sm-6">
-                    <div class="input-box search-box">
-                        <app-search-field
-                          fieldName="consultancyId"
-                          fieldText="Company Name"
-                          fieldType="name"
-                          fieldPlaceholder="Enter"
-                          [fieldRequired]="true"
-                          [fieldDisabled]="!isEdit"
-                          [fieldList]="selectCompanyList"
-                          [isEdit]="true"
-                          [editValue]="companyData"
-                          (queryChange)="onCompanyQuery($event)"
-                          (inputChange)="onCompanyChange($event)"
-                        >
-                        </app-search-field>
-                        <div
-                          class="mb-3"
-                          *ngIf="
-                          myProfileForm.submitted &&
-                          myProfileForm.controls['consultancyId'].invalid
-                          "
-                        >
-                          <div
-                            class="input-field-message"
-                            *ngIf="myProfileForm.controls['consultancyId'].errors?.['required']"
-                          >
-                            Company name is required
-                          </div>
-                        </div>
-                      </div>
-                </div>
-                
-                <div class="col-md-6">
-                    <div class="input-box">
-                        <div class="form-group">
-                            <label for="email">Email <span class="req">*</span></label>
-                            <input
-                              type="email"
-                              class="form-control"
-                              id="email"
-                              name="email"
-                              placeholder="Email"
-                              [(ngModel)]="formData.email"
-                              pattern="[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,4}$"
-                              required
-                              [disabled]="!isEdit"
-                            />
-                            <div
-                              class="mt-2"
-                              *ngIf="
-                              myProfileForm.submitted && myProfileForm.controls['email'].invalid
-                              "
-                            >
-                              <div
-                                class="input-field-message"
-                                *ngIf="myProfileForm.controls['email'].errors?.['required']"
-                              >
-                                Email is required
-                              </div>
-                              <div
-                                class="input-field-message"
-                                *ngIf="myProfileForm.controls['email'].errors?.['email']"
-                              >
-                                Invalid email format
-                              </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="input-box">
-                        <div class="form-group">
-                            <label for="companyUrl"
-                              >Company Website <span class="req">*</span></label
-                            >
-                            <input
-                              type="text"
-                              class="form-control"
-                              placeholder="Name"
-                              [(ngModel)]="companyData.email"
-                              name="companyUrl"
-                              required
-                              autocomplete="off"
-                              [disabled]="!isEdit"
-                            />
-                            <div
-                              class="mt-2"
-                              *ngIf="
-                              myProfileForm.submitted &&
-                              myProfileForm.controls['companyUrl']
-                                  .invalid
-                              "
-                            >
-                              <div
-                                class="input-field-message"
-                                *ngIf="myProfileForm.controls['companyUrl'].errors?.['required']"
-                              >
-                                Company Name is required
-                              </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-sm-6">
-                    <div class="input-box">
-                        <app-intl-tel-input
-                            [phoneNumber]="userPhone"
-                            (phoneNumberChange)="userPhone = $event"
-                            [edit]="isEdit"
-                        ></app-intl-tel-input>
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="input-box">
-                        <div class="form-group">
-                            <label for="alternateEmail">Alternate Email</label>
-                            <input
-                              type="email"
-                              class="form-control"
-                              id="alternateEmail"
-                              name="alternateEmail"
-                              placeholder="Email"
-                              [(ngModel)]="formData.alternateEmail"
-                              pattern="[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,4}$"
-                              [disabled]="!isEdit"
-                            />
-                            <div
-                              class="mt-2"
-                              *ngIf="
-                              myProfileForm.submitted && myProfileForm.controls['alternateEmail'].invalid
-                              "
-                            >
-                              <div
-                                class="input-field-message"
-                                *ngIf="myProfileForm.controls['alternateEmail'].errors?.['required']"
-                              >
-                                Email is required
-                              </div>
-                              <div
-                                class="input-field-message"
-                                *ngIf="myProfileForm.controls['email'].errors?.['alternateEmail']"
-                              >
-                                Invalid email format
-                              </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-12 col-lg-8">
-                  <div class="input-box profile-url-box">
-                    <div class="form-group">
-                      <label for="profileId">Profile ID</label>
-                      <div class="d-flex align-items-center">
-                        <span>{{publicProfileUrlPrefix}}</span>
-                        <input
-                          type="text"
-                          class="form-control"
-                          placeholder="name"
-                          [(ngModel)]="formData.publicProfileUserName"
-                          name="profileId"
-                          autocomplete="off"
-                          [disabled]="!isEdit"
-                          required
-                          (ngModelChange)="handleProfileId()"
-                        />
-                      </div>
-                      <div *ngIf="isEdit" class="d-flex align-items-center mt-2">
-                        <div class="btn btn-sm btn-secondary {{isCheckAvailability ? '' : 'disabled'}}" (click)="checkProfileId()">Check Availability</div>
-                        <div class="btn btn-dark btn-sm ms-2 {{isCheckAvailability ? '' : 'disabled'}}" (click)="clearProfileId()">Cancel</div>
-                        <div class="ms-2 text-sm" *ngIf="isProfileIdAvailable && formData.publicProfileUserName != ''" [ngClass]="isProfileIdAvailable == 'true' ? 'text-primary' : 'text-danger-500'">
-                          Profile ID {{isProfileIdAvailable == 'false' ? 'not' : ''}} available
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div class="col-md-12">
-                    <div class="input-box role-box">
-                        <div class="form-group">
-                          <label>Job role</label>
-                          <div class="list d-md-flex">
-                            <div class="form-check item">
-                                <input
-                                  class="form-check-input"
-                                  type="radio"
-                                  name="recruiter"
-                                  id="recruiter"
-                                  value="1"
-                                  [(ngModel)]="userTypeId"
-                                  (change)="
-                                    onJobRoleChange()
-                                  "
-                                  [required]="true"
-                                  [disabled]="!isEdit"
-                                />
-                                <label
-                                  class="form-check-label"
-                                  for="recruiter"
-                                >
-                                  Recruiter
-                                </label>
-                            </div>
-                            <div class="form-check item">
-                                <input
-                                  class="form-check-input"
-                                  type="radio"
-                                  name="benchSales"
-                                  id="benchSales"
-                                  value="2"
-                                  [(ngModel)]="userTypeId"
-                                  (change)="
-                                    onJobRoleChange()
-                                  "
-                                  [required]="true"
-                                  [disabled]="!isEdit"
-                                />
-                                <label
-                                  class="form-check-label"
-                                  for="benchSales"
-                                >
-                                Bench Sales
-                                </label>
-                            </div>
-                            <div class="form-check item">
-                                <input
-                                  class="form-check-input"
-                                  type="radio"
-                                  name="recruitBenchSales"
-                                  id="recruitBenchSales"
-                                  value="3"
-                                  [(ngModel)]="userTypeId"
-                                  (change)="
-                                    onJobRoleChange()
-                                  "
-                                  [required]="true"
-                                  [disabled]="!isEdit"
-                                />
-                                <label
-                                  class="form-check-label"
-                                  for="recruitBenchSales"
-                                >
-                                Recruiter / Bench Sales
-                                </label>
-                            </div>     
-                          </div> 
-                        </div>
-                    </div>     
-                </div>
-            </div>
-            <div class="submit-box d-flex justify-content-center" *ngIf="isEdit">
-              <submit-btn
-                [isSubmit]="isFormSubmitted"
-                defaultText="Update"
-                defaultActionText="Update..."
-              >
-              </submit-btn>
-                <div class="btn btn-outline-dark ms-3" (click)="handleCancel()">
-                    Cancel
-                </div>
+        <div class="row g-3">
+          <!-- First Name -->
+          <div class="col-md-6">
+            <div class="form-group mb-0">
+              <label class="form-label fw-semibold small text-secondary">
+                First Name <span class="text-danger">*</span>
+              </label>
+              <div class="input-group">
+                <span class="input-group-text bg-light text-muted border-end-0">
+                  <span class="material-symbols-outlined fs-6">person</span>
+                </span>
+                <input
+                  type="text"
+                  class="form-control border-start-0"
+                  [ngClass]="{'bg-light text-dark': !isEdit}"
+                  placeholder="Enter first name"
+                  [(ngModel)]="formData.fname"
+                  (ngModelChange)="onNameChange()"
+                  name="firstName"
+                  required
+                  autocomplete="off"
+                  [disabled]="!isEdit"
+                />
               </div>
-        </form>
+              <div class="mt-1" *ngIf="myProfileForm.submitted && myProfileForm.controls['firstName']?.invalid">
+                <span class="text-danger small" *ngIf="myProfileForm.controls['firstName']?.errors?.['required']">
+                  First name is required.
+                </span>
+              </div>
+            </div>
+          </div>
 
-    </ng-container>
+          <!-- Last Name -->
+          <div class="col-md-6">
+            <div class="form-group mb-0">
+              <label class="form-label fw-semibold small text-secondary">
+                Last Name <span class="text-danger">*</span>
+              </label>
+              <div class="input-group">
+                <span class="input-group-text bg-light text-muted border-end-0">
+                  <span class="material-symbols-outlined fs-6">badge</span>
+                </span>
+                <input
+                  type="text"
+                  class="form-control border-start-0"
+                  [ngClass]="{'bg-light text-dark': !isEdit}"
+                  placeholder="Enter last name"
+                  [(ngModel)]="formData.lname"
+                  (ngModelChange)="onNameChange()"
+                  name="lastName"
+                  required
+                  autocomplete="off"
+                  [disabled]="!isEdit"
+                />
+              </div>
+              <div class="mt-1" *ngIf="myProfileForm.submitted && myProfileForm.controls['lastName']?.invalid">
+                <span class="text-danger small" *ngIf="myProfileForm.controls['lastName']?.errors?.['required']">
+                  Last name is required.
+                </span>
+              </div>
+            </div>
+          </div>
 
-    <div class="mt-2 alert alert-danger" *ngIf="isError">
-        {{ error }}
-    </div>
+          <!-- Email Address -->
+          <div class="col-md-6">
+            <div class="form-group mb-0">
+              <label class="form-label fw-semibold small text-secondary">
+                Email Address <span class="text-danger">*</span>
+              </label>
+              <div class="input-group">
+                <span class="input-group-text bg-light text-muted border-end-0">
+                  <span class="material-symbols-outlined fs-6">alternate_email</span>
+                </span>
+                <input
+                  type="email"
+                  class="form-control border-start-0"
+                  [ngClass]="{'bg-light text-dark': !isEdit}"
+                  placeholder="name@company.com"
+                  [(ngModel)]="formData.email"
+                  name="email"
+                  pattern="[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,4}$"
+                  required
+                  [disabled]="!isEdit"
+                />
+              </div>
+              <div class="mt-1" *ngIf="myProfileForm.submitted && myProfileForm.controls['email']?.invalid">
+                <span class="text-danger small" *ngIf="myProfileForm.controls['email']?.errors?.['required']">
+                  Email is required.
+                </span>
+                <span class="text-danger small" *ngIf="myProfileForm.controls['email']?.errors?.['pattern']">
+                  Invalid email format.
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Alternate Email -->
+          <div class="col-md-6">
+            <div class="form-group mb-0">
+              <label class="form-label fw-semibold small text-secondary">
+                Alternate Email <span class="text-muted fw-normal">(Optional)</span>
+              </label>
+              <div class="input-group">
+                <span class="input-group-text bg-light text-muted border-end-0">
+                  <span class="material-symbols-outlined fs-6">mail</span>
+                </span>
+                <input
+                  type="email"
+                  class="form-control border-start-0"
+                  [ngClass]="{'bg-light text-dark': !isEdit}"
+                  placeholder="alt.email@domain.com"
+                  [(ngModel)]="formData.alternateEmail"
+                  name="alternateEmail"
+                  pattern="[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,4}$"
+                  [disabled]="!isEdit"
+                />
+              </div>
+              <div class="mt-1" *ngIf="myProfileForm.submitted && myProfileForm.controls['alternateEmail']?.invalid">
+                <span class="text-danger small" *ngIf="myProfileForm.controls['alternateEmail']?.errors?.['pattern']">
+                  Invalid email format.
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Section 2: Company & Contact Information -->
+      <div class="form-section-card p-3 p-md-4 rounded-3 border bg-white mb-4">
+        <div class="d-flex align-items-center gap-2 mb-3 pb-2 border-bottom">
+          <span class="material-symbols-outlined text-teal fs-5">business</span>
+          <h6 class="fw-bold mb-0 text-dark">Company & Contact Information</h6>
+        </div>
+
+        <div class="row g-3">
+          <!-- Company Name -->
+          <div class="col-md-6">
+            <div class="input-box search-box mb-0">
+              <app-search-field
+                fieldName="consultancyId"
+                fieldText="Company Name"
+                fieldType="name"
+                fieldPlaceholder="Search or select company..."
+                [fieldRequired]="true"
+                [fieldDisabled]="!isEdit"
+                [fieldList]="selectCompanyList"
+                [isEdit]="true"
+                [editValue]="companyData"
+                (queryChange)="onCompanyQuery($event)"
+                (inputChange)="onCompanyChange($event)"
+              >
+              </app-search-field>
+              <div class="mt-1" *ngIf="myProfileForm.submitted && myProfileForm.controls['consultancyId']?.invalid">
+                <span class="text-danger small" *ngIf="myProfileForm.controls['consultancyId']?.errors?.['required']">
+                  Company name is required.
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Company Website -->
+          <div class="col-md-6">
+            <div class="form-group mb-0">
+              <label class="form-label fw-semibold small text-secondary">
+                Company Website <span class="text-danger">*</span>
+              </label>
+              <div class="input-group">
+                <span class="input-group-text bg-light text-muted border-end-0">
+                  <span class="material-symbols-outlined fs-6">language</span>
+                </span>
+                <input
+                  type="text"
+                  class="form-control border-start-0"
+                  [ngClass]="{'bg-light text-dark': !isEdit}"
+                  placeholder="https://example.com"
+                  [(ngModel)]="companyData.email"
+                  name="companyUrl"
+                  required
+                  autocomplete="off"
+                  [disabled]="!isEdit"
+                />
+              </div>
+              <div class="mt-1" *ngIf="myProfileForm.submitted && myProfileForm.controls['companyUrl']?.invalid">
+                <span class="text-danger small" *ngIf="myProfileForm.controls['companyUrl']?.errors?.['required']">
+                  Company website is required.
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Phone Number -->
+          <div class="col-md-6">
+            <div class="form-group mb-0">
+              <label class="form-label fw-semibold small text-secondary">
+                Phone Number <span class="text-muted fw-normal">(Optional)</span>
+              </label>
+              <div class="intl-tel-wrapper" [ngClass]="{'tel-view-mode': !isEdit}">
+                <app-intl-tel-input
+                  [phoneNumber]="userPhone"
+                  (phoneNumberChange)="userPhone = $event"
+                  [edit]="isEdit"
+                ></app-intl-tel-input>
+              </div>
+            </div>
+          </div>
+
+          <!-- Public Profile ID -->
+          <div class="col-md-6">
+            <div class="form-group mb-0">
+              <label class="form-label fw-semibold small text-secondary d-flex justify-content-between align-items-center">
+                <span>Public Profile Handle</span>
+                <span class="text-muted fw-normal" style="font-size: 0.72rem;">Unique profile URL</span>
+              </label>
+              <div class="input-group">
+                <span class="input-group-text bg-light text-muted border-end-0 font-monospace small px-2">
+                  {{ publicProfileUrlPrefix }}
+                </span>
+                <input
+                  type="text"
+                  class="form-control border-start-0 font-monospace"
+                  [ngClass]="{'bg-light text-dark': !isEdit}"
+                  placeholder="username"
+                  [(ngModel)]="formData.publicProfileUserName"
+                  name="profileId"
+                  autocomplete="off"
+                  [disabled]="!isEdit"
+                  required
+                  (ngModelChange)="handleProfileId()"
+                />
+              </div>
+
+              <!-- Availability Check Action & Badge -->
+              <div *ngIf="isEdit" class="d-flex align-items-center gap-2 mt-2 flex-wrap">
+                <button
+                  type="button"
+                  class="btn btn-sm btn-outline-teal d-inline-flex align-items-center gap-1"
+                  [disabled]="!isCheckAvailability || !formData.publicProfileUserName"
+                  (click)="checkProfileId()"
+                >
+                  <span class="material-symbols-outlined fs-6">verified</span>
+                  <span>Check Availability</span>
+                </button>
+                <button
+                  type="button"
+                  class="btn btn-sm btn-outline-secondary d-inline-flex align-items-center gap-1"
+                  [disabled]="!isCheckAvailability"
+                  (click)="clearProfileId()"
+                >
+                  <span class="material-symbols-outlined fs-6">refresh</span>
+                  <span>Reset</span>
+                </button>
+                <span
+                  *ngIf="isProfileIdAvailable && formData.publicProfileUserName"
+                  class="badge px-2 py-1 d-inline-flex align-items-center gap-1"
+                  [ngClass]="isProfileIdAvailable === 'true' ? 'bg-success-subtle text-success border border-success-subtle' : 'bg-danger-subtle text-danger border border-danger-subtle'"
+                >
+                  <span class="material-symbols-outlined fs-6">
+                    {{ isProfileIdAvailable === 'true' ? 'check_circle' : 'cancel' }}
+                  </span>
+                  <span>{{ isProfileIdAvailable === 'true' ? 'Handle Available' : 'Handle Taken' }}</span>
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Section 3: Job Role Specialization -->
+      <div class="form-section-card p-3 p-md-4 rounded-3 border bg-white mb-4">
+        <div class="d-flex align-items-center gap-2 mb-3 pb-2 border-bottom">
+          <span class="material-symbols-outlined text-teal fs-5">work</span>
+          <div>
+            <h6 class="fw-bold mb-0 text-dark">Primary Job Role</h6>
+            <span class="text-muted small">Select your primary day-to-day focus to customize your candidate and job posting dashboards.</span>
+          </div>
+        </div>
+
+        <div class="row g-3">
+          <!-- Recruiter Option Card -->
+          <div class="col-md-4">
+            <label
+              class="role-choice-card d-flex align-items-start gap-3 p-3 rounded-3 border h-100 position-relative"
+              [class.active]="userTypeId == 1 || userTypeId == '1'"
+              [class.pointer]="isEdit"
+            >
+              <input
+                type="radio"
+                class="form-check-input mt-1 flex-shrink-0"
+                name="jobRoleOption"
+                id="roleRecruiter"
+                value="1"
+                [(ngModel)]="userTypeId"
+                (change)="onJobRoleChange()"
+                [disabled]="!isEdit"
+              />
+              <div>
+                <div class="d-flex align-items-center gap-1">
+                  <span class="material-symbols-outlined text-teal fs-5">person_search</span>
+                  <span class="fw-bold text-dark">Recruiter</span>
+                </div>
+                <p class="text-muted small mb-0 mt-1">
+                  Source, screen, and interview candidates for direct client requisitions.
+                </p>
+              </div>
+            </label>
+          </div>
+
+          <!-- Bench Sales Option Card -->
+          <div class="col-md-4">
+            <label
+              class="role-choice-card d-flex align-items-start gap-3 p-3 rounded-3 border h-100 position-relative"
+              [class.active]="userTypeId == 2 || userTypeId == '2'"
+              [class.pointer]="isEdit"
+            >
+              <input
+                type="radio"
+                class="form-check-input mt-1 flex-shrink-0"
+                name="jobRoleOption"
+                id="roleBenchSales"
+                value="2"
+                [(ngModel)]="userTypeId"
+                (change)="onJobRoleChange()"
+                [disabled]="!isEdit"
+              />
+              <div>
+                <div class="d-flex align-items-center gap-1">
+                  <span class="material-symbols-outlined text-teal fs-5">storefront</span>
+                  <span class="fw-bold text-dark">Bench Sales</span>
+                </div>
+                <p class="text-muted small mb-0 mt-1">
+                  Market consulting bench talent and source contracting vendor opportunities.
+                </p>
+              </div>
+            </label>
+          </div>
+
+          <!-- Recruiter & Bench Sales Option Card -->
+          <div class="col-md-4">
+            <label
+              class="role-choice-card d-flex align-items-start gap-3 p-3 rounded-3 border h-100 position-relative"
+              [class.active]="userTypeId == 3 || userTypeId == '3'"
+              [class.pointer]="isEdit"
+            >
+              <input
+                type="radio"
+                class="form-check-input mt-1 flex-shrink-0"
+                name="jobRoleOption"
+                id="roleDual"
+                value="3"
+                [(ngModel)]="userTypeId"
+                (change)="onJobRoleChange()"
+                [disabled]="!isEdit"
+              />
+              <div>
+                <div class="d-flex align-items-center gap-1">
+                  <span class="material-symbols-outlined text-teal fs-5">hub</span>
+                  <span class="fw-bold text-dark">Recruiter & Bench Sales</span>
+                </div>
+                <p class="text-muted small mb-0 mt-1">
+                  Dual-responsibility managing both talent acquisition and bench placement.
+                </p>
+              </div>
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <!-- Action Buttons (Bottom Bar when in Edit Mode) -->
+      <div *ngIf="isEdit" class="d-flex justify-content-end align-items-center gap-3 pt-3 border-top mt-4">
+        <button
+          type="button"
+          class="btn btn-outline-secondary px-4 py-2"
+          (click)="handleCancel()"
+          [disabled]="isFormSubmitted"
+        >
+          Cancel
+        </button>
+        <button
+          type="submit"
+          class="btn btn-teal px-4 py-2 d-inline-flex align-items-center gap-2 shadow-sm"
+          [disabled]="isFormSubmitted"
+        >
+          <span *ngIf="isFormSubmitted" class="spinner-border spinner-border-sm"></span>
+          <span *ngIf="!isFormSubmitted" class="material-symbols-outlined fs-5">save</span>
+          <span>{{ isFormSubmitted ? 'Saving Changes...' : 'Save Profile' }}</span>
+        </button>
+      </div>
+
+    </form>
+
+  </ng-container>
+
+  <!-- Error Banner -->
+  <div class="mt-3 alert alert-danger d-flex align-items-center gap-2" *ngIf="isError">
+    <span class="material-symbols-outlined fs-5">error</span>
+    <span>{{ error }}</span>
+  </div>
 
 </div>
