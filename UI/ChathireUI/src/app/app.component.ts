@@ -33,7 +33,13 @@ export class AppComponent   {
     private sharedService: SharedService
     ) {
 
-    let bodyClassList:string = 'home';
+    const checkIsHome = (url: string) => {
+      const clean = (url || '').split('?')[0].replace('#', '');
+      return clean === '' || clean === '/' || clean === '/home';
+    };
+
+    const initialHref = window.location.hash || window.location.pathname || '';
+    this.isNotHomeRoute = !checkIsHome(initialHref);
 
     router.events.subscribe((event: any) => {
       
@@ -44,20 +50,15 @@ export class AppComponent   {
         
         document.body.className = "";
 
-        if (name[1].includes("?")) {
+        if (name[1] && name[1].includes("?")) {
           let finalname = name[1].split("?");
           r.addClass(document.body, finalname[0]);
         }
-        else {
+        else if (name[1]) {
             r.addClass(document.body, name[1]);
         }
           
-        if(this.router.url == '/home') {
-          this.isNotHomeRoute = false;
-        }
-        else {
-          this.isNotHomeRoute = true;
-        }
+        this.isNotHomeRoute = !checkIsHome(this.router.url);
 
         if(this.router.url != '/login' && !this.router.url.includes('/search-jobs')) {
           this.sharedService.setPageToRetain(null)
