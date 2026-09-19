@@ -85,5 +85,7 @@ public partial class User
 
     public virtual ICollection<UserSubscriptionPlan> UserSubscriptionPlans { get; } = new List<UserSubscriptionPlan>();
 
+    public virtual ICollection<UserLogin> UserLogins { get; } = new List<UserLogin>();
+
     public virtual UserType? UserType { get; set; }
 }

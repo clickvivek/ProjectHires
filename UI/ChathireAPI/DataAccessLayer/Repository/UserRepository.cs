@@ -22,7 +22,7 @@ namespace DataAccessLayer.Repository
         Task<List<User>> GetUserByUserName(string email);
         Task<List<User>> GetUserByPublicProfileId(string publicProfileId);
         List<User> GetUserById(long Id);
-
+        Task RecordUserLogin(long userId, string ipAddress = null, string location = null);
     }
     public class UserRepository : BaseRepository<User, long>, IUserRepository
     {
@@ -150,9 +150,29 @@ namespace DataAccessLayer.Repository
         public List<User> GetUserById(long Id)
         {
             return _context.Users.Where(s => s.Id.Equals(Id)).ToList();
-
-
         }
 
+        public async Task RecordUserLogin(long userId, string ipAddress = null, string location = null)
+        {
+            try
+            {
+                var loginRecord = new UserLogin
+                {
+                    UserId = userId,
+                    LoginTime = DateTime.UtcNow,
+                    IpAddress = ipAddress,
+                    Location = location,
+                    IsActive = true,
+                    Updated = DateTime.UtcNow
+                };
+
+                await _context.UserLogins.AddAsync(loginRecord);
+                await _context.SaveChangesAsync();
+            }
+            catch (Exception)
+            {
+                // Non-blocking: failure to record login should not block user authentication
+            }
+        }
     }
 }

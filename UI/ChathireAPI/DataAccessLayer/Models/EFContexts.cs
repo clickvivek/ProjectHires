@@ -111,6 +111,8 @@ public partial class EFContexts : DbContext
 
     public virtual DbSet<UserSubscriptionPlan> UserSubscriptionPlans { get; set; }
 
+    public virtual DbSet<UserLogin> UserLogins { get; set; }
+
     public virtual DbSet<UserType> UserTypes { get; set; }
 
     public virtual DbSet<Visa> Visas { get; set; }
@@ -1107,6 +1109,25 @@ public partial class EFContexts : DbContext
             entity.HasOne(d => d.User).WithMany(p => p.UserSubscriptionPlans)
                 .HasForeignKey(d => d.UserId)
                 .HasConstraintName("FK_UserSubscriptionPlan_User");
+        });
+
+        modelBuilder.Entity<UserLogin>(entity =>
+        {
+            entity.ToTable("UserLogins");
+
+            entity.Property(e => e.LoginTime).HasColumnType("datetime");
+            entity.Property(e => e.IpAddress)
+                .HasMaxLength(50)
+                .IsUnicode(false);
+            entity.Property(e => e.Location)
+                .HasMaxLength(100)
+                .IsUnicode(false);
+            entity.Property(e => e.IsActive).HasDefaultValueSql("((1))");
+            entity.Property(e => e.Updated).HasColumnType("datetime");
+
+            entity.HasOne(d => d.User).WithMany(p => p.UserLogins)
+                .HasForeignKey(d => d.UserId)
+                .HasConstraintName("FK_UserLogins_User");
         });
 
         modelBuilder.Entity<UserType>(entity =>

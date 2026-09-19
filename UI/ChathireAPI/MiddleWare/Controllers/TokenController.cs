@@ -1,4 +1,4 @@
-using AutoMapper;
+﻿using AutoMapper;
 using BusinessEntityAndDTO.Models;
 using BusinessLayer.Manager;
 using Microsoft.AspNetCore.Authorization;
@@ -27,7 +27,8 @@ namespace MiddleWare.Controllers
             {
                 var loginMgr = managerFactory.Get<ILoginManager>();
 
-                var result = await loginMgr.GenerateToken(model.EMail, model.Pwd);
+                var clientIp = GetClientIpAddress();
+                var result = await loginMgr.GenerateToken(model.EMail, model.Pwd, clientIp);
 
                 var userFunctions = await loginMgr.UserFunction(result.Item3);
 
@@ -87,7 +88,8 @@ namespace MiddleWare.Controllers
             {
                 var loginMgr = managerFactory.Get<ILoginManager>();
 
-                var result = await loginMgr.GenerateGoogleToken(model.IdToken);
+                var clientIp = GetClientIpAddress();
+                var result = await loginMgr.GenerateGoogleToken(model.IdToken, clientIp);
 
                 var userFunctions = await loginMgr.UserFunction(result.Item3);
 
@@ -149,32 +151,60 @@ namespace MiddleWare.Controllers
             });
         }
 
-
         [HttpGet]
-        [Route("Refresh")]
+        [Route("RefreshToken")]
         [ApiAuthorize("Login")]
         public Task<Result<String>> RefreshToken()
         {
             return ExecuteAsync<String>(async () =>
             {
                 var loginMgr = managerFactory.Get<ILoginManager>();
-
                 return loginMgr.GetTokenFromContext(GetUserContext());
             });
         }
 
+        [HttpGet]
+        [Route("GetToken")]
+        [ApiAuthorize("Login")]
+        public Task<Result<String>> GetToken()
+        {
+            return ExecuteAsync<String>(async () =>
+            {
+                var loginMgr = managerFactory.Get<ILoginManager>();
+                return loginMgr.GetTokenFromContext(GetUserContext());
+            });
+        }
 
         [HttpGet]
-        [Route("Functions")]
+        [Route("GetUserFunction")]
         [ApiAuthorize("Login")]
-        public Task<Result<List<String>>> GetUserFunctions()
+        public Task<Result<List<String>>> GetUserFunction()
         {
             return ExecuteAsync<List<String>>(async () =>
             {
                 var loginMgr = managerFactory.Get<ILoginManager>();
-
                 return await loginMgr.UserFunction(GetUserContext());
             });
+        }
+
+        private string GetClientIpAddress()
+        {
+            try
+            {
+                if (HttpContext.Request.Headers.ContainsKey("X-Forwarded-For"))
+                {
+                    var forwardedHeader = HttpContext.Request.Headers["X-Forwarded-For"].ToString();
+                    if (!string.IsNullOrWhiteSpace(forwardedHeader))
+                    {
+                        return forwardedHeader.Split(',')[0].Trim();
+                    }
+                }
+                return HttpContext.Connection.RemoteIpAddress?.ToString();
+            }
+            catch
+            {
+                return null;
+            }
         }
     }
 }

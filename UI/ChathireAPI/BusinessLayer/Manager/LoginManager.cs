@@ -18,9 +18,9 @@ namespace BusinessLayer.Manager
 {
     public interface ILoginManager
     {
-        Task<Tuple<String, String, UserContext, String>> GenerateToken(string EmployeeCode, String Pwd);
+        Task<Tuple<String, String, UserContext, String>> GenerateToken(string EmployeeCode, String Pwd, string ipAddress = null, string location = null);
 
-        Task<Tuple<String, String, UserContext, String>> GenerateGoogleToken(string idToken);
+        Task<Tuple<String, String, UserContext, String>> GenerateGoogleToken(string idToken, string ipAddress = null, string location = null);
 
         Task<TokenModel> ValidateToken(String Token);
 
@@ -82,7 +82,7 @@ namespace BusinessLayer.Manager
         }
 
       
-        public async Task<Tuple<String, String, UserContext, String>> GenerateToken(string UserName, String Pwd)
+        public async Task<Tuple<String, String, UserContext, String>> GenerateToken(string UserName, String Pwd, string ipAddress = null, string location = null)
         {
             return await ExecuteAsync<Tuple<String, String, UserContext, String>>(async () =>
             {
@@ -93,6 +93,11 @@ namespace BusinessLayer.Manager
                         var loginRepo = repositoryFactory.Get<IUserRepository>();
 
                         var result = await loginRepo.ValidateUser(UserName, Pwd);
+
+                        if (result?.Item2 != null && result.Item2.UserId > 0)
+                        {
+                            await loginRepo.RecordUserLogin(result.Item2.UserId, ipAddress, location);
+                        }
 
                         //await UpdateEmployeeLastLogin(result.Item2);
                         return result;
@@ -111,7 +116,7 @@ namespace BusinessLayer.Manager
             }, "GenerateToken", null);
         }
 
-        public async Task<Tuple<String, String, UserContext, String>> GenerateGoogleToken(string idToken)
+        public async Task<Tuple<String, String, UserContext, String>> GenerateGoogleToken(string idToken, string ipAddress = null, string location = null)
         {
             return await ExecuteAsync<Tuple<String, String, UserContext, String>>(async () =>
             {
@@ -127,6 +132,11 @@ namespace BusinessLayer.Manager
 
                 var loginRepo = repositoryFactory.Get<IUserRepository>();
                 var result = await loginRepo.ValidateOrCreateGoogleUser(payload.Email, payload.GivenName, payload.FamilyName, payload.Picture);
+
+                if (result?.Item2 != null && result.Item2.UserId > 0)
+                {
+                    await loginRepo.RecordUserLogin(result.Item2.UserId, ipAddress, location);
+                }
 
                 return Tuple.Create(result.Item1, GetTokenFromContext(result.Item2), result.Item2, result.Item3);
             }, "GenerateGoogleToken", null);
