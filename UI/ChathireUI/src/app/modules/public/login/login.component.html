@@ -244,7 +244,7 @@
                   class="form-control custom-input ps-5 letter-spacing-otp font-monospace"
                   id="forgotOtp"
                   name="forgotOtp"
-                  placeholder="123456"
+                  placeholder="_ _ _ _ _ _"
                   [(ngModel)]="forgotOtp"
                   maxlength="6"
                   pattern="^[0-9]{6}$"
@@ -266,7 +266,7 @@
             <div class="mb-3.5">
               <label for="newPassword" class="form-label input-label">New Password</label>
               <div class="position-relative">
-                <span class="material-symbols-outlined input-icon-left position-absolute top-50 translate-middle-y ms-3">lock_reset</span>
+                <span class="material-symbols-outlined input-icon-left position-absolute top-50 translate-middle-y ms-3">lock</span>
                 <input
                   [type]="showNewPassword ? 'text' : 'password'"
                   class="form-control custom-input ps-5 pe-5"
@@ -300,7 +300,7 @@
             <div class="mb-4">
               <label for="confirmPassword" class="form-label input-label">Confirm New Password</label>
               <div class="position-relative">
-                <span class="material-symbols-outlined input-icon-left position-absolute top-50 translate-middle-y ms-3">lock_check</span>
+                <span class="material-symbols-outlined input-icon-left position-absolute top-50 translate-middle-y ms-3">lock</span>
                 <input
                   [type]="showConfirmPassword ? 'text' : 'password'"
                   class="form-control custom-input ps-5 pe-5"

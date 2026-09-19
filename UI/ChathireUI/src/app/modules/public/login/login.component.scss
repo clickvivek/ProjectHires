@@ -89,8 +89,14 @@
 
     .letter-spacing-otp {
       letter-spacing: 4px;
-      font-size: 18px;
+      font-size: 17px;
       font-weight: 600;
+
+      &::placeholder {
+        letter-spacing: 4px;
+        color: #9A949D;
+        font-weight: 500;
+      }
     }
 
     .input-icon-left {
