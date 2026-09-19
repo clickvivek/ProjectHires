@@ -129,99 +129,904 @@
     </div>
   </section>
 
-  <!-- 3. How It Works -->
-  <section class="how-it-works-block py-4 py-lg-5" style="background-color: var(--page-bg);">
-    <div class="container py-3">
-      <div class="text-center mb-4">
-        <h2 class="fw-bold mb-2">How it works</h2>
-        <p class="text-muted lead mb-0">A modern marketplace built specifically for C2C recruitment.</p>
+  <!-- 3. How It Works - Interactive Application Demo -->
+  <section class="how-it-works-block py-5" id="how-it-works" style="background-color: var(--page-bg);">
+    <div class="container py-2 py-lg-4">
+      
+      <!-- Section Heading -->
+      <div class="text-center mb-4 mb-lg-5">
+        <div class="d-inline-flex align-items-center gap-2 px-3 py-1 rounded-pill mb-3 demo-badge-pill">
+          <span class="material-symbols-outlined fs-6 text-primary">play_circle</span>
+          <span class="small fw-bold text-primary text-uppercase tracking-wider">Interactive Product Demo</span>
+        </div>
+        <h2 class="display-6 fw-bold mb-3 text-dark">
+          How ChatHire Works
+        </h2>
+        <p class="text-muted lead mb-0 max-w-2xl mx-auto" style="font-size: 1.15rem;">
+          The modern C2C recruitment marketplace engineered for speed, transparency, and zero middlemen.
+        </p>
       </div>
-      <div class="content-wrapper position-relative">
-        <div class="row">
-          <div class="col-md-12 col-lg-10 offset-lg-1">
-            <ul class="nav nav-tabs" role="tablist">
-              <li class="nav-item">
-                <a class="nav-link active" href="#recruiters" role="tab" data-bs-toggle="tab">Recruiters</a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="#benchsales" role="tab" data-bs-toggle="tab">Bench Sales Managers</a>
-              </li>
-            </ul>
-            <div class="tab-content bg-white shadow-sm border" style="border-radius: 0 0 8px 8px; border-top: none; border-color: var(--border) !important;">
-              <div role="tabpanel" class="tab-pane fade show active" id="recruiters">
-                <div class="row position-relative">
-                  <div class="col-lg-4 col-md-4 col-sm-12">
-                    <div class="content-box col-border-padding h-100 text-center py-4 px-3">
-                      <div class="d-flex flex-column justify-content-center h-100">
-                        <div class="flex-grow-1">
-                          <img src="assets/images/post-job-icon.svg" width="60" class="mb-3" />
-                          <h5 class="mb-2 head fw-normal">Post your job openings</h5>
-                          <p class="desp text-muted small">Create your own profile page and share it in Linkedin and Add in Your email Signature</p>
-                        </div>
-                        <div class="mt-3"><button class="btn btn-outline-primary px-4 py-2" style="border-radius: 4px;">Post your Job</button></div>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="col-lg-4 col-md-4 col-sm-12 col-border">
-                    <div class="content-box col-border-padding h-100 text-center py-4 px-3">
-                      <div class="d-flex flex-column justify-content-center h-100">
-                        <div class="flex-grow-1">
-                          <img src="assets/images/search-hotlist-icon.svg" width="60" class="mb-3" />
-                          <h5 class="mb-2 head fw-normal">Search Hotlist</h5>
-                          <p class="desp text-muted small">Search hotlist posted by fellow recruiters and connect and do live chat</p>
-                        </div>
-                        <div class="mt-3"><button class="btn btn-outline-primary px-4 py-2" style="border-radius: 4px;">Explore</button></div>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="col-lg-4 col-md-4 col-sm-12 col-border">
-                    <div class="content-box col-border-padding h-100 text-center py-4 px-3">
-                      <div class="d-flex flex-column justify-content-center h-100">
-                        <div class="flex-grow-1">
-                          <img src="assets/images/collaborate-icon.svg" width="60" class="mb-3" />
-                          <h5 class="mb-2 head fw-normal">Collaborate</h5>
-                          <p class="desp text-muted small">Recruit the right candidate ! Win-Win !</p>
-                        </div>
-                        <div class="mt-3"><button class="btn btn-outline-primary px-4 py-2" style="border-radius: 4px;">Get started</button></div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
+
+      <!-- Persona Switcher -->
+      <div class="row justify-content-center mb-4">
+        <div class="col-12 col-md-10 col-lg-8">
+          <div class="persona-switch-wrapper p-1 rounded-4 shadow-sm bg-white border d-flex gap-2">
+            <button 
+              type="button" 
+              class="btn flex-fill persona-tab-btn d-flex align-items-center justify-content-center gap-2 py-3 px-3 rounded-3 transition border-0"
+              [class.active]="activePersona === 'benchsales'"
+              (click)="setPersona('benchsales')">
+              <span class="material-symbols-outlined fs-5">assignment_ind</span>
+              <div class="text-start">
+                <div class="fw-bold persona-title">Bench Sales Manager</div>
+                <div class="small persona-sub">Hotlist &bull; LinkedIn &bull; Inbound Submissions</div>
               </div>
-              <div role="tabpanel" class="tab-pane fade" id="benchsales">
-                <div class="row position-relative">
-                  <div class="col-lg-4 col-md-4 col-sm-12">
-                    <div class="content-box col-border-padding text-center py-4 px-3">
-                      <img src="assets/images/post-job-icon.svg" width="60" class="mb-3" />
-                      <h5 class="mb-2 head fw-normal">Post Hotlist</h5>
-                      <p class="desp text-muted small">Post your bench candidates / Hotlist</p>
-                      <div class="mt-3"><button class="btn btn-outline-primary px-4 py-2" style="border-radius: 4px;">Post Hotlist</button></div>
-                    </div>
-                  </div>
-                  <div class="col-lg-4 col-md-4 col-sm-12 col-border">
-                    <div class="content-box col-border-padding text-center py-4 px-3">
-                      <img src="assets/images/search-hotlist-icon.svg" width="60" class="mb-3" />
-                      <h5 class="mb-2 head fw-normal">Receive Job Offer</h5>
-                      <p class="desp text-muted small">Receive job offers from recruiters</p>
-                      <div class="mt-3"><button class="btn btn-outline-primary px-4 py-2" style="border-radius: 4px;">Explore</button></div>
-                    </div>
-                  </div>
-                  <div class="col-lg-4 col-md-4 col-sm-12 col-border">
-                    <div class="content-box col-border-padding text-center py-4 px-3">
-                      <img src="assets/images/collaborate-icon.svg" width="60" class="mb-3" />
-                      <h5 class="mb-2 head fw-normal">Collaborate</h5>
-                      <p class="desp text-muted small">Negotiate rate and submit resume</p>
-                      <div class="mt-3"><button class="btn btn-outline-primary px-4 py-2" style="border-radius: 4px;">Get started</button></div>
-                    </div>
-                  </div>
-                </div>
+            </button>
+            <button 
+              type="button" 
+              class="btn flex-fill persona-tab-btn d-flex align-items-center justify-content-center gap-2 py-3 px-3 rounded-3 transition border-0"
+              [class.active]="activePersona === 'recruiter'"
+              (click)="setPersona('recruiter')">
+              <span class="material-symbols-outlined fs-5">work_history</span>
+              <div class="text-start">
+                <div class="fw-bold persona-title">Recruiter / Client</div>
+                <div class="small persona-sub">Post Jobs &bull; Share &bull; Receive Resumes</div>
               </div>
-            </div>
+            </button>
           </div>
         </div>
       </div>
+
+      <!-- Stepper Progress Timeline -->
+      <div class="row justify-content-center mb-4">
+        <div class="col-12 col-lg-10">
+          
+          <!-- Bench Sales Steps Timeline -->
+          <div *ngIf="activePersona === 'benchsales'" class="stepper-timeline d-flex justify-content-between position-relative">
+            <button 
+              type="button" 
+              class="stepper-node text-start btn p-0 border-0 bg-transparent"
+              [class.active]="benchStep === 1"
+              [class.completed]="benchStep > 1"
+              (click)="setBenchStep(1)">
+              <div class="d-flex align-items-center gap-2">
+                <span class="step-circle">1</span>
+                <div>
+                  <div class="step-label fw-bold">Build Hotlist</div>
+                  <div class="step-desc small text-muted d-none d-sm-block">Add candidate profiles</div>
+                </div>
+              </div>
+            </button>
+
+            <div class="stepper-line flex-grow-1 mx-2 align-self-center"></div>
+
+            <button 
+              type="button" 
+              class="stepper-node text-start btn p-0 border-0 bg-transparent"
+              [class.active]="benchStep === 2"
+              [class.completed]="benchStep > 2"
+              (click)="setBenchStep(2)">
+              <div class="d-flex align-items-center gap-2">
+                <span class="step-circle">2</span>
+                <div>
+                  <div class="step-label fw-bold">LinkedIn Image Export</div>
+                  <div class="step-desc small text-muted d-none d-sm-block">Save table as image & share</div>
+                </div>
+              </div>
+            </button>
+
+            <div class="stepper-line flex-grow-1 mx-2 align-self-center"></div>
+
+            <button 
+              type="button" 
+              class="stepper-node text-start btn p-0 border-0 bg-transparent"
+              [class.active]="benchStep === 3"
+              (click)="setBenchStep(3)">
+              <div class="d-flex align-items-center gap-2">
+                <span class="step-circle">3</span>
+                <div>
+                  <div class="step-label fw-bold">Inbound Calls & Submissions</div>
+                  <div class="step-desc small text-muted d-none d-sm-block">Direct calls & 1-click submit</div>
+                </div>
+              </div>
+            </button>
+          </div>
+
+          <!-- Recruiter Steps Timeline -->
+          <div *ngIf="activePersona === 'recruiter'" class="stepper-timeline d-flex justify-content-between position-relative">
+            <button 
+              type="button" 
+              class="stepper-node text-start btn p-0 border-0 bg-transparent"
+              [class.active]="recruiterStep === 1"
+              [class.completed]="recruiterStep > 1"
+              (click)="setRecruiterStep(1)">
+              <div class="d-flex align-items-center gap-2">
+                <span class="step-circle">1</span>
+                <div>
+                  <div class="step-label fw-bold">Post Job & Share</div>
+                  <div class="step-desc small text-muted d-none d-sm-block">Create requirement & LinkedIn post</div>
+                </div>
+              </div>
+            </button>
+
+            <div class="stepper-line flex-grow-1 mx-3 align-self-center"></div>
+
+            <button 
+              type="button" 
+              class="stepper-node text-start btn p-0 border-0 bg-transparent"
+              [class.active]="recruiterStep === 2"
+              (click)="setRecruiterStep(2)">
+              <div class="d-flex align-items-center gap-2">
+                <span class="step-circle">2</span>
+                <div>
+                  <div class="step-label fw-bold">Receive Matched Resumes</div>
+                  <div class="step-desc small text-muted d-none d-sm-block">Review submissions from bench managers</div>
+                </div>
+              </div>
+            </button>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Application Mockup Frame -->
+      <div class="row justify-content-center">
+        <div class="col-12 col-lg-11 col-xl-10">
+          <div class="app-browser-frame bg-white rounded-4 shadow-lg border overflow-hidden">
+            
+            <!-- Browser Header Bar -->
+            <div class="browser-header px-4 py-3 border-bottom d-flex align-items-center justify-content-between">
+              <div class="d-flex align-items-center gap-2">
+                <span class="window-dot dot-red"></span>
+                <span class="window-dot dot-yellow"></span>
+                <span class="window-dot dot-green"></span>
+                <div class="browser-url-pill ms-3 px-3 py-1 rounded-pill bg-light text-muted small d-flex align-items-center gap-2">
+                  <span class="material-symbols-outlined fs-6 text-success">lock</span>
+                  <span class="fw-mono">chathire.com/app/{{ activePersona === 'benchsales' ? 'bench-manager-hub' : 'recruiter-portal' }}</span>
+                </div>
+              </div>
+              <div class="d-flex align-items-center gap-2">
+                <span class="badge bg-success-subtle text-success border border-success-subtle px-3 py-1 rounded-pill small fw-medium">
+                  ● Live Interactive Demo
+                </span>
+              </div>
+            </div>
+
+            <!-- Frame Body Content -->
+            <div class="browser-canvas p-3 p-md-4 p-lg-5">
+
+              <!-- ==================================================== -->
+              <!-- 1. BENCH SALES MANAGER FLOWS                         -->
+              <!-- ==================================================== -->
+
+              <div *ngIf="activePersona === 'benchsales'">
+                
+                <!-- BENCH STEP 1: HOTLIST CREATION -->
+                <div *ngIf="benchStep === 1" class="demo-step-pane">
+                  <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
+                    <div>
+                      <h4 class="fw-bold mb-1 d-flex align-items-center gap-2">
+                        <span class="material-symbols-outlined text-primary">featured_play_list</span>
+                        My Active Candidate Hotlist
+                      </h4>
+                      <p class="text-muted small mb-0">
+                        Add and organize your on-bench consultants with verified tech stacks, visas, and rates.
+                      </p>
+                    </div>
+                    <div class="d-flex align-items-center gap-2 flex-wrap">
+                      <button 
+                        type="button" 
+                        class="btn btn-primary px-3 py-2 d-inline-flex align-items-center gap-1 shadow-sm rounded-3"
+                        (click)="addDemoCandidate()">
+                        <span class="material-symbols-outlined fs-6">person_add</span>
+                        <span>+ Add Candidate Profile</span>
+                      </button>
+                      <button 
+                        type="button" 
+                        class="btn btn-outline-secondary px-3 py-2 d-inline-flex align-items-center gap-1 rounded-3"
+                        (click)="setBenchStep(2)">
+                        <span>Next: Export to LinkedIn</span>
+                        <span class="material-symbols-outlined fs-6">arrow_forward</span>
+                      </button>
+                    </div>
+                  </div>
+
+                  <!-- Quick Alert on Candidate Add -->
+                  <div *ngIf="candidateAddedSuccess" class="alert alert-success d-flex align-items-center gap-2 py-2 px-3 mb-3 rounded-3 fade show">
+                    <span class="material-symbols-outlined text-success">check_circle</span>
+                    <div class="small fw-medium">
+                      <strong>New Consultant Added!</strong> "Vikas Nambiar - Senior Salesforce Technical Architect" is now live on your hotlist.
+                    </div>
+                  </div>
+
+                  <!-- Hotlist Table -->
+                  <div class="table-responsive rounded-3 border bg-white shadow-xs">
+                    <table class="table table-hover align-middle mb-0 demo-table">
+                      <thead class="table-light">
+                        <tr>
+                          <th class="py-3 px-3">Candidate & Role</th>
+                          <th class="py-3 px-3">Key Skills</th>
+                          <th class="py-3 px-3">Experience</th>
+                          <th class="py-3 px-3">Visa / Location</th>
+                          <th class="py-3 px-3">C2C Rate</th>
+                          <th class="py-3 px-3 text-center">Status</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr *ngFor="let cand of benchCandidates" [class.table-success-highlight]="cand.isNew">
+                          <td class="py-3 px-3">
+                            <div class="d-flex align-items-center gap-3">
+                              <div class="avatar-circle-sm bg-plum text-white fw-bold">
+                                {{ cand.name.charAt(0) }}
+                              </div>
+                              <div>
+                                <div class="fw-bold text-dark candidate-name">{{ cand.name }}</div>
+                                <div class="text-muted small">{{ cand.role }}</div>
+                              </div>
+                            </div>
+                          </td>
+                          <td class="py-3 px-3">
+                            <div class="d-flex flex-wrap gap-1" style="max-width: 260px;">
+                              <span *ngFor="let s of cand.skills.slice(0, 3)" class="badge skill-badge px-2 py-1">
+                                {{ s }}
+                              </span>
+                              <span *ngIf="cand.skills.length > 3" class="badge skill-badge-more px-2 py-1">
+                                +{{ cand.skills.length - 3 }}
+                              </span>
+                            </div>
+                          </td>
+                          <td class="py-3 px-3 fw-medium text-secondary">
+                            {{ cand.experience }}
+                          </td>
+                          <td class="py-3 px-3">
+                            <div class="fw-medium text-dark small">{{ cand.visa }}</div>
+                            <div class="text-muted small">{{ cand.location }}</div>
+                          </td>
+                          <td class="py-3 px-3">
+                            <span class="badge rate-pill fw-bold">{{ cand.rate }}</span>
+                          </td>
+                          <td class="py-3 px-3 text-center">
+                            <span class="badge bg-success-subtle text-success px-2 py-1 rounded-pill small">
+                              ● {{ cand.status }}
+                            </span>
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+
+                  <!-- Bottom Value Callout -->
+                  <div class="mt-4 p-3 rounded-3 bg-light border d-flex flex-column flex-md-row justify-content-between align-items-center gap-3">
+                    <div class="d-flex align-items-center gap-2">
+                      <span class="material-symbols-outlined text-primary fs-5">auto_awesome</span>
+                      <span class="small text-muted">
+                        <strong>Pro-Tip:</strong> Your hotlist updates in real-time across the ChatHire network with direct recruiter visibility.
+                      </span>
+                    </div>
+                    <button class="btn btn-sm btn-link text-primary text-decoration-none fw-bold p-0 d-flex align-items-center gap-1" (click)="setBenchStep(2)">
+                      Generate LinkedIn Image Now <span class="material-symbols-outlined fs-6">arrow_forward</span>
+                    </button>
+                  </div>
+                </div>
+
+                <!-- BENCH STEP 2: EXPORT TABLE AS IMAGE & SHARE IN LINKEDIN -->
+                <div *ngIf="benchStep === 2" class="demo-step-pane">
+                  <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
+                    <div>
+                      <h4 class="fw-bold mb-1 d-flex align-items-center gap-2">
+                        <span class="material-symbols-outlined text-primary">photo_camera</span>
+                        Auto-Generate Social Image & Share to LinkedIn
+                      </h4>
+                      <p class="text-muted small mb-0">
+                        Stop manually crafting Excel screenshots. Generate 1080p high-resolution branded hotlist images with 1-click.
+                      </p>
+                    </div>
+                    <div class="d-flex align-items-center gap-2">
+                      <button 
+                        type="button" 
+                        class="btn btn-outline-secondary px-3 py-2 rounded-3"
+                        (click)="setBenchStep(1)">
+                        <span class="material-symbols-outlined fs-6 align-middle me-1">arrow_back</span>
+                        Back to Hotlist
+                      </button>
+                      <button 
+                        type="button" 
+                        class="btn btn-primary px-3 py-2 rounded-3 shadow-sm"
+                        (click)="setBenchStep(3)">
+                        Next: Inbound Calls
+                        <span class="material-symbols-outlined fs-6 align-middle ms-1">arrow_forward</span>
+                      </button>
+                    </div>
+                  </div>
+
+                  <div class="row g-4 align-items-stretch">
+                    <!-- Left: Graphic Card Preview / Image Generator -->
+                    <div class="col-lg-6">
+                      <div class="card border h-100 shadow-sm rounded-4 overflow-hidden">
+                        <div class="card-header bg-dark text-white py-3 px-4 d-flex justify-content-between align-items-center">
+                          <div class="d-flex align-items-center gap-2">
+                            <span class="material-symbols-outlined fs-5 text-warning">image</span>
+                            <span class="fw-bold small text-uppercase">Generated Image Canvas (1080 &times; 1080)</span>
+                          </div>
+                          <span class="badge bg-warning text-dark fw-bold">Auto-Branded</span>
+                        </div>
+                        <div class="card-body p-4 image-canvas-preview text-white" style="background: linear-gradient(145deg, #2D1B2C 0%, #5B365A 100%);">
+                          <div class="d-flex justify-content-between align-items-center mb-3 border-bottom border-light pb-2">
+                            <div class="d-flex align-items-center gap-2">
+                              <div class="brand-logo-badge bg-white text-plum fw-bolder px-2 py-1 rounded">CH</div>
+                              <div>
+                                <h6 class="mb-0 fw-bold text-white">APEX GLOBAL CONSULTING</h6>
+                                <small class="text-white-50">Verified Bench Marketing Partner</small>
+                              </div>
+                            </div>
+                            <span class="badge bg-white text-dark fw-bold px-2 py-1">AVAILABLE BENCH</span>
+                          </div>
+
+                          <h5 class="fw-bold text-warning mb-3">🔥 HOTLIST OF AVAILABLE TECH LEAD CONSULTANTS</h5>
+
+                          <div class="hotlist-image-table bg-white text-dark rounded-3 p-2 mb-3 shadow-sm">
+                            <div class="d-flex justify-content-between border-bottom py-2 px-2 small fw-bold bg-light">
+                              <span>Candidate & Tech Stack</span>
+                              <span>Exp / Visa</span>
+                              <span>Rate</span>
+                            </div>
+                            <div class="d-flex justify-content-between border-bottom py-2 px-2 small">
+                              <div><strong>Rahul S.</strong> &bull; Java AWS Full Stack Architect</div>
+                              <div>10+ Yrs / H1B</div>
+                              <div class="text-plum fw-bold">$80/hr</div>
+                            </div>
+                            <div class="d-flex justify-content-between border-bottom py-2 px-2 small">
+                              <div><strong>Sneha P.</strong> &bull; Snowflake & PySpark Lead</div>
+                              <div>8+ Yrs / GC</div>
+                              <div class="text-plum fw-bold">$85/hr</div>
+                            </div>
+                            <div class="d-flex justify-content-between py-2 px-2 small">
+                              <div><strong>Amitabh V.</strong> &bull; DevOps / Kubernetes SRE Lead</div>
+                              <div>11+ Yrs / USC</div>
+                              <div class="text-plum fw-bold">$90/hr</div>
+                            </div>
+                          </div>
+
+                          <div class="d-flex justify-content-between align-items-center text-white-50 small mt-2">
+                            <span>📞 Direct: (214) 555-0199</span>
+                            <span>📧 bench@apexconsulting.com</span>
+                          </div>
+                        </div>
+                        <div class="card-footer bg-light p-3 d-flex justify-content-between align-items-center">
+                          <div class="small text-muted">
+                            <span class="material-symbols-outlined fs-6 align-middle text-success">verified</span> High-res PNG ready for export
+                          </div>
+                          <button class="btn btn-sm btn-outline-primary d-inline-flex align-items-center gap-1" (click)="generateSocialImage()">
+                            <span class="material-symbols-outlined fs-6">download</span>
+                            <span>{{ imageGenerating ? 'Rendering...' : 'Download PNG Image' }}</span>
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- Right: LinkedIn Post Preview & Share Simulator -->
+                    <div class="col-lg-6">
+                      <div class="card border h-100 shadow-sm rounded-4 linkedin-card">
+                        <div class="card-header bg-white py-3 px-4 d-flex justify-content-between align-items-center border-bottom">
+                          <div class="d-flex align-items-center gap-2">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="#0A66C2">
+                              <path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.28 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.75M6.46 10.9v8.37H9.2V10.9H6.46M7.83 6.2a1.62 1.62 0 0 0-1.62 1.62c0 .89.73 1.62 1.62 1.62.89 0 1.62-.73 1.62-1.62A1.62 1.62 0 0 0 7.83 6.2Z"/>
+                            </svg>
+                            <span class="fw-bold small text-dark">LinkedIn Post Composer</span>
+                          </div>
+                          <span class="badge bg-primary-subtle text-primary small">1-Click Integration</span>
+                        </div>
+                        <div class="card-body p-3 p-md-4">
+                          <!-- LinkedIn Author Header -->
+                          <div class="d-flex align-items-center gap-3 mb-3">
+                            <div class="avatar-circle-sm bg-primary text-white fw-bold">VS</div>
+                            <div>
+                              <div class="fw-bold text-dark small">Vikram Sharma <span class="text-muted fw-normal">&bull; 1st</span></div>
+                              <div class="text-muted" style="font-size: 11px;">Lead Bench Sales Recruiter @ Apex Consulting | C2C Specialist</div>
+                              <div class="text-muted" style="font-size: 11px;">Just now &bull; <span class="material-symbols-outlined fs-6 align-middle">public</span></div>
+                            </div>
+                          </div>
+
+                          <!-- Post Caption -->
+                          <p class="small text-dark mb-3">
+                            🔥 <strong>Hotlist of Senior Consultants available immediately for C2C requirements!</strong><br><br>
+                            All profiles are pre-screened with verified references & excellent communication.
+                            Reach out for quick resume submissions & client calls! 🚀<br><br>
+                            <span class="text-primary fw-medium">#benchsales #c2chiring #hotlist #javadeveloper #snowflake #devops</span>
+                          </p>
+
+                          <!-- Embedded Social Image Snippet -->
+                          <div class="rounded-3 border overflow-hidden bg-light p-2 text-center text-muted small mb-3">
+                            <div class="d-flex align-items-center justify-content-center gap-2 py-3 bg-plum text-white rounded">
+                              <span class="material-symbols-outlined">image</span>
+                              <span class="fw-bold">ChatHire_Hotlist_ApexConsulting.png (Attached)</span>
+                            </div>
+                          </div>
+
+                          <!-- Interactive Share Button -->
+                          <button 
+                            type="button" 
+                            class="btn btn-linkedin w-100 py-2 d-flex align-items-center justify-content-center gap-2 shadow-sm rounded-3"
+                            [disabled]="linkedinShared"
+                            (click)="shareBenchToLinkedIn()">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                              <path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.28 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.75M6.46 10.9v8.37H9.2V10.9H6.46M7.83 6.2a1.62 1.62 0 0 0-1.62 1.62c0 .89.73 1.62 1.62 1.62.89 0 1.62-.73 1.62-1.62A1.62 1.62 0 0 0 7.83 6.2Z"/>
+                            </svg>
+                            <span class="fw-bold">{{ linkedinShared ? 'Shared to LinkedIn!' : 'Share Image to LinkedIn Now' }}</span>
+                          </button>
+
+                          <div *ngIf="linkedinShared" class="alert alert-success d-flex align-items-center gap-2 py-2 px-3 mt-3 mb-0 rounded-3">
+                            <span class="material-symbols-outlined text-success">check_circle</span>
+                            <span class="small fw-medium">Posted live to LinkedIn with embedded direct response link!</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- BENCH STEP 3: INBOUND CALLS & SUBMIT RESUMES -->
+                <div *ngIf="benchStep === 3" class="demo-step-pane">
+                  <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
+                    <div>
+                      <h4 class="fw-bold mb-1 d-flex align-items-center gap-2">
+                        <span class="material-symbols-outlined text-primary">phone_in_talk</span>
+                        Receive Inbound Recruiter Inquiries & Submit Resumes
+                      </h4>
+                      <p class="text-muted small mb-0">
+                        When hiring managers and recruiters see your hotlist, they call or message you directly. Agree on rates and submit in 1 click.
+                      </p>
+                    </div>
+                    <div class="d-flex align-items-center gap-2">
+                      <button 
+                        type="button" 
+                        class="btn btn-outline-secondary px-3 py-2 rounded-3"
+                        (click)="setBenchStep(2)">
+                        <span class="material-symbols-outlined fs-6 align-middle me-1">arrow_back</span>
+                        Back to Image Export
+                      </button>
+                      <button 
+                        type="button" 
+                        class="btn btn-primary px-3 py-2 rounded-3 shadow-sm"
+                        routerLink="/addcandidate">
+                        <span>Get Started Free</span>
+                        <span class="material-symbols-outlined fs-6 align-middle ms-1">arrow_forward</span>
+                      </button>
+                    </div>
+                  </div>
+
+                  <div class="row g-4 align-items-stretch">
+                    <!-- Left: Incoming Call Radar Simulation -->
+                    <div class="col-lg-5">
+                      <div class="card border h-100 shadow-sm rounded-4 overflow-hidden bg-white">
+                        <div class="card-header bg-light py-3 px-4 border-bottom d-flex justify-content-between align-items-center">
+                          <span class="fw-bold small text-uppercase text-dark">Live Inbound Channel</span>
+                          <span class="badge bg-danger-subtle text-danger pulse-dot">● Inbound Call</span>
+                        </div>
+                        <div class="card-body p-4 text-center d-flex flex-column justify-content-center align-items-center">
+                          <div class="caller-radar-pulse mb-3">
+                            <div class="avatar-circle-lg bg-plum text-white fw-bold shadow">
+                              MV
+                            </div>
+                          </div>
+                          <h5 class="fw-bold text-dark mb-1">Marcus Vance</h5>
+                          <p class="text-muted small mb-2">Director of Talent Acquisition &bull; Apex FinTech</p>
+                          <span class="badge bg-light text-dark border px-3 py-1 mb-3">
+                            Requirement: Java AWS Lead ($85/hr C2C)
+                          </span>
+
+                          <div class="w-100 mt-2">
+                            <div *ngIf="callState === 'incoming'" class="d-flex gap-2">
+                              <button class="btn btn-success flex-fill py-2 d-flex align-items-center justify-content-center gap-2 rounded-3 shadow-sm" (click)="acceptInboundCall()">
+                                <span class="material-symbols-outlined">call</span>
+                                <span class="fw-bold">Accept Call & Chat</span>
+                              </button>
+                            </div>
+                            <div *ngIf="callState !== 'incoming'" class="alert alert-success py-2 px-3 rounded-3 mb-0 small">
+                              <span class="material-symbols-outlined fs-6 align-middle text-success me-1">phone_in_talk</span>
+                              Connected with Marcus Vance
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- Right: Direct Chat & 1-Click Resume Submission Console -->
+                    <div class="col-lg-7">
+                      <div class="card border h-100 shadow-sm rounded-4 chat-console-card">
+                        <div class="card-header bg-white py-3 px-4 border-bottom d-flex justify-content-between align-items-center">
+                          <div class="d-flex align-items-center gap-2">
+                            <span class="material-symbols-outlined text-primary">chat</span>
+                            <span class="fw-bold small text-dark">Direct Negotiation & Submission Portal</span>
+                          </div>
+                          <span class="badge bg-success text-white small">Direct Recruiter Access</span>
+                        </div>
+                        <div class="card-body p-4 d-flex flex-column">
+                          <!-- Chat Messages -->
+                          <div class="chat-thread flex-grow-1 mb-3 d-flex flex-column gap-3">
+                            <!-- Recruiter Message -->
+                            <div class="chat-bubble incoming-bubble p-3 rounded-4 bg-light align-self-start border" style="max-width: 85%;">
+                              <div class="d-flex align-items-center gap-2 mb-1">
+                                <span class="fw-bold small text-dark">Marcus Vance (Recruiter)</span>
+                                <span class="text-muted" style="font-size: 11px;">10:14 AM</span>
+                              </div>
+                              <p class="small text-dark mb-0">
+                                Hi Vikram! Saw your hotlist for <strong>Rahul Sharma (Java AWS Architect)</strong>. Our client has an urgent 12-month C2C role. Can you submit his resume for $80-$85/hr?
+                              </p>
+                            </div>
+
+                            <!-- Bench Manager Response -->
+                            <div class="chat-bubble outgoing-bubble p-3 rounded-4 bg-plum text-white align-self-end shadow-xs" style="max-width: 85%;">
+                              <div class="d-flex align-items-center justify-content-between gap-2 mb-1">
+                                <span class="fw-bold small text-white">You (Bench Sales)</span>
+                                <span class="text-white-50" style="font-size: 11px;">10:15 AM</span>
+                              </div>
+                              <p class="small text-white mb-0">
+                                Hi Marcus! Yes, Rahul is 100% available immediately and fully authorized (H1B/USC). Rate $85/hr C2C works great.
+                              </p>
+                            </div>
+
+                            <!-- Submission Confirmation if Done -->
+                            <div *ngIf="callState === 'submitted'" class="alert alert-success d-flex align-items-center gap-3 py-3 px-3 rounded-3 shadow-xs">
+                              <span class="material-symbols-outlined text-success fs-3">task_alt</span>
+                              <div>
+                                <div class="fw-bold text-success small">Resume Submitted Successfully!</div>
+                                <div class="small text-muted">{{ resumeSubmitFeedback }}</div>
+                              </div>
+                            </div>
+                          </div>
+
+                          <!-- 1-Click Submission Action Bar -->
+                          <div class="p-3 bg-light rounded-3 border">
+                            <div class="small fw-bold text-dark mb-2">⚡ 1-Click Instant Actions:</div>
+                            <div class="d-flex flex-wrap gap-2">
+                              <button 
+                                type="button" 
+                                class="btn btn-primary btn-sm px-3 py-2 rounded-2 d-inline-flex align-items-center gap-1 shadow-xs"
+                                [disabled]="callState === 'submitted'"
+                                (click)="submitResumeWithRate('$85/hr C2C')">
+                                <span class="material-symbols-outlined fs-6">send</span>
+                                <span>Submit Rahul's Resume ($85/hr C2C)</span>
+                              </button>
+                              <button 
+                                type="button" 
+                                class="btn btn-outline-secondary btn-sm px-3 py-2 rounded-2"
+                                *ngIf="callState === 'submitted'"
+                                (click)="resetCallDemo()">
+                                <span class="material-symbols-outlined fs-6 align-middle">restart_alt</span>
+                                <span>Simulate Another Inbound Call</span>
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+
+              <!-- ==================================================== -->
+              <!-- 2. RECRUITERS / HIRING MANAGERS FLOWS                -->
+              <!-- ==================================================== -->
+
+              <div *ngIf="activePersona === 'recruiter'">
+                
+                <!-- RECRUITER STEP 1: CREATE JOB POSTING & SHARE IN LINKEDIN -->
+                <div *ngIf="recruiterStep === 1" class="demo-step-pane">
+                  <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
+                    <div>
+                      <h4 class="fw-bold mb-1 d-flex align-items-center gap-2">
+                        <span class="material-symbols-outlined text-primary">post_add</span>
+                        Create C2C Requirement & Broadcast to LinkedIn
+                      </h4>
+                      <p class="text-muted small mb-0">
+                        Post your open C2C requirements in seconds with custom rates, skills, and generate shareable LinkedIn graphics.
+                      </p>
+                    </div>
+                    <div class="d-flex align-items-center gap-2">
+                      <button 
+                        type="button" 
+                        class="btn btn-primary px-3 py-2 rounded-3 shadow-sm"
+                        (click)="setRecruiterStep(2)">
+                        Next: Review Resumes
+                        <span class="material-symbols-outlined fs-6 align-middle ms-1">arrow_forward</span>
+                      </button>
+                    </div>
+                  </div>
+
+                  <div class="row g-4 align-items-stretch">
+                    <!-- Left: Job Creation Form Preview -->
+                    <div class="col-lg-6">
+                      <div class="card border h-100 shadow-sm rounded-4 overflow-hidden bg-white">
+                        <div class="card-header bg-light py-3 px-4 border-bottom d-flex justify-content-between align-items-center">
+                          <span class="fw-bold small text-uppercase text-dark">Job Requirement Details</span>
+                          <span class="badge bg-plum text-white">Free C2C Posting</span>
+                        </div>
+                        <div class="card-body p-4">
+                          <div class="mb-3">
+                            <label class="form-label small fw-bold text-muted">Job Title</label>
+                            <input type="text" class="form-control form-control-sm fw-bold" value="Lead Cloud .NET Azure Architect" readonly />
+                          </div>
+                          <div class="row g-2 mb-3">
+                            <div class="col-6">
+                              <label class="form-label small fw-bold text-muted">Corp-to-Corp Rate</label>
+                              <input type="text" class="form-control form-control-sm text-plum fw-bold" value="$85 - $90/hr C2C" readonly />
+                            </div>
+                            <div class="col-6">
+                              <label class="form-label small fw-bold text-muted">Work Location</label>
+                              <input type="text" class="form-control form-control-sm" value="New York, NY (Hybrid)" readonly />
+                            </div>
+                          </div>
+                          <div class="mb-3">
+                            <label class="form-label small fw-bold text-muted">Required Tech Stack</label>
+                            <div class="d-flex flex-wrap gap-1">
+                              <span class="badge bg-secondary-subtle text-dark px-2 py-1">.NET 8 Core</span>
+                              <span class="badge bg-secondary-subtle text-dark px-2 py-1">Azure Microservices</span>
+                              <span class="badge bg-secondary-subtle text-dark px-2 py-1">Kubernetes</span>
+                              <span class="badge bg-secondary-subtle text-dark px-2 py-1">Kafka</span>
+                              <span class="badge bg-secondary-subtle text-dark px-2 py-1">Angular / React</span>
+                            </div>
+                          </div>
+                          <div class="p-3 bg-light rounded-3 border d-flex justify-content-between align-items-center">
+                            <div>
+                              <div class="small fw-bold text-dark">Auto-notify Bench Managers</div>
+                              <div class="text-muted" style="font-size: 11px;">Instantly notify 1,200+ matched bench sales leads</div>
+                            </div>
+                            <span class="badge bg-success px-2 py-1">ENABLED</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- Right: LinkedIn Job Broadcast Preview -->
+                    <div class="col-lg-6">
+                      <div class="card border h-100 shadow-sm rounded-4 linkedin-card">
+                        <div class="card-header bg-white py-3 px-4 d-flex justify-content-between align-items-center border-bottom">
+                          <div class="d-flex align-items-center gap-2">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="#0A66C2">
+                              <path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.28 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.75M6.46 10.9v8.37H9.2V10.9H6.46M7.83 6.2a1.62 1.62 0 0 0-1.62 1.62c0 .89.73 1.62 1.62 1.62.89 0 1.62-.73 1.62-1.62A1.62 1.62 0 0 0 7.83 6.2Z"/>
+                            </svg>
+                            <span class="fw-bold small text-dark">LinkedIn Broadcast Preview</span>
+                          </div>
+                          <span class="badge bg-primary-subtle text-primary small">Auto-Formatted</span>
+                        </div>
+                        <div class="card-body p-3 p-md-4">
+                          <div class="d-flex align-items-center gap-3 mb-3">
+                            <div class="avatar-circle-sm bg-plum text-white fw-bold">HR</div>
+                            <div>
+                              <div class="fw-bold text-dark small">Hiring Team @ Apex Tech <span class="text-muted fw-normal">&bull; Company</span></div>
+                              <div class="text-muted" style="font-size: 11px;">Just now &bull; <span class="material-symbols-outlined fs-6 align-middle">public</span></div>
+                            </div>
+                          </div>
+
+                          <p class="small text-dark mb-3">
+                            💼 <strong>Urgent C2C Hiring: Lead Cloud .NET Azure Architect</strong><br>
+                            &bull; <strong>Rate:</strong> $85 - $90/hr C2C<br>
+                            &bull; <strong>Duration:</strong> 12+ Months Contract<br>
+                            &bull; <strong>Location:</strong> New York, NY (Hybrid)<br><br>
+                            Bench sales managers with immediate candidates, apply directly or submit resumes on ChatHire! ⚡<br>
+                            <span class="text-primary fw-medium">#dotnet #azure #c2chiring #techrecruitment #benchsales</span>
+                          </p>
+
+                          <button 
+                            type="button" 
+                            class="btn btn-linkedin w-100 py-2 d-flex align-items-center justify-content-center gap-2 shadow-sm rounded-3"
+                            [disabled]="recruiterLinkedInShared"
+                            (click)="shareRecruiterToLinkedIn()">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                              <path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.28 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.75M6.46 10.9v8.37H9.2V10.9H6.46M7.83 6.2a1.62 1.62 0 0 0-1.62 1.62c0 .89.73 1.62 1.62 1.62.89 0 1.62-.73 1.62-1.62A1.62 1.62 0 0 0 7.83 6.2Z"/>
+                            </svg>
+                            <span class="fw-bold">{{ recruiterLinkedInShared ? 'Broadcasting to LinkedIn...' : 'Share Job Opening to LinkedIn' }}</span>
+                          </button>
+
+                          <div *ngIf="recruiterLinkedInShared" class="alert alert-success d-flex align-items-center gap-2 py-2 px-3 mt-3 mb-0 rounded-3">
+                            <span class="material-symbols-outlined text-success">check_circle</span>
+                            <span class="small fw-medium">Job published to LinkedIn! Bench sales managers are now submitting resumes.</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- RECRUITER STEP 2: RECEIVE RESUMES FROM BENCH SALES MANAGERS -->
+                <div *ngIf="recruiterStep === 2" class="demo-step-pane">
+                  <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
+                    <div>
+                      <h4 class="fw-bold mb-1 d-flex align-items-center gap-2">
+                        <span class="material-symbols-outlined text-primary">mark_email_read</span>
+                        Incoming Resumes from Verified Bench Sales Managers
+                      </h4>
+                      <p class="text-muted small mb-0">
+                        Review verified consultant profiles, match scores, rates, and initiate direct chats without third-party commission.
+                      </p>
+                    </div>
+                    <div class="d-flex align-items-center gap-2">
+                      <button 
+                        type="button" 
+                        class="btn btn-outline-secondary px-3 py-2 rounded-3"
+                        (click)="setRecruiterStep(1)">
+                        <span class="material-symbols-outlined fs-6 align-middle me-1">arrow_back</span>
+                        Back to Job Post
+                      </button>
+                      <button 
+                        type="button" 
+                        class="btn btn-primary px-3 py-2 rounded-3 shadow-sm"
+                        routerLink="/postjobs">
+                        <span>Post a Job — FREE</span>
+                        <span class="material-symbols-outlined fs-6 align-middle ms-1">arrow_forward</span>
+                      </button>
+                    </div>
+                  </div>
+
+                  <!-- Candidate Submissions Grid -->
+                  <div class="row g-3">
+                    <div class="col-12" *ngFor="let sub of recruiterSubmissions">
+                      <div class="card border rounded-4 shadow-sm p-3 p-md-4 submission-card transition">
+                        <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
+                          <div class="d-flex align-items-start gap-3">
+                            <div class="avatar-circle-md bg-plum text-white fw-bold">
+                              {{ sub.consultantName.charAt(0) }}
+                            </div>
+                            <div>
+                              <div class="d-flex align-items-center gap-2 flex-wrap mb-1">
+                                <h5 class="fw-bold text-dark mb-0">{{ sub.consultantName }}</h5>
+                                <span class="badge bg-success-subtle text-success border border-success-subtle px-2 py-1 rounded-pill small">
+                                  ⚡ {{ sub.matchScore }}% Match
+                                </span>
+                                <span *ngIf="isShortlisted(sub.id)" class="badge bg-warning text-dark px-2 py-1 rounded-pill small fw-bold">
+                                  ⭐ Shortlisted
+                                </span>
+                              </div>
+                              <div class="text-muted small mb-2">{{ sub.role }}</div>
+                              <div class="d-flex flex-wrap gap-3 small text-muted">
+                                <span><strong class="text-dark">Bench Company:</strong> {{ sub.benchCompany }}</span>
+                                <span><strong class="text-dark">Submitted by:</strong> {{ sub.benchManager }}</span>
+                                <span><strong class="text-dark">Visa:</strong> {{ sub.visa }}</span>
+                                <span><strong class="text-dark">Location:</strong> {{ sub.location }}</span>
+                              </div>
+                            </div>
+                          </div>
+
+                          <div class="d-flex flex-column flex-md-row align-items-md-center gap-2 align-self-end align-self-md-center">
+                            <div class="text-md-end me-md-2">
+                              <span class="fs-5 fw-bold text-plum">{{ sub.rate }}</span>
+                              <div class="text-muted" style="font-size: 11px;">Direct C2C</div>
+                            </div>
+                            <button 
+                              type="button" 
+                              class="btn btn-outline-primary btn-sm px-3 py-2 rounded-3 d-inline-flex align-items-center gap-1"
+                              (click)="openResumePreview(sub)">
+                              <span class="material-symbols-outlined fs-6">description</span>
+                              <span>Resume & Matrix</span>
+                            </button>
+                            <button 
+                              type="button" 
+                              class="btn btn-sm px-3 py-2 rounded-3 d-inline-flex align-items-center gap-1"
+                              [class.btn-warning]="isShortlisted(sub.id)"
+                              [class.btn-primary]="!isShortlisted(sub.id)"
+                              (click)="shortlistSubmission(sub.id)">
+                              <span class="material-symbols-outlined fs-6">star</span>
+                              <span>{{ isShortlisted(sub.id) ? 'Shortlisted' : 'Shortlist Candidate' }}</span>
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Resume Preview Modal Simulation -->
+                  <div *ngIf="activeResumeModal" class="demo-resume-modal-backdrop position-fixed top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center p-3 z-index-1050">
+                    <div class="card border-0 shadow-2xl rounded-4 overflow-hidden w-100 max-w-2xl bg-white animate-scale-up">
+                      <div class="card-header bg-dark text-white py-3 px-4 d-flex justify-content-between align-items-center">
+                        <div class="d-flex align-items-center gap-2">
+                          <span class="material-symbols-outlined text-warning">verified_user</span>
+                          <span class="fw-bold">Candidate Resume Preview &bull; {{ activeResumeModal.consultantName }}</span>
+                        </div>
+                        <button type="button" class="btn-close btn-close-white" (click)="closeResumePreview()"></button>
+                      </div>
+                      <div class="card-body p-4" style="max-height: 70vh; overflow-y: auto;">
+                        <div class="border-bottom pb-3 mb-3">
+                          <h5 class="fw-bold text-dark mb-1">{{ activeResumeModal.consultantName }}</h5>
+                          <div class="text-plum fw-bold small mb-2">{{ activeResumeModal.role }}</div>
+                          <div class="d-flex flex-wrap gap-2 small text-muted">
+                            <span>📍 {{ activeResumeModal.location }}</span>
+                            <span>🛂 {{ activeResumeModal.visa }}</span>
+                            <span>⏱️ {{ activeResumeModal.experience }} Total Experience</span>
+                            <span>💼 {{ activeResumeModal.rate }}</span>
+                          </div>
+                        </div>
+                        <h6 class="fw-bold text-dark mb-2">Technical Skill Matrix</h6>
+                        <div class="p-3 bg-light rounded-3 mb-3 small">
+                          <div class="mb-1"><strong>Cloud & Architecture:</strong> Azure Kubernetes Service (AKS), App Services, Functions, Event Grid</div>
+                          <div class="mb-1"><strong>Backend:</strong> C#, .NET 8, ASP.NET Core, EF Core, Microservices, REST / gRPC</div>
+                          <div class="mb-1"><strong>Databases & Messaging:</strong> Azure SQL, CosmosDB, Kafka, RabbitMQ, Redis</div>
+                        </div>
+                        <h6 class="fw-bold text-dark mb-2">Verified Representation</h6>
+                        <p class="small text-muted mb-0">
+                          Submitted by <strong>{{ activeResumeModal.benchManager }}</strong> at <strong>{{ activeResumeModal.benchCompany }}</strong>. Right to Represent verified on file.
+                        </p>
+                      </div>
+                      <div class="card-footer bg-light p-3 d-flex justify-content-between align-items-center">
+                        <button class="btn btn-outline-secondary btn-sm" (click)="closeResumePreview()">Close Preview</button>
+                        <div class="d-flex gap-2">
+                          <button class="btn btn-primary btn-sm px-4" (click)="shortlistSubmission(activeResumeModal.id); closeResumePreview()">
+                            ⭐ Shortlist & Contact Bench Manager
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                </div>
+
+              </div>
+
+            </div>
+
+            <!-- Frame Footer Bar / Controls -->
+            <div class="browser-footer px-4 py-3 bg-light border-top d-flex flex-column flex-md-row justify-content-between align-items-center gap-3">
+              <div class="d-flex align-items-center gap-3">
+                <span class="small text-muted fw-medium">
+                  {{ activePersona === 'benchsales' ? 'Bench Sales Flow' : 'Recruiter Flow' }} &bull; 
+                  Step {{ activePersona === 'benchsales' ? benchStep + ' of 3' : recruiterStep + ' of 2' }}
+                </span>
+              </div>
+              <div class="d-flex align-items-center gap-2">
+                <!-- Bench Nav -->
+                <ng-container *ngIf="activePersona === 'benchsales'">
+                  <button 
+                    class="btn btn-sm btn-outline-secondary px-3 py-2 rounded-3" 
+                    [disabled]="benchStep === 1"
+                    (click)="setBenchStep(benchStep - 1)">
+                    Previous Step
+                  </button>
+                  <button 
+                    class="btn btn-sm btn-primary px-3 py-2 rounded-3 shadow-xs" 
+                    *ngIf="benchStep < 3"
+                    (click)="setBenchStep(benchStep + 1)">
+                    Next Step &rarr;
+                  </button>
+                  <a 
+                    class="btn btn-sm btn-success px-4 py-2 rounded-3 shadow-xs fw-bold text-white text-decoration-none" 
+                    *ngIf="benchStep === 3"
+                    routerLink="/addcandidate">
+                    Post Your Hotlist Now &rarr;
+                  </a>
+                </ng-container>
+
+                <!-- Recruiter Nav -->
+                <ng-container *ngIf="activePersona === 'recruiter'">
+                  <button 
+                    class="btn btn-sm btn-outline-secondary px-3 py-2 rounded-3" 
+                    [disabled]="recruiterStep === 1"
+                    (click)="setRecruiterStep(recruiterStep - 1)">
+                    Previous Step
+                  </button>
+                  <button 
+                    class="btn btn-sm btn-primary px-3 py-2 rounded-3 shadow-xs" 
+                    *ngIf="recruiterStep === 1"
+                    (click)="setRecruiterStep(2)">
+                    Next Step &rarr;
+                  </button>
+                  <a 
+                    class="btn btn-sm btn-success px-4 py-2 rounded-3 shadow-xs fw-bold text-white text-decoration-none" 
+                    *ngIf="recruiterStep === 2"
+                    routerLink="/postjobs">
+                    Post a Job — FREE &rarr;
+                  </a>
+                </ng-container>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
     </div>
   </section>
+
 
   <!-- 4. Final CTA -->
   <section class="cta-section">
