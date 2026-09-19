@@ -1,8 +1,11 @@
 <section class="login-page-wrapper">
-  <div class="row g-0 align-items-stretch min-vh-login">
+  <div class="row g-0 align-items-stretch min-vh-login" [ngClass]="step !== 'login' ? 'justify-content-center align-items-center' : ''">
     
-    <!-- Left Column: Login / Forgot Password Form (45% Desktop) -->
-    <div class="col-12 col-lg-5 d-flex flex-column justify-content-center p-4 p-md-5 bg-white login-left-panel">
+    <!-- Form Column: Login / Forgot Password Form -->
+    <div
+      [ngClass]="step === 'login' ? 'col-12 col-lg-5 login-left-panel' : 'col-12 col-md-8 col-lg-6 col-xl-5 mx-auto forgot-centered-panel'"
+      class="d-flex flex-column justify-content-center p-4 p-md-5 bg-white"
+    >
       
       <!-- Main Form Container -->
       <div class="form-container mx-auto my-auto w-100">
@@ -345,8 +348,8 @@
 
     </div>
 
-    <!-- Right Column: Marketing & Value Section (55% Desktop) -->
-    <div class="col-lg-7 d-none d-lg-flex flex-column justify-content-center p-5 text-white login-right-panel position-relative">
+    <!-- Right Column: Marketing & Value Section (Shown only in standard login) -->
+    <div *ngIf="step === 'login'" class="col-lg-7 d-none d-lg-flex flex-column justify-content-center p-5 text-white login-right-panel position-relative">
       
       <div class="hero-content my-auto px-xl-4 py-4 max-w-hero">
         

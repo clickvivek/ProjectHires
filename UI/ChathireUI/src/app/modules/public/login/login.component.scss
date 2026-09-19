@@ -25,11 +25,18 @@
     min-height: calc(100vh - 80px);
   }
 
-  /* Left Panel (45% Desktop Width) */
-  .login-left-panel {
+  /* Left / Form Panel */
+  .login-left-panel, .forgot-centered-panel {
     @media (min-width: 992px) {
-      flex: 0 0 45%;
-      max-width: 45%;
+      &.login-left-panel {
+        flex: 0 0 45%;
+        max-width: 45%;
+      }
+    }
+
+    &.forgot-centered-panel {
+      max-width: 500px;
+      width: 100%;
     }
 
     .form-container {
