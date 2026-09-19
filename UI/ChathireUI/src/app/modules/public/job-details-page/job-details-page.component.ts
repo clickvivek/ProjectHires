@@ -267,8 +267,20 @@ export class JobDetailsPageComponent {
     }
   }
 
+  getCompanyLogoUrl(logo: string | null | undefined): string {
+    if (!logo) return '';
+    if (logo.startsWith('http://') || logo.startsWith('https://') || logo.startsWith('data:image')) return logo;
+    return `${picUrl}${logo}`;
+  }
+
+  getCompanyInitial(name: string | null | undefined): string {
+    if (!name) return 'C';
+    return name.trim().charAt(0).toUpperCase();
+  }
+
   ngOnInit() {
 
   }
 
 }
+

@@ -13,8 +13,26 @@
                             <div class="left">
                                 <h6 class="fw-medium mb-1">{{ selectedJob.jobOpeningName }}</h6>
                                 <div class="info d-flex flex-column align-items-start">
-                                  <div class="text-dark-500 sub-title fw-medium">
-                                    {{ selectedJob.companyName }}
+                                  <div class="company-row d-flex align-items-center">
+                                    <div class="company-logo-badge flex-shrink-0" *ngIf="selectedJob?.companyLogo || selectedJob?.companyName">
+                                      <img
+                                        *ngIf="selectedJob?.companyLogo"
+                                        [src]="getCompanyLogoUrl(selectedJob?.companyLogo)"
+                                        [alt]="selectedJob?.companyName || 'Company Logo'"
+                                        class="company-logo-img"
+                                        (error)="$any($event.target).style.display='none'; pageLogoFallback.style.display='flex'"
+                                      />
+                                      <div
+                                        #pageLogoFallback
+                                        class="company-logo-fallback"
+                                        [style.display]="selectedJob?.companyLogo ? 'none' : 'flex'"
+                                      >
+                                        <span>{{ getCompanyInitial(selectedJob?.companyName) }}</span>
+                                      </div>
+                                    </div>
+                                    <div class="text-dark-500 sub-title fw-medium">
+                                      {{ selectedJob.companyName }}
+                                    </div>
                                   </div>
                                   <div class="text-dark-500 text-sm location-info d-flex align-items-center mt-1" *ngIf="getFormattedLocations(selectedJob?.locations)">
                                     <span class="material-symbols-outlined text-danger me-1" style="font-size: 16px;">location_on</span>
