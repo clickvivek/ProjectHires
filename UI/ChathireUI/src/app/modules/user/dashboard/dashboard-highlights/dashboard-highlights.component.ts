@@ -3,8 +3,9 @@ import { Router } from '@angular/router';
 import * as moment from 'moment';
 import { SessionService } from 'src/app/core/session/session.service';
 import { CandidateProfileService } from 'src/app/api/api/candidate-profile.service';
-import { JobOpeningService } from 'src/app/api';
+import { JobOpeningService, ConsultancyService } from 'src/app/api';
 import { SharedService } from '../../../shared/services/shared.service';
+import { picUrl } from 'src/app/data/various';
 
 @Component({
   selector: 'dashboard-highlights',
@@ -17,6 +18,8 @@ export class DashboardHighlightsComponent implements OnInit {
   filteredCandidateList: any[] = [];
   searchTerm: string = '';
   user: any;
+  company: any = null;
+  companyLogoFailed: boolean = false;
   isCollapsed: boolean = false; // Expanded by default
   totalHotlistCandidates: number = 0;
   resumesSubmittedLast30Days: number = 0;
@@ -35,7 +38,8 @@ export class DashboardHighlightsComponent implements OnInit {
     private sessionService: SessionService,
     private sharedService: SharedService,
     private candidateProfileService: CandidateProfileService,
-    private jobOpeningService: JobOpeningService
+    private jobOpeningService: JobOpeningService,
+    private consultancyService: ConsultancyService
   ) { }
 
   ngOnInit() {
@@ -52,6 +56,12 @@ export class DashboardHighlightsComponent implements OnInit {
     this.sessionService.userdetailscast.subscribe((res: any) => {
       this.user = res;
       if (this.user) {
+        if (this.user.consultancyUsers && this.user.consultancyUsers.length > 0 && this.user.consultancyUsers[0].consultancy) {
+          this.company = this.user.consultancyUsers[0].consultancy;
+        } else if (this.sessionService.consultancyId) {
+          this.fetchCompanyDetails(this.sessionService.consultancyId);
+        }
+
         if (this.showBenchSalesSection()) {
           this.fetchBenchSalesStats();
         }
@@ -61,6 +71,45 @@ export class DashboardHighlightsComponent implements OnInit {
         }
       }
     });
+  }
+
+  fetchCompanyDetails(consultancyId: number) {
+    if (!consultancyId) return;
+    this.consultancyService.apiConsultancyConsultancyByIdGet(consultancyId).subscribe({
+      next: (res: any) => {
+        if (res && res.value) {
+          this.company = res.value;
+        } else if (res && !res.value) {
+          this.company = res;
+        }
+      },
+      error: (err: any) => {
+        console.error('Error loading company details for dashboard:', err);
+      }
+    });
+  }
+
+  getCompanyLogoUrl(logo: string | null | undefined): string {
+    if (!logo) {
+      return '';
+    }
+    if (logo.startsWith('http://') || logo.startsWith('https://') || logo.startsWith('data:image')) {
+      return logo;
+    }
+    return `${picUrl}${logo}`;
+  }
+
+  getCompanyName(): string {
+    return this.company?.name || this.user?.companyName || this.user?.consultancyUsers?.[0]?.consultancy?.name || '';
+  }
+
+  getCompanyInitial(): string {
+    const name = this.getCompanyName();
+    return name ? name.trim().charAt(0).toUpperCase() : 'C';
+  }
+
+  onCompanyLogoError(event: any) {
+    this.companyLogoFailed = true;
   }
 
   fetchBenchSalesStats() {

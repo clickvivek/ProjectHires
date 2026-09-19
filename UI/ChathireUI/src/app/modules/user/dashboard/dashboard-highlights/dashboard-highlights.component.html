@@ -6,11 +6,31 @@
     <!-- Dashboard Card Header -->
     <div class="card-header border-0 bg-transparent p-3 p-md-4">
       <div class="d-flex align-items-center gap-3">
+        <!-- Company Logo Badge in Welcome Section -->
+        <div class="welcome-company-logo-wrap flex-shrink-0" *ngIf="getCompanyName() || getCompanyLogoUrl(company?.logo)">
+          <img
+            *ngIf="getCompanyLogoUrl(company?.logo) && !companyLogoFailed"
+            [src]="getCompanyLogoUrl(company?.logo)"
+            [alt]="getCompanyName() || 'Company Logo'"
+            class="welcome-company-logo-img"
+            (error)="onCompanyLogoError($event)"
+          />
+          <div
+            *ngIf="!getCompanyLogoUrl(company?.logo) || companyLogoFailed"
+            class="welcome-company-logo-fallback"
+          >
+            <span>{{ getCompanyInitial() }}</span>
+          </div>
+        </div>
+
         <div>
-          <div class="d-flex align-items-center gap-2 mb-1">
-            <h1 class="welcome-title text-capitalize mb-0">Hello, {{ user?.fname || 'Raj' }} 👋</h1>
+          <div class="d-flex align-items-center gap-2 mb-1 flex-wrap">
+            <h1 class="welcome-title text-capitalize mb-0">Hello, {{ user?.fname || 'User' }} 👋</h1>
             <span class="role-badge ms-1">
               {{ getRoleBadgeText() }}
+            </span>
+            <span class="company-name-badge ms-1" *ngIf="getCompanyName()">
+              <span class="material-symbols-outlined fs-6 align-middle me-1">business</span>{{ getCompanyName() }}
             </span>
           </div>
           <p class="welcome-subtitle mb-0">
