@@ -34,8 +34,10 @@ export class AppComponent   {
     ) {
 
     const checkIsHome = (url: string) => {
-      const clean = (url || '').split('?')[0].replace('#', '');
-      return clean === '' || clean === '/' || clean === '/home';
+      if (!url) return true;
+      const clean = url.split('?')[0].replace(/^#+/, '').replace(/^\/+/, '');
+      const rootPath = clean.split('#')[0].split('/')[0];
+      return rootPath === '' || rootPath === 'home';
     };
 
     const initialHref = window.location.hash || window.location.pathname || '';
