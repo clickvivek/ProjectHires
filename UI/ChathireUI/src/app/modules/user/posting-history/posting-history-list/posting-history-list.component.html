@@ -1,40 +1,93 @@
-<div class="posting-history-list-wrapper">
-    <li class="list-group-item shadow">
-        <div class="top">
-            <p class="text-secondary-800 text-base desp fw-medium">
-                {{ item.name }}
-            </p>
-            <p
-            class="text-dark-600 desp fw-medium d-none d-md-block"
-          >
-            {{ getRelocation(item?.jobOpeningLocations) }}
-          </p>
-          <div class="desp ms-auto">
-            <slider-classic [data]="item.active" [selectedItem]="item" activeText="Active" inActiveText="Inactive" (outputparams)="handleActive($event)"></slider-classic>
+<div class="posting-card-wrapper mb-3">
+  <div class="job-history-card bg-white border rounded-3 p-3 p-md-4 position-relative transition-all" [class.job-inactive]="!item?.active">
+    
+    <!-- Top Row: Title, Location, and Status Toggle -->
+    <div class="d-flex align-items-start justify-content-between gap-3 flex-wrap flex-md-nowrap">
+      <div class="flex-grow-1">
+        <!-- Job Title & Status Pill -->
+        <div class="d-flex align-items-center gap-2 flex-wrap mb-2">
+          <h5 class="job-card-title fw-bold mb-0 text-dark" (click)="editPost(item)" role="button" title="Edit this job">
+            {{ item?.name }}
+          </h5>
+          <span class="status-pill" [ngClass]="item?.active ? 'status-active' : 'status-inactive'">
+            <span class="status-dot"></span>
+            {{ item?.active ? 'Active' : 'Inactive' }}
+          </span>
+        </div>
+
+        <!-- Meta Info Row (Location with Country, Posted Date) -->
+        <div class="d-flex align-items-center gap-3 flex-wrap text-sm">
+          <!-- Location Badge with Country (USA or Canada) -->
+          <div class="meta-item d-flex align-items-center text-dark-700" *ngIf="getFormattedLocation(item?.jobOpeningLocations)">
+            <span class="material-symbols-outlined fs-6 text-danger me-1 flex-shrink-0">location_on</span>
+            <span class="fw-medium location-text">{{ getFormattedLocation(item?.jobOpeningLocations) }}</span>
+          </div>
+
+          <!-- Posted Date -->
+          <div class="meta-item d-flex align-items-center text-muted">
+            <span class="material-symbols-outlined fs-6 me-1 flex-shrink-0">calendar_today</span>
+            <span>Posted on {{ getDate(item?.postedDate) }}</span>
           </div>
         </div>
-        <div class="bottom">
-            <p
-            class="text-dark-600 desp fw-medium d-md-none"
-          >
-            {{ getRelocation(item?.jobOpeningLocations) }}
-          </p>
-            <p
-            class="text-dark-400 text-sm desp"
-            >
-            posted on {{getDate(item.postedDate)}}
-            </p>
-            <div class="mt-3 d-flex align-items-center">
-                <div class="d-flex align-items-center pointer me-3" (click)="editPost(item)">
-                    <span class="material-symbols-outlined text-sm me-2">edit</span>
-                    <p class="text-sm">Edit</p>
-                </div>
-    
-                <div class="d-flex align-items-center text-danger pointer me-3" (click)="deletePost(item)">
-                    <span class="material-symbols-outlined text-sm me-2">delete</span>
-                    <p class="text-sm">Delete</p>
-                </div>
-            </div>
-        </div>
-    </li>
+      </div>
+
+      <!-- Right: Toggle Switch -->
+      <div class="status-toggle-box flex-shrink-0 d-flex align-items-center gap-2 ms-auto ms-md-0">
+        <span class="toggle-status-label text-sm fw-medium d-none d-sm-inline" [class.text-success]="item?.active" [class.text-muted]="!item?.active">
+          {{ item?.active ? 'Active' : 'Inactive' }}
+        </span>
+        <label class="switch-custom mb-0" title="Toggle Active / Inactive">
+          <input
+            type="checkbox"
+            [checked]="item?.active"
+            (change)="handleActiveToggle(!item?.active)"
+          />
+          <span class="slider-round"></span>
+        </label>
+      </div>
+    </div>
+
+    <!-- Divider -->
+    <hr class="card-divider my-3">
+
+    <!-- Bottom Row: Preview link & Action Buttons -->
+    <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 pt-1">
+      <!-- Public Preview Link -->
+      <div>
+        <a 
+          [routerLink]="['/jobs']" 
+          [queryParams]="{ id: generateJobId(item?.id) }" 
+          target="_blank"
+          class="btn-public-preview text-decoration-none d-inline-flex align-items-center gap-1 text-sm fw-medium"
+        >
+          <span>View Public Job Page</span>
+          <span class="material-symbols-outlined fs-6">open_in_new</span>
+        </a>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="d-flex align-items-center gap-2">
+        <button
+          type="button"
+          class="btn btn-sm btn-action-edit d-inline-flex align-items-center gap-1"
+          (click)="editPost(item)"
+          title="Edit Job Posting"
+        >
+          <span class="material-symbols-outlined fs-6">edit</span>
+          <span>Edit</span>
+        </button>
+
+        <button
+          type="button"
+          class="btn btn-sm btn-action-delete d-inline-flex align-items-center gap-1"
+          (click)="deletePost(item)"
+          title="Delete Job Posting"
+        >
+          <span class="material-symbols-outlined fs-6">delete</span>
+          <span>Delete</span>
+        </button>
+      </div>
+    </div>
+
+  </div>
 </div>

@@ -1,63 +1,166 @@
-<div class="posting-history-wrapper">
-    
-    <div class="container">
-        <div class="row">
-            <div class="col-sm-12">
-                
-                <loader *ngIf="!isLoaded"></loader>
-                
-                <ng-container *ngIf="isLoaded">
+<div class="posting-history-wrapper py-4">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-12 col-xl-11">
 
-                    <div class="row">
-                        <div class="col-lg-6">
-                            <h5 class="mb-3 text-secondary-800">List of jobs posted by you in last 90 days</h5>
-                            <page-search (outputData)="handleSearch($event)"  placeholder="Search by job, location" ></page-search>
-                        </div>
-                    </div>
+        <loader *ngIf="!isLoaded"></loader>
 
-                    <ng-container *ngIf="isDataAvailable()">
+        <ng-container *ngIf="isLoaded">
 
-                        <div class="options-box">
-                            <h6>{{totalItems}} results available </h6>
-                        </div>
-
-                        <div class="list-container">
-                            <posting-history-list 
-                            *ngFor=" let posting of filteredDataList | slice : ItemStartIndex : ItemEndIndex" 
-                            [item]="posting"
-                            (deleteParams)="onDeletePost($event)">
-                        </posting-history-list>
-                        </div>
-
-                        <app-pagination-box
-                            [totalItems]="totalItems"
-                            [ItemStartIndex]="ItemStartIndex"
-                            [ItemEndIndex]="ItemEndIndex"
-                            [itemLimit]="itemLimit"
-                            (outputParams)="getIndexParams($event)"
-                        >
-                        </app-pagination-box>
-
-                    </ng-container>
-                    
-                    
-                    <div class="options-box" *ngIf="!isDataAvailable()">
-                        <h6 *ngIf="!isError">No data found</h6>
-                        <div class="row" *ngIf="isError">
-                            <div class="col-lg-6">
-                                <div class="alert alert-danger">{{error}}</div>
-                            </div>
-                        </div>
-                    </div>
-
-                </ng-container>
-
-                
-
+          <!-- Page Header Banner -->
+          <div class="page-header-card bg-white border rounded-3 p-4 mb-4 shadow-sm">
+            <div class="d-flex align-items-center justify-content-between flex-wrap gap-3">
+              <div>
+                <h1 class="page-title fw-bold mb-1">List of Jobs Posted</h1>
+                <p class="page-subtitle text-muted mb-0">
+                  Manage, track, and edit your job postings from the last 90 days.
+                </p>
+              </div>
+              <div>
+                <a routerLink="/postjobs" class="btn btn-post-job d-inline-flex align-items-center gap-2">
+                  <span class="material-symbols-outlined fs-5">add_circle</span>
+                  <span>Post a New Job</span>
+                </a>
+              </div>
             </div>
-        </div>
+
+            <!-- Stats Metrics Row -->
+            <div class="row g-3 mt-2 pt-3 border-top">
+              <div class="col-4 col-sm-3 col-md-2">
+                <div class="stat-mini-box" (click)="setFilterTab('all')" [class.stat-active]="filterTab === 'all'">
+                  <span class="stat-count text-dark">{{ initialDataList.length }}</span>
+                  <span class="stat-label">Total Jobs</span>
+                </div>
+              </div>
+              <div class="col-4 col-sm-3 col-md-2">
+                <div class="stat-mini-box" (click)="setFilterTab('active')" [class.stat-active]="filterTab === 'active'">
+                  <span class="stat-count text-success">{{ getActiveCount() }}</span>
+                  <span class="stat-label">Active</span>
+                </div>
+              </div>
+              <div class="col-4 col-sm-3 col-md-2">
+                <div class="stat-mini-box" (click)="setFilterTab('inactive')" [class.stat-active]="filterTab === 'inactive'">
+                  <span class="stat-count text-muted">{{ getInactiveCount() }}</span>
+                  <span class="stat-label">Inactive</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Search & Filter Bar -->
+          <div class="search-filter-card bg-white border rounded-3 p-3 mb-4 shadow-sm">
+            <div class="row g-3 align-items-center">
+              <div class="col-12 col-md-6 col-lg-5">
+                <div class="search-input-wrap position-relative">
+                  <span class="material-symbols-outlined position-absolute top-50 start-0 translate-middle-y ms-3 text-muted">search</span>
+                  <input
+                    type="text"
+                    class="form-control custom-search-input ps-5 pe-4"
+                    placeholder="Search by job title, location, country..."
+                    [(ngModel)]="searchData"
+                    (ngModelChange)="handleSearch($event)"
+                  />
+                  <button 
+                    *ngIf="searchData"
+                    type="button" 
+                    class="btn-clear-search position-absolute top-50 end-0 translate-middle-y me-2 btn btn-sm p-0 text-muted"
+                    (click)="clearSearch()"
+                    title="Clear search"
+                  >
+                    <span class="material-symbols-outlined fs-6">close</span>
+                  </button>
+                </div>
+              </div>
+
+              <div class="col-12 col-md-6 col-lg-7 d-flex align-items-center justify-content-md-end gap-2 flex-wrap">
+                <!-- Filter Tabs -->
+                <div class="btn-group filter-tab-group" role="group">
+                  <button
+                    type="button"
+                    class="btn btn-sm btn-filter-tab"
+                    [class.active]="filterTab === 'all'"
+                    (click)="setFilterTab('all')"
+                  >
+                    All ({{ initialDataList.length }})
+                  </button>
+                  <button
+                    type="button"
+                    class="btn btn-sm btn-filter-tab"
+                    [class.active]="filterTab === 'active'"
+                    (click)="setFilterTab('active')"
+                  >
+                    Active ({{ getActiveCount() }})
+                  </button>
+                  <button
+                    type="button"
+                    class="btn btn-sm btn-filter-tab"
+                    [class.active]="filterTab === 'inactive'"
+                    (click)="setFilterTab('inactive')"
+                  >
+                    Inactive ({{ getInactiveCount() }})
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Results Summary Count -->
+          <div class="d-flex align-items-center justify-content-between mb-3 px-1" *ngIf="isDataAvailable()">
+            <div class="text-sm text-muted fw-medium">
+              Showing <span class="text-dark fw-bold">{{ totalItems }}</span> {{ totalItems === 1 ? 'result' : 'results' }}
+              <span *ngIf="searchData"> for "<span class="text-primary-700">{{ searchData }}</span>"</span>
+            </div>
+          </div>
+
+          <!-- Job Cards List -->
+          <ng-container *ngIf="isDataAvailable()">
+            <div class="job-list-container">
+              <posting-history-list 
+                *ngFor="let posting of filteredDataList | slice : ItemStartIndex : ItemEndIndex" 
+                [item]="posting"
+                (deleteParams)="onDeletePost($event)"
+              ></posting-history-list>
+            </div>
+
+            <!-- Pagination -->
+            <div class="d-flex justify-content-center mt-4">
+              <app-pagination-box
+                [totalItems]="totalItems"
+                [ItemStartIndex]="ItemStartIndex"
+                [ItemEndIndex]="ItemEndIndex"
+                [itemLimit]="itemLimit"
+                (outputParams)="getIndexParams($event)"
+              ></app-pagination-box>
+            </div>
+          </ng-container>
+
+          <!-- Empty State / No Data -->
+          <div class="empty-state-card bg-white border rounded-3 p-5 text-center shadow-sm my-3" *ngIf="!isDataAvailable()">
+            <div class="empty-icon-box mx-auto mb-3 rounded-circle d-flex align-items-center justify-content-center">
+              <span class="material-symbols-outlined fs-1 text-muted">work_off</span>
+            </div>
+            <h5 class="fw-bold mb-2">No jobs found</h5>
+            <p class="text-muted text-sm mb-4" *ngIf="searchData || filterTab !== 'all'">
+              No postings match your current filter or search criteria. Try clearing the search.
+            </p>
+            <p class="text-muted text-sm mb-4" *ngIf="!searchData && filterTab === 'all'">
+              You haven't posted any jobs in the last 90 days. Start posting now to connect with talent.
+            </p>
+            <div class="d-flex align-items-center justify-content-center gap-2">
+              <button *ngIf="searchData || filterTab !== 'all'" type="button" class="btn btn-outline-secondary btn-sm px-3" (click)="resetFilters()">
+                Clear Filters
+              </button>
+              <a routerLink="/postjobs" class="btn btn-post-job btn-sm px-3">
+                Post a Job
+              </a>
+            </div>
+          </div>
+
+        </ng-container>
+
+      </div>
     </div>
+  </div>
 
-    <router-outlet></router-outlet>
-
+  <router-outlet></router-outlet>
 </div>
