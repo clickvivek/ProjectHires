@@ -87,7 +87,7 @@ export class SessionService {
     return this.userDetails.value
   }
 
-  user(data): Observable<boolean> {
+  user(data, skipRedirect: boolean = false): Observable<boolean> {
 
     this.userId = data.userId
     this.userTypeId = data.userTypeId
@@ -99,7 +99,7 @@ export class SessionService {
       
       this.userDetails.next(res.value[0])
 
-      if(!this._sharedService.isUserUpdate()) { // when personal details updated after login
+      if(!skipRedirect && !this._sharedService.isUserUpdate()) { // when personal details updated after login
     
         if(this._sharedService.getPageToRetain()) {
 

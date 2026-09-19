@@ -19,22 +19,22 @@ declare var $:JQueryStatic;
   selector: '.chat-btn'
 })
 
-export class ChatButtonDirective  {
+export class ChatButtonDirective implements OnInit {
 
-  @Input() chatUser;
+  @Input() chatUser: any;
 
-  @Input() isProfile:boolean = false;
+  @Input() isProfile: boolean = false;
 
-  user:any;
+  user: any;
 
   APP_ID = environment.talkJsAppId;
-  popup:any;
-  session:any;
-  conversation:any;
+  popup: any;
+  session: any;
+  conversation: any;
 
-  talkElementLanucher:any
+  talkElementLanucher: any;
 
-  userId:any;
+  userId: any;
 
   constructor(
     private router: Router,
@@ -42,46 +42,112 @@ export class ChatButtonDirective  {
     private sessionService: SessionService,
     private talkService: TalkService,
     public dialog: MatDialog
-    ) {
+  ) {}
+
+  ngOnInit(): void {
+    this.sessionService.userdetailscast.subscribe((res: any) => {
+      if (res) {
+        this.user = res;
+      }
+    });
   }
 
-  generateRandomId() {
+  generateRandomId(): number {
     return Math.floor(Math.random() * (99 - 10 + 1)) + 10;
   }
 
-  private openChatPopup() {
+  private buildMeUser(): any {
+    const cachedDetails = this.sessionService.getUserDetails() || this.user;
+    const uid = cachedDetails?.id || this.sessionService.userId || this.generateRandomId();
+    const fname = cachedDetails?.fname || '';
+    const lname = cachedDetails?.lname || '';
+    const email = cachedDetails?.email || this.sessionService.userEmail || '';
+    const name = (fname || lname) ? `${fname} ${lname}`.trim() : (email ? email.split('@')[0] : 'User');
+    const photoUrl = cachedDetails?.profilePic ? `${picUrl}${cachedDetails.profilePic}` : defaultProfilePic;
+
+    let userCompanyName = '';
+    let userProfileUrl = '';
+    if (cachedDetails?.consultancyUsers && cachedDetails.consultancyUsers.length > 0) {
+      userCompanyName = cachedDetails.consultancyUsers[0]?.consultancy?.name || '';
+      if (cachedDetails.consultancyUsers[0]?.publicProfileUserName) {
+        userProfileUrl = `${publicProfileUrlPrefix}${cachedDetails.consultancyUsers[0].publicProfileUserName}`;
+      }
+    }
+
+    return new Talk.User({
+      id: String(uid),
+      name: name,
+      photoUrl: photoUrl,
+      role: 'PremiumRecruiters',
+      custom: {
+        companyName: userCompanyName,
+        profileUrl: userProfileUrl
+      },
+    });
+  }
+
+  private buildOtherUser(chatUser: any): any {
+    const uid = chatUser?.userId || chatUser?.id || this.generateRandomId();
+    const fname = chatUser?.userFName || chatUser?.fname || '';
+    const lname = chatUser?.userLName || chatUser?.lname || '';
+    const name = (fname || lname) ? `${fname} ${lname}`.trim() : (chatUser?.userName || 'Recruiter');
+    const photo = chatUser?.profilePic;
+    const photoUrl = photo ? (photo.startsWith('http') ? photo : `${picUrl}${photo}`) : defaultProfilePic;
+    const companyName = chatUser?.companyName || '';
+    const profileUserName = chatUser?.profileUserName || '';
+    const profileUrl = profileUserName ? `${publicProfileUrlPrefix}${profileUserName}` : '';
+
+    return new Talk.User({
+      id: String(uid),
+      name: name,
+      photoUrl: photoUrl,
+      role: 'PremiumRecruiters',
+      custom: {
+        companyName: companyName,
+        profileUrl: profileUrl
+      },
+    });
+  }
+
+  private openChatPopup(): void {
+    if (!this.chatUser) return;
+
     this.initChat(this.chatUser);
 
-    this.popup = this.session?.createPopup();
-    this.popup?.select(this.conversation);
-    this.popup?.mount();
-    
-    setTimeout(() => {
-      this.talkElementLanucher = document.querySelector('#__talkjs_launcher');
+    if (this.session && this.conversation) {
+      this.popup = this.session.createPopup();
+      this.popup.select(this.conversation);
+      this.popup.mount();
 
-      this.talkElementLanucher?.addEventListener("click", (e) => {
-        const parent = this.talkElementLanucher?.parentNode;
-        parent?.remove();
-      });
-    }, 1000);
+      setTimeout(() => {
+        this.talkElementLanucher = document.querySelector('#__talkjs_launcher');
+        this.talkElementLanucher?.addEventListener("click", () => {
+          const parent = this.talkElementLanucher?.parentNode;
+          parent?.remove();
+        });
+      }, 1000);
+    }
   }
 
   @HostListener("click", ["$event"])
-  onClick(event:any) {
-    if(this.popup) {
+  onClick(event: any): void {
+    if (this.popup) {
       this.popup.destroy();
     }
 
-    if(!this.authService.isLoggedIn()) {
+    if (!this.authService.isLoggedIn()) {
       const dialogRef = this.dialog.open(LoginModalComponent, {
         width: '440px',
         panelClass: 'login-modal-panel',
-        data: { actionText: 'send a message' }
+        data: { actionText: 'chat with this recruiter' }
       });
 
       dialogRef.afterClosed().subscribe(res => {
         if (res && res.success) {
-          this.openChatPopup();
+          // Open chat immediately on the current page without changing the URL
+          setTimeout(() => {
+            this.openChatPopup();
+          }, 300);
         }
       });
       return;
@@ -90,58 +156,10 @@ export class ChatButtonDirective  {
     this.openChatPopup();
   }
 
-  
-
-   initChat(chatUser) {
-
-    let me:any = {};
-
-    if(this.sessionService.userId) {
-
-      this.sessionService.userdetailscast.subscribe((res: any) => {
-        
-        this.user = res
-
-        const userCompanyName = this.user.consultancyUsers[0].consultancy.name
-        const userProfileUrl = `${publicProfileUrlPrefix}${this.user.consultancyUsers[0].publicProfileUserName}` 
-
-        me = new Talk.User({
-          id: this.user.id,
-          name: `${this.user.fname} ${this.user.lname}`,
-          photoUrl: this.user.profilePic ? `${picUrl}${this.user.profilePic}` : defaultProfilePic,
-          role: 'PremiumRecruiters',
-          custom: {
-            companyName: userCompanyName,
-            profileUrl: userProfileUrl
-          },
-        })
-      })
-
-    }
-    else {
-
-      me =  new Talk.User({
-        id: this.generateRandomId(),
-        name: "user",
-        photoUrl: `${defaultProfilePic}`,
-        role: "PremiumRecruiters"
-      })
-
-    }
-
-    this.userId = chatUser.userId
-    
-    const other = new Talk.User({
-      id: chatUser.userId,
-      name: `${chatUser.userFName} ${chatUser.userLName}`,
-      photoUrl: `${picUrl}${chatUser.profilePic}`,
-      //welcomeMessage: 'Hey there! How are you? :-)',
-      role: 'PremiumRecruiters',
-      custom: {
-        companyName: chatUser.companyName,
-        profileUrl: `${publicProfileUrlPrefix}${chatUser.profileUserName}`
-      },
-    })
+  initChat(chatUser: any): void {
+    const me = this.buildMeUser();
+    const other = this.buildOtherUser(chatUser);
+    this.userId = chatUser?.userId || chatUser?.id;
 
     this.session = new Talk.Session({
       appId: this.APP_ID,
@@ -155,24 +173,15 @@ export class ChatButtonDirective  {
     this.conversation.setParticipant(me);
     this.conversation.setParticipant(other);
 
-    this.talkService.fetchTalkUserPresence(this.userId).subscribe((res:any) => {
-      console.log(res)
-    })
-    
-
-   }
-  
-   ngOnChanges() {
-    
-    if(this.chatUser) {
-      
-      
-
-      
+    if (this.userId) {
+      this.talkService.fetchTalkUserPresence(this.userId).subscribe({
+        next: () => {},
+        error: () => {}
+      });
     }
-    
-   }
+  }
 
+  ngOnChanges(): void {}
 }
 
 @Directive({

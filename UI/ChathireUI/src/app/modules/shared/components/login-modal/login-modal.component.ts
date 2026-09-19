@@ -85,7 +85,7 @@ export class LoginModalComponent implements OnInit {
             consultancyId: res.value.consultancyId,
             consultancyUserId: res.value.consultancyUserId
           };
-          this.authService.login(user);
+          this.authService.login(user, true);
           this.dialogRef.close({ success: true, user });
         },
         error: (err: any) => {
@@ -125,7 +125,7 @@ export class LoginModalComponent implements OnInit {
             consultancyId: res.value.consultancyId,
             consultancyUserId: res.value.consultancyUserId
           };
-          this.authService.login(user);
+          this.authService.login(user, true);
           this.dialogRef.close({ success: true, user });
         },
         error: (error: any) => {

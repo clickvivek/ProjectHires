@@ -33,13 +33,13 @@ export class AuthService {
     return this.token != null ? true : false
   }
 
-  login(user:any) {
+  login(user:any, skipRedirect: boolean = false) {
 
     // Set the authenticated flag to true
     this._authenticated = true;
 
     this.token = user.token
-    this.sessionService.user(user)
+    this.sessionService.user(user, skipRedirect)
 
     this.destroyChatPopup()
 
