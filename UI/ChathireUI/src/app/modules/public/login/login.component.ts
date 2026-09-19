@@ -247,7 +247,7 @@ export class LoginComponent implements OnInit, OnDestroy {
 
   private startResendTimer() {
     this.clearResendTimer();
-    this.resendCountdown = 60;
+    this.resendCountdown = 120;
     this.resendInterval = setInterval(() => {
       this.resendCountdown--;
       if (this.resendCountdown <= 0) {
