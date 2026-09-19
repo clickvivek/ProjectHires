@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -29,6 +29,7 @@ namespace Middleware.Security
     public class CustomAuthenticationHandler : AuthenticationHandler<AuthenticationSchemeOptions>
     {
         private readonly ILoginManager loginManager;
+        private readonly IServiceProvider _serviceProvider;
         private ILogger<CustomAuthenticationHandler> log;
         protected IMemoryCache memoryCache;
         private static long? _timeOut = null;
@@ -41,6 +42,7 @@ namespace Middleware.Security
             IServiceProvider serviceProvider)
             : base(options, logger, encoder, clock)
         {
+            _serviceProvider = serviceProvider;
             loginManager = serviceProvider?.GetService<IManagerFactory>().Get<ILoginManager>();
             this.memoryCache = serviceProvider?.GetService<IMemoryCache>();
             log = logger.CreateLogger<CustomAuthenticationHandler>();
@@ -124,6 +126,11 @@ namespace Middleware.Security
                     claims.Add(new Claim("Permissions", function));
                 }
             }
+            if (validatedToken?.context != null && validatedToken.context.UserId > 0)
+            {
+                TrackUserActivity(validatedToken.context.UserId);
+            }
+
             var identity = new ClaimsIdentity(claims, Scheme.Name);
             var principal = new System.Security.Principal.GenericPrincipal(identity, null);
             var ticket = new AuthenticationTicket(principal, Scheme.Name);
@@ -168,9 +175,42 @@ namespace Middleware.Security
             return functions;
         }
 
-        //protected override Task<AuthenticateResult> HandleAuthenticateAsync()
-        //{
-        //    throw new NotImplementedException();
-        //}
+        private void TrackUserActivity(long userId)
+        {
+            try
+            {
+                string cacheKey = $"LastActive_{userId}";
+                if (memoryCache != null && !memoryCache.TryGetValue(cacheKey, out _))
+                {
+                    // Set 15-minute throttle in cache
+                    memoryCache.Set(cacheKey, DateTime.UtcNow, TimeSpan.FromMinutes(15));
+
+                    _ = Task.Run(async () =>
+                    {
+                        try
+                        {
+                            if (_serviceProvider != null)
+                            {
+                                using var scope = _serviceProvider.CreateScope();
+                                var mgrFactory = scope.ServiceProvider.GetService<IManagerFactory>();
+                                if (mgrFactory != null)
+                                {
+                                    var loginMgr = mgrFactory.Get<ILoginManager>();
+                                    await loginMgr.UpdateLastActive(userId);
+                                }
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            log.LogWarning("Failed to update last active timestamp for user {UserId}: {Message}", userId, ex.Message);
+                        }
+                    });
+                }
+            }
+            catch
+            {
+                // Non-blocking
+            }
+        }
     }
 }

@@ -28,6 +28,7 @@ namespace BusinessLayer.Manager
 
         Task<List<String>> UserFunction(UserContext userContext);
 
+        Task UpdateLastActive(long userId);
     }
     class LoginManager : BaseManager<LoginManager>, ILoginManager
     {
@@ -153,5 +154,13 @@ namespace BusinessLayer.Manager
             }, "UserFunction", userContext);
         }
 
+        public async Task UpdateLastActive(long userId)
+        {
+            await ExecuteAsync(async () =>
+            {
+                var loginRepo = repositoryFactory.Get<IUserRepository>();
+                await loginRepo.UpdateUserLastActive(userId);
+            }, "UpdateLastActive", null);
+        }
     }
 }

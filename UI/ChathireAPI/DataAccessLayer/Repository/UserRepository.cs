@@ -23,6 +23,7 @@ namespace DataAccessLayer.Repository
         Task<List<User>> GetUserByPublicProfileId(string publicProfileId);
         List<User> GetUserById(long Id);
         Task RecordUserLogin(long userId, string ipAddress = null, string location = null);
+        Task UpdateUserLastActive(long userId);
     }
     public class UserRepository : BaseRepository<User, long>, IUserRepository
     {
@@ -172,6 +173,27 @@ namespace DataAccessLayer.Repository
             catch (Exception)
             {
                 // Non-blocking: failure to record login should not block user authentication
+            }
+        }
+
+        public async Task UpdateUserLastActive(long userId)
+        {
+            try
+            {
+                var latestLogin = await _context.UserLogins
+                    .Where(l => l.UserId == userId && l.IsActive == true)
+                    .OrderByDescending(l => l.LoginTime)
+                    .FirstOrDefaultAsync();
+
+                if (latestLogin != null)
+                {
+                    latestLogin.Updated = DateTime.UtcNow;
+                    await _context.SaveChangesAsync();
+                }
+            }
+            catch (Exception)
+            {
+                // Non-blocking: background activity update failure should not impact user flow
             }
         }
     }
