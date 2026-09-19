@@ -30,13 +30,12 @@ $verified-blue: #1677FF;
 
 :host {
   display: block;
-  margin-top: -40px;
 }
 
 .profile-wrapper {
   background-color: $page-bg;
   min-height: calc(100vh - 66px);
-  padding-top: 20px;
+  padding-top: 8px;
   padding-bottom: 48px;
 
   .max-width-lg {

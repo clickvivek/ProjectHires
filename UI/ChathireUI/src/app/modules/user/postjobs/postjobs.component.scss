@@ -15,14 +15,13 @@
   --color-error: #B42318;
 
   display: block;
-  margin-top: -40px;
   background-color: var(--bg-page);
   min-height: calc(100vh - 70px);
 }
 
 ::ng-deep .postjobs-wrapper {
   background-color: var(--bg-page) !important;
-  padding: 20px 0 60px 0;
+  padding: 8px 0 60px 0;
   min-height: calc(100vh - 70px);
 
   /* Main Card styling */

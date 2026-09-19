@@ -171,6 +171,14 @@ body {
   }
 }
 
+body.login, body.signup {
+  .main-container {
+    .content-wrapper {
+      padding: 0;
+    }
+  }
+}
+
 .btn {
   @extend .ft-head;
   letter-spacing: 0.4px;

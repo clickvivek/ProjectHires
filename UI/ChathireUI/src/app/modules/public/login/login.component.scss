@@ -3,18 +3,6 @@
 
 :host {
   display: block;
-  margin-top: -40px;
-  margin-bottom: 0;
-
-  @include hires-breakpoint("lt-lg") {
-    margin-top: -40px;
-    margin-bottom: 0;
-  }
-}
-
-::ng-deep .content-wrapper {
-  padding-top: 0 !important;
-  padding-bottom: 0 !important;
 }
 
 .login-page-wrapper {
