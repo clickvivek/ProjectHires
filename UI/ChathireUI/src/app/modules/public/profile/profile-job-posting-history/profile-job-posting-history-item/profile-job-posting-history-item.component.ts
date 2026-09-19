@@ -79,18 +79,18 @@ export class ProfileJobPostingHistoryItemComponent {
     const differenceInDays = current.clone().startOf('day').diff(target.clone().startOf('day'), 'days');
     
     if (differenceInDays <= 0) {
-      return 'posted today';
+      return 'Posted today';
     } else if (differenceInDays === 1) {
-      return 'posted yesterday';
+      return 'Posted yesterday';
     } else if (differenceInDays < 30) {
-      return `posted ${differenceInDays} days ago`;
+      return `Posted ${differenceInDays} days ago`;
     } else if (differenceInDays < 60) {
-      return 'posted 1 month ago';
+      return 'Posted 1 month ago';
     } else if (differenceInDays < 365) {
       const months = Math.floor(differenceInDays / 30);
-      return `posted ${months} months ago`;
+      return `Posted ${months} months ago`;
     } else {
-      return `posted on ${moment(date).format('MMM D, YYYY')}`;
+      return `Posted on ${moment(date).format('MMM D, YYYY')}`;
     }
   }
 
