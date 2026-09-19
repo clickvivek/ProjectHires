@@ -273,3 +273,189 @@
     transform: rotate(360deg);
   }
 }
+
+// ==========================================
+// DAU DASHBOARD STYLES
+// ==========================================
+
+.dau-dashboard-area {
+  .dau-kpi-card {
+    background: #ffffff;
+    border-radius: 14px;
+    padding: 20px;
+    border: 1px solid #e2e8f0;
+    transition: all 0.2s ease;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.06);
+    }
+
+    .kpi-icon-box {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .kpi-value {
+      font-size: 2rem;
+      font-weight: 700;
+      color: #0f172a;
+      line-height: 1.1;
+    }
+  }
+
+  .timeframe-pill-group {
+    background: #e2e8f0;
+    padding: 3px;
+    border-radius: 10px;
+
+    .btn-timeframe {
+      border: none;
+      background: transparent;
+      color: #475569;
+      font-size: 0.85rem;
+      font-weight: 600;
+      padding: 6px 14px;
+      border-radius: 8px;
+      transition: all 0.2s ease;
+
+      &.active {
+        background: #ffffff;
+        color: #39756F;
+        box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+      }
+
+      &:hover:not(.active) {
+        color: #1e293b;
+      }
+    }
+  }
+
+  .dau-chart-card {
+    background: #ffffff;
+    border-radius: 14px;
+    border: 1px solid #e2e8f0;
+    padding: 24px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  }
+
+  .chart-bars-container {
+    display: flex;
+    align-items: flex-end;
+    gap: 6px;
+    height: 200px;
+    padding-top: 20px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid #e2e8f0;
+    overflow-x: auto;
+
+    .chart-bar-col {
+      flex: 1;
+      min-width: 24px;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      align-items: center;
+      position: relative;
+      cursor: pointer;
+
+      &:hover {
+        .bar-fill {
+          background: #2563eb !important;
+        }
+
+        .bar-tooltip {
+          opacity: 1;
+          visibility: visible;
+          transform: translateY(-8px);
+        }
+      }
+
+      .bar-fill {
+        width: 100%;
+        max-width: 32px;
+        background: linear-gradient(180deg, #38bdf8 0%, #0284c7 100%);
+        border-radius: 4px 4px 0 0;
+        transition: height 0.3s ease, background 0.2s ease;
+      }
+
+      .bar-label {
+        font-size: 0.65rem;
+        color: #64748b;
+        margin-top: 6px;
+        text-align: center;
+        white-space: nowrap;
+      }
+
+      .bar-tooltip {
+        position: absolute;
+        bottom: 100%;
+        left: 50%;
+        transform: translateX(-50%);
+        background: #0f172a;
+        color: #ffffff;
+        font-size: 0.72rem;
+        padding: 4px 8px;
+        border-radius: 6px;
+        white-space: nowrap;
+        opacity: 0;
+        visibility: hidden;
+        transition: all 0.2s ease;
+        z-index: 10;
+        pointer-events: none;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      }
+    }
+  }
+
+  .activity-user-avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.8rem;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+
+  .pulse-online {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: #22c55e;
+    box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7);
+    animation: pulse 2s infinite;
+  }
+
+  .dot-offline {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: #94a3b8;
+  }
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7);
+  }
+  70% {
+    transform: scale(1);
+    box-shadow: 0 0 0 6px rgba(34, 197, 94, 0);
+  }
+  100% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(34, 197, 94, 0);
+  }
+}

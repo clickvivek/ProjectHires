@@ -15,6 +15,18 @@
       <div class="nav nav-pills mt-3 mt-md-0 admin-tab-pills" role="tablist">
         <button
           class="nav-link d-flex align-items-center gap-2"
+          [class.active]="activeTab === 'dau-dashboard'"
+          (click)="setTab('dau-dashboard')"
+          type="button"
+        >
+          <span class="material-symbols-outlined fs-5">insights</span>
+          <span>DAU & Activity</span>
+          <span *ngIf="dauSummary.activeNowCount > 0" class="badge rounded-pill bg-success ms-1">
+            {{ dauSummary.activeNowCount }} Live
+          </span>
+        </button>
+        <button
+          class="nav-link d-flex align-items-center gap-2"
           [class.active]="activeTab === 'bulk-upload'"
           (click)="setTab('bulk-upload')"
           type="button"
@@ -33,6 +45,396 @@
           <span>Manage Companies</span>
           <span *ngIf="allCompanies.length > 0" class="badge rounded-pill bg-secondary ms-1">{{ allCompanies.length }}</span>
         </button>
+      </div>
+    </div>
+
+    <!-- ==================================================== -->
+    <!-- TAB 0: DAU & USER ACTIVITY DASHBOARD -->
+    <!-- ==================================================== -->
+    <div *ngIf="activeTab === 'dau-dashboard'" class="tab-content-area dau-dashboard-area">
+
+      <!-- Top Dashboard Controls -->
+      <div class="card border-0 shadow-sm p-3 mb-4">
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center gap-3">
+          <div>
+            <h5 class="mb-1 fw-bold text-dark d-flex align-items-center gap-2">
+              <span class="material-symbols-outlined text-primary">monitoring</span>
+              Active Users & Engagement Analytics
+            </h5>
+            <p class="text-muted small mb-0">
+              Real-time drill-down of active recruiters, bench sales managers, and candidates across the platform.
+            </p>
+          </div>
+
+          <!-- Timeframe & Action Controls -->
+          <div class="d-flex align-items-center flex-wrap gap-2">
+            <div class="timeframe-pill-group d-flex align-items-center">
+              <button
+                class="btn-timeframe"
+                [class.active]="dauTimeframe === 'day'"
+                (click)="setDauTimeframe('day')"
+                type="button"
+                title="View today's hourly activity breakdown"
+              >
+                Day (24h)
+              </button>
+              <button
+                class="btn-timeframe"
+                [class.active]="dauTimeframe === 'week'"
+                (click)="setDauTimeframe('week')"
+                type="button"
+                title="View past 7 days daily activity breakdown"
+              >
+                Week (7d)
+              </button>
+              <button
+                class="btn-timeframe"
+                [class.active]="dauTimeframe === 'month'"
+                (click)="setDauTimeframe('month')"
+                type="button"
+                title="View past 30 days daily activity breakdown"
+              >
+                Month (30d)
+              </button>
+            </div>
+
+            <button
+              class="btn btn-outline-secondary btn-sm d-flex align-items-center gap-1"
+              (click)="loadDauStats()"
+              [disabled]="isLoadingDau"
+              title="Refresh Analytics"
+            >
+              <span class="material-symbols-outlined fs-6" [class.spin]="isLoadingDau">refresh</span>
+              <span>Refresh</span>
+            </button>
+
+            <button
+              class="btn btn-outline-primary btn-sm d-flex align-items-center gap-1"
+              (click)="exportActivityCsv()"
+              [disabled]="filteredUserActivities.length === 0"
+              title="Export filtered records to CSV"
+            >
+              <span class="material-symbols-outlined fs-6">download</span>
+              <span>Export CSV</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Loading State -->
+      <div *ngIf="isLoadingDau" class="text-center py-5">
+        <div class="spinner-border text-primary mb-2" role="status"></div>
+        <p class="text-muted small">Loading user activity and DAU metrics...</p>
+      </div>
+
+      <div *ngIf="!isLoadingDau">
+        <!-- KPI Cards Grid -->
+        <div class="row g-3 mb-4">
+          <!-- Card 1: DAU -->
+          <div class="col-sm-6 col-xl-3">
+            <div class="dau-kpi-card h-100">
+              <div class="d-flex justify-content-between align-items-start mb-2">
+                <span class="text-muted small fw-semibold text-uppercase">Daily Active (DAU)</span>
+                <div class="kpi-icon-box bg-primary-light text-primary">
+                  <span class="material-symbols-outlined fs-5">today</span>
+                </div>
+              </div>
+              <div class="kpi-value mb-1">{{ dauSummary.dauCount }}</div>
+              <div class="text-muted small d-flex align-items-center gap-1">
+                <span class="badge bg-primary-subtle text-primary">Today</span>
+                <span>Unique active users</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Card 2: WAU -->
+          <div class="col-sm-6 col-xl-3">
+            <div class="dau-kpi-card h-100">
+              <div class="d-flex justify-content-between align-items-start mb-2">
+                <span class="text-muted small fw-semibold text-uppercase">Weekly Active (WAU)</span>
+                <div class="kpi-icon-box bg-teal-light text-teal">
+                  <span class="material-symbols-outlined fs-5">date_range</span>
+                </div>
+              </div>
+              <div class="kpi-value mb-1">{{ dauSummary.wauCount }}</div>
+              <div class="text-muted small d-flex align-items-center gap-1">
+                <span class="badge bg-success-subtle text-success">7 Days</span>
+                <span>Unique active users</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Card 3: MAU -->
+          <div class="col-sm-6 col-xl-3">
+            <div class="dau-kpi-card h-100">
+              <div class="d-flex justify-content-between align-items-start mb-2">
+                <span class="text-muted small fw-semibold text-uppercase">Monthly Active (MAU)</span>
+                <div class="kpi-icon-box bg-purple-subtle text-purple">
+                  <span class="material-symbols-outlined fs-5">calendar_month</span>
+                </div>
+              </div>
+              <div class="kpi-value mb-1">{{ dauSummary.mauCount }}</div>
+              <div class="text-muted small d-flex align-items-center gap-1">
+                <span class="badge bg-purple-subtle text-purple">30 Days</span>
+                <span>Unique active users</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Card 4: Active Right Now -->
+          <div class="col-sm-6 col-xl-3">
+            <div class="dau-kpi-card h-100">
+              <div class="d-flex justify-content-between align-items-start mb-2">
+                <span class="text-muted small fw-semibold text-uppercase">Active Right Now</span>
+                <div class="kpi-icon-box bg-success-subtle text-success">
+                  <span class="material-symbols-outlined fs-5">bolt</span>
+                </div>
+              </div>
+              <div class="kpi-value mb-1 d-flex align-items-center gap-2">
+                <span>{{ dauSummary.activeNowCount }}</span>
+                <span *ngIf="dauSummary.activeNowCount > 0" class="pulse-online"></span>
+              </div>
+              <div class="text-muted small d-flex align-items-center gap-1">
+                <span class="badge bg-success text-white">Live</span>
+                <span>Active in last 15 mins</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Activity Trend Chart Card -->
+        <div class="dau-chart-card mb-4">
+          <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center gap-2 mb-3">
+            <div>
+              <h6 class="mb-0 fw-bold text-dark d-flex align-items-center gap-2">
+                <span class="material-symbols-outlined text-primary fs-5">bar_chart</span>
+                Activity Spikes ({{ dauTimeframe === 'day' ? 'Hourly View - Today' : (dauTimeframe === 'week' ? 'Past 7 Days View' : 'Past 30 Days View') }})
+              </h6>
+              <span class="text-muted small">
+                Hover over bars to inspect unique active user counts and session traffic.
+              </span>
+            </div>
+
+            <!-- Trend Metric Switcher -->
+            <div class="btn-group btn-group-sm" role="group">
+              <button
+                type="button"
+                class="btn"
+                [ngClass]="trendMetric === 'users' ? 'btn-primary' : 'btn-outline-secondary'"
+                (click)="setTrendMetric('users')"
+              >
+                Unique Active Users
+              </button>
+              <button
+                type="button"
+                class="btn"
+                [ngClass]="trendMetric === 'logins' ? 'btn-primary' : 'btn-outline-secondary'"
+                (click)="setTrendMetric('logins')"
+              >
+                Total Logins
+              </button>
+            </div>
+          </div>
+
+          <!-- Bar Visualizer -->
+          <div *ngIf="dauTrends.length > 0" class="chart-bars-container">
+            <div *ngFor="let point of dauTrends" class="chart-bar-col">
+              <div
+                class="bar-fill"
+                [style.height.%]="getTrendBarHeight(point)"
+                [style.opacity]="(trendMetric === 'users' ? point.uniqueUsers : point.totalLogins) > 0 ? '1' : '0.2'"
+              ></div>
+              <span class="bar-label">{{ point.dateLabel }}</span>
+              <div class="bar-tooltip">
+                <div class="fw-bold">{{ point.dateLabel }}</div>
+                <div>{{ trendMetric === 'users' ? point.uniqueUsers + ' active users' : point.totalLogins + ' logins' }}</div>
+              </div>
+            </div>
+          </div>
+
+          <div *ngIf="dauTrends.length === 0" class="text-center py-4 text-muted small">
+            No activity trend data recorded for this timeframe yet.
+          </div>
+        </div>
+
+        <!-- User Activity Drilldown Table Card -->
+        <div class="card border-0 shadow-sm p-4 mb-4">
+          <div class="d-flex flex-column flex-lg-row justify-content-between align-items-start align-items-lg-center gap-3 mb-3">
+            <div>
+              <h5 class="mb-1 fw-bold text-dark d-flex align-items-center gap-2">
+                <span class="material-symbols-outlined text-primary">group</span>
+                User Activity Drilldown
+                <span class="badge bg-secondary-subtle text-secondary fs-6 rounded-pill">
+                  {{ filteredUserActivities.length }} Sessions
+                </span>
+              </h5>
+              <span class="text-muted small">Detailed audit logs of users active in the selected timeframe.</span>
+            </div>
+
+            <!-- Filters Bar -->
+            <div class="d-flex flex-wrap align-items-center gap-2 w-100 w-lg-auto">
+              <!-- Search -->
+              <div class="input-group input-group-sm" style="min-width: 220px; max-width: 280px;">
+                <span class="input-group-text bg-white border-end-0 text-muted">
+                  <span class="material-symbols-outlined fs-6">search</span>
+                </span>
+                <input
+                  type="text"
+                  class="form-control border-start-0"
+                  placeholder="Search user, IP, role..."
+                  [(ngModel)]="userActivitySearch"
+                  (ngModelChange)="onActivitySearchChange()"
+                />
+              </div>
+
+              <!-- Role Filter -->
+              <select
+                class="form-select form-select-sm"
+                style="width: auto;"
+                [(ngModel)]="roleFilter"
+                (ngModelChange)="onRoleFilterChange($event)"
+              >
+                <option value="all">All Roles</option>
+                <option value="Recruiter">Recruiters</option>
+                <option value="Bench Sales">Bench Sales</option>
+                <option value="Candidate">Candidates</option>
+              </select>
+
+              <!-- Online Only Toggle -->
+              <button
+                class="btn btn-sm d-flex align-items-center gap-1"
+                [ngClass]="onlineOnlyFilter ? 'btn-success' : 'btn-outline-secondary'"
+                (click)="toggleOnlineOnly()"
+                title="Filter users active in the last 15 minutes"
+              >
+                <span class="pulse-online me-1" *ngIf="onlineOnlyFilter"></span>
+                <span>Online Now</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Drilldown Table -->
+          <div class="table-responsive border rounded-3 mb-3">
+            <table class="table table-hover align-middle mb-0 custom-admin-table">
+              <thead class="table-light">
+                <tr>
+                  <th scope="col" style="width: 40px;">#</th>
+                  <th scope="col">User</th>
+                  <th scope="col">Role</th>
+                  <th scope="col">Status</th>
+                  <th scope="col">Last Active</th>
+                  <th scope="col">Initial Login</th>
+                  <th scope="col">IP Address</th>
+                  <th scope="col">Location</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let item of paginatedUserActivities; let i = index">
+                  <td class="text-muted small">
+                    {{ (activityCurrentPage - 1) * activityPageSize + i + 1 }}
+                  </td>
+                  <td>
+                    <div class="d-flex align-items-center gap-2">
+                      <div
+                        class="activity-user-avatar"
+                        [ngClass]="{
+                          'bg-primary-subtle text-primary': item.roleName === 'Recruiter',
+                          'bg-purple-subtle text-purple': item.roleName === 'Bench Sales',
+                          'bg-success-subtle text-success': item.roleName === 'Candidate' || !item.roleName
+                        }"
+                      >
+                        {{ getUserInitials(item.fullName || item.userName) }}
+                      </div>
+                      <div class="d-flex flex-column">
+                        <span class="fw-semibold text-dark small">{{ item.fullName || item.userName }}</span>
+                        <span class="text-muted" style="font-size: 0.75rem;">{{ item.email || item.userName }}</span>
+                      </div>
+                    </div>
+                  </td>
+                  <td>
+                    <span
+                      class="badge"
+                      [ngClass]="{
+                        'bg-primary-subtle text-primary border border-primary-subtle': item.roleName === 'Recruiter',
+                        'bg-purple-subtle text-purple border border-purple-subtle': item.roleName === 'Bench Sales',
+                        'bg-success-subtle text-success border border-success-subtle': item.roleName === 'Candidate',
+                        'bg-secondary-subtle text-secondary': !item.roleName
+                      }"
+                    >
+                      {{ item.roleName || 'User' }}
+                    </span>
+                  </td>
+                  <td>
+                    <div class="d-flex align-items-center gap-1">
+                      <span [class]="item.isOnline ? 'pulse-online' : 'dot-offline'"></span>
+                      <span class="small" [ngClass]="item.isOnline ? 'text-success fw-semibold' : 'text-muted'">
+                        {{ item.isOnline ? 'Online' : getRelativeTime(item.lastActiveTime) }}
+                      </span>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="small text-dark fw-medium">{{ formatDateDisplay(item.lastActiveTime) }}</div>
+                    <div class="text-muted" style="font-size: 0.72rem;">{{ getRelativeTime(item.lastActiveTime) }}</div>
+                  </td>
+                  <td class="small text-muted">
+                    {{ formatDateDisplay(item.loginTime) }}
+                  </td>
+                  <td>
+                    <code class="small text-dark bg-light px-2 py-1 rounded border">{{ item.ipAddress || '::1' }}</code>
+                  </td>
+                  <td class="small text-muted">
+                    <span *ngIf="item.location" class="d-flex align-items-center gap-1">
+                      <span class="material-symbols-outlined fs-6 text-muted">location_on</span>
+                      {{ item.location }}
+                    </span>
+                    <span *ngIf="!item.location">—</span>
+                  </td>
+                </tr>
+
+                <tr *ngIf="filteredUserActivities.length === 0">
+                  <td colspan="8" class="text-center py-4 text-muted">
+                    <span class="material-symbols-outlined fs-2 text-muted d-block mb-1">person_off</span>
+                    No active user sessions found matching your filters for this timeframe.
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Pagination -->
+          <div *ngIf="filteredUserActivities.length > 0" class="d-flex flex-column flex-sm-row justify-content-between align-items-center gap-2">
+            <div class="text-muted small">
+              Showing {{ (activityCurrentPage - 1) * activityPageSize + 1 }} to
+              {{ Math.min(activityCurrentPage * activityPageSize, filteredUserActivities.length) }}
+              of {{ filteredUserActivities.length }} records
+            </div>
+
+            <div class="d-flex align-items-center gap-2">
+              <select
+                class="form-select form-select-sm"
+                style="width: 80px;"
+                [(ngModel)]="activityPageSize"
+                (ngModelChange)="applyActivityFilters()"
+              >
+                <option *ngFor="let opt of activityPageSizeOptions" [value]="opt">{{ opt }}</option>
+              </select>
+
+              <nav aria-label="Activity pagination">
+                <ul class="pagination pagination-sm mb-0">
+                  <li class="page-item" [class.disabled]="activityCurrentPage === 1">
+                    <button class="page-link" (click)="setActivityPage(activityCurrentPage - 1)">‹</button>
+                  </li>
+                  <li class="page-item disabled">
+                    <span class="page-link">{{ activityCurrentPage }} / {{ activityTotalPages }}</span>
+                  </li>
+                  <li class="page-item" [class.disabled]="activityCurrentPage === activityTotalPages">
+                    <button class="page-link" (click)="setActivityPage(activityCurrentPage + 1)">›</button>
+                  </li>
+                </ul>
+              </nav>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
 

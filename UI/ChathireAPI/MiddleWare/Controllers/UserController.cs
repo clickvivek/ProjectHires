@@ -294,5 +294,15 @@ namespace MiddleWare.Controllers
             });
         }
 
+        [HttpGet]
+        [Route("DauStats")]
+        public Task<Result<DauDashboardDto>> GetDauStats([FromQuery] string timeframe = "day", [FromQuery] DateTime? startDate = null, [FromQuery] DateTime? endDate = null)
+        {
+            return ExecuteAsync<DauDashboardDto>(async () =>
+            {
+                var userManager = managerFactory.Get<IUserManager>();
+                return await userManager.GetDauDashboard(timeframe, startDate, endDate, GetDummyUserContext());
+            });
+        }
     }
 }

@@ -37,6 +37,7 @@ namespace BusinessLayer.Manager
         Task<bool> ResendOtp(string email, UserContext userContext);
         Task<bool> SendForgotPasswordOtp(string email, UserContext userContext);
         Task<bool> ResetPasswordWithOtp(string email, string otp, string newPassword, UserContext userContext);
+        Task<DauDashboardDto> GetDauDashboard(string timeframe, DateTime? startDate, DateTime? endDate, UserContext userContext);
     }
     public class UserManager : BaseManager<UserManager>, IUserManager
     {
@@ -619,9 +620,14 @@ namespace BusinessLayer.Manager
             }
         }
 
-
-
-
+        public async Task<DauDashboardDto> GetDauDashboard(string timeframe, DateTime? startDate, DateTime? endDate, UserContext userContext)
+        {
+            return await ExecuteAsync<DauDashboardDto>(async () =>
+            {
+                var repo = repositoryFactory.Get<IUserRepository>();
+                return await repo.GetDauDashboard(timeframe, startDate, endDate);
+            }, "GetDauDashboard", userContext);
+        }
     }
 }
 

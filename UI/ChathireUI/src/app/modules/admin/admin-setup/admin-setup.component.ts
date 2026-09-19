@@ -1,7 +1,9 @@
 import { Component, OnInit, ElementRef, ViewChild } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
 import { ToastrService } from 'ngx-toastr';
 import { ConsultancyService } from 'src/app/api/api/consultancy.service';
 import { picUrl, defaultProfilePic } from 'src/app/data/various';
+import { environment } from 'src/environments/environment';
 
 export interface CsvCompanyRow {
   name: string;
@@ -26,7 +28,29 @@ export class AdminSetupComponent implements OnInit {
   @ViewChild('fileInput') fileInput!: ElementRef;
   @ViewChild('logoInput') logoInput!: ElementRef;
 
-  activeTab: 'bulk-upload' | 'view-edit' = 'bulk-upload';
+  activeTab: 'dau-dashboard' | 'bulk-upload' | 'view-edit' = 'dau-dashboard';
+
+  // --- Tab 0: DAU Dashboard State ---
+  dauTimeframe: 'day' | 'week' | 'month' = 'day';
+  isLoadingDau = false;
+  dauSummary: any = {
+    dauCount: 0,
+    wauCount: 0,
+    mauCount: 0,
+    activeNowCount: 0,
+    totalLoginsInPeriod: 0,
+    totalRegisteredUsers: 0
+  };
+  dauTrends: any[] = [];
+  allUserActivities: any[] = [];
+  filteredUserActivities: any[] = [];
+  userActivitySearch = '';
+  roleFilter = 'all';
+  onlineOnlyFilter = false;
+  activityCurrentPage = 1;
+  activityPageSize = 25;
+  activityPageSizeOptions = [10, 25, 50, 100];
+  trendMetric: 'users' | 'logins' = 'users';
 
   // --- Tab 1: Bulk Upload State ---
   selectedFile: File | null = null;
@@ -62,16 +86,19 @@ export class AdminSetupComponent implements OnInit {
 
   constructor(
     private consultancyService: ConsultancyService,
+    private http: HttpClient,
     private toastr: ToastrService
   ) {}
 
   ngOnInit(): void {
-    this.loadCompanies();
+    this.loadDauStats();
   }
 
-  setTab(tab: 'bulk-upload' | 'view-edit') {
+  setTab(tab: 'dau-dashboard' | 'bulk-upload' | 'view-edit') {
     this.activeTab = tab;
-    if (tab === 'view-edit' && this.allCompanies.length === 0) {
+    if (tab === 'dau-dashboard' && !this.dauSummary.totalRegisteredUsers) {
+      this.loadDauStats();
+    } else if (tab === 'view-edit' && this.allCompanies.length === 0) {
       this.loadCompanies();
     }
   }
@@ -590,5 +617,198 @@ export class AdminSetupComponent implements OnInit {
 
   onImageError(event: any) {
     event.target.src = this.defaultLogo;
+  }
+
+  // ==========================================
+  // TAB 0: DAU & ACTIVITY DASHBOARD
+  // ==========================================
+
+  loadDauStats(timeframe?: 'day' | 'week' | 'month') {
+    if (timeframe) {
+      this.dauTimeframe = timeframe;
+    }
+    this.isLoadingDau = true;
+    const url = `${environment.rootUrl}/api/User/DauStats?timeframe=${this.dauTimeframe}`;
+
+    this.http.get<any>(url).subscribe({
+      next: (res: any) => {
+        this.isLoadingDau = false;
+        const data = res?.data || res;
+        if (data && data.summary) {
+          this.dauSummary = data.summary;
+          this.dauTrends = data.trends || [];
+          this.allUserActivities = data.userActivities || [];
+          this.applyActivityFilters();
+        }
+      },
+      error: (err: any) => {
+        this.isLoadingDau = false;
+        const msg = err?.error?.message || err?.message || 'Failed to fetch DAU analytics.';
+        this.toastr.error(msg, 'Dashboard Error');
+      }
+    });
+  }
+
+  setDauTimeframe(tf: 'day' | 'week' | 'month') {
+    if (this.dauTimeframe !== tf) {
+      this.dauTimeframe = tf;
+      this.activityCurrentPage = 1;
+      this.loadDauStats();
+    }
+  }
+
+  setTrendMetric(metric: 'users' | 'logins') {
+    this.trendMetric = metric;
+  }
+
+  applyActivityFilters() {
+    let result = [...this.allUserActivities];
+
+    // Search filter
+    if (this.userActivitySearch && this.userActivitySearch.trim()) {
+      const q = this.userActivitySearch.trim().toLowerCase();
+      result = result.filter(u =>
+        (u.fullName && u.fullName.toLowerCase().includes(q)) ||
+        (u.userName && u.userName.toLowerCase().includes(q)) ||
+        (u.email && u.email.toLowerCase().includes(q)) ||
+        (u.roleName && u.roleName.toLowerCase().includes(q)) ||
+        (u.ipAddress && u.ipAddress.toLowerCase().includes(q)) ||
+        (u.location && u.location.toLowerCase().includes(q))
+      );
+    }
+
+    // Role filter
+    if (this.roleFilter && this.roleFilter !== 'all') {
+      result = result.filter(u => u.roleName && u.roleName.toLowerCase() === this.roleFilter.toLowerCase());
+    }
+
+    // Online only filter
+    if (this.onlineOnlyFilter) {
+      result = result.filter(u => u.isOnline);
+    }
+
+    this.filteredUserActivities = result;
+    this.activityCurrentPage = 1;
+  }
+
+  onActivitySearchChange() {
+    this.applyActivityFilters();
+  }
+
+  onRoleFilterChange(role: string) {
+    this.roleFilter = role;
+    this.applyActivityFilters();
+  }
+
+  toggleOnlineOnly() {
+    this.onlineOnlyFilter = !this.onlineOnlyFilter;
+    this.applyActivityFilters();
+  }
+
+  get paginatedUserActivities(): any[] {
+    const startIndex = (this.activityCurrentPage - 1) * this.activityPageSize;
+    return this.filteredUserActivities.slice(startIndex, startIndex + this.activityPageSize);
+  }
+
+  get activityTotalPages(): number {
+    return Math.ceil(this.filteredUserActivities.length / this.activityPageSize) || 1;
+  }
+
+  setActivityPage(page: number) {
+    if (page >= 1 && page <= this.activityTotalPages) {
+      this.activityCurrentPage = page;
+    }
+  }
+
+  getMaxTrendValue(): number {
+    if (!this.dauTrends || this.dauTrends.length === 0) return 1;
+    const max = Math.max(...this.dauTrends.map(t => this.trendMetric === 'users' ? t.uniqueUsers : t.totalLogins));
+    return max > 0 ? max : 1;
+  }
+
+  getTrendBarHeight(point: any): number {
+    const val = this.trendMetric === 'users' ? (point.uniqueUsers || 0) : (point.totalLogins || 0);
+    const max = this.getMaxTrendValue();
+    if (max === 0) return 4;
+    const pct = Math.round((val / max) * 100);
+    return Math.max(pct, 4); // Minimum 4% height for visibility
+  }
+
+  getUserInitials(name: string): string {
+    if (!name) return 'U';
+    const parts = name.trim().split(' ');
+    if (parts.length >= 2) {
+      return (parts[0][0] + parts[1][0]).toUpperCase();
+    }
+    return name.slice(0, 2).toUpperCase();
+  }
+
+  formatDateDisplay(dateVal: any): string {
+    if (!dateVal) return '—';
+    try {
+      const d = new Date(dateVal);
+      return d.toLocaleString('en-US', {
+        month: 'short',
+        day: 'numeric',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: true
+      });
+    } catch {
+      return String(dateVal);
+    }
+  }
+
+  getRelativeTime(dateVal: any): string {
+    if (!dateVal) return '—';
+    try {
+      const now = new Date().getTime();
+      const past = new Date(dateVal).getTime();
+      const diffMs = now - past;
+      const diffMins = Math.floor(diffMs / (1000 * 60));
+      const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
+      const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+
+      if (diffMins < 1) return 'Just now';
+      if (diffMins < 60) return `${diffMins}m ago`;
+      if (diffHours < 24) return `${diffHours}h ago`;
+      if (diffDays === 1) return 'Yesterday';
+      return `${diffDays}d ago`;
+    } catch {
+      return '—';
+    }
+  }
+
+  exportActivityCsv() {
+    if (this.filteredUserActivities.length === 0) {
+      this.toastr.warning('No activity data to export.', 'Export Warning');
+      return;
+    }
+
+    const headers = ['User ID', 'Full Name', 'Username', 'Email', 'Role', 'Status', 'Initial Login Time (UTC)', 'Last Active Time (UTC)', 'IP Address', 'Location'];
+    const rows = this.filteredUserActivities.map(u => [
+      u.userId,
+      `"${(u.fullName || '').replace(/"/g, '""')}"`,
+      `"${(u.userName || '').replace(/"/g, '""')}"`,
+      `"${(u.email || '').replace(/"/g, '""')}"`,
+      `"${(u.roleName || '').replace(/"/g, '""')}"`,
+      u.isOnline ? 'Online' : 'Offline',
+      u.loginTime || '',
+      u.lastActiveTime || '',
+      `"${(u.ipAddress || '').replace(/"/g, '""')}"`,
+      `"${(u.location || '').replace(/"/g, '""')}"`
+    ]);
+
+    const csvContent = [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    const url = URL.createObjectURL(blob);
+    link.setAttribute('href', url);
+    link.setAttribute('download', `chathire_user_activity_${this.dauTimeframe}_${new Date().toISOString().slice(0, 10)}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    this.toastr.success(`Exported ${this.filteredUserActivities.length} user activity records.`, 'Export Success');
   }
 }
