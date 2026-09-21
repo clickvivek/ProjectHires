@@ -16,9 +16,11 @@ namespace MiddleWare.Controllers
     public class ConsultancyController : BaseCtrler<ConsultancyController>
     {
         EFContexts dbcontext;
+        private readonly IServiceProvider _serviceProvider;
 
         public ConsultancyController(IServiceProvider serviceProvider, ILogger<ConsultancyController> logger, IMapper mapper) : base(serviceProvider, logger, mapper)
         {
+            _serviceProvider = serviceProvider;
             dbcontext = serviceProvider.GetService<EFContexts>();
         }
 
@@ -55,6 +57,33 @@ namespace MiddleWare.Controllers
             {
                 var mgr = managerFactory.Get<IConsultancyManager>();
                 return await mgr.BulkAddConsultancies(consultancies, GetDummyUserContext());
+            });
+        }
+
+        [HttpPost]
+        [Route("ScrapeAndAddLinkedInCompanies")]
+        public Task<Result<List<LinkedInCompanyScrapedDto>>> ScrapeAndAddLinkedInCompanies([FromBody] LinkedInScrapeRequestDto request)
+        {
+            return ExecuteAsync<List<LinkedInCompanyScrapedDto>>(async () =>
+            {
+                var scraperService = _serviceProvider.GetService<BusinessLayer.Services.ILinkedInScraperService>();
+                if (scraperService == null)
+                {
+                    throw new InvalidOperationException("LinkedInScraperService is not registered.");
+                }
+
+                long? adminUserId = null;
+                try
+                {
+                    var userContext = GetUserContext();
+                    if (userContext != null && userContext.UserId > 0)
+                    {
+                        adminUserId = userContext.UserId;
+                    }
+                }
+                catch { }
+
+                return await scraperService.ScrapeAndSaveCompaniesAsync(request.Urls, request.AutoSaveToDb, adminUserId);
             });
         }
 

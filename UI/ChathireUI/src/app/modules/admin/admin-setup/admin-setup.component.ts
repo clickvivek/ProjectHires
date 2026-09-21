@@ -28,7 +28,7 @@ export class AdminSetupComponent implements OnInit {
   @ViewChild('fileInput') fileInput!: ElementRef;
   @ViewChild('logoInput') logoInput!: ElementRef;
 
-  activeTab: 'dau-dashboard' | 'bulk-upload' | 'view-edit' | 'review-companies' | 'user-quotas' | 'admin-users' = 'dau-dashboard';
+  activeTab: 'dau-dashboard' | 'bulk-upload' | 'view-edit' | 'review-companies' | 'user-quotas' | 'admin-users' | 'linkedin-scraper' = 'dau-dashboard';
 
   // --- Tab: Admin Users State ---
   adminUsers: any[] = [];
@@ -149,7 +149,7 @@ export class AdminSetupComponent implements OnInit {
     this.loadAdminUsers();
   }
 
-  setTab(tab: 'dau-dashboard' | 'bulk-upload' | 'view-edit' | 'review-companies' | 'user-quotas' | 'admin-users') {
+  setTab(tab: 'dau-dashboard' | 'bulk-upload' | 'view-edit' | 'review-companies' | 'user-quotas' | 'admin-users' | 'linkedin-scraper') {
     this.activeTab = tab;
     if (tab === 'dau-dashboard' && !this.dauSummary.totalRegisteredUsers) {
       this.loadDauStats();
@@ -1144,4 +1144,229 @@ export class AdminSetupComponent implements OnInit {
   toggleAdminPasswordVisibility() {
     this.showAdminPassword = !this.showAdminPassword;
   }
+
+  // ==========================================
+  // --- Tab: LinkedIn Company Scraper State & Methods ---
+  // ==========================================
+  linkedinUrlsInput: string = '';
+  isScrapingLinkedIn: boolean = false;
+  scrapedResults: any[] = [];
+  linkedinFilter: 'all' | 'completed' | 'failed' = 'all';
+  linkedinSearchTerm: string = '';
+  isDraggingFile: boolean = false;
+  uploadedFileName: string = '';
+  autoSaveToDb: boolean = true;
+  showAddLinkedInModal: boolean = false;
+  parsedUrlCount: number = 0;
+
+  openAddLinkedInModal() {
+    this.showAddLinkedInModal = true;
+  }
+
+  closeAddLinkedInModal() {
+    this.showAddLinkedInModal = false;
+  }
+
+  onLinkedInUrlInputChanged() {
+    const urls = this.extractUrlsFromText(this.linkedinUrlsInput);
+    this.parsedUrlCount = urls.length;
+  }
+
+  onLinkedInDragOver(event: DragEvent) {
+    event.preventDefault();
+    event.stopPropagation();
+    this.isDraggingFile = true;
+  }
+
+  onLinkedInDragLeave(event: DragEvent) {
+    event.preventDefault();
+    event.stopPropagation();
+    this.isDraggingFile = false;
+  }
+
+  onLinkedInDrop(event: DragEvent) {
+    event.preventDefault();
+    event.stopPropagation();
+    this.isDraggingFile = false;
+
+    if (event.dataTransfer && event.dataTransfer.files && event.dataTransfer.files.length > 0) {
+      const file = event.dataTransfer.files[0];
+      this.processLinkedInFile(file);
+    }
+  }
+
+  onLinkedInFileSelected(event: any) {
+    if (event.target.files && event.target.files.length > 0) {
+      const file = event.target.files[0];
+      this.processLinkedInFile(file);
+    }
+  }
+
+  processLinkedInFile(file: File) {
+    const ext = file.name.split('.').pop()?.toLowerCase();
+    if (ext !== 'csv' && ext !== 'txt') {
+      this.toastr.warning('Please upload a valid .csv or .txt file.', 'Invalid File Format');
+      return;
+    }
+
+    this.uploadedFileName = file.name;
+    const reader = new FileReader();
+    reader.onload = (e: any) => {
+      const content = e.target.result;
+      const extractedUrls = this.extractUrlsFromText(content);
+      if (extractedUrls.length === 0) {
+        this.toastr.warning('No valid LinkedIn URLs found in the uploaded file.', 'Empty / Invalid File');
+        return;
+      }
+
+      // Merge with existing or replace
+      if (this.linkedinUrlsInput.trim()) {
+        this.linkedinUrlsInput = this.linkedinUrlsInput.trim() + '\n' + extractedUrls.join('\n');
+      } else {
+        this.linkedinUrlsInput = extractedUrls.join('\n');
+      }
+
+      this.onLinkedInUrlInputChanged();
+      this.toastr.info(`Loaded ${extractedUrls.length} LinkedIn URL(s) from "${file.name}".`, 'File Processed');
+    };
+    reader.readAsText(file);
+  }
+
+  extractUrlsFromText(text: string): string[] {
+    if (!text || !text.trim()) return [];
+    // Split by newlines, commas, semicolons or spaces
+    const tokens = text.split(/[\r\n,;]+/).map(t => t.trim()).filter(t => t.length > 0);
+    const validUrls: string[] = [];
+    for (const token of tokens) {
+      if (token.toLowerCase().includes('linkedin.com/company') || 
+          token.toLowerCase().includes('linkedin.com/school') ||
+          token.toLowerCase().startsWith('http://') || 
+          token.toLowerCase().startsWith('https://') ||
+          token.toLowerCase().startsWith('www.linkedin.com')) {
+        validUrls.push(token);
+      } else if (token.length > 2 && !token.includes(' ')) {
+        // Assume company slug or raw url
+        if (!token.startsWith('http')) {
+          validUrls.push(`https://www.linkedin.com/company/${token}`);
+        } else {
+          validUrls.push(token);
+        }
+      }
+    }
+    // Return unique URLs
+    return Array.from(new Set(validUrls));
+  }
+
+  startLinkedInScraping() {
+    const urls = this.extractUrlsFromText(this.linkedinUrlsInput);
+    if (urls.length === 0) {
+      this.toastr.warning('Please enter at least one valid LinkedIn company URL.', 'Validation Error');
+      return;
+    }
+
+    this.isScrapingLinkedIn = true;
+    const payload = {
+      urls: urls,
+      autoSaveToDb: this.autoSaveToDb
+    };
+
+    const endpoint = `${environment.rootUrl}/api/Consultancy/ScrapeAndAddLinkedInCompanies`;
+    this.http.post<any>(endpoint, payload).subscribe({
+      next: (res: any) => {
+        this.isScrapingLinkedIn = false;
+        const results = res?.value || res?.data || res || [];
+        
+        // Merge into current session results (prepend)
+        this.scrapedResults = [...results, ...this.scrapedResults];
+        
+        const successCount = results.filter((r: any) => r.status === 'Completed').length;
+        const failCount = results.filter((r: any) => r.status === 'Failed').length;
+
+        if (successCount > 0) {
+          this.toastr.success(`Processed ${results.length} company URLs (${successCount} saved to database).`, 'Extraction Complete');
+          // Reload all companies so the "Manage Companies" tab is fresh
+          this.loadCompanies();
+        } else {
+          this.toastr.warning(`Completed processing with ${failCount} errors.`, 'Extraction Finished');
+        }
+
+        // Close modal if open
+        this.closeAddLinkedInModal();
+      },
+      error: (err: any) => {
+        this.isScrapingLinkedIn = false;
+        const msg = err?.error?.message || err?.message || 'Failed to extract company data.';
+        this.toastr.error(msg, 'Scraper Error');
+      }
+    });
+  }
+
+  clearLinkedInInputs() {
+    this.linkedinUrlsInput = '';
+    this.uploadedFileName = '';
+    this.parsedUrlCount = 0;
+  }
+
+  clearScrapedResults() {
+    this.scrapedResults = [];
+    this.toastr.info('Cleared scraper activity results.', 'Cleared');
+  }
+
+  getFilteredScrapedResults(): any[] {
+    let list = this.scrapedResults;
+    if (this.linkedinFilter === 'completed') {
+      list = list.filter(r => r.status === 'Completed');
+    } else if (this.linkedinFilter === 'failed') {
+      list = list.filter(r => r.status === 'Failed');
+    }
+
+    if (this.linkedinSearchTerm.trim()) {
+      const term = this.linkedinSearchTerm.toLowerCase().trim();
+      list = list.filter(r => 
+        (r.companyName && r.companyName.toLowerCase().includes(term)) ||
+        (r.domainName && r.domainName.toLowerCase().includes(term)) ||
+        (r.website && r.website.toLowerCase().includes(term)) ||
+        (r.inputUrl && r.inputUrl.toLowerCase().includes(term))
+      );
+    }
+    return list;
+  }
+
+  getScrapedStats() {
+    const total = this.scrapedResults.length;
+    const completed = this.scrapedResults.filter(r => r.status === 'Completed').length;
+    const failed = this.scrapedResults.filter(r => r.status === 'Failed').length;
+    const newRecords = this.scrapedResults.filter(r => r.isNewRecord).length;
+    return { total, completed, failed, newRecords };
+  }
+
+  exportScrapedResults() {
+    if (this.scrapedResults.length === 0) {
+      this.toastr.warning('No results to export.', 'Export Empty');
+      return;
+    }
+
+    const headers = ['Company Name', 'Domain', 'Website', 'LinkedIn URL', 'Azure Logo', 'Status', 'Message', 'Consultancy ID'];
+    const rows = this.scrapedResults.map(r => [
+      `"${(r.companyName || '').replace(/"/g, '""')}"`,
+      `"${(r.domainName || '').replace(/"/g, '""')}"`,
+      `"${(r.website || '').replace(/"/g, '""')}"`,
+      `"${(r.normalizedLinkedinUrl || r.inputUrl || '').replace(/"/g, '""')}"`,
+      `"${(r.azureLogoFileName || '').replace(/"/g, '""')}"`,
+      `"${(r.status || '').replace(/"/g, '""')}"`,
+      `"${(r.statusMessage || '').replace(/"/g, '""')}"`,
+      `"${r.consultancyId || ''}"`
+    ]);
+
+    const csvContent = 'data:text/csv;charset=utf-8,' + [headers.join(','), ...rows.map(e => e.join(','))].join('\n');
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement('a');
+    link.setAttribute('href', encodedUri);
+    link.setAttribute('download', `LinkedIn_Companies_${new Date().toISOString().slice(0,10)}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    this.toastr.success('Exported scraper results to CSV.', 'Export Complete');
+  }
 }
+

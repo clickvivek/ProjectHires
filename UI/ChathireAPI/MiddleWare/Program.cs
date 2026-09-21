@@ -34,6 +34,7 @@ var config = new AutoMapper.MapperConfiguration(
     });
 builder.Services.AddSingleton(config.CreateMapper());
 builder.Services.AddHttpClient<BusinessLayer.Services.IResendEmailService, BusinessLayer.Services.ResendEmailService>();
+builder.Services.AddHttpClient<BusinessLayer.Services.ILinkedInScraperService, BusinessLayer.Services.LinkedInScraperService>();
 DependancyManager.ConfigureAPI(builder.Services);
 builder.Services.AddHostedService<MiddleWare.BackgroundServices.JobExpirationBackgroundService>();
 

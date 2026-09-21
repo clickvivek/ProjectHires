@@ -1,0 +1,4 @@
+# Development config secrets
+**/appsettings.Development.json
+**/appsettings.Local.json
+**/appsettings.*.local.json

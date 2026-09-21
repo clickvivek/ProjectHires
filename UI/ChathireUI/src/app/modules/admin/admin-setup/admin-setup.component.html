@@ -75,6 +75,16 @@
           <span>Admin Users</span>
           <span *ngIf="adminUsers.length > 0" class="badge rounded-pill bg-danger ms-1">{{ adminUsers.length }}</span>
         </button>
+        <button
+          class="nav-link d-flex align-items-center gap-2"
+          [class.active]="activeTab === 'linkedin-scraper'"
+          (click)="setTab('linkedin-scraper')"
+          type="button"
+        >
+          <span class="material-symbols-outlined fs-5">share</span>
+          <span>Add Company (LinkedIn)</span>
+          <span *ngIf="scrapedResults.length > 0" class="badge rounded-pill bg-primary ms-1">{{ scrapedResults.length }}</span>
+        </button>
       </div>
     </div>
 
@@ -1825,6 +1835,386 @@
 
     </div>
 
+    <!-- ==================================================== -->
+    <!-- TAB: LINKEDIN COMPANY SCRAPER -->
+    <!-- ==================================================== -->
+    <div *ngIf="activeTab === 'linkedin-scraper'" class="tab-content-area linkedin-scraper-area">
+
+      <!-- Header & Action Bar -->
+      <div class="card border-0 shadow-sm p-3 mb-4">
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center gap-3">
+          <div>
+            <h5 class="mb-1 fw-bold text-dark d-flex align-items-center gap-2">
+              <span class="material-symbols-outlined text-primary fs-4">share</span>
+              <span>LinkedIn Company Scraper</span>
+            </h5>
+            <p class="text-muted small mb-0">
+              Extract company name, website domain, high-res logo from LinkedIn URLs and automatically save into Consultancies.
+            </p>
+          </div>
+          <div class="d-flex gap-2">
+            <button
+              type="button"
+              class="btn btn-outline-secondary btn-sm d-flex align-items-center gap-1"
+              (click)="exportScrapedResults()"
+              [disabled]="scrapedResults.length === 0"
+            >
+              <span class="material-symbols-outlined fs-5">download</span>
+              <span>Export All</span>
+            </button>
+            <button
+              type="button"
+              class="btn btn-primary btn-sm d-flex align-items-center gap-1 shadow-sm px-3"
+              (click)="openAddLinkedInModal()"
+            >
+              <span class="material-symbols-outlined fs-5">add_link</span>
+              <span>Add LinkedIn URLs</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Summary Metric Cards -->
+      <div class="row g-3 mb-4">
+        <div class="col-6 col-md-3">
+          <div class="card border-0 shadow-sm p-3 h-100 bg-white border-start border-4 border-primary">
+            <div class="d-flex justify-content-between align-items-center">
+              <div>
+                <div class="text-muted small text-uppercase fw-semibold">Processed</div>
+                <div class="fs-4 fw-bold text-dark mt-1">{{ getScrapedStats().total }}</div>
+              </div>
+              <div class="stat-icon-circle bg-primary-subtle text-primary">
+                <span class="material-symbols-outlined">link</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-6 col-md-3">
+          <div class="card border-0 shadow-sm p-3 h-100 bg-white border-start border-4 border-success">
+            <div class="d-flex justify-content-between align-items-center">
+              <div>
+                <div class="text-muted small text-uppercase fw-semibold">Saved to DB</div>
+                <div class="fs-4 fw-bold text-success mt-1">{{ getScrapedStats().completed }}</div>
+              </div>
+              <div class="stat-icon-circle bg-success-subtle text-success">
+                <span class="material-symbols-outlined">check_circle</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-6 col-md-3">
+          <div class="card border-0 shadow-sm p-3 h-100 bg-white border-start border-4 border-info">
+            <div class="d-flex justify-content-between align-items-center">
+              <div>
+                <div class="text-muted small text-uppercase fw-semibold">New Records</div>
+                <div class="fs-4 fw-bold text-info mt-1">{{ getScrapedStats().newRecords }}</div>
+              </div>
+              <div class="stat-icon-circle bg-info-subtle text-info">
+                <span class="material-symbols-outlined">domain_add</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-6 col-md-3">
+          <div class="card border-0 shadow-sm p-3 h-100 bg-white border-start border-4 border-danger">
+            <div class="d-flex justify-content-between align-items-center">
+              <div>
+                <div class="text-muted small text-uppercase fw-semibold">Failed</div>
+                <div class="fs-4 fw-bold text-danger mt-1">{{ getScrapedStats().failed }}</div>
+              </div>
+              <div class="stat-icon-circle bg-danger-subtle text-danger">
+                <span class="material-symbols-outlined">error</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Inline Input Section (Quick URL Extraction) -->
+      <div class="card border-0 shadow-sm p-4 mb-4">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h6 class="fw-bold text-dark mb-0 d-flex align-items-center gap-2">
+            <span class="material-symbols-outlined text-primary fs-5">input</span>
+            <span>Submit LinkedIn Company URLs</span>
+          </h6>
+          <span class="badge bg-light text-secondary border px-2 py-1" *ngIf="parsedUrlCount > 0">
+            {{ parsedUrlCount }} URL(s) detected
+          </span>
+        </div>
+
+        <div class="row g-3">
+          <!-- Textarea input -->
+          <div class="col-lg-7">
+            <label class="form-label fw-semibold small text-muted">
+              Enter LinkedIn URLs (one per line or separated by comma)
+            </label>
+            <textarea
+              class="form-control font-monospace"
+              rows="5"
+              placeholder="https://www.linkedin.com/company/google&#10;https://www.linkedin.com/company/microsoft&#10;https://www.linkedin.com/company/stripe"
+              [(ngModel)]="linkedinUrlsInput"
+              (ngModelChange)="onLinkedInUrlInputChanged()"
+              [disabled]="isScrapingLinkedIn"
+            ></textarea>
+          </div>
+
+          <!-- Drag & Drop Zone -->
+          <div class="col-lg-5">
+            <label class="form-label fw-semibold small text-muted">Or upload CSV / TXT file</label>
+            <div
+              class="dropzone-box d-flex flex-column align-items-center justify-content-center p-3 text-center border border-2 border-dashed rounded-3 h-75 cursor-pointer position-relative"
+              [class.drag-over]="isDraggingFile"
+              (dragover)="onLinkedInDragOver($event)"
+              (dragleave)="onLinkedInDragLeave($event)"
+              (drop)="onLinkedInDrop($event)"
+              (click)="linkedinFileInput.click()"
+            >
+              <input
+                #linkedinFileInput
+                type="file"
+                accept=".csv,.txt"
+                class="d-none"
+                (change)="onLinkedInFileSelected($event)"
+              />
+              <span class="material-symbols-outlined text-primary fs-1 mb-1">cloud_upload</span>
+              <div class="fw-semibold small text-dark">Drag & drop CSV or TXT file here</div>
+              <div class="text-muted extra-small">or click to browse from computer</div>
+              <div *ngIf="uploadedFileName" class="badge bg-primary-subtle text-primary mt-2">
+                📄 {{ uploadedFileName }}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Actions Bar -->
+        <div class="d-flex flex-column flex-sm-row justify-content-between align-items-sm-center gap-3 mt-4 pt-3 border-top">
+          <div class="form-check form-switch mb-0">
+            <input
+              class="form-check-input cursor-pointer"
+              type="checkbox"
+              id="autoSaveToDbSwitch"
+              [(ngModel)]="autoSaveToDb"
+            />
+            <label class="form-check-label small fw-semibold text-dark cursor-pointer" for="autoSaveToDbSwitch">
+              Automatically save / update in Consultancies database & upload Azure logo
+            </label>
+          </div>
+
+          <div class="d-flex gap-2">
+            <button
+              type="button"
+              class="btn btn-outline-secondary btn-sm px-3"
+              (click)="clearLinkedInInputs()"
+              [disabled]="isScrapingLinkedIn || (!linkedinUrlsInput && !uploadedFileName)"
+            >
+              Clear
+            </button>
+            <button
+              type="button"
+              class="btn btn-primary px-4 d-flex align-items-center gap-2 shadow-sm"
+              (click)="startLinkedInScraping()"
+              [disabled]="isScrapingLinkedIn || parsedUrlCount === 0"
+            >
+              <span *ngIf="isScrapingLinkedIn" class="spinner-border spinner-border-sm"></span>
+              <span *ngIf="!isScrapingLinkedIn" class="material-symbols-outlined fs-5">bolt</span>
+              <span>{{ isScrapingLinkedIn ? 'Extracting & Saving...' : 'Extract & Save to DB' }}</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Results Table Card -->
+      <div class="card border-0 shadow-sm">
+        <div class="card-header bg-white border-bottom p-3">
+          <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center gap-3">
+            <div class="d-flex align-items-center gap-2">
+              <h6 class="mb-0 fw-bold text-dark">Extraction Results & Activity</h6>
+              <span *ngIf="scrapedResults.length > 0" class="badge bg-secondary rounded-pill">
+                {{ scrapedResults.length }}
+              </span>
+            </div>
+
+            <div class="d-flex flex-wrap align-items-center gap-2 w-100 w-md-auto">
+              <!-- Filter Buttons -->
+              <div class="btn-group btn-group-sm" role="group">
+                <button
+                  type="button"
+                  class="btn"
+                  [ngClass]="linkedinFilter === 'all' ? 'btn-primary text-white' : 'btn-outline-secondary'"
+                  (click)="linkedinFilter = 'all'"
+                >
+                  All ({{ scrapedResults.length }})
+                </button>
+                <button
+                  type="button"
+                  class="btn"
+                  [ngClass]="linkedinFilter === 'completed' ? 'btn-primary text-white' : 'btn-outline-secondary'"
+                  (click)="linkedinFilter = 'completed'"
+                >
+                  Completed ({{ getScrapedStats().completed }})
+                </button>
+                <button
+                  type="button"
+                  class="btn"
+                  [ngClass]="linkedinFilter === 'failed' ? 'btn-primary text-white' : 'btn-outline-secondary'"
+                  (click)="linkedinFilter = 'failed'"
+                >
+                  Failed ({{ getScrapedStats().failed }})
+                </button>
+              </div>
+
+              <!-- Search Input -->
+              <div class="input-group input-group-sm search-group">
+                <span class="input-group-text bg-light border-end-0">
+                  <span class="material-symbols-outlined fs-6 text-muted">search</span>
+                </span>
+                <input
+                  type="text"
+                  class="form-control border-start-0 bg-light"
+                  placeholder="Filter results..."
+                  [(ngModel)]="linkedinSearchTerm"
+                />
+              </div>
+
+              <button
+                *ngIf="scrapedResults.length > 0"
+                type="button"
+                class="btn btn-outline-danger btn-sm d-flex align-items-center gap-1"
+                (click)="clearScrapedResults()"
+              >
+                <span class="material-symbols-outlined fs-6">delete_sweep</span>
+                <span>Clear</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Table Body -->
+        <div class="table-responsive">
+          <table class="table table-hover align-middle mb-0 custom-scraper-table">
+            <thead class="table-light">
+              <tr>
+                <th style="width: 50px;" class="text-center">#</th>
+                <th style="min-width: 250px;">Company</th>
+                <th style="min-width: 180px;">Website Domain</th>
+                <th style="min-width: 220px;">LinkedIn URL</th>
+                <th style="min-width: 140px;">Status</th>
+                <th style="min-width: 160px;">Azure Logo</th>
+                <th style="width: 100px;" class="text-end">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <!-- Empty State -->
+              <tr *ngIf="getFilteredScrapedResults().length === 0">
+                <td colspan="7" class="text-center py-5 text-muted">
+                  <div class="d-flex flex-column align-items-center justify-content-center">
+                    <span class="material-symbols-outlined fs-1 text-muted opacity-50 mb-2">find_in_page</span>
+                    <p class="mb-1 fw-semibold">No extraction results to display</p>
+                    <small class="text-muted">Enter LinkedIn company URLs above or upload a CSV to extract details.</small>
+                  </div>
+                </td>
+              </tr>
+
+              <!-- Data Rows -->
+              <tr *ngFor="let item of getFilteredScrapedResults(); let i = index">
+                <td class="text-center text-muted small">{{ i + 1 }}</td>
+                
+                <!-- Company (Logo + Name + Tagline) -->
+                <td>
+                  <div class="d-flex align-items-center gap-3">
+                    <div class="company-logo-frame bg-light rounded border d-flex align-items-center justify-content-center overflow-hidden">
+                      <img
+                        *ngIf="item.originalLogoUrl"
+                        [src]="item.originalLogoUrl"
+                        [alt]="item.companyName"
+                        class="img-fluid"
+                        (error)="item.originalLogoUrl = null"
+                      />
+                      <span *ngIf="!item.originalLogoUrl" class="material-symbols-outlined text-secondary fs-4">
+                        apartment
+                      </span>
+                    </div>
+                    <div>
+                      <div class="fw-bold text-dark d-flex align-items-center gap-2">
+                        <span>{{ item.companyName || 'Unknown Company' }}</span>
+                        <span *ngIf="item.isNewRecord" class="badge bg-success-subtle text-success extra-small">New</span>
+                        <span *ngIf="item.consultancyId && !item.isNewRecord" class="badge bg-secondary-subtle text-secondary extra-small">ID #{{ item.consultancyId }}</span>
+                      </div>
+                      <div *ngIf="item.description" class="text-muted extra-small text-truncate" style="max-width: 280px;" [title]="item.description">
+                        {{ item.description }}
+                      </div>
+                    </div>
+                  </div>
+                </td>
+
+                <!-- Website Domain -->
+                <td>
+                  <div *ngIf="item.domainName">
+                    <a [href]="item.website || ('https://' + item.domainName)" target="_blank" class="text-primary text-decoration-none fw-semibold d-inline-flex align-items-center gap-1">
+                      <span>{{ item.domainName }}</span>
+                      <span class="material-symbols-outlined extra-small">open_in_new</span>
+                    </a>
+                  </div>
+                  <span *ngIf="!item.domainName" class="text-muted small">N/A</span>
+                </td>
+
+                <!-- LinkedIn URL -->
+                <td>
+                  <a [href]="item.normalizedLinkedinUrl || item.inputUrl" target="_blank" class="badge bg-light text-primary border text-decoration-none d-inline-flex align-items-center gap-1 p-2">
+                    <span class="material-symbols-outlined extra-small">link</span>
+                    <span class="text-truncate" style="max-width: 180px;">{{ item.companySlug || item.inputUrl }}</span>
+                  </a>
+                </td>
+
+                <!-- Status -->
+                <td>
+                  <span
+                    class="badge d-inline-flex align-items-center gap-1 px-2 py-1 rounded-pill"
+                    [class.bg-success-subtle]="item.status === 'Completed'"
+                    [class.text-success]="item.status === 'Completed'"
+                    [class.bg-danger-subtle]="item.status === 'Failed'"
+                    [class.text-danger]="item.status === 'Failed'"
+                    [class.bg-warning-subtle]="item.status === 'Pending'"
+                    [class.text-warning]="item.status === 'Pending'"
+                  >
+                    <span class="material-symbols-outlined extra-small">
+                      {{ item.status === 'Completed' ? 'check_circle' : (item.status === 'Failed' ? 'error' : 'hourglass_empty') }}
+                    </span>
+                    <span>{{ item.status }}</span>
+                  </span>
+                  <div *ngIf="item.statusMessage" class="extra-small text-muted mt-1">
+                    {{ item.statusMessage }}
+                  </div>
+                </td>
+
+                <!-- Azure Logo File -->
+                <td>
+                  <div *ngIf="item.azureLogoFileName" class="font-monospace extra-small text-secondary text-truncate" style="max-width: 150px;" [title]="item.azureLogoFileName">
+                    ☁️ {{ item.azureLogoFileName }}
+                  </div>
+                  <span *ngIf="!item.azureLogoFileName" class="text-muted extra-small">—</span>
+                </td>
+
+                <!-- Actions -->
+                <td class="text-end">
+                  <button
+                    *ngIf="item.consultancyId"
+                    type="button"
+                    class="btn btn-sm btn-outline-primary p-1"
+                    title="View in Consultancies"
+                    (click)="setTab('view-edit')"
+                  >
+                    <span class="material-symbols-outlined fs-6">domain</span>
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+
   </div>
 </div>
 
@@ -2204,3 +2594,96 @@
 
   </div>
 </div>
+
+<!-- ==================================================== -->
+<!-- POPUP MODAL: ADD LINKEDIN COMPANY URLS -->
+<!-- ==================================================== -->
+<div *ngIf="showAddLinkedInModal" class="modal-backdrop-custom d-flex align-items-center justify-content-center">
+  <div class="modal-dialog-custom bg-white rounded-4 shadow-lg overflow-hidden animate__animated animate__fadeInDown" style="max-width: 580px; width: 90%;">
+    
+    <!-- Modal Header -->
+    <div class="p-4 border-bottom d-flex justify-content-between align-items-start">
+      <div>
+        <h5 class="fw-bold text-dark mb-1">Add LinkedIn Company URLs</h5>
+        <p class="text-muted extra-small mb-0">
+          Enter URLs manually, or upload a CSV/TXT file. Each URL should be on a new line or separated by a comma.
+        </p>
+      </div>
+      <button type="button" class="btn-close" (click)="closeAddLinkedInModal()"></button>
+    </div>
+
+    <!-- Modal Body -->
+    <div class="p-4">
+      <!-- Company URLs Label & Textarea -->
+      <div class="mb-3">
+        <label class="form-label fw-bold text-danger small mb-1">Company URLs *</label>
+        <textarea
+          class="form-control border-danger font-monospace"
+          rows="6"
+          placeholder="https://www.linkedin.com/company/google&#10;https://www.linkedin.com/company/microsoft"
+          [(ngModel)]="linkedinUrlsInput"
+          (ngModelChange)="onLinkedInUrlInputChanged()"
+          [disabled]="isScrapingLinkedIn"
+        ></textarea>
+        <div class="text-danger extra-small mt-1" *ngIf="parsedUrlCount === 0 && linkedinUrlsInput.trim().length > 0">
+          Please enter at least one valid LinkedIn URL.
+        </div>
+      </div>
+
+      <!-- OR Divider -->
+      <div class="d-flex align-items-center my-3">
+        <hr class="flex-grow-1 my-0 text-muted" />
+        <span class="px-3 text-muted extra-small fw-bold text-uppercase">OR</span>
+        <hr class="flex-grow-1 my-0 text-muted" />
+      </div>
+
+      <!-- File Upload Zone -->
+      <div
+        class="dropzone-box d-flex flex-column align-items-center justify-content-center p-4 text-center border border-2 border-dashed rounded-3 cursor-pointer"
+        [class.drag-over]="isDraggingFile"
+        (dragover)="onLinkedInDragOver($event)"
+        (dragleave)="onLinkedInDragLeave($event)"
+        (drop)="onLinkedInDrop($event)"
+        (click)="modalFileInput.click()"
+      >
+        <input
+          #modalFileInput
+          type="file"
+          accept=".csv,.txt"
+          class="d-none"
+          (change)="onLinkedInFileSelected($event)"
+        />
+        <span class="material-symbols-outlined text-primary fs-1 mb-1">upload_file</span>
+        <div class="fw-bold text-dark small">Upload a file</div>
+        <div class="text-muted extra-small">Drag & drop a CSV or TXT file here</div>
+        <div *ngIf="uploadedFileName" class="badge bg-primary-subtle text-primary mt-2">
+          📄 {{ uploadedFileName }}
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal Footer -->
+    <div class="p-3 bg-light border-top d-flex justify-content-end gap-2">
+      <button
+        type="button"
+        class="btn btn-outline-secondary px-3"
+        (click)="closeAddLinkedInModal()"
+        [disabled]="isScrapingLinkedIn"
+      >
+        Cancel
+      </button>
+      <button
+        type="button"
+        class="btn btn-primary px-4 d-flex align-items-center gap-2"
+        (click)="startLinkedInScraping()"
+        [disabled]="isScrapingLinkedIn || parsedUrlCount === 0"
+      >
+        <span *ngIf="isScrapingLinkedIn" class="spinner-border spinner-border-sm"></span>
+        <span *ngIf="!isScrapingLinkedIn" class="material-symbols-outlined fs-5">bolt</span>
+        <span>{{ isScrapingLinkedIn ? 'Extracting...' : 'Extract & Save' }}</span>
+      </button>
+    </div>
+
+  </div>
+</div>
+
