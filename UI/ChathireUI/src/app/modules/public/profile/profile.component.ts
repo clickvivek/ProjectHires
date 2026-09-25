@@ -38,6 +38,9 @@ export class ProfileComponent implements OnInit {
 
   isLoaded:boolean = false;
   isProfileAvailable:boolean = false;
+  isProfilePrivate:boolean = false;
+  isCandidate:boolean = false;
+  candidateData:any = null;
   
   activeTab: string = 'recruiters';
   isJobsLoaded: boolean = false;
@@ -221,19 +224,50 @@ export class ProfileComponent implements OnInit {
     this.isCandidatesLoaded = false;
     this.hasJobs = false;
     this.hasCandidates = false;
+    this.isProfilePrivate = false;
 
     this.userService.apiUserGetUserByPublicProfileIdGet(this.profileId).subscribe({
-      next: (res : any) => {
-        if(!_.isEmpty(res.value)) {
+      next: (res: any) => {
+        if (!_.isEmpty(res.value)) {
           let publicUser = res.value[0];
-          let consultancyId = publicUser.consultancyUsers[0]?.consultancyId;
-          this.consultancyUserId = publicUser.consultancyUsers[0]?.id;
-          this.user = publicUser.consultancyUsers[0]?.user;
+
+          if (publicUser.userTypeId === 5 || publicUser.directCandidateDetail) {
+            this.isCandidate = true;
+            this.candidateData = publicUser;
+            this.user = publicUser;
+
+            const isOptedIn = publicUser.directCandidateDetail?.isPublicProfileEnabled;
+            const isOwner = this.sessionService.userId == publicUser.id;
+
+            if (!isOptedIn && !isOwner) {
+              this.isProfileAvailable = false;
+              this.isProfilePrivate = true;
+              this.isLoaded = true;
+              return;
+            }
+
+            this.chatUser = {
+              userId: publicUser.id,
+              userFName: publicUser.fname,
+              userLName: publicUser.lname,
+              profilePic: publicUser.profilePic,
+              profileUserName: publicUser.directCandidateDetail?.publicProfileSlug
+            };
+
+            this.isLoaded = true;
+            this.isProfileAvailable = true;
+            return;
+          }
+
+          this.isCandidate = false;
+          let consultancyId = publicUser.consultancyUsers && publicUser.consultancyUsers[0]?.consultancyId;
+          this.consultancyUserId = publicUser.consultancyUsers && publicUser.consultancyUsers[0]?.id;
+          this.user = publicUser.consultancyUsers && publicUser.consultancyUsers[0]?.user;
           if (consultancyId) {
             this.fetchCompanyDetails(consultancyId);
           }
 
-          const profileUserName = publicUser?.consultancyUsers[0]?.publicProfileUserName;
+          const profileUserName = publicUser?.consultancyUsers && publicUser?.consultancyUsers[0]?.publicProfileUserName;
 
           this.chatUser = {
             userId: publicUser.id,
@@ -251,18 +285,56 @@ export class ProfileComponent implements OnInit {
 
           this.isLoaded = true;
           this.isProfileAvailable = true;
-        }
-        else {
+        } else {
           this.user = null;
+          this.isCandidate = false;
           this.isLoaded = true;
           this.isProfileAvailable = false;
         }
       },
-      error: (error : any) => {
+      error: (error: any) => {
         this.isLoaded = true;
         this.isProfileAvailable = false;
       },
     });
+  }
+
+  getCandidateLocation(): string {
+    if (!this.candidateData) return '';
+    if (this.candidateData.city) {
+      return `${this.candidateData.city.cityName || this.candidateData.city.city1 || ''}${this.candidateData.city.stateCode ? ', ' + this.candidateData.city.stateCode : ''}`;
+    }
+    return this.candidateData.location || '';
+  }
+
+  getCandidatePreferredLocations(): string[] {
+    const raw = this.candidateData?.directCandidateDetail?.preferredLocations;
+    if (!raw) return [];
+    try {
+      const parsed = JSON.parse(raw);
+      if (Array.isArray(parsed)) {
+        return parsed.map((item: any) => {
+          if (typeof item === 'string') return item;
+          return item.city1 ? `${item.city1}${item.stateCode ? ', ' + item.stateCode : ''}` : (item.cityName || item.name || '');
+        }).filter(Boolean);
+      }
+    } catch (e) {
+      return raw.split(',').map((s: string) => s.trim()).filter(Boolean);
+    }
+    return [];
+  }
+
+  isCandidateOwner(): boolean {
+    return this.sessionService.userId == this.candidateData?.id;
+  }
+
+  getCandidateResumeUrl(): string {
+    const resumes = this.candidateData?.directCandidateResumes;
+    if (resumes && resumes.length > 0) {
+      const primary = resumes.find((r: any) => r.isPrimary) || resumes[0];
+      return primary.blobUrl;
+    }
+    return '';
   }
 
 }

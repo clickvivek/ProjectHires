@@ -1,4 +1,4 @@
-﻿//using DataAccessLayer.Audit;
+//using DataAccessLayer.Audit;
 using DataAccessLayer.Models;
 //using DataAccessLayer.EFContext;
 //using DataAccessLayer.EFContext;
@@ -165,6 +165,26 @@ namespace DataAccessLayer.Common
             if (typeof(T) == typeof(IUserSubscriptionPlanRepository))
             {
                 return new UserSubscriptionPlanRepository(_context) as T;
+            }
+
+            if (typeof(T) == typeof(IDirectCandidateRepository))
+            {
+                return new DirectCandidateRepository(_context) as T;
+            }
+
+            if (typeof(T) == typeof(IPromocodeRepository))
+            {
+                return new PromocodeRepository(_context) as T;
+            }
+
+            if (typeof(T) == typeof(IUserReferralRepository))
+            {
+                return new UserReferralRepository(_context) as T;
+            }
+
+            if (typeof(T) == typeof(IEmailJobPostingRepository))
+            {
+                return new EmailJobPostingRepository(_context) as T;
             }
 
             //if (typeof(T) == typeof(IJobOpeningSkillsRepository))

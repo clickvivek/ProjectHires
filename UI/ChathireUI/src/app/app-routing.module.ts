@@ -26,6 +26,9 @@ const routes: Routes = [
   { path: 'inbox', canActivate: [ AuthGuard ], loadChildren: () => import('./modules/user/inbox/inbox.module').then(m => m.InboxModule) },
   { path: 'chat', canActivate: [ AuthGuard ], loadChildren: () => import('./modules/user/messages/messages.module').then(m => m.MessagesModule) },
   { path: 'jobs', canActivate: [ AuthGuard ], loadChildren: () => import('./modules/public/job-details-page/job-details-page.module').then(m => m.JobDetailsPageModule) },
+  { path: 'my-profile', canActivate: [ AuthGuard ], loadChildren: () => import('./modules/user/candidate-profile/candidate-profile.module').then(m => m.CandidateProfileModule) },
+  { path: 'refer-for-rewards', canActivate: [ AuthGuard ], loadChildren: () => import('./modules/user/referral/referral.module').then(m => m.ReferralModule) },
+  { path: 'referrals', canActivate: [ AuthGuard ], loadChildren: () => import('./modules/user/referral/referral.module').then(m => m.ReferralModule) },
   { path: 'Adminsetup', canActivate: [ AdminGuard ], loadChildren: () => import('./modules/admin/admin-setup/admin-setup.module').then(m => m.AdminSetupModule) },
   { path: 'adminsetup', canActivate: [ AdminGuard ], loadChildren: () => import('./modules/admin/admin-setup/admin-setup.module').then(m => m.AdminSetupModule) },
   { path: '', pathMatch: 'full', redirectTo: 'home' }

@@ -147,6 +147,23 @@ namespace DataAccessLayer.Repository
                     where p.PublicProfileUserName == publicProfileId
             select o).Include(o => o.ConsultancyUsers).ToListAsync();
 
+            if (a == null || a.Count == 0)
+            {
+                a = await (from u in _context.Users
+                           join d in _context.DirectCandidateDetails on u.Id equals d.CandidateUserId
+                           where d.PublicProfileSlug == publicProfileId
+                           select u)
+                           .Include(u => u.City)
+                               .ThenInclude(c => c.IdStateNavigation)
+                           .Include(u => u.DirectCandidateDetail)
+                               .ThenInclude(d => d.Visa)
+                           .Include(u => u.DirectCandidateExperiences)
+                               .ThenInclude(e => e.City)
+                           .Include(u => u.DirectCandidateEducations)
+                           .Include(u => u.DirectCandidateResumes)
+                           .ToListAsync();
+            }
+
             return a;
         }
 

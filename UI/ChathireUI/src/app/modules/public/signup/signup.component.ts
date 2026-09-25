@@ -7,6 +7,9 @@ import { UserService } from 'src/app/api/api/user.service';
 import { TokenService } from 'src/app/api/api/token.service';
 import { SessionService } from 'src/app/core/session/session.service';
 
+import { ActivatedRoute } from '@angular/router';
+import { ReferralService } from 'src/app/core/services/referral.service';
+
 declare var google: any;
 
 @Component({
@@ -24,6 +27,7 @@ export class SignupComponent implements OnInit, OnDestroy {
     agreeTerms: false
   };
 
+  referralCode: string = '';
   otpCode: string = '';
   showPassword: boolean = false;
   isFormSubmitted: boolean = false;
@@ -39,6 +43,8 @@ export class SignupComponent implements OnInit, OnDestroy {
 
   user: UserDto;
 
+  selectedRole: 'candidate' | 'recruiter' = 'candidate';
+
   @ViewChild('signupForm', { static: false }) signupForm: NgForm;
   @ViewChild('otpForm', { static: false }) otpForm: NgForm;
 
@@ -46,7 +52,9 @@ export class SignupComponent implements OnInit, OnDestroy {
     private authService: AuthService,
     private userService: UserService,
     private tokenService: TokenService,
-    private sessionService: SessionService
+    private sessionService: SessionService,
+    private route: ActivatedRoute,
+    private referralService: ReferralService
   ) { }
 
   handleTogglePassword() {
@@ -82,6 +90,16 @@ export class SignupComponent implements OnInit, OnDestroy {
             consultancyId: res.value.consultancyId,
             consultancyUserId: res.value.consultancyUserId
           };
+
+          const refCode = this.referralCode || sessionStorage.getItem('ch_referral_code') || '';
+          if (refCode || user.userEmail) {
+            this.referralService.processSignup(user.userEmail, refCode, user.userId).subscribe({
+              next: () => {},
+              error: () => {}
+            });
+            sessionStorage.removeItem('ch_referral_code');
+          }
+
           this.authService.login(user);
         },
         error: (err: any) => {
@@ -99,11 +117,14 @@ export class SignupComponent implements OnInit, OnDestroy {
       this.error = "";
       this.successMessage = "";
 
+      const isCandidate = this.selectedRole === 'candidate';
       this.user = {
         "email": this.formData.email,
         "password": this.formData.password,
         "active": false,
-        "userTypeId": 1,
+        "userTypeId": isCandidate ? 5 : 1,
+        "roleRecruiter": !isCandidate,
+        "roleBenchSales": false,
         "updated": new Date().toISOString()
       };
 
@@ -172,6 +193,16 @@ export class SignupComponent implements OnInit, OnDestroy {
                 userTypeName: tokenRes.value.userTypeName,
                 userTypeId: tokenRes.value.userTypeId
               };
+
+              const refCode = this.referralCode || sessionStorage.getItem('ch_referral_code') || '';
+              if (refCode || user.userEmail) {
+                this.referralService.processSignup(user.userEmail, refCode, user.userId).subscribe({
+                  next: () => {},
+                  error: () => {}
+                });
+                sessionStorage.removeItem('ch_referral_code');
+              }
+
               this.authService.login(user);
             },
             error: (loginErr: any) => {
@@ -246,6 +277,21 @@ export class SignupComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+    this.route.queryParams.subscribe(params => {
+      if (params['ref']) {
+        this.referralCode = params['ref'];
+        sessionStorage.setItem('ch_referral_code', this.referralCode);
+      }
+      if (params['email'] && !this.formData.email) {
+        this.formData.email = params['email'];
+      }
+    });
+
+    const savedRef = sessionStorage.getItem('ch_referral_code');
+    if (savedRef && !this.referralCode) {
+      this.referralCode = savedRef;
+    }
+
     setTimeout(() => {
       if (typeof google !== 'undefined' && google.accounts) {
         google.accounts.id.initialize({

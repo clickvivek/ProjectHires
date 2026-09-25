@@ -297,6 +297,33 @@
     }
   }
 
+  /* Skip For Now Button */
+  .btn-skip-step {
+    height: 48px;
+    background-color: #F2F4F7 !important;
+    color: #344054 !important;
+    border: 1px solid #D0D5DD !important;
+    font-weight: 600 !important;
+    font-size: 14px !important;
+    border-radius: 8px !important;
+    padding: 0 20px !important;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease-in-out;
+
+    &:hover:not(:disabled) {
+      background-color: #EAECF0 !important;
+      color: #1D2939 !important;
+      border-color: #98A2B3 !important;
+    }
+
+    &:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+  }
+
   .btn-create-company-link {
     color: #70246D !important;
     background-color: #FAF5FA !important;

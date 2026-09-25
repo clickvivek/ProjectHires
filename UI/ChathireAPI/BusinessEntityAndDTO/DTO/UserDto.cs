@@ -177,7 +177,15 @@ namespace BusinessEntityAndDTO.DTO
 
         public List<ConsultancyUserDto>? ConsultancyUsers { get; set; } 
 
+        public CityDto? City { get; set; }
 
+        public DirectCandidateDetailDto? DirectCandidateDetail { get; set; }
+
+        public List<DirectCandidateExperienceDto>? DirectCandidateExperiences { get; set; }
+
+        public List<DirectCandidateEducationDto>? DirectCandidateEducations { get; set; }
+
+        public List<DirectCandidateResumeDto>? DirectCandidateResumes { get; set; }
     }
 
 

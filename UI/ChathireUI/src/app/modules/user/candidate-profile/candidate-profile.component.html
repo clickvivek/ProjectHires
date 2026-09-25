@@ -1,0 +1,594 @@
+<div class="candidate-profile-page py-4">
+  <div class="container">
+
+    <!-- Loading Spinner -->
+    <div *ngIf="isLoading" class="text-center py-5">
+      <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Loading...</span>
+      </div>
+      <p class="mt-2 text-muted">Loading your candidate profile...</p>
+    </div>
+
+    <div *ngIf="!isLoading">
+
+      <!-- Alerts -->
+      <div *ngIf="successMessage" class="alert alert-success alert-dismissible fade show d-flex align-items-center mb-4" role="alert">
+        <span class="material-symbols-outlined me-2">check_circle</span>
+        <div>{{ successMessage }}</div>
+        <button type="button" class="btn-close ms-auto" (click)="clearAlerts()"></button>
+      </div>
+
+      <div *ngIf="errorMessage" class="alert alert-danger alert-dismissible fade show d-flex align-items-center mb-4" role="alert">
+        <span class="material-symbols-outlined me-2">error</span>
+        <div>{{ errorMessage }}</div>
+        <button type="button" class="btn-close ms-auto" (click)="clearAlerts()"></button>
+      </div>
+
+      <!-- Hero Header Card -->
+      <div class="card border-0 shadow-sm rounded-4 mb-4 profile-hero-card">
+        <div class="card-body p-4">
+          <div class="row align-items-center">
+            <div class="col-auto">
+              <div class="profile-avatar-wrapper position-relative">
+                <img
+                  *ngIf="profile?.profilePic"
+                  [src]="getProfilePic()"
+                  class="rounded-circle profile-avatar"
+                  alt="Avatar"
+                  (error)="$any($event.target).style.display='none'; profileAvatarFallback.style.display='flex'"
+                />
+                <div
+                  #profileAvatarFallback
+                  class="profile-avatar-fallback rounded-circle"
+                  [style.display]="profile?.profilePic ? 'none' : 'flex'"
+                >
+                  <span>{{ getUserInitial(profile?.fname, profile?.lname) }}</span>
+                </div>
+              </div>
+            </div>
+            <div class="col">
+              <div class="d-flex align-items-center flex-wrap gap-2 mb-1">
+                <h3 class="mb-0 fw-bold text-dark">{{ profile?.fname }} {{ profile?.lname }}</h3>
+                <span class="badge bg-primary-subtle text-primary rounded-pill px-3 py-1 fw-semibold">Job Seeker</span>
+                <span *ngIf="profile?.details?.isActivelyLooking" class="badge bg-success-subtle text-success rounded-pill px-3 py-1 fw-semibold">
+                  ● Actively Looking
+                </span>
+              </div>
+              <p class="text-muted mb-2 fs-6" *ngIf="profile?.details?.headline">{{ profile?.details?.headline }}</p>
+              <div class="d-flex flex-wrap gap-3 text-muted small">
+                <span *ngIf="profile?.email" class="d-flex align-items-center"><span class="material-symbols-outlined fs-6 me-1">mail</span>{{ profile?.email }}</span>
+                <span *ngIf="profile?.phone" class="d-flex align-items-center"><span class="material-symbols-outlined fs-6 me-1">call</span>{{ profile?.phone }}</span>
+                <span *ngIf="profile?.cityName" class="d-flex align-items-center"><span class="material-symbols-outlined fs-6 me-1">location_on</span>{{ profile?.cityName }}</span>
+                <span *ngIf="profile?.details?.visaName" class="d-flex align-items-center text-primary fw-medium"><span class="material-symbols-outlined fs-6 me-1">badge</span>{{ profile?.details?.visaName }}</span>
+              </div>
+            </div>
+            <div class="col-12 col-md-auto mt-3 mt-md-0 d-flex gap-2 flex-wrap">
+              <a *ngIf="profile?.details?.isPublicProfileEnabled && profile?.details?.publicProfileSlug" [href]="getPublicProfileUrl()" target="_blank" class="btn btn-outline-success btn-sm d-flex align-items-center">
+                <span class="material-symbols-outlined fs-6 me-1">public</span>Public Profile
+              </a>
+              <a *ngIf="profile?.linkedin" [href]="profile?.linkedin" target="_blank" class="btn btn-outline-secondary btn-sm d-flex align-items-center">
+                <span class="material-symbols-outlined fs-6 me-1">link</span>LinkedIn
+              </a>
+              <a *ngIf="profile?.details?.gitHubUrl" [href]="profile?.details?.gitHubUrl" target="_blank" class="btn btn-outline-secondary btn-sm d-flex align-items-center">
+                <span class="material-symbols-outlined fs-6 me-1">code</span>GitHub
+              </a>
+              <a routerLink="/search-jobs" class="btn btn-primary btn-sm px-3 fw-medium d-flex align-items-center">
+                <span class="material-symbols-outlined fs-6 me-1">search</span>Find Jobs
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Navigation Tabs -->
+      <div class="card border-0 shadow-sm rounded-4">
+        <div class="card-header bg-white border-bottom px-4 pt-3 pb-0">
+          <ul class="nav nav-tabs card-header-tabs border-0">
+            <li class="nav-item">
+              <button class="nav-link tab-btn" [class.active]="activeTab === 'details'" (click)="activeTab = 'details'">
+                <span class="material-symbols-outlined fs-6 me-1 align-middle">tune</span>Profile Details
+              </button>
+            </li>
+            <li class="nav-item">
+              <button class="nav-link tab-btn" [class.active]="activeTab === 'resumes'" (click)="activeTab = 'resumes'">
+                <span class="material-symbols-outlined fs-6 me-1 align-middle">description</span>Resumes & CVs
+                <span class="badge bg-secondary-subtle text-secondary rounded-pill ms-1">{{ profile?.resumes?.length || 0 }}</span>
+              </button>
+            </li>
+            <li class="nav-item">
+              <button class="nav-link tab-btn" [class.active]="activeTab === 'experience'" (click)="activeTab = 'experience'">
+                <span class="material-symbols-outlined fs-6 me-1 align-middle">work</span>Experience
+                <span class="badge bg-secondary-subtle text-secondary rounded-pill ms-1">{{ profile?.experiences?.length || 0 }}</span>
+              </button>
+            </li>
+            <li class="nav-item">
+              <button class="nav-link tab-btn" [class.active]="activeTab === 'education'" (click)="activeTab = 'education'">
+                <span class="material-symbols-outlined fs-6 me-1 align-middle">school</span>Education
+                <span class="badge bg-secondary-subtle text-secondary rounded-pill ms-1">{{ profile?.educations?.length || 0 }}</span>
+              </button>
+            </li>
+          </ul>
+        </div>
+
+        <div class="card-body p-4">
+
+          <!-- TAB 1: Profile Details -->
+          <div *ngIf="activeTab === 'details'">
+            <form [formGroup]="detailsForm" (ngSubmit)="saveDetails()">
+              
+              <div class="row g-3">
+                <div class="col-12">
+                  <label class="form-label fw-semibold">Professional Headline</label>
+                  <input type="text" class="form-control" formControlName="headline" placeholder="e.g. Senior Full Stack .NET & Angular Developer" />
+                  <div class="form-text">A concise summary that recruiters see on your profile.</div>
+                </div>
+
+                <div class="col-12">
+                  <label class="form-label fw-semibold">Summary / Bio</label>
+                  <textarea class="form-control" rows="4" formControlName="summary" placeholder="Briefly describe your core expertise, career achievements, and tech stack..."></textarea>
+                </div>
+
+                <!-- Work Authorization & Visa -->
+                <div class="col-md-6">
+                  <label class="form-label fw-semibold">Work Authorization (Visa Status)</label>
+                  <select class="form-select" formControlName="visaId">
+                    <option [ngValue]="null">-- Select Work Authorization --</option>
+                    <option *ngFor="let v of visaList" [ngValue]="v.id">{{ v.name }}</option>
+                  </select>
+                  <div class="form-text">Used to match you with jobs accepting your status.</div>
+                </div>
+
+                <div class="col-md-6">
+                  <label class="form-label fw-semibold">Visa Expiry Date (if applicable)</label>
+                  <input type="date" class="form-control" formControlName="visaExpiryDate" />
+                </div>
+
+                <!-- Experience & Compensation -->
+                <div class="col-md-4">
+                  <label class="form-label fw-semibold">Total Experience (Years)</label>
+                  <input type="number" step="0.5" class="form-control" formControlName="totalYearsOfExp" placeholder="e.g. 5.5" />
+                </div>
+
+                <div class="col-md-4">
+                  <label class="form-label fw-semibold">Expected Annual Salary ($)</label>
+                  <input type="number" class="form-control" formControlName="expectedAnnualSalary" placeholder="e.g. 120000" />
+                </div>
+
+                <div class="col-md-4">
+                  <label class="form-label fw-semibold">Expected Hourly Rate ($/hr)</label>
+                  <input type="number" class="form-control" formControlName="expectedHourlyRate" placeholder="e.g. 65" />
+                </div>
+
+                <div class="col-12">
+                  <div class="form-check form-switch">
+                    <input class="form-check-input" type="checkbox" id="showCompPublicSwitch" formControlName="isShowCompensationPublic" />
+                    <label class="form-check-label fw-medium text-secondary small" for="showCompPublicSwitch">
+                      Show Expected Salary / Rate on Public Profile
+                    </label>
+                  </div>
+                </div>
+
+                <!-- Preferences -->
+                <div class="col-md-6">
+                  <label class="form-label fw-semibold">Preferred Work Type</label>
+                  <select class="form-select" formControlName="preferredWorkType">
+                    <option value="Full-time">Full-time (W2 / Direct Hire)</option>
+                    <option value="Contract (C2C / W2)">Contract (C2C / W2)</option>
+                    <option value="Part-time">Part-time</option>
+                    <option value="Any">Any / Open to all</option>
+                  </select>
+                </div>
+
+                <div class="col-md-6">
+                  <label class="form-label fw-semibold">Notice Period (Days)</label>
+                  <input type="number" class="form-control" formControlName="noticePeriodDays" placeholder="0 for Immediate" />
+                </div>
+
+                <!-- Preferred Locations (Multi-Select) -->
+                <div class="col-12">
+                  <div class="input-box search-box mb-0">
+                    <app-multi-search-field
+                      fieldName="preferredLocations"
+                      fieldText="Preferred Locations (Cities / States)"
+                      fieldType="city1"
+                      fieldPlaceholder="Type to search preferred cities or states (e.g. Austin, TX)..."
+                      [fieldRequired]="false"
+                      [fieldList]="selectPreferredLocationsList"
+                      fieldItemMinLimit="0"
+                      fieldItemMaxLimit="10"
+                      [isEdit]="true"
+                      [editValue]="selectedLocationsList"
+                      (queryChange)="onPreferredLocationQuery($event)"
+                      (inputChange)="onSelectedLocationsChange($event)"
+                    >
+                    </app-multi-search-field>
+                    <div class="form-text small">Recruiters will see your preferred locations on your public profile and job applications.</div>
+                  </div>
+                </div>
+
+                <!-- Checkboxes -->
+                <div class="col-12">
+                  <div class="d-flex flex-wrap gap-4 p-3 bg-light rounded-3">
+                    <div class="form-check form-switch">
+                      <input class="form-check-input" type="checkbox" id="activelyLookingSwitch" formControlName="isActivelyLooking" />
+                      <label class="form-check-label fw-medium" for="activelyLookingSwitch">Actively Looking for Jobs</label>
+                    </div>
+                    <div class="form-check form-switch">
+                      <input class="form-check-input" type="checkbox" id="remoteOnlySwitch" formControlName="remoteOnly" />
+                      <label class="form-check-label fw-medium" for="remoteOnlySwitch">Open to Remote Only</label>
+                    </div>
+                    <div class="form-check form-switch">
+                      <input class="form-check-input" type="checkbox" id="canRelocateSwitch" formControlName="canRelocate" />
+                      <label class="form-check-label fw-medium" for="canRelocateSwitch">Willing to Relocate</label>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Links -->
+                <div class="col-md-6">
+                  <label class="form-label fw-semibold">GitHub Profile URL</label>
+                  <input type="url" class="form-control" formControlName="gitHubUrl" placeholder="https://github.com/username" />
+                </div>
+
+                <!-- Public Profile Settings Card -->
+                <div class="col-12">
+                  <div class="card border rounded-3 p-3 bg-white shadow-xs">
+                    <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-2 pb-2 border-bottom">
+                      <div class="d-flex align-items-center gap-2">
+                        <span class="material-symbols-outlined text-primary fs-5">public</span>
+                        <div>
+                          <h6 class="fw-bold mb-0 text-dark">Public Profile Settings</h6>
+                          <span class="text-muted small">Allow recruiters and employers to view your verified candidate profile via a unique link.</span>
+                        </div>
+                      </div>
+                      <div class="form-check form-switch ms-auto">
+                        <input class="form-check-input fs-5" type="checkbox" id="publicProfileSwitch" formControlName="isPublicProfileEnabled" (change)="onPublicToggleChange()" />
+                        <label class="form-check-label fw-semibold text-dark ms-1" for="publicProfileSwitch">
+                          {{ detailsForm.get('isPublicProfileEnabled')?.value ? 'Public Enabled' : 'Profile Private' }}
+                        </label>
+                      </div>
+                    </div>
+
+                    <div *ngIf="detailsForm.get('isPublicProfileEnabled')?.value" class="mt-3">
+                      <div class="row g-2 align-items-center">
+                        <div class="col-md-7">
+                          <label class="form-label fw-semibold small text-secondary">Your Custom Profile Handle / URL</label>
+                          <div class="input-group">
+                            <span class="input-group-text bg-light text-muted small border-end-0">
+                              {{ publicProfileUrlPrefix }}
+                            </span>
+                            <input
+                              type="text"
+                              class="form-control border-start-0 font-monospace"
+                              formControlName="publicProfileSlug"
+                              placeholder="e.g. john-doe"
+                              (input)="onSlugInput()"
+                            />
+                          </div>
+                          <div class="form-text small">Only lowercase letters, numbers, hyphens, and underscores are allowed.</div>
+                        </div>
+
+                        <div class="col-md-5 d-flex align-items-center gap-2 mt-md-4 pt-md-1 flex-wrap">
+                          <button
+                            type="button"
+                            class="btn btn-outline-primary btn-sm d-inline-flex align-items-center gap-1"
+                            [disabled]="isCheckingSlug || !detailsForm.get('publicProfileSlug')?.value"
+                            (click)="checkSlugAvailability()"
+                          >
+                            <span class="spinner-border spinner-border-sm" *ngIf="isCheckingSlug"></span>
+                            <span class="material-symbols-outlined fs-6" *ngIf="!isCheckingSlug">verified</span>
+                            <span>Check Availability</span>
+                          </button>
+
+                          <button
+                            type="button"
+                            class="btn btn-outline-secondary btn-sm d-inline-flex align-items-center gap-1"
+                            (click)="generateDefaultSlug(true)"
+                          >
+                            <span class="material-symbols-outlined fs-6">autorenew</span>
+                            <span>Auto Generate</span>
+                          </button>
+
+                          <span
+                            *ngIf="isSlugAvailable && detailsForm.get('publicProfileSlug')?.value"
+                            class="badge px-2 py-1 d-inline-flex align-items-center gap-1"
+                            [ngClass]="isSlugAvailable === 'true' ? 'bg-success-subtle text-success border border-success-subtle' : 'bg-danger-subtle text-danger border border-danger-subtle'"
+                          >
+                            <span class="material-symbols-outlined fs-6">
+                              {{ isSlugAvailable === 'true' ? 'check_circle' : 'cancel' }}
+                            </span>
+                            <span>{{ isSlugAvailable === 'true' ? 'Handle Available' : 'Handle Taken' }}</span>
+                          </span>
+                        </div>
+                      </div>
+
+                      <!-- Live Profile Link Box when saved -->
+                      <div *ngIf="profile?.details?.isPublicProfileEnabled && profile?.details?.publicProfileSlug" class="d-flex align-items-center justify-content-between p-2 mt-3 bg-light rounded-2 border">
+                        <div class="d-flex align-items-center gap-2 overflow-hidden text-truncate">
+                          <span class="material-symbols-outlined text-success fs-6">link</span>
+                          <a [href]="getPublicProfileUrl()" target="_blank" class="text-primary fw-medium small text-truncate">
+                            {{ getPublicProfileUrl() }}
+                          </a>
+                        </div>
+                        <div class="d-flex gap-2 flex-shrink-0">
+                          <button type="button" class="btn btn-sm btn-light border py-0 px-2 d-flex align-items-center text-muted" (click)="copyPublicUrl()">
+                            <span class="material-symbols-outlined fs-6 me-1">{{ isCopiedUrl ? 'done' : 'content_copy' }}</span>
+                            <span class="small">{{ isCopiedUrl ? 'Copied!' : 'Copy' }}</span>
+                          </button>
+                          <a [href]="getPublicProfileUrl()" target="_blank" class="btn btn-sm btn-primary py-0 px-2 d-flex align-items-center">
+                            <span class="material-symbols-outlined fs-6 me-1">open_in_new</span>
+                            <span class="small">View</span>
+                          </a>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Submit Button -->
+                <div class="col-12 mt-4 text-end">
+                  <button type="submit" class="btn btn-primary px-4 py-2 fw-semibold" [disabled]="isSavingDetails">
+                    <span *ngIf="isSavingDetails" class="spinner-border spinner-border-sm me-1"></span>
+                    Save Profile Details
+                  </button>
+                </div>
+
+              </div>
+
+            </form>
+          </div>
+
+          <!-- TAB 2: Resumes & CVs -->
+          <div *ngIf="activeTab === 'resumes'">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+              <div>
+                <h5 class="fw-bold mb-1">Your Resumes</h5>
+                <p class="text-muted small mb-0">Upload multiple resumes customized for different job roles. Select a primary resume for 1-Click Apply.</p>
+              </div>
+              <div>
+                <label class="btn btn-primary px-3 py-2 fw-semibold d-inline-flex align-items-center cursor-pointer">
+                  <span class="material-symbols-outlined fs-6 me-1">upload_file</span>
+                  <span>{{ isUploadingResume ? 'Uploading...' : 'Upload New Resume' }}</span>
+                  <input type="file" (change)="onFileSelected($event)" accept=".pdf,.doc,.docx" [disabled]="isUploadingResume" style="display: none;" />
+                </label>
+              </div>
+            </div>
+
+            <!-- Upload Dropzone Notice -->
+            <div *ngIf="!profile?.resumes || profile?.resumes?.length === 0" class="text-center py-5 border rounded-4 bg-light">
+              <span class="material-symbols-outlined text-muted fs-1 mb-2">description</span>
+              <h6 class="fw-semibold text-dark">No resumes uploaded yet</h6>
+              <p class="text-muted small mb-3">Upload your resume in PDF or Word format to apply for jobs directly in 1-Click.</p>
+              <label class="btn btn-outline-primary px-4 py-2 fw-medium cursor-pointer">
+                Upload Resume
+                <input type="file" (change)="onFileSelected($event)" accept=".pdf,.doc,.docx" [disabled]="isUploadingResume" style="display: none;" />
+              </label>
+            </div>
+
+            <!-- Resume List Cards -->
+            <div *ngIf="resumes.length > 0" class="row g-3">
+              <div class="col-12 col-lg-6" *ngFor="let resume of resumes">
+                <div class="card border rounded-3 p-3 h-100 position-relative transition-all" [class.border-primary]="resume.isPrimary" [class.bg-purple-light]="resume.isPrimary">
+                  <div class="d-flex align-items-start gap-3">
+                    <div class="resume-icon-box bg-white p-2.5 rounded-3 shadow-sm border text-danger">
+                      <span class="material-symbols-outlined fs-2">picture_as_pdf</span>
+                    </div>
+                    <div class="flex-grow-1 overflow-hidden">
+                      <div class="d-flex align-items-center gap-2 mb-1">
+                        <h6 class="fw-bold mb-0 text-truncate text-dark" [title]="resume.fileName">{{ resume.fileName }}</h6>
+                        <span *ngIf="resume.isPrimary" class="badge bg-primary text-white text-xs">Primary</span>
+                      </div>
+                      <div class="text-muted small mb-2">
+                        <span *ngIf="resume.fileSizeInKb">{{ resume.fileSizeInKb }} KB • </span>
+                        <span>Uploaded {{ resume.uploadedDate | date:'mediumDate' }}</span>
+                      </div>
+                      <div class="d-flex align-items-center gap-2 mt-2">
+                        <a [href]="getResumeUrl(resume.blobUrl)" target="_blank" class="btn btn-sm btn-outline-secondary d-flex align-items-center">
+                          <span class="material-symbols-outlined fs-6 me-1">visibility</span>View / Download
+                        </a>
+                        <button *ngIf="!resume.isPrimary" (click)="setPrimaryResume(resume.id)" class="btn btn-sm btn-outline-primary">
+                          Set as Primary
+                        </button>
+                        <button (click)="deleteResume(resume.id)" class="btn btn-sm btn-outline-danger ms-auto" title="Delete Resume">
+                          <span class="material-symbols-outlined fs-6">delete</span>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- TAB 3: Experience -->
+          <div *ngIf="activeTab === 'experience'">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+              <div>
+                <h5 class="fw-bold mb-1">Work History</h5>
+                <p class="text-muted small mb-0">Add your past and current employment experience.</p>
+              </div>
+              <button class="btn btn-primary btn-sm px-3 py-2 fw-semibold d-flex align-items-center" (click)="openAddExpModal()">
+                <span class="material-symbols-outlined fs-6 me-1">add</span>Add Experience
+              </button>
+            </div>
+
+            <div *ngIf="experiences.length === 0" class="text-center py-5 border rounded-4 bg-light">
+              <span class="material-symbols-outlined text-muted fs-1 mb-2">work_outline</span>
+              <h6 class="fw-semibold text-dark">No work experience added yet</h6>
+              <p class="text-muted small mb-3">Highlight your previous positions to stand out to hiring managers.</p>
+              <button class="btn btn-outline-primary px-4 py-2 fw-medium" (click)="openAddExpModal()">Add Experience</button>
+            </div>
+
+            <div *ngIf="experiences.length > 0" class="timeline-wrapper">
+              <div class="card border rounded-3 p-3 mb-3" *ngFor="let exp of experiences">
+                <div class="d-flex justify-content-between align-items-start">
+                  <div>
+                    <h6 class="fw-bold text-dark mb-0">{{ exp.title }}</h6>
+                    <div class="text-primary fw-medium small mb-1">{{ exp.companyName }} <span *ngIf="exp.cityName">• {{ exp.cityName }}</span></div>
+                    <div class="text-muted small mb-2">
+                      {{ exp.startDate | date:'MMM yyyy' }} – {{ exp.isCurrent ? 'Present' : (exp.endDate | date:'MMM yyyy') }}
+                      <span *ngIf="exp.isCurrent" class="badge bg-success-subtle text-success ms-2">Current</span>
+                    </div>
+                    <p class="text-muted small mb-0" style="white-space: pre-line;" *ngIf="exp.description">{{ exp.description }}</p>
+                  </div>
+                  <div class="d-flex gap-1">
+                    <button class="btn btn-sm btn-light" (click)="openEditExpModal(exp)" title="Edit">
+                      <span class="material-symbols-outlined fs-6">edit</span>
+                    </button>
+                    <button class="btn btn-sm btn-light text-danger" (click)="deleteExperience(exp.id)" title="Delete">
+                      <span class="material-symbols-outlined fs-6">delete</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- TAB 4: Education -->
+          <div *ngIf="activeTab === 'education'">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+              <div>
+                <h5 class="fw-bold mb-1">Education Qualifications</h5>
+                <p class="text-muted small mb-0">Degrees, colleges, and certifications.</p>
+              </div>
+              <button class="btn btn-primary btn-sm px-3 py-2 fw-semibold d-flex align-items-center" (click)="openAddEduModal()">
+                <span class="material-symbols-outlined fs-6 me-1">add</span>Add Education
+              </button>
+            </div>
+
+            <div *ngIf="educations.length === 0" class="text-center py-5 border rounded-4 bg-light">
+              <span class="material-symbols-outlined text-muted fs-1 mb-2">school</span>
+              <h6 class="fw-semibold text-dark">No education added yet</h6>
+              <p class="text-muted small mb-3">Add your academic background to complete your candidate profile.</p>
+              <button class="btn btn-outline-primary px-4 py-2 fw-medium" (click)="openAddEduModal()">Add Education</button>
+            </div>
+
+            <div *ngIf="educations.length > 0">
+              <div class="card border rounded-3 p-3 mb-3" *ngFor="let edu of educations">
+                <div class="d-flex justify-content-between align-items-start">
+                  <div>
+                    <h6 class="fw-bold text-dark mb-0">{{ edu.degree }} <span *ngIf="edu.major">in {{ edu.major }}</span></h6>
+                    <div class="text-primary fw-medium small mb-1">{{ edu.institution }}</div>
+                    <div class="text-muted small">
+                      <span *ngIf="edu.graduationYear">Graduated {{ edu.graduationYear }}</span>
+                    </div>
+                  </div>
+                  <div class="d-flex gap-1">
+                    <button class="btn btn-sm btn-light" (click)="openEditEduModal(edu)" title="Edit">
+                      <span class="material-symbols-outlined fs-6">edit</span>
+                    </button>
+                    <button class="btn btn-sm btn-light text-danger" (click)="deleteEducation(edu.id)" title="Delete">
+                      <span class="material-symbols-outlined fs-6">delete</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+</div>
+
+<!-- Modal: Add / Edit Experience -->
+<div class="modal-backdrop fade show" *ngIf="showExpModal" (click)="closeExpModal()"></div>
+<div class="modal fade show d-block" *ngIf="showExpModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content rounded-4 shadow border-0">
+      <div class="modal-header border-bottom px-4 py-3">
+        <h5 class="modal-title fw-bold">{{ editingExpId ? 'Edit Experience' : 'Add Work Experience' }}</h5>
+        <button type="button" class="btn-close" (click)="closeExpModal()"></button>
+      </div>
+      <form [formGroup]="expForm" (ngSubmit)="saveExperience()">
+        <div class="modal-body p-4">
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Job Title *</label>
+            <input type="text" class="form-control" formControlName="title" placeholder="e.g. Senior Software Engineer" required />
+          </div>
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Company Name *</label>
+            <input type="text" class="form-control" formControlName="companyName" placeholder="e.g. Microsoft" required />
+          </div>
+          <div class="row g-2 mb-3">
+            <div class="col-6">
+              <label class="form-label fw-semibold">Start Date *</label>
+              <input type="date" class="form-control" formControlName="startDate" required />
+            </div>
+            <div class="col-6" *ngIf="!expForm.get('isCurrent')?.value">
+              <label class="form-label fw-semibold">End Date</label>
+              <input type="date" class="form-control" formControlName="endDate" />
+            </div>
+          </div>
+          <div class="form-check mb-3">
+            <input class="form-check-input" type="checkbox" id="isCurrentExp" formControlName="isCurrent" />
+            <label class="form-check-label fw-medium" for="isCurrentExp">I currently work here</label>
+          </div>
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Description / Key Accomplishments</label>
+            <textarea class="form-control" rows="3" formControlName="description" placeholder="Responsibilities, tech stack, achievements..."></textarea>
+          </div>
+        </div>
+        <div class="modal-footer border-top px-4 py-3">
+          <button type="button" class="btn btn-light" (click)="closeExpModal()">Cancel</button>
+          <button type="submit" class="btn btn-primary px-4" [disabled]="expForm.invalid || isSavingExp">
+            <span *ngIf="isSavingExp" class="spinner-border spinner-border-sm me-1"></span>
+            Save Experience
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: Add / Edit Education -->
+<div class="modal-backdrop fade show" *ngIf="showEduModal" (click)="closeEduModal()"></div>
+<div class="modal fade show d-block" *ngIf="showEduModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content rounded-4 shadow border-0">
+      <div class="modal-header border-bottom px-4 py-3">
+        <h5 class="modal-title fw-bold">{{ editingEduId ? 'Edit Education' : 'Add Education' }}</h5>
+        <button type="button" class="btn-close" (click)="closeEduModal()"></button>
+      </div>
+      <form [formGroup]="eduForm" (ngSubmit)="saveEducation()">
+        <div class="modal-body p-4">
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Degree / Certification *</label>
+            <input type="text" class="form-control" formControlName="degree" placeholder="e.g. Bachelor of Science" required />
+          </div>
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Institution / University *</label>
+            <input type="text" class="form-control" formControlName="institution" placeholder="e.g. University of Texas at Austin" required />
+          </div>
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Major / Field of Study</label>
+            <input type="text" class="form-control" formControlName="major" placeholder="e.g. Computer Science" />
+          </div>
+          <div class="row g-2 mb-3">
+            <div class="col-6">
+              <label class="form-label fw-semibold">Start Year</label>
+              <input type="number" class="form-control" formControlName="startYear" placeholder="e.g. 2018" />
+            </div>
+            <div class="col-6">
+              <label class="form-label fw-semibold">Graduation Year</label>
+              <input type="number" class="form-control" formControlName="graduationYear" placeholder="e.g. 2022" />
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer border-top px-4 py-3">
+          <button type="button" class="btn btn-light" (click)="closeEduModal()">Cancel</button>
+          <button type="submit" class="btn btn-primary px-4" [disabled]="eduForm.invalid || isSavingEdu">
+            <span *ngIf="isSavingEdu" class="spinner-border spinner-border-sm me-1"></span>
+            Save Education
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

@@ -1,10 +1,10 @@
-﻿
+
 //using BusinessLayer.Manager;
 using AutoMapper;
 using BusinessLayer.Manager;
-//using BusinessLayer.Manager;
-//using BusinessLayer.UserAccessControl;
+using BusinessLayer.Services;
 using DataAccessLayer.Common;
+using DataAccessLayer.Models;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using System;
@@ -47,7 +47,14 @@ namespace BusinessLayer.Common
             _bslObjects.Add(typeof(IConsultancyManager), new Lazy<IManager>(() => new ConsultancyManager(services, services.GetService<ILogger<ConsultancyManager>>(), services.GetService<IMapper>())));
 
             _bslObjects.Add(typeof(ISubscriptionManager), new Lazy<IManager>(() => new SubscriptionManager(services, services.GetService<ILogger<SubscriptionManager>>(), services.GetService<IMapper>())));
-
+            
+            _bslObjects.Add(typeof(IDirectCandidateManager), new Lazy<IManager>(() => new DirectCandidateManager(services, services.GetService<ILogger<DirectCandidateManager>>(), services.GetService<IMapper>())));
+            
+            _bslObjects.Add(typeof(IPromocodeManager), new Lazy<IManager>(() => new PromocodeManager(services, services.GetService<ILogger<PromocodeManager>>(), services.GetService<IMapper>())));
+            
+            _bslObjects.Add(typeof(IUserReferralManager), new Lazy<IManager>(() => new UserReferralManager(services, services.GetService<ILogger<UserReferralManager>>(), services.GetService<IMapper>())));
+            
+            _bslObjects.Add(typeof(IEmailJobPostingManager), new Lazy<IManager>(() => new EmailJobPostingManager(services, services.GetService<EFContexts>(), services.GetService<IJobParserService>(), services.GetService<IHotlistParserService>(), services.GetService<IResendEmailService>(), services.GetService<Microsoft.Extensions.Configuration.IConfiguration>(), services.GetService<ILogger<EmailJobPostingManager>>(), services.GetService<IMapper>())));
         }
 
         public T Get<T>()

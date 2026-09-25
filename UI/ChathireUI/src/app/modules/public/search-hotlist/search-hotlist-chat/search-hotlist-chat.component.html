@@ -4,7 +4,20 @@
   </div>
   <div class="d-flex align-items-center gap-3">
     <div class="avatar-wrap flex-shrink-0">
-      <img [src]="getProfilePic(item.profilePic)" class="avatar-img" alt="Recruiter Avatar" />
+      <img
+        *ngIf="item?.profilePic"
+        [src]="getProfilePic(item.profilePic)"
+        class="avatar-img"
+        alt="Recruiter Avatar"
+        (error)="$any($event.target).style.display='none'; hotlistAvatarFallback.style.display='flex'"
+      />
+      <div
+        #hotlistAvatarFallback
+        class="avatar-fallback"
+        [style.display]="item?.profilePic ? 'none' : 'flex'"
+      >
+        <span>{{ getUserInitial(item?.consultancyUserFName, item?.consultancyUserLName) }}</span>
+      </div>
       <span class="status-indicator" [ngClass]="isUserOnline ? 'active' : ''" [title]="isUserOnline ? 'Online' : 'Offline'"></span>
     </div>
     <div class="recruiter-details flex-grow-1 min-w-0">

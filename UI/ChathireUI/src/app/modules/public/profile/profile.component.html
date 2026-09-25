@@ -9,170 +9,359 @@
       <!-- Profile Available -->
       <ng-container *ngIf="isProfileAvailable">
         
-        <!-- Main Recruiter Profile Card -->
-        <div class="card main-profile-card mb-4">
-          <div *ngIf="user" class="card-body p-4 p-md-5">
+        <!-- ================= CANDIDATE PUBLIC PROFILE ================= -->
+        <ng-container *ngIf="isCandidate">
+          
+          <!-- Candidate Hero Card -->
+          <div class="card main-profile-card mb-4">
+            <div class="card-body p-4 p-md-5">
+              <div class="profile-header-card-layout">
+                
+                <!-- Left: Avatar + Candidate Info -->
+                <div class="profile-left-section">
+                  <div class="avatar-wrap">
+                    <profile-pic [isPublic]="true" [user]="user"></profile-pic>
+                  </div>
 
-            <!-- Profile Top Header Section -->
-            <div class="profile-header-card-layout">
-              
-              <!-- Left: Avatar + User Info -->
-              <div class="profile-left-section">
-                <div class="avatar-wrap">
-                  <profile-pic [isPublic]="true" [user]="user"></profile-pic>
+                  <div class="user-info-wrap">
+                    <!-- Candidate Name + Verified Badge -->
+                    <div class="profile-name-row d-flex align-items-center gap-2 mb-1 flex-wrap">
+                      <h1 class="profile-name text-capitalize mb-0">{{ user?.fname }} {{ user?.lname }}</h1>
+                      <span class="verified-badge-wrap" title="Verified Candidate">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" class="verified-icon">
+                          <path d="M10.5213 2.62368C11.3147 1.75257 12.6853 1.75257 13.4787 2.62368L14.4989 3.74378C14.9323 4.2196 15.5494 4.47547 16.1843 4.44208L17.6766 4.36361C18.8373 4.30259 19.8026 5.26787 19.7416 6.42858L19.6631 7.9209C19.6297 8.55577 19.8856 9.17288 20.3614 9.60627L21.4815 10.6265C22.3526 11.4199 22.3526 12.7904 21.4815 13.5838L20.3614 14.604C19.8856 15.0374 19.6297 15.6545 19.6631 16.2893L19.7416 17.7817C19.8026 18.9424 18.8373 19.9076 17.6766 19.8466L16.1843 19.7682C15.5494 19.7348 14.9323 19.9906 14.4989 20.4665L13.4787 21.5866C12.6853 22.4577 11.3147 22.4577 10.5213 21.5866L9.50113 20.4665C9.06774 19.9906 8.45063 19.7348 7.81576 19.7682L6.32344 19.8466C5.16273 19.9076 4.19745 18.9424 4.25847 17.7817L4.33694 16.2893C4.37033 15.6545 4.11446 15.0374 3.63864 14.604L2.51854 13.5838C1.64743 12.7904 1.64743 11.4199 2.51854 10.6265L3.63864 9.60627C4.11446 9.17288 4.37033 8.55577 4.33694 7.9209L4.25847 6.42858C4.19745 5.26787 5.16273 4.30259 6.32344 4.36361L7.81576 4.44208C8.45063 4.47547 9.06774 4.2196 9.50113 3.74378L10.5213 2.62368Z" fill="#1677FF"/>
+                          <path d="M8.5 12.2L11 14.7L15.8 9.5" stroke="#FFFFFF" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                      </span>
+                      <span class="badge bg-primary-subtle text-primary rounded-pill px-3 py-1 fw-semibold ms-1">Job Seeker</span>
+                      <span *ngIf="candidateData?.directCandidateDetail?.isActivelyLooking" class="badge bg-success-subtle text-success rounded-pill px-3 py-1 fw-semibold">
+                        ● Actively Looking
+                      </span>
+                    </div>
+
+                    <!-- Headline -->
+                    <div class="profile-designation-text mt-1 text-dark fw-medium fs-6" *ngIf="candidateData?.directCandidateDetail?.headline">
+                      {{ candidateData?.directCandidateDetail?.headline }}
+                    </div>
+
+                    <!-- Meta Tags (Location, Visa, Experience) -->
+                    <div class="d-flex flex-wrap gap-3 text-muted small mt-2">
+                      <span *ngIf="getCandidateLocation()" class="d-flex align-items-center">
+                        <span class="material-symbols-outlined fs-6 me-1">location_on</span>{{ getCandidateLocation() }}
+                      </span>
+                      <span *ngIf="candidateData?.directCandidateDetail?.visaName" class="d-flex align-items-center text-primary fw-medium">
+                        <span class="material-symbols-outlined fs-6 me-1">badge</span>{{ candidateData?.directCandidateDetail?.visaName }}
+                      </span>
+                      <span *ngIf="candidateData?.directCandidateDetail?.totalYearsOfExp" class="d-flex align-items-center">
+                        <span class="material-symbols-outlined fs-6 me-1">work_history</span>{{ candidateData?.directCandidateDetail?.totalYearsOfExp }} Years Exp
+                      </span>
+                      <span *ngIf="candidateData?.directCandidateDetail?.preferredWorkType" class="d-flex align-items-center">
+                        <span class="material-symbols-outlined fs-6 me-1">schedule</span>{{ candidateData?.directCandidateDetail?.preferredWorkType }}
+                      </span>
+                    </div>
+
+                    <!-- Actions Group (LinkedIn, GitHub, Chat) -->
+                    <div class="action-buttons-group mt-3">
+                      <!-- LinkedIn Action -->
+                      <a *ngIf="getLinkedInUrl()" [href]="getLinkedInUrl()" target="_blank" class="btn-linkedin-square" title="View LinkedIn Profile">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                          <path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.28 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.75M6.46 10.9v8.37H9.25V10.9H6.46M7.86 6.78a1.6 1.6 0 1 0 1.6 1.6 1.6 1.6 0 0 0-1.6-1.6z"/>
+                        </svg>
+                      </a>
+
+                      <!-- GitHub Action -->
+                      <a *ngIf="candidateData?.directCandidateDetail?.gitHubUrl" [href]="candidateData?.directCandidateDetail?.gitHubUrl" target="_blank" class="btn btn-outline-secondary btn-sm d-flex align-items-center rounded-2 px-2" title="View GitHub">
+                        <span class="material-symbols-outlined fs-6 me-1">code</span>GitHub
+                      </a>
+
+                      <!-- Portfolio Action -->
+                      <a *ngIf="candidateData?.directCandidateDetail?.portfolioUrl" [href]="candidateData?.directCandidateDetail?.portfolioUrl" target="_blank" class="btn btn-outline-secondary btn-sm d-flex align-items-center rounded-2 px-2" title="View Portfolio">
+                        <span class="material-symbols-outlined fs-6 me-1">language</span>Portfolio
+                      </a>
+
+                      <!-- Teal Chat Action -->
+                      <div class="btn-chat-teal chat-btn" [chatUser]="chatUser" [isProfile]="true">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" class="chat-icon">
+                          <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/>
+                        </svg>
+                        <span class="chat-btn-text">Chat with Candidate</span>
+                      </div>
+                    </div>
+                  </div>
                 </div>
 
-                <div class="user-info-wrap">
-                  <!-- 1. Recruiter Name + Verified Badge -->
-                  <div class="profile-name-row d-flex align-items-center gap-2 mb-1">
-                    <h1 class="profile-name text-capitalize mb-0">{{ user?.fname }} {{ user?.lname }}</h1>
-                    <span class="verified-badge-wrap" title="Verified Recruiter">
-                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" class="verified-icon">
-                        <path d="M10.5213 2.62368C11.3147 1.75257 12.6853 1.75257 13.4787 2.62368L14.4989 3.74378C14.9323 4.2196 15.5494 4.47547 16.1843 4.44208L17.6766 4.36361C18.8373 4.30259 19.8026 5.26787 19.7416 6.42858L19.6631 7.9209C19.6297 8.55577 19.8856 9.17288 20.3614 9.60627L21.4815 10.6265C22.3526 11.4199 22.3526 12.7904 21.4815 13.5838L20.3614 14.604C19.8856 15.0374 19.6297 15.6545 19.6631 16.2893L19.7416 17.7817C19.8026 18.9424 18.8373 19.9076 17.6766 19.8466L16.1843 19.7682C15.5494 19.7348 14.9323 19.9906 14.4989 20.4665L13.4787 21.5866C12.6853 22.4577 11.3147 22.4577 10.5213 21.5866L9.50113 20.4665C9.06774 19.9906 8.45063 19.7348 7.81576 19.7682L6.32344 19.8466C5.16273 19.9076 4.19745 18.9424 4.25847 17.7817L4.33694 16.2893C4.37033 15.6545 4.11446 15.0374 3.63864 14.604L2.51854 13.5838C1.64743 12.7904 1.64743 11.4199 2.51854 10.6265L3.63864 9.60627C4.11446 9.17288 4.37033 8.55577 4.33694 7.9209L4.25847 6.42858C4.19745 5.26787 5.16273 4.30259 6.32344 4.36361L7.81576 4.44208C8.45063 4.47547 9.06774 4.2196 9.50113 3.74378L10.5213 2.62368Z" fill="#1677FF"/>
-                        <path d="M8.5 12.2L11 14.7L15.8 9.5" stroke="#FFFFFF" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
-                      </svg>
-                    </span>
+                <!-- Right: Quick Specs Panel -->
+                <div class="profile-right-section">
+                  <div class="bg-light p-3 rounded-3 border text-start" style="min-width: 240px;">
+                    <div class="small fw-semibold text-secondary text-uppercase mb-2">Preferences</div>
+                    <div class="small mb-1" *ngIf="candidateData?.directCandidateDetail?.noticePeriodDays !== null && candidateData?.directCandidateDetail?.noticePeriodDays !== undefined">
+                      <span class="text-muted">Notice:</span>
+                      <strong class="text-dark ms-1">{{ candidateData?.directCandidateDetail?.noticePeriodDays === 0 ? 'Immediate' : candidateData?.directCandidateDetail?.noticePeriodDays + ' Days' }}</strong>
+                    </div>
+
+                    <!-- Expected Compensation (with opt-in visibility check) -->
+                    <ng-container *ngIf="candidateData?.directCandidateDetail?.isShowCompensationPublic || isCandidateOwner()">
+                      <div class="small mb-1" *ngIf="candidateData?.directCandidateDetail?.expectedAnnualSalary">
+                        <span class="text-muted">Expected Salary:</span>
+                        <strong class="text-dark ms-1">${{ candidateData?.directCandidateDetail?.expectedAnnualSalary | number }}/yr</strong>
+                        <span *ngIf="!candidateData?.directCandidateDetail?.isShowCompensationPublic && isCandidateOwner()" class="badge bg-warning-subtle text-warning ms-1" style="font-size: 10px;">Hidden Publicly</span>
+                      </div>
+                      <div class="small mb-1" *ngIf="candidateData?.directCandidateDetail?.expectedHourlyRate">
+                        <span class="text-muted">Expected Rate:</span>
+                        <strong class="text-dark ms-1">${{ candidateData?.directCandidateDetail?.expectedHourlyRate }}/hr</strong>
+                        <span *ngIf="!candidateData?.directCandidateDetail?.isShowCompensationPublic && isCandidateOwner()" class="badge bg-warning-subtle text-warning ms-1" style="font-size: 10px;">Hidden Publicly</span>
+                      </div>
+                    </ng-container>
+
+                    <!-- Preferred Locations -->
+                    <div class="small mt-2 pt-2 border-top" *ngIf="getCandidatePreferredLocations().length > 0">
+                      <span class="text-muted d-block mb-1 fw-medium">Preferred Locations:</span>
+                      <div class="d-flex flex-wrap gap-1">
+                        <span *ngFor="let loc of getCandidatePreferredLocations()" class="badge bg-white text-dark border px-2 py-1 fw-normal">
+                          <span class="material-symbols-outlined fs-6 me-1 align-middle text-primary" style="font-size: 13px !important;">location_on</span>{{ loc }}
+                        </span>
+                      </div>
+                    </div>
+
+                    <div class="small mt-2 pt-2 border-top d-flex flex-wrap gap-1">
+                      <span *ngIf="candidateData?.directCandidateDetail?.remoteOnly" class="badge bg-info-subtle text-info border border-info-subtle">Remote Only</span>
+                      <span *ngIf="candidateData?.directCandidateDetail?.canRelocate" class="badge bg-secondary-subtle text-secondary border">Open to Relocation</span>
+                    </div>
                   </div>
-                  
-                  <!-- 2. Role Badge (Gold) -->
-                  <div class="mb-2">
-                    <span class="role-badge-gold">{{ getRoleBadgeText() }}</span>
+                </div>
+
+              </div>
+
+              <!-- About / Summary Section -->
+              <div class="about-section mt-4 mb-4" *ngIf="candidateData?.directCandidateDetail?.summary">
+                <h3 class="section-title">Summary & Bio</h3>
+                <p class="about-body" style="white-space: pre-line;">
+                  {{ candidateData?.directCandidateDetail?.summary }}
+                </p>
+              </div>
+
+              <!-- Work Experience Section -->
+              <div class="mt-4 mb-4" *ngIf="candidateData?.directCandidateExperiences && candidateData?.directCandidateExperiences?.length > 0">
+                <h3 class="section-title mb-3">Work Experience</h3>
+                <div class="experience-timeline">
+                  <div *ngFor="let exp of candidateData?.directCandidateExperiences" class="p-3 mb-3 border rounded-3 bg-light">
+                    <div class="d-flex justify-content-between align-items-start flex-wrap gap-2">
+                      <div>
+                        <h6 class="fw-bold mb-0 text-dark">{{ exp.title }}</h6>
+                        <span class="text-primary fw-medium small">{{ exp.companyName }}</span>
+                        <span *ngIf="exp.cityName" class="text-muted small ms-2">● {{ exp.cityName }}</span>
+                      </div>
+                      <div class="text-muted small">
+                        <span>{{ exp.startDate | date:'MMM yyyy' }}</span> – 
+                        <span>{{ exp.isCurrent ? 'Present' : (exp.endDate | date:'MMM yyyy') }}</span>
+                        <span *ngIf="exp.isCurrent" class="badge bg-success-subtle text-success ms-2">Current</span>
+                      </div>
+                    </div>
+                    <p class="mt-2 mb-0 small text-secondary" *ngIf="exp.description" style="white-space: pre-line;">{{ exp.description }}</p>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Education Section -->
+              <div class="mt-4" *ngIf="candidateData?.directCandidateEducations && candidateData?.directCandidateEducations?.length > 0">
+                <h3 class="section-title mb-3">Education</h3>
+                <div class="row g-3">
+                  <div *ngFor="let edu of candidateData?.directCandidateEducations" class="col-md-6">
+                    <div class="p-3 border rounded-3 bg-light h-100">
+                      <h6 class="fw-bold mb-1 text-dark">{{ edu.degree }} <span *ngIf="edu.major">in {{ edu.major }}</span></h6>
+                      <div class="text-primary small fw-medium">{{ edu.institution }}</div>
+                      <div class="text-muted small mt-1" *ngIf="edu.graduationYear">Class of {{ edu.graduationYear }}</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+        </ng-container>
+
+        <!-- ================= RECRUITER PUBLIC PROFILE ================= -->
+        <ng-container *ngIf="!isCandidate">
+          
+          <!-- Main Recruiter Profile Card -->
+          <div class="card main-profile-card mb-4">
+            <div *ngIf="user" class="card-body p-4 p-md-5">
+
+              <!-- Profile Top Header Section -->
+              <div class="profile-header-card-layout">
+                
+                <!-- Left: Avatar + User Info -->
+                <div class="profile-left-section">
+                  <div class="avatar-wrap">
+                    <profile-pic [isPublic]="true" [user]="user"></profile-pic>
                   </div>
 
-                  <!-- 3. Actions Group (LinkedIn + Teal Chat) -->
-                  <div class="action-buttons-group">
-                    <!-- LinkedIn Action -->
-                    <a *ngIf="getLinkedInUrl()" [href]="getLinkedInUrl()" target="_blank" class="btn-linkedin-square" title="View LinkedIn Profile">
-                      <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.28 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.75M6.46 10.9v8.37H9.25V10.9H6.46M7.86 6.78a1.6 1.6 0 1 0 1.6 1.6 1.6 1.6 0 0 0-1.6-1.6z"/>
-                      </svg>
-                    </a>
-                    <a *ngIf="!getLinkedInUrl()" href="https://www.linkedin.com" target="_blank" class="btn-linkedin-square" title="LinkedIn Profile">
-                      <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.28 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.75M6.46 10.9v8.37H9.25V10.9H6.46M7.86 6.78a1.6 1.6 0 1 0 1.6 1.6 1.6 1.6 0 0 0-1.6-1.6z"/>
-                      </svg>
-                    </a>
+                  <div class="user-info-wrap">
+                    <!-- 1. Recruiter Name + Verified Badge -->
+                    <div class="profile-name-row d-flex align-items-center gap-2 mb-1">
+                      <h1 class="profile-name text-capitalize mb-0">{{ user?.fname }} {{ user?.lname }}</h1>
+                      <span class="verified-badge-wrap" title="Verified Recruiter">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" class="verified-icon">
+                          <path d="M10.5213 2.62368C11.3147 1.75257 12.6853 1.75257 13.4787 2.62368L14.4989 3.74378C14.9323 4.2196 15.5494 4.47547 16.1843 4.44208L17.6766 4.36361C18.8373 4.30259 19.8026 5.26787 19.7416 6.42858L19.6631 7.9209C19.6297 8.55577 19.8856 9.17288 20.3614 9.60627L21.4815 10.6265C22.3526 11.4199 22.3526 12.7904 21.4815 13.5838L20.3614 14.604C19.8856 15.0374 19.6297 15.6545 19.6631 16.2893L19.7416 17.7817C19.8026 18.9424 18.8373 19.9076 17.6766 19.8466L16.1843 19.7682C15.5494 19.7348 14.9323 19.9906 14.4989 20.4665L13.4787 21.5866C12.6853 22.4577 11.3147 22.4577 10.5213 21.5866L9.50113 20.4665C9.06774 19.9906 8.45063 19.7348 7.81576 19.7682L6.32344 19.8466C5.16273 19.9076 4.19745 18.9424 4.25847 17.7817L4.33694 16.2893C4.37033 15.6545 4.11446 15.0374 3.63864 14.604L2.51854 13.5838C1.64743 12.7904 1.64743 11.4199 2.51854 10.6265L3.63864 9.60627C4.11446 9.17288 4.37033 8.55577 4.33694 7.9209L4.25847 6.42858C4.19745 5.26787 5.16273 4.30259 6.32344 4.36361L7.81576 4.44208C8.45063 4.47547 9.06774 4.2196 9.50113 3.74378L10.5213 2.62368Z" fill="#1677FF"/>
+                          <path d="M8.5 12.2L11 14.7L15.8 9.5" stroke="#FFFFFF" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                      </span>
+                    </div>
+                    
+                    <!-- 2. Role Badge (Gold) -->
+                    <div class="mb-2">
+                      <span class="role-badge-gold">{{ getRoleBadgeText() }}</span>
+                    </div>
 
-                    <!-- Teal Chat Action -->
-                    <div class="btn-chat-teal chat-btn" [chatUser]="chatUser" [isProfile]="true">
-                      <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" class="chat-icon">
-                        <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/>
-                      </svg>
-                      <span class="chat-btn-text">Chat</span>
+                    <!-- 3. Actions Group (LinkedIn + Teal Chat) -->
+                    <div class="action-buttons-group">
+                      <!-- LinkedIn Action -->
+                      <a *ngIf="getLinkedInUrl()" [href]="getLinkedInUrl()" target="_blank" class="btn-linkedin-square" title="View LinkedIn Profile">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                          <path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.28 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.75M6.46 10.9v8.37H9.25V10.9H6.46M7.86 6.78a1.6 1.6 0 1 0 1.6 1.6 1.6 1.6 0 0 0-1.6-1.6z"/>
+                        </svg>
+                      </a>
+                      <a *ngIf="!getLinkedInUrl()" href="https://www.linkedin.com" target="_blank" class="btn-linkedin-square" title="LinkedIn Profile">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                          <path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.28 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.75M6.46 10.9v8.37H9.25V10.9H6.46M7.86 6.78a1.6 1.6 0 1 0 1.6 1.6 1.6 1.6 0 0 0-1.6-1.6z"/>
+                        </svg>
+                      </a>
+
+                      <!-- Teal Chat Action -->
+                      <div class="btn-chat-teal chat-btn" [chatUser]="chatUser" [isProfile]="true">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" class="chat-icon">
+                          <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/>
+                        </svg>
+                        <span class="chat-btn-text">Chat</span>
+                      </div>
+                    </div>
+
+                    <!-- 4. Job Title -->
+                    <div class="profile-designation-text mt-2">
+                      {{ getTitleText() }}
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Right: Company Name, Website, Logo -->
+                <div class="profile-right-section">
+                  <div class="company-text-col text-md-end">
+                    <h2 class="company-name-title mb-1">{{ company?.name || 'Recruitment Consultancy' }}</h2>
+                    <div *ngIf="company?.website">
+                      <a [href]="company?.website.startsWith('http') ? company?.website : 'https://' + company?.website" target="_blank" class="company-website-link">
+                        {{ getCleanWebsite(company?.website) }}
+                      </a>
+                    </div>
+                    <div *ngIf="company?.email || user?.email">
+                      <a [href]="'mailto:' + (company?.email || user?.email)" class="company-email-link">
+                        {{ company?.email || user?.email }}
+                      </a>
                     </div>
                   </div>
 
-                  <!-- 4. Job Title -->
-                  <div class="profile-designation-text mt-2">
-                    {{ getTitleText() }}
+                  <div class="company-brand-box" *ngIf="company?.logo || company?.name">
+                    <img
+                      *ngIf="company?.logo"
+                      [src]="getCompanyLogoUrl(company?.logo)"
+                      [alt]="company?.name || 'Company Logo'"
+                      class="company-brand-img"
+                      (error)="$any($event.target).style.display='none'; compFallbackHeader.style.display='flex'"
+                    />
+                    <div
+                      #compFallbackHeader
+                      class="company-brand-fallback"
+                      [style.display]="company?.logo ? 'none' : 'flex'"
+                    >
+                      <span>{{ getCompanyInitial() }}</span>
+                    </div>
                   </div>
+                </div>
+
+              </div>
+
+              <!-- About Section -->
+              <div class="about-section mt-4 mb-4">
+                <h3 class="section-title">About</h3>
+                <p class="about-body">
+                  Experienced talent acquisition partner specializing in enterprise IT hiring, contract staffing, and C2C recruitment across SAP, Java, DevOps, Cloud Infrastructure, and Salesforce ecosystems.
+                </p>
+              </div>
+
+              <!-- Specializations Section -->
+              <div class="specializations-section">
+                <h3 class="section-title">Specializations</h3>
+                <div class="chips-flex">
+                  <span class="spec-chip">SAP</span>
+                  <span class="spec-chip">Java</span>
+                  <span class="spec-chip">.NET</span>
+                  <span class="spec-chip">Cloud</span>
+                  <span class="spec-chip">DevOps</span>
+                  <span class="spec-chip">Salesforce</span>
+                  <span class="spec-chip">Contract / C2C</span>
                 </div>
               </div>
 
-              <!-- Right: Company Name, Website, Logo -->
-              <div class="profile-right-section">
-                <div class="company-text-col text-md-end">
-                  <h2 class="company-name-title mb-1">{{ company?.name || 'Recruitment Consultancy' }}</h2>
-                  <div *ngIf="company?.website">
-                    <a [href]="company?.website.startsWith('http') ? company?.website : 'https://' + company?.website" target="_blank" class="company-website-link">
-                      {{ getCleanWebsite(company?.website) }}
-                    </a>
-                  </div>
-                  <div *ngIf="company?.email || user?.email">
-                    <a [href]="'mailto:' + (company?.email || user?.email)" class="company-email-link">
-                      {{ company?.email || user?.email }}
-                    </a>
-                  </div>
-                </div>
+            </div>
+          </div>
 
-                <div class="company-brand-box" *ngIf="company?.logo || company?.name">
-                  <img
-                    *ngIf="company?.logo"
-                    [src]="getCompanyLogoUrl(company?.logo)"
-                    [alt]="company?.name || 'Company Logo'"
-                    class="company-brand-img"
-                    (error)="$any($event.target).style.display='none'; compFallbackHeader.style.display='flex'"
-                  />
-                  <div
-                    #compFallbackHeader
-                    class="company-brand-fallback"
-                    [style.display]="company?.logo ? 'none' : 'flex'"
+          <!-- Activity & Job Postings Tab Panel Card -->
+          <div class="card activity-panel-card mb-4" *ngIf="isProfileAvailable && (!isJobsLoaded || !isCandidatesLoaded || hasJobs || hasCandidates)">
+            <div class="card-header bg-transparent border-bottom-0 p-3 p-md-4 pb-0" *ngIf="(!isJobsLoaded || hasJobs) || (!isCandidatesLoaded || hasCandidates)">
+              <ul class="nav nav-tabs enterprise-tabs" role="tablist">
+                <li class="nav-item" *ngIf="!isJobsLoaded || hasJobs">
+                  <a
+                    class="nav-link"
+                    [class.active]="activeTab === 'recruiters'"
+                    (click)="setActiveTab('recruiters')"
+                    role="tab"
                   >
-                    <span>{{ getCompanyInitial() }}</span>
-                  </div>
+                    Open Requirements
+                  </a>
+                </li>
+                <li class="nav-item" *ngIf="!isCandidatesLoaded || hasCandidates">
+                  <a
+                    class="nav-link"
+                    [class.active]="activeTab === 'benchsales'"
+                    (click)="setActiveTab('benchsales')"
+                    role="tab"
+                  >
+                    Available Candidates
+                  </a>
+                </li>
+              </ul>
+            </div>
+
+            <div class="card-body p-3 p-md-4 pt-2 pt-md-2">
+              <div class="tab-content">
+                <div role="tabpanel" class="tab-pane fade" [class.show]="activeTab === 'recruiters'" [class.active]="activeTab === 'recruiters'" id="profile-recruiters">
+                  <profile-job-posting-history [consultancyUserId]="consultancyUserId" [profileId]="profileId" (outParams)="handleJobs($event)"></profile-job-posting-history>
+                </div>
+                <div role="tabpanel" class="tab-pane fade" [class.show]="activeTab === 'benchsales'" [class.active]="activeTab === 'benchsales'" id="profile-benchsales">
+                  <profile-available-resources [consultancyUserId]="consultancyUserId" [profileId]="profileId" (outParams)="handleCandidates($event)"></profile-available-resources>
                 </div>
               </div>
-
-            </div>
-
-            <!-- About Section -->
-            <div class="about-section mt-4 mb-4">
-              <h3 class="section-title">About</h3>
-              <p class="about-body">
-                Experienced talent acquisition partner specializing in enterprise IT hiring, contract staffing, and C2C recruitment across SAP, Java, DevOps, Cloud Infrastructure, and Salesforce ecosystems.
-              </p>
-            </div>
-
-            <!-- Specializations Section -->
-            <div class="specializations-section">
-              <h3 class="section-title">Specializations</h3>
-              <div class="chips-flex">
-                <span class="spec-chip">SAP</span>
-                <span class="spec-chip">Java</span>
-                <span class="spec-chip">.NET</span>
-                <span class="spec-chip">Cloud</span>
-                <span class="spec-chip">DevOps</span>
-                <span class="spec-chip">Salesforce</span>
-                <span class="spec-chip">Contract / C2C</span>
-              </div>
-            </div>
-
-          </div>
-        </div>
-
-        <!-- Activity & Job Postings Tab Panel Card -->
-        <div class="card activity-panel-card mb-4" *ngIf="isProfileAvailable && (!isJobsLoaded || !isCandidatesLoaded || hasJobs || hasCandidates)">
-          <div class="card-header bg-transparent border-bottom-0 p-3 p-md-4 pb-0" *ngIf="(!isJobsLoaded || hasJobs) || (!isCandidatesLoaded || hasCandidates)">
-            <ul class="nav nav-tabs enterprise-tabs" role="tablist">
-              <li class="nav-item" *ngIf="!isJobsLoaded || hasJobs">
-                <a
-                  class="nav-link"
-                  [class.active]="activeTab === 'recruiters'"
-                  (click)="setActiveTab('recruiters')"
-                  role="tab"
-                >
-                  Open Requirements
-                </a>
-              </li>
-              <li class="nav-item" *ngIf="!isCandidatesLoaded || hasCandidates">
-                <a
-                  class="nav-link"
-                  [class.active]="activeTab === 'benchsales'"
-                  (click)="setActiveTab('benchsales')"
-                  role="tab"
-                >
-                  Available Candidates
-                </a>
-              </li>
-            </ul>
-          </div>
-
-          <div class="card-body p-3 p-md-4 pt-2 pt-md-2">
-            <div class="tab-content">
-              <div role="tabpanel" class="tab-pane fade" [class.show]="activeTab === 'recruiters'" [class.active]="activeTab === 'recruiters'" id="profile-recruiters">
-                <profile-job-posting-history [consultancyUserId]="consultancyUserId" [profileId]="profileId" (outParams)="handleJobs($event)"></profile-job-posting-history>
-              </div>
-              <div role="tabpanel" class="tab-pane fade" [class.show]="activeTab === 'benchsales'" [class.active]="activeTab === 'benchsales'" id="profile-benchsales">
-                <profile-available-resources [consultancyUserId]="consultancyUserId" [profileId]="profileId" (outParams)="handleCandidates($event)"></profile-available-resources>
-              </div>
             </div>
           </div>
-        </div>
+
+        </ng-container>
 
       </ng-container>
 
+      <!-- Profile Private State -->
+      <div class="card empty-profile-card" *ngIf="!isProfileAvailable && isProfilePrivate">
+        <div class="card-body text-center p-5">
+          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#E6A23C" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="mb-3">
+            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+            <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+          </svg>
+          <h4 class="text-dark-900 font-weight-bold mb-2">Private Profile</h4>
+          <p class="text-muted mb-0">This candidate's profile is currently set to private.</p>
+        </div>
+      </div>
+
       <!-- Profile Not Found State -->
-      <div class="card empty-profile-card" *ngIf="!isProfileAvailable">
+      <div class="card empty-profile-card" *ngIf="!isProfileAvailable && !isProfilePrivate">
         <div class="card-body text-center p-5">
           <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#C64646" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="mb-3">
             <circle cx="12" cy="12" r="10"></circle>
@@ -180,7 +369,7 @@
             <line x1="12" y1="16" x2="12.01" y2="16"></line>
           </svg>
           <h4 class="text-dark-900 font-weight-bold mb-2">Profile Not Found</h4>
-          <p class="text-muted mb-0">The requested recruiter public profile does not exist or may have been removed.</p>
+          <p class="text-muted mb-0">The requested profile does not exist or may have been removed.</p>
         </div>
       </div>
 

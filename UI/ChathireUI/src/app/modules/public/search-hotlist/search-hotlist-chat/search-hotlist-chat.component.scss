@@ -40,6 +40,23 @@
       background-color: #ffffff;
     }
 
+    .avatar-fallback {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #7C3AED 0%, #4F46E5 100%);
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 18px;
+      border: 2px solid #ffffff;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+      text-transform: uppercase;
+      user-select: none;
+    }
+
     .status-indicator {
       position: absolute;
       bottom: 0;

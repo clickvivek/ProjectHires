@@ -23,6 +23,45 @@
 
           <form #signupForm="ngForm" (ngSubmit)="signup()" novalidate>
             
+            <!-- Account Role Selection -->
+            <div class="mb-3.5">
+              <label class="form-label input-label">I want to join as</label>
+              <div class="row g-2">
+                <div class="col-6">
+                  <div
+                    class="p-2.5 rounded-3 border text-center cursor-pointer transition-all d-flex align-items-center justify-content-center gap-2"
+                    [ngStyle]="{
+                      'border-color': selectedRole === 'candidate' ? '#72246C' : '#E5E7EB',
+                      'background-color': selectedRole === 'candidate' ? '#FAF5FF' : '#FFFFFF',
+                      'color': selectedRole === 'candidate' ? '#72246C' : '#4B5563',
+                      'font-weight': selectedRole === 'candidate' ? '600' : '400',
+                      'box-shadow': selectedRole === 'candidate' ? '0 0 0 2px rgba(114,36,108,0.15)' : 'none'
+                    }"
+                    (click)="selectedRole = 'candidate'"
+                  >
+                    <span class="material-symbols-outlined fs-5">person</span>
+                    <span class="small">Job Seeker</span>
+                  </div>
+                </div>
+                <div class="col-6">
+                  <div
+                    class="p-2.5 rounded-3 border text-center cursor-pointer transition-all d-flex align-items-center justify-content-center gap-2"
+                    [ngStyle]="{
+                      'border-color': selectedRole === 'recruiter' ? '#72246C' : '#E5E7EB',
+                      'background-color': selectedRole === 'recruiter' ? '#FAF5FF' : '#FFFFFF',
+                      'color': selectedRole === 'recruiter' ? '#72246C' : '#4B5563',
+                      'font-weight': selectedRole === 'recruiter' ? '600' : '400',
+                      'box-shadow': selectedRole === 'recruiter' ? '0 0 0 2px rgba(114,36,108,0.15)' : 'none'
+                    }"
+                    (click)="selectedRole = 'recruiter'"
+                  >
+                    <span class="material-symbols-outlined fs-5">business</span>
+                    <span class="small text-nowrap">Recruiter / Bench Sales</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
             <!-- Email Input Field -->
             <div class="mb-3.5">
               <label for="email" class="form-label input-label">Email</label>

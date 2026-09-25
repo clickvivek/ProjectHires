@@ -1,6 +1,8 @@
 .admin-setup-container {
   min-height: calc(100vh - 80px);
   background-color: #f8fafc;
+  padding-top: 1.5rem !important;
+  margin-top: 0 !important;
 
   .page-title {
     font-size: 1.6rem;
@@ -28,7 +30,7 @@
     border-radius: 10px;
 
     .nav-link {
-      color: #64748b;
+      color: #475569;
       font-weight: 600;
       font-size: 0.9rem;
       border-radius: 8px;
@@ -36,14 +38,27 @@
       transition: all 0.2s ease;
 
       &:hover:not(.active) {
-        color: #334155;
-        background: rgba(255, 255, 255, 0.5);
+        color: #0f172a;
+        background: rgba(255, 255, 255, 0.7);
       }
 
       &.active {
-        background-color: #ffffff;
-        color: #39756F;
+        background-color: #ffffff !important;
+        color: #0f172a !important; // Crisp dark font color when background is white
+        font-weight: 700 !important;
         box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+
+        .material-symbols-outlined {
+          color: #0f172a !important;
+        }
+
+        span {
+          color: #0f172a !important;
+        }
+
+        .badge {
+          color: #ffffff !important;
+        }
       }
     }
   }
@@ -730,7 +745,8 @@
   }
 }
 
-.modal-backdrop-custom {
+.modal-backdrop-custom,
+.custom-modal-backdrop {
   position: fixed;
   top: 0;
   left: 0;
@@ -740,4 +756,133 @@
   backdrop-filter: blur(4px);
   z-index: 1050;
 }
+
+.promo-codes-area {
+  .promo-table {
+    thead th {
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.4px;
+      padding: 8px 12px;
+      border-bottom: 1px solid #cbd5e1;
+      background-color: #f8fafc;
+      color: #334155;
+      white-space: nowrap;
+    }
+
+    tbody td {
+      padding: 6px 12px;
+      vertical-align: middle;
+      border-bottom: 1px solid #f1f5f9;
+      color: #0f172a;
+    }
+
+    tbody tr.thin-row {
+      height: 38px;
+      transition: background-color 0.12s ease;
+
+      &:hover {
+        background-color: #f8fafc;
+      }
+    }
+  }
+
+  .promo-code-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 3px 8px;
+    background-color: #f1f5f9;
+    color: #0f172a !important; // High contrast dark slate font
+    border: 1px solid #94a3b8;
+    border-radius: 5px;
+    font-size: 0.84rem;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+  }
+
+  .promo-benefit-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 2px 7px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    border-radius: 4px;
+    line-height: 1.2;
+
+    &.badge-postings {
+      background-color: #dbeafe;
+      color: #1e3a8a !important;
+      border: 1px solid #93c5fd;
+    }
+    &.badge-downloads {
+      background-color: #ccfbf1;
+      color: #115e59 !important;
+      border: 1px solid #5eead4;
+    }
+    &.badge-chats {
+      background-color: #dcfce7;
+      color: #14532d !important;
+      border: 1px solid #86efac;
+    }
+    &.badge-discount {
+      background-color: #fef9c3;
+      color: #713f12 !important;
+      border: 1px solid #fde047;
+    }
+    &.badge-standard {
+      background-color: #f1f5f9;
+      color: #334155 !important;
+      border: 1px solid #cbd5e1;
+    }
+  }
+
+  .promo-icon-btn {
+    width: 30px;
+    height: 30px;
+    min-width: 30px;
+    max-width: 30px;
+    padding: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 6px;
+    transition: all 0.15s ease;
+
+    .material-symbols-outlined {
+      font-size: 15px;
+      line-height: 1;
+    }
+
+    &:hover {
+      transform: scale(1.08);
+    }
+  }
+
+  .hover-primary:hover {
+    color: #39756F !important;
+  }
+
+  .btn-purple {
+    background-color: #6d28d9;
+    border-color: #6d28d9;
+    color: #ffffff;
+    font-weight: 600;
+
+    &:hover, &:focus {
+      background-color: #5b21b6;
+      border-color: #5b21b6;
+      color: #ffffff;
+    }
+  }
+
+  .bg-purple {
+    background-color: #6d28d9 !important;
+  }
+
+  .spin-anim {
+    animation: spin 1s linear infinite;
+  }
+}
+
 

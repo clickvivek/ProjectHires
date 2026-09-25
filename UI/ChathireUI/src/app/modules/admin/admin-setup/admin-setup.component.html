@@ -85,6 +85,26 @@
           <span>Add Company (LinkedIn)</span>
           <span *ngIf="scrapedResults.length > 0" class="badge rounded-pill bg-primary ms-1">{{ scrapedResults.length }}</span>
         </button>
+        <button
+          class="nav-link d-flex align-items-center gap-2"
+          [class.active]="activeTab === 'promo-codes'"
+          (click)="setTab('promo-codes')"
+          type="button"
+        >
+          <span class="material-symbols-outlined fs-5">loyalty</span>
+          <span>Promo Codes</span>
+          <span *ngIf="promoTotalCount > 0" class="badge rounded-pill bg-info text-dark ms-1">{{ promoTotalCount }}</span>
+        </button>
+        <button
+          class="nav-link d-flex align-items-center gap-2"
+          [class.active]="activeTab === 'jobposting-by-email'"
+          (click)="setTab('jobposting-by-email')"
+          type="button"
+        >
+          <span class="material-symbols-outlined fs-5">forward_to_inbox</span>
+          <span>Jobposting by email</span>
+          <span *ngIf="emailJobStats.totalReceived > 0" class="badge rounded-pill bg-purple text-white ms-1">{{ emailJobStats.totalReceived }}</span>
+        </button>
       </div>
     </div>
 
@@ -2215,9 +2235,6 @@
 
     </div>
 
-  </div>
-</div>
-
 
 <!-- ==================================================== -->
 <!-- EDIT COMPANY & LOGO MODAL -->
@@ -2686,4 +2703,1452 @@
 
   </div>
 </div>
+
+<!-- ==================================================== -->
+<!-- TAB: PROMO CODE MANAGEMENT -->
+<!-- ==================================================== -->
+<div *ngIf="activeTab === 'promo-codes'" class="tab-content-area promo-codes-area">
+
+  <!-- Compact Top Toolbar Card (Zero Wasted Space) -->
+  <div class="card border-0 shadow-sm p-3 mb-3 bg-white rounded-3">
+    <div class="d-flex flex-column flex-lg-row justify-content-between align-items-start align-items-lg-center gap-3">
+      
+      <!-- Title & Quick Stats -->
+      <div>
+        <div class="d-flex align-items-center gap-2 flex-wrap">
+          <h5 class="mb-0 fw-bold text-dark d-flex align-items-center gap-2">
+            <span class="material-symbols-outlined text-primary fs-5">loyalty</span>
+            Promo Codes & Employer Rewards
+          </h5>
+          <span class="badge bg-dark text-white fw-bold px-2 py-1">{{ promoTotalCount }} Codes</span>
+          <span class="badge bg-success-subtle text-success border border-success-subtle fw-semibold px-2 py-1">{{ promoActiveCount }} Active</span>
+          <span *ngIf="promoExpiredCount > 0" class="badge bg-danger-subtle text-danger border border-danger-subtle fw-semibold px-2 py-1">{{ promoExpiredCount }} Expired</span>
+          <span *ngIf="promoTotalRedemptions > 0" class="badge bg-info-subtle text-info-emphasis border border-info-subtle fw-semibold px-2 py-1">{{ promoTotalRedemptions }} Used</span>
+        </div>
+        <div class="text-muted extra-small mt-1">
+          Create, schedule, and distribute reward codes for Recruiters & Employers.
+        </div>
+      </div>
+
+      <!-- Controls: Search, Filter & Create Button -->
+      <div class="d-flex align-items-center gap-2 flex-wrap w-100 w-lg-auto justify-content-lg-end">
+        <!-- Search Input -->
+        <div class="input-group input-group-sm" style="max-width: 240px;">
+          <span class="input-group-text bg-white border-end-0 text-muted">
+            <span class="material-symbols-outlined" style="font-size: 16px;">search</span>
+          </span>
+          <input
+            type="text"
+            class="form-control border-start-0 ps-0 text-dark fw-medium"
+            placeholder="Search code / description..."
+            [(ngModel)]="promoCodeSearch"
+            (input)="onPromoSearchChange()"
+          />
+          <button
+            *ngIf="promoCodeSearch"
+            class="btn btn-outline-secondary border-start-0 py-0"
+            type="button"
+            (click)="promoCodeSearch = ''; onPromoSearchChange()"
+          >
+            <span class="material-symbols-outlined" style="font-size: 14px;">close</span>
+          </button>
+        </div>
+
+        <!-- Status Filter Pills -->
+        <div class="status-filter-pills">
+          <button
+            type="button"
+            class="filter-pill"
+            [class.active]="promoCodeFilter === 'all'"
+            (click)="onPromoFilterChange('all')"
+          >
+            <span>All</span>
+            <span class="badge-count">{{ promoTotalCount }}</span>
+          </button>
+          <button
+            type="button"
+            class="filter-pill"
+            [class.active]="promoCodeFilter === 'active'"
+            (click)="onPromoFilterChange('active')"
+          >
+            <span>Active</span>
+            <span class="badge-count">{{ promoActiveCount }}</span>
+          </button>
+          <button
+            type="button"
+            class="filter-pill"
+            [class.active]="promoCodeFilter === 'expired'"
+            (click)="onPromoFilterChange('expired')"
+          >
+            <span>Expired</span>
+            <span class="badge-count">{{ promoExpiredCount }}</span>
+          </button>
+          <button
+            type="button"
+            class="filter-pill"
+            [class.active]="promoCodeFilter === 'inactive'"
+            (click)="onPromoFilterChange('inactive')"
+          >
+            <span>Inactive</span>
+          </button>
+        </div>
+
+        <!-- Refresh Button -->
+        <button
+          type="button"
+          class="btn btn-sm btn-outline-secondary d-inline-flex align-items-center gap-1 px-3 shadow-sm fw-semibold"
+          style="height: 34px;"
+          (click)="loadPromoCodes()"
+          [disabled]="isLoadingPromoCodes"
+          title="Refresh promo codes"
+        >
+          <span class="material-symbols-outlined" style="font-size: 18px;" [class.spin]="isLoadingPromoCodes">refresh</span>
+          <span>Refresh</span>
+        </button>
+
+        <!-- Create Button -->
+        <button
+          type="button"
+          class="btn btn-sm btn-primary d-inline-flex align-items-center gap-1 px-3 shadow-sm fw-semibold"
+          style="height: 34px;"
+          (click)="openCreatePromoModal()"
+        >
+          <span class="material-symbols-outlined" style="font-size: 18px;">add</span>
+          <span>Create Code</span>
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Promo Codes Table Card -->
+  <div class="card border-0 shadow-sm bg-white rounded-3 overflow-hidden">
+    <!-- Loading State -->
+    <div *ngIf="isLoadingPromoCodes" class="text-center py-4">
+      <div class="spinner-border spinner-border-sm text-primary mb-2" role="status">
+        <span class="visually-hidden">Loading...</span>
+      </div>
+      <div class="text-dark small fw-medium">Loading promo codes...</div>
+    </div>
+
+    <!-- Empty State -->
+    <div *ngIf="!isLoadingPromoCodes && filteredPromoCodes.length === 0" class="text-center py-5">
+      <div class="icon-circle bg-light text-muted mx-auto mb-2" style="width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+        <span class="material-symbols-outlined fs-3">loyalty</span>
+      </div>
+      <h6 class="fw-bold text-dark mb-1">No Promo Codes Found</h6>
+      <p class="text-muted small mb-3">
+        {{ promoCodeSearch || promoCodeFilter !== 'all' ? 'Try adjusting your search or filter options.' : 'Create your first promotional reward code.' }}
+      </p>
+      <button
+        *ngIf="!promoCodeSearch && promoCodeFilter === 'all'"
+        type="button"
+        class="btn btn-primary btn-sm px-3 fw-semibold"
+        (click)="openCreatePromoModal()"
+      >
+        <span class="material-symbols-outlined fs-6 align-middle me-1">add</span>
+        Create Promo Code
+      </button>
+    </div>
+
+    <!-- Table -->
+    <div *ngIf="!isLoadingPromoCodes && filteredPromoCodes.length > 0" class="table-responsive">
+      <table class="table table-hover align-middle mb-0 super-thin-table promo-table">
+        <thead class="table-light">
+          <tr>
+            <th scope="col" style="min-width: 200px;">Promo Code</th>
+            <th scope="col" style="min-width: 260px;">Rewards & Quota Benefits</th>
+            <th scope="col" style="min-width: 180px;">Validity Period</th>
+            <th scope="col" class="text-center" style="min-width: 100px;">Redemptions</th>
+            <th scope="col" class="text-center" style="min-width: 90px;">Status</th>
+            <th scope="col" class="text-end" style="min-width: 110px;">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let promo of paginatedPromoCodes" class="thin-row">
+            <!-- Promo Code, Policy & Description -->
+            <td>
+              <div class="d-flex align-items-center gap-2 flex-wrap">
+                <span class="promo-code-badge font-monospace">
+                  <span class="material-symbols-outlined fs-6 me-1 text-primary">local_offer</span>
+                  {{ promo.promocode || 'UNNAMED_CODE' }}
+                </span>
+                <span
+                  *ngIf="promo.isSingleUse || (!promo.isSingleUse && promo.maxRedemptions === 1)"
+                  class="badge bg-secondary-subtle text-dark border border-secondary-subtle extra-small fw-bold"
+                  title="Can only be claimed once globally"
+                >
+                  Single-Use
+                </span>
+                <span
+                  *ngIf="!promo.isSingleUse && promo.maxRedemptions && promo.maxRedemptions > 1"
+                  class="badge bg-primary-subtle text-primary border border-primary-subtle extra-small fw-bold"
+                  [title]="'Shared by up to ' + promo.maxRedemptions + ' employers'"
+                >
+                  Multi-Use (Max {{ promo.maxRedemptions }})
+                </span>
+                <span
+                  *ngIf="!promo.isSingleUse && !promo.maxRedemptions"
+                  class="badge bg-light text-muted border extra-small fw-bold"
+                  title="Unlimited claims until expiration"
+                >
+                  Multi-Use
+                </span>
+              </div>
+              <div *ngIf="promo.description" class="text-dark extra-small mt-1 text-truncate fw-medium" style="max-width: 260px;" [title]="promo.description">
+                {{ promo.description }}
+              </div>
+            </td>
+
+            <!-- Benefits -->
+            <td>
+              <div class="d-flex flex-wrap gap-1">
+                <span *ngIf="promo.noOfFreeJobPosting && promo.noOfFreeJobPosting > 0" class="promo-benefit-badge badge-postings">
+                  <span class="material-symbols-outlined fs-6 align-middle me-1" style="font-size: 13px;">post_add</span>
+                  +{{ promo.noOfFreeJobPosting }} Postings
+                </span>
+                <span *ngIf="promo.noOfFreeDownloads && promo.noOfFreeDownloads > 0" class="promo-benefit-badge badge-downloads">
+                  <span class="material-symbols-outlined fs-6 align-middle me-1" style="font-size: 13px;">file_download</span>
+                  +{{ promo.noOfFreeDownloads }} Downloads
+                </span>
+                <span *ngIf="promo.dailyChatLimit && promo.dailyChatLimit > 0" class="promo-benefit-badge badge-chats">
+                  <span class="material-symbols-outlined fs-6 align-middle me-1" style="font-size: 13px;">chat</span>
+                  {{ promo.dailyChatLimit }} Daily Chats
+                </span>
+                <span *ngIf="promo.discountAmount && promo.discountAmount > 0" class="promo-benefit-badge badge-discount">
+                  <span class="material-symbols-outlined fs-6 align-middle me-1" style="font-size: 13px;">sell</span>
+                  ${{ promo.discountAmount }} Off
+                </span>
+                <span *ngIf="!promo.noOfFreeJobPosting && !promo.noOfFreeDownloads && !promo.dailyChatLimit && !promo.discountAmount" class="promo-benefit-badge badge-standard">
+                  Standard Access
+                </span>
+              </div>
+            </td>
+
+            <!-- Validity Period -->
+            <td>
+              <div class="small fw-bold text-dark">
+                {{ formatDateOnly(promo.startDate) }} &rarr; {{ formatDateOnly(promo.endDate) }}
+              </div>
+              <div class="extra-small mt-1">
+                <span *ngIf="isPromoExpired(promo)" class="badge bg-danger-subtle text-danger border border-danger-subtle fw-bold">
+                  Expired
+                </span>
+                <span *ngIf="!isPromoExpired(promo) && promo.active" class="badge bg-success-subtle text-success border border-success-subtle fw-bold">
+                  Active
+                </span>
+                <span *ngIf="!isPromoExpired(promo) && !promo.active" class="badge bg-secondary-subtle text-secondary border border-secondary-subtle fw-bold">
+                  Disabled
+                </span>
+              </div>
+            </td>
+
+            <!-- Redemptions -->
+            <td class="text-center">
+              <ng-container *ngIf="promo.isSingleUse || (!promo.isSingleUse && promo.maxRedemptions === 1)">
+                <span
+                  class="badge px-2 py-1 fw-bold fs-6"
+                  [ngClass]="(promo.redemptionCount || 0) >= 1 ? 'bg-danger-subtle text-danger border border-danger-subtle' : 'bg-success-subtle text-success border border-success-subtle'"
+                >
+                  {{ (promo.redemptionCount || 0) >= 1 ? '1 / 1 Claimed' : '0 / 1 Available' }}
+                </span>
+              </ng-container>
+              <ng-container *ngIf="!promo.isSingleUse && promo.maxRedemptions && promo.maxRedemptions > 1">
+                <span
+                  class="badge px-2 py-1 fw-bold fs-6"
+                  [ngClass]="(promo.redemptionCount || 0) >= promo.maxRedemptions ? 'bg-danger-subtle text-danger border border-danger-subtle' : 'bg-light text-dark border border-secondary-subtle'"
+                >
+                  {{ promo.redemptionCount || 0 }} / {{ promo.maxRedemptions }}
+                </span>
+              </ng-container>
+              <ng-container *ngIf="!promo.isSingleUse && !promo.maxRedemptions">
+                <span class="badge rounded-pill bg-light text-dark border border-secondary-subtle px-2 py-1 fw-bold fs-6">
+                  {{ promo.redemptionCount || 0 }}
+                </span>
+              </ng-container>
+            </td>
+
+            <!-- Status Toggle -->
+            <td class="text-center">
+              <div class="form-check form-switch d-inline-block">
+                <input
+                  class="form-check-input"
+                  type="checkbox"
+                  role="switch"
+                  [checked]="promo.active"
+                  (change)="togglePromoStatus(promo, $event)"
+                  title="Toggle active status"
+                />
+              </div>
+            </td>
+
+            <!-- Actions -->
+            <td class="text-end">
+              <div class="d-flex align-items-center justify-content-end gap-1">
+                <button
+                  type="button"
+                  class="btn btn-sm btn-outline-dark promo-icon-btn"
+                  (click)="copyPromoCode(promo.promocode)"
+                  title="Copy Promo Code"
+                >
+                  <span class="material-symbols-outlined">content_copy</span>
+                </button>
+                <button
+                  type="button"
+                  class="btn btn-sm btn-outline-danger promo-icon-btn"
+                  (click)="openDeletePromoModal(promo)"
+                  title="Delete Promo Code"
+                >
+                  <span class="material-symbols-outlined">delete</span>
+                </button>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Pagination Controls -->
+    <div *ngIf="filteredPromoCodes.length > 0" class="p-2 px-3 border-top bg-light d-flex flex-column flex-md-row justify-content-between align-items-center gap-2">
+      <div class="text-dark small fw-medium">
+        Showing {{ ((promoCurrentPage - 1) * promoPageSize) + 1 }} to {{ Math.min(promoCurrentPage * promoPageSize, filteredPromoCodes.length) }} of {{ filteredPromoCodes.length }} promo codes
+      </div>
+
+      <div class="d-flex align-items-center gap-3">
+        <!-- Page size selector -->
+        <div class="d-flex align-items-center gap-1 small text-dark fw-medium">
+          <span>Show:</span>
+          <select
+            class="form-select form-select-sm text-dark fw-semibold"
+            style="width: 75px;"
+            [ngModel]="promoPageSize"
+            (ngModelChange)="onPromoPageSizeChange($event)"
+          >
+            <option *ngFor="let size of promoPageSizeOptions" [value]="size">{{ size }}</option>
+          </select>
+        </div>
+
+        <!-- Page navigation -->
+        <div class="d-flex align-items-center gap-1">
+          <button
+            type="button"
+            class="btn btn-sm btn-outline-secondary"
+            [disabled]="promoCurrentPage <= 1"
+            (click)="onPromoPageChange(promoCurrentPage - 1)"
+          >
+            <span class="material-symbols-outlined fs-6">chevron_left</span>
+          </button>
+          <span class="small px-2 text-dark fw-bold">
+            Page {{ promoCurrentPage }} of {{ totalPromoPages }}
+          </span>
+          <button
+            type="button"
+            class="btn btn-sm btn-outline-secondary"
+            [disabled]="promoCurrentPage >= totalPromoPages"
+            (click)="onPromoPageChange(promoCurrentPage + 1)"
+          >
+            <span class="material-symbols-outlined fs-6">chevron_right</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+  <!-- ==================================================== -->
+  <!-- TAB 9: JOBPOSTING BY EMAIL -->
+  <!-- ==================================================== -->
+  <div *ngIf="activeTab === 'jobposting-by-email'" class="tab-content-area jobposting-by-email-area">
+
+    <!-- Top Dashboard Controls -->
+    <div class="card border-0 shadow-sm p-3 mb-4">
+      <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center gap-3">
+        <div>
+          <h5 class="mb-1 fw-bold text-dark d-flex align-items-center gap-2">
+            <span class="material-symbols-outlined text-purple fs-4">forward_to_inbox</span>
+            <span>Jobposting by Email</span>
+            <span class="badge bg-purple-subtle text-purple border border-purple-subtle px-2 py-1 fs-6">
+              AI Normalized
+            </span>
+          </h5>
+          <p class="text-muted small mb-0">
+            Automated inbound job posting pipeline via <strong class="text-dark">jobposting@chathire.com</strong>. Verifies recruiter against primary & alternate email, normalizes messy formatting with AI, and publishes as regular job postings.
+          </p>
+        </div>
+
+        <div class="d-flex align-items-center gap-2">
+          <button
+            type="button"
+            class="btn btn-outline-secondary d-flex align-items-center gap-1 shadow-sm"
+            (click)="loadEmailJobPostings(); loadEmailJobStats();"
+            [disabled]="isLoadingEmailJobs"
+          >
+            <span class="material-symbols-outlined fs-5" [class.spin-anim]="isLoadingEmailJobs">refresh</span>
+            <span>Refresh</span>
+          </button>
+          <button
+            type="button"
+            class="btn btn-purple text-white d-flex align-items-center gap-2 shadow-sm px-3"
+            (click)="openSimulateModal()"
+          >
+            <span class="material-symbols-outlined fs-5">send</span>
+            <span>Simulate Inbound Email</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Stat Metric Cards -->
+    <div class="row g-3 mb-4">
+      <div class="col-6 col-md-4 col-xl-2">
+        <div class="card border-0 shadow-sm p-3 h-100 border-start border-4 border-primary">
+          <div class="d-flex justify-content-between align-items-center mb-1">
+            <span class="text-muted extra-small text-uppercase fw-bold">Total Ingested</span>
+            <span class="material-symbols-outlined text-primary fs-5">all_inbox</span>
+          </div>
+          <h3 class="mb-0 fw-bold text-dark">{{ emailJobStats.totalReceived }}</h3>
+          <span class="text-muted extra-small mt-1">Total email submissions</span>
+        </div>
+      </div>
+
+      <div class="col-6 col-md-4 col-xl-2">
+        <div class="card border-0 shadow-sm p-3 h-100 border-start border-4 border-success">
+          <div class="d-flex justify-content-between align-items-center mb-1">
+            <span class="text-muted extra-small text-uppercase fw-bold">Published</span>
+            <span class="material-symbols-outlined text-success fs-5">check_circle</span>
+          </div>
+          <h3 class="mb-0 fw-bold text-success">{{ emailJobStats.publishedCount }}</h3>
+          <span class="text-muted extra-small mt-1">Live in regular postings</span>
+        </div>
+      </div>
+
+      <div class="col-6 col-md-4 col-xl-2">
+        <div class="card border-0 shadow-sm p-3 h-100 border-start border-4 border-info">
+          <div class="d-flex justify-content-between align-items-center mb-1">
+            <span class="text-muted extra-small text-uppercase fw-bold">Parsed / Review</span>
+            <span class="material-symbols-outlined text-info fs-5">pending_actions</span>
+          </div>
+          <h3 class="mb-0 fw-bold text-info">{{ emailJobStats.parsedCount }}</h3>
+          <span class="text-muted extra-small mt-1">Ready for confirmation</span>
+        </div>
+      </div>
+
+      <div class="col-6 col-md-4 col-xl-2">
+        <div class="card border-0 shadow-sm p-3 h-100 border-start border-4 border-warning">
+          <div class="d-flex justify-content-between align-items-center mb-1">
+            <span class="text-muted extra-small text-uppercase fw-bold">Quota Exceeded</span>
+            <span class="material-symbols-outlined text-warning fs-5">warning</span>
+          </div>
+          <h3 class="mb-0 fw-bold text-warning">{{ emailJobStats.quotaExceededCount }}</h3>
+          <span class="text-muted extra-small mt-1">Quota limit reached</span>
+        </div>
+      </div>
+
+      <div class="col-6 col-md-4 col-xl-2">
+        <div class="card border-0 shadow-sm p-3 h-100 border-start border-4 border-danger">
+          <div class="d-flex justify-content-between align-items-center mb-1">
+            <span class="text-muted extra-small text-uppercase fw-bold">Failed</span>
+            <span class="material-symbols-outlined text-danger fs-5">error</span>
+          </div>
+          <h3 class="mb-0 fw-bold text-danger">{{ emailJobStats.failedCount }}</h3>
+          <span class="text-muted extra-small mt-1">Unregistered / bad payload</span>
+        </div>
+      </div>
+
+      <div class="col-6 col-md-4 col-xl-2">
+        <div class="card border-0 shadow-sm p-3 h-100 border-start border-4 border-secondary">
+          <div class="d-flex justify-content-between align-items-center mb-1">
+            <span class="text-muted extra-small text-uppercase fw-bold">Rejected</span>
+            <span class="material-symbols-outlined text-secondary fs-5">cancel</span>
+          </div>
+          <h3 class="mb-0 fw-bold text-secondary">{{ emailJobStats.rejectedCount }}</h3>
+          <span class="text-muted extra-small mt-1">Manual / rule rejections</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main Content Table Card -->
+    <div class="card border-0 shadow-sm overflow-hidden">
+      
+      <!-- Filter Bar -->
+      <div class="p-3 bg-white border-bottom d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center gap-3">
+        
+        <!-- Search -->
+        <div class="search-input-wrap flex-grow-1" style="max-width: 380px;">
+          <div class="input-group input-group-sm">
+            <span class="input-group-text bg-light border-end-0">
+              <span class="material-symbols-outlined fs-6 text-muted">search</span>
+            </span>
+            <input
+              type="text"
+              class="form-control border-start-0 ps-0"
+              placeholder="Search by sender email, name, subject..."
+              [(ngModel)]="emailJobSearch"
+              (ngModelChange)="onEmailJobSearchChange()"
+            />
+          </div>
+        </div>
+
+        <!-- Status Filter Pills -->
+        <div class="d-flex flex-wrap gap-1 align-items-center">
+          <button
+            type="button"
+            class="btn btn-sm"
+            [class.btn-dark]="emailJobStatusFilter === 'all'"
+            [class.btn-outline-secondary]="emailJobStatusFilter !== 'all'"
+            (click)="onEmailJobFilterChange('all')"
+          >
+            All
+          </button>
+          <button
+            type="button"
+            class="btn btn-sm"
+            [class.btn-success]="emailJobStatusFilter === 'published'"
+            [class.btn-outline-success]="emailJobStatusFilter !== 'published'"
+            (click)="onEmailJobFilterChange('published')"
+          >
+            Published
+          </button>
+          <button
+            type="button"
+            class="btn btn-sm"
+            [class.btn-info]="emailJobStatusFilter === 'parsed'"
+            [class.btn-outline-info]="emailJobStatusFilter !== 'parsed'"
+            (click)="onEmailJobFilterChange('parsed')"
+          >
+            Parsed
+          </button>
+          <button
+            type="button"
+            class="btn btn-sm"
+            [class.btn-warning]="emailJobStatusFilter === 'quotaexceeded'"
+            [class.btn-outline-warning]="emailJobStatusFilter !== 'quotaexceeded'"
+            (click)="onEmailJobFilterChange('quotaexceeded')"
+          >
+            Quota Exceeded
+          </button>
+          <button
+            type="button"
+            class="btn btn-sm"
+            [class.btn-danger]="emailJobStatusFilter === 'failed'"
+            [class.btn-outline-danger]="emailJobStatusFilter !== 'failed'"
+            (click)="onEmailJobFilterChange('failed')"
+          >
+            Failed
+          </button>
+          <button
+            type="button"
+            class="btn btn-sm"
+            [class.btn-secondary]="emailJobStatusFilter === 'rejected'"
+            [class.btn-outline-secondary]="emailJobStatusFilter !== 'rejected'"
+            (click)="onEmailJobFilterChange('rejected')"
+          >
+            Rejected
+          </button>
+        </div>
+
+      </div>
+
+      <!-- Table -->
+      <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0 custom-admin-table">
+          <thead class="table-light">
+            <tr>
+              <th scope="col" style="width: 140px;">Received</th>
+              <th scope="col" style="width: 240px;">Sender / Recruiter</th>
+              <th scope="col">Job Subject & Parsed Title</th>
+              <th scope="col" style="width: 130px;" class="text-center">Status</th>
+              <th scope="col" style="width: 110px;" class="text-center">Job ID</th>
+              <th scope="col" style="width: 200px;" class="text-end">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- Loading Row -->
+            <tr *ngIf="isLoadingEmailJobs">
+              <td colspan="6" class="text-center py-5">
+                <div class="spinner-border text-purple spinner-border-sm me-2"></div>
+                <span class="text-muted">Loading email job postings...</span>
+              </td>
+            </tr>
+
+            <!-- Empty Row -->
+            <tr *ngIf="!isLoadingEmailJobs && emailJobPostings.length === 0">
+              <td colspan="6" class="text-center py-5">
+                <div class="d-flex flex-column align-items-center justify-content-center text-muted">
+                  <span class="material-symbols-outlined fs-1 text-secondary mb-2">mark_email_read</span>
+                  <h6 class="fw-bold mb-1">No Email Job Postings Found</h6>
+                  <p class="small mb-3">No emails have been ingested matching the current filter.</p>
+                  <button type="button" class="btn btn-sm btn-purple text-white" (click)="openSimulateModal()">
+                    Simulate Test Email
+                  </button>
+                </div>
+              </td>
+            </tr>
+
+            <!-- Data Rows -->
+            <tr *ngFor="let item of emailJobPostings">
+              
+              <!-- Received Date -->
+              <td>
+                <div class="fw-semibold text-dark small">
+                  {{ item.receivedDate | date:'MMM d, y' }}
+                </div>
+                <div class="text-muted extra-small">
+                  {{ item.receivedDate | date:'h:mm a' }}
+                </div>
+              </td>
+
+              <!-- Sender & Recruiter Match -->
+              <td>
+                <div class="d-flex align-items-start gap-2">
+                  <span class="material-symbols-outlined text-purple fs-5 mt-1">mail</span>
+                  <div>
+                    <div class="fw-bold text-dark small font-monospace">{{ item.senderEmail }}</div>
+                    <div *ngIf="item.recruiterName" class="text-muted extra-small">
+                      👤 {{ item.recruiterName }}
+                      <span *ngIf="item.matchedEmailType" class="badge" [class.bg-primary-subtle]="item.matchedEmailType === 'Primary'" [class.text-primary]="item.matchedEmailType === 'Primary'" [class.bg-info-subtle]="item.matchedEmailType === 'Alternate'" [class.text-info]="item.matchedEmailType === 'Alternate'">
+                        {{ item.matchedEmailType }} Email
+                      </span>
+                    </div>
+                    <div *ngIf="!item.recruiterName" class="text-danger extra-small">
+                      ⚠️ Unregistered Email
+                    </div>
+                  </div>
+                </div>
+              </td>
+
+              <!-- Subject & Parsed Title -->
+              <td>
+                <div class="fw-semibold text-dark small text-truncate" style="max-width: 380px;" title="{{ item.emailSubject }}">
+                  {{ item.emailSubject }}
+                </div>
+                <div *ngIf="item.parsedJob?.name" class="text-primary extra-small mt-1 d-flex align-items-center gap-1">
+                  <span class="material-symbols-outlined fs-6">auto_awesome</span>
+                  <strong class="text-truncate" style="max-width: 350px;">{{ item.parsedJob?.name }}</strong>
+                  <span *ngIf="item.parsedJob?.jobLocation" class="text-muted">({{ item.parsedJob?.jobLocation }})</span>
+                </div>
+                <div *ngIf="item.errorMessage" class="text-danger extra-small mt-1 text-truncate" style="max-width: 380px;" title="{{ item.errorMessage }}">
+                  {{ item.errorMessage }}
+                </div>
+              </td>
+
+              <!-- Status Badge -->
+              <td class="text-center">
+                <span class="badge px-2 py-1 rounded-pill fw-bold" [ngClass]="getEmailStatusBadgeClass(item.status)">
+                  {{ item.status }}
+                </span>
+              </td>
+
+              <!-- Job ID Link -->
+              <td class="text-center">
+                <ng-container *ngIf="item.createdJobOpeningId">
+                  <a
+                    [routerLink]="['/recruiter/job-openings/view', item.createdJobOpeningId]"
+                    target="_blank"
+                    class="badge bg-purple-subtle text-purple border border-purple-subtle px-2 py-1 text-decoration-none fw-bold"
+                    title="View Regular Job Posting"
+                  >
+                    #{{ item.createdJobOpeningId }}
+                  </a>
+                </ng-container>
+                <ng-container *ngIf="!item.createdJobOpeningId">
+                  <span class="text-muted extra-small">-</span>
+                </ng-container>
+              </td>
+
+              <!-- Actions -->
+              <td class="text-end">
+                <div class="d-flex align-items-center justify-content-end gap-1">
+                  
+                  <!-- Review & Publish Button -->
+                  <button
+                    type="button"
+                    class="btn btn-sm btn-primary d-flex align-items-center gap-1 px-2 py-1"
+                    (click)="openReviewPublishModal(item)"
+                    title="Review Parsed Fields & Publish to Regular Postings"
+                  >
+                    <span class="material-symbols-outlined fs-6">rate_review</span>
+                    <span class="extra-small fw-bold">Review / Post</span>
+                  </button>
+
+                  <!-- Raw Email View -->
+                  <button
+                    type="button"
+                    class="btn btn-sm btn-outline-secondary promo-icon-btn"
+                    (click)="openRawEmailModal(item)"
+                    title="View Raw Email Payload"
+                  >
+                    <span class="material-symbols-outlined">visibility</span>
+                  </button>
+
+                  <!-- Reprocess with AI -->
+                  <button
+                    type="button"
+                    class="btn btn-sm btn-outline-info promo-icon-btn"
+                    (click)="reprocessEmailJob(item)"
+                    title="Reprocess with AI Parser"
+                  >
+                    <span class="material-symbols-outlined">auto_fix_high</span>
+                  </button>
+
+                  <!-- Reject -->
+                  <button
+                    *ngIf="item.status !== 'Published' && item.status !== 'Rejected'"
+                    type="button"
+                    class="btn btn-sm btn-outline-warning promo-icon-btn"
+                    (click)="rejectEmailJob(item)"
+                    title="Reject Email Posting"
+                  >
+                    <span class="material-symbols-outlined">block</span>
+                  </button>
+
+                  <!-- Delete -->
+                  <button
+                    type="button"
+                    class="btn btn-sm btn-outline-danger promo-icon-btn"
+                    (click)="deleteEmailJob(item)"
+                    title="Delete Entry"
+                  >
+                    <span class="material-symbols-outlined">delete</span>
+                  </button>
+
+                </div>
+              </td>
+
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Pagination Controls -->
+      <div *ngIf="emailJobTotalCount > 0" class="p-2 px-3 border-top bg-light d-flex flex-column flex-md-row justify-content-between align-items-center gap-2">
+        <div class="text-dark small fw-medium">
+          Showing {{ ((emailJobCurrentPage - 1) * emailJobPageSize) + 1 }} to {{ Math.min(emailJobCurrentPage * emailJobPageSize, emailJobTotalCount) }} of {{ emailJobTotalCount }} email job postings
+        </div>
+
+        <div class="d-flex align-items-center gap-2">
+          <button
+            type="button"
+            class="btn btn-sm btn-outline-secondary"
+            [disabled]="emailJobCurrentPage <= 1"
+            (click)="onEmailJobPageChange(emailJobCurrentPage - 1)"
+          >
+            <span class="material-symbols-outlined fs-6">chevron_left</span>
+          </button>
+          <span class="small fw-bold px-2">Page {{ emailJobCurrentPage }}</span>
+          <button
+            type="button"
+            class="btn btn-sm btn-outline-secondary"
+            [disabled]="emailJobCurrentPage * emailJobPageSize >= emailJobTotalCount"
+            (click)="onEmailJobPageChange(emailJobCurrentPage + 1)"
+          >
+            <span class="material-symbols-outlined fs-6">chevron_right</span>
+          </button>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+  </div>
+</div>
+
+<!-- ==================================================== -->
+<!-- CREATE PROMO CODE MODAL -->
+<!-- ==================================================== -->
+<div *ngIf="isCreatePromoModalOpen" class="custom-modal-backdrop d-flex align-items-center justify-content-center">
+  <div class="modal-dialog-box card border-0 shadow-lg rounded-4 overflow-hidden" style="max-width: 640px; width: 95%;">
+
+    <!-- Modal Header -->
+    <div class="p-3 px-4 bg-primary text-white d-flex justify-content-between align-items-center">
+      <div class="d-flex align-items-center gap-2">
+        <span class="material-symbols-outlined fs-4">add_circle</span>
+        <h5 class="mb-0 fw-bold">Create Promo Code</h5>
+      </div>
+      <button type="button" class="btn-close btn-close-white" (click)="closeCreatePromoModal()"></button>
+    </div>
+
+    <!-- Modal Body -->
+    <div class="p-4 bg-white" style="max-height: 75vh; overflow-y: auto;">
+      <div class="p-3 mb-3 bg-purple-subtle border border-purple-subtle rounded-3 small text-purple d-flex align-items-start gap-2">
+        <span class="material-symbols-outlined fs-5 mt-1 flex-shrink-0">info</span>
+        <div>
+          Promo codes grant quota rewards and higher access tiers exclusively to <strong>Recruiter & Employer</strong> accounts upon redemption (not applicable for Candidates).
+        </div>
+      </div>
+
+      <form (ngSubmit)="savePromoCode()">
+        <!-- Promo Code Input with Auto Generate Button -->
+        <div class="mb-3">
+          <label class="form-label fw-semibold small text-dark d-flex justify-content-between align-items-center">
+            <span>Promo Code <span class="text-danger">*</span></span>
+            <button
+              type="button"
+              class="btn btn-link btn-sm p-0 text-decoration-none text-primary d-flex align-items-center gap-1"
+              (click)="generateRandomPromoCode()"
+            >
+              <span class="material-symbols-outlined" style="font-size: 14px;">autorenew</span>
+              <span>Auto Generate</span>
+            </button>
+          </label>
+          <input
+            type="text"
+            class="form-control font-monospace text-uppercase fw-bold"
+            placeholder="e.g. WELCOME100, SUMMER2026, HIRES-PRO"
+            [(ngModel)]="createPromoForm.promocode"
+            name="promocode"
+            [class.is-invalid]="promoFormErrors['promocode']"
+            maxlength="50"
+            required
+          />
+          <div *ngIf="promoFormErrors['promocode']" class="invalid-feedback">
+            {{ promoFormErrors['promocode'] }}
+          </div>
+        </div>
+
+        <!-- Description (Optional) -->
+        <div class="mb-3">
+          <label class="form-label fw-semibold small text-dark">
+            Description <span class="text-muted fw-normal">(Optional)</span>
+          </label>
+          <textarea
+            class="form-control"
+            rows="2"
+            placeholder="e.g. Early adopter bonus for tech recruiting agencies..."
+            [(ngModel)]="createPromoForm.description"
+            name="description"
+          ></textarea>
+        </div>
+
+        <!-- Usage Redemption Policy: Single-Use (Default) vs Multi-Use -->
+        <div class="mb-3 p-3 bg-light rounded-3 border">
+          <label class="form-label fw-bold small text-dark d-flex align-items-center gap-1 mb-2">
+            <span class="material-symbols-outlined fs-6 text-primary">pin</span>
+            Usage Redemption Policy <span class="text-danger">*</span>
+          </label>
+          <div class="d-flex flex-column flex-sm-row gap-3">
+            <div class="form-check">
+              <input
+                class="form-check-input"
+                type="radio"
+                name="usageType"
+                id="usageSingle"
+                [value]="true"
+                [(ngModel)]="createPromoForm.isSingleUse"
+              />
+              <label class="form-check-label text-dark small fw-semibold" for="usageSingle">
+                Single-Use <span class="badge bg-dark text-white ms-1">Default</span>
+                <div class="text-muted extra-small">Can only be claimed once globally across the platform.</div>
+              </label>
+            </div>
+            <div class="form-check">
+              <input
+                class="form-check-input"
+                type="radio"
+                name="usageType"
+                id="usageMulti"
+                [value]="false"
+                [(ngModel)]="createPromoForm.isSingleUse"
+              />
+              <label class="form-check-label text-dark small fw-semibold" for="usageMulti">
+                Multi-Use (Shared)
+                <div class="text-muted extra-small">Multiple employers can redeem this code.</div>
+              </label>
+            </div>
+          </div>
+
+          <!-- If Multi-Use, option to set Max Redemptions -->
+          <div *ngIf="!createPromoForm.isSingleUse" class="mt-3 pt-2 border-top">
+            <label class="form-label fw-semibold small text-dark">
+              Max Total Claims <span class="text-muted fw-normal">(Optional — leave blank for unlimited)</span>
+            </label>
+            <input
+              type="number"
+              class="form-control form-control-sm"
+              placeholder="e.g. 50 (First 50 employers)"
+              [(ngModel)]="createPromoForm.maxRedemptions"
+              name="maxRedemptions"
+              min="2"
+            />
+          </div>
+        </div>
+
+        <!-- Start Date & End Date (Mandatory) -->
+        <div class="row g-3 mb-3">
+          <div class="col-md-6">
+            <label class="form-label fw-semibold small text-dark">
+              Start Date <span class="text-danger">* (Mandatory)</span>
+            </label>
+            <input
+              type="date"
+              class="form-control"
+              [(ngModel)]="createPromoForm.startDate"
+              name="startDate"
+              [class.is-invalid]="promoFormErrors['startDate']"
+              required
+            />
+            <div *ngIf="promoFormErrors['startDate']" class="invalid-feedback">
+              {{ promoFormErrors['startDate'] }}
+            </div>
+          </div>
+
+          <div class="col-md-6">
+            <label class="form-label fw-semibold small text-dark">
+              End Date <span class="text-danger">* (Mandatory)</span>
+            </label>
+            <input
+              type="date"
+              class="form-control"
+              [(ngModel)]="createPromoForm.endDate"
+              name="endDate"
+              [class.is-invalid]="promoFormErrors['endDate']"
+              required
+            />
+            <div *ngIf="promoFormErrors['endDate']" class="invalid-feedback">
+              {{ promoFormErrors['endDate'] }}
+            </div>
+          </div>
+        </div>
+
+        <div class="border-top pt-3 mt-3 mb-3">
+          <h6 class="fw-bold text-dark small text-uppercase mb-3 d-flex align-items-center gap-1">
+            <span class="material-symbols-outlined fs-5 text-primary">card_giftcard</span>
+            Reward Benefits & Quota Options <span class="text-muted fw-normal text-capitalize ms-1">(Optional)</span>
+          </h6>
+
+          <!-- Free Postings & Free Downloads -->
+          <div class="row g-3 mb-3">
+            <div class="col-md-6">
+              <label class="form-label fw-semibold small text-dark">
+                No. of Free Job Postings
+              </label>
+              <div class="input-group">
+                <span class="input-group-text bg-light text-muted">
+                  <span class="material-symbols-outlined fs-6">post_add</span>
+                </span>
+                <input
+                  type="number"
+                  class="form-control"
+                  placeholder="e.g. 25"
+                  [(ngModel)]="createPromoForm.noOfFreeJobPosting"
+                  name="noOfFreeJobPosting"
+                  min="0"
+                />
+              </div>
+              <div class="form-text extra-small">Additional job postings added to quota.</div>
+            </div>
+
+            <div class="col-md-6">
+              <label class="form-label fw-semibold small text-dark">
+                No. of Free Resume Downloads
+              </label>
+              <div class="input-group">
+                <span class="input-group-text bg-light text-muted">
+                  <span class="material-symbols-outlined fs-6">file_download</span>
+                </span>
+                <input
+                  type="number"
+                  class="form-control"
+                  placeholder="e.g. 50"
+                  [(ngModel)]="createPromoForm.noOfFreeDownloads"
+                  name="noOfFreeDownloads"
+                  min="0"
+                />
+              </div>
+              <div class="form-text extra-small">Additional resume views / downloads.</div>
+            </div>
+          </div>
+
+          <!-- Discount Amount & Daily Chat Limit -->
+          <div class="row g-3 mb-3">
+            <div class="col-md-6">
+              <label class="form-label fw-semibold small text-dark">
+                Discount Amount ($)
+              </label>
+              <div class="input-group">
+                <span class="input-group-text bg-light text-muted fw-bold">$</span>
+                <input
+                  type="number"
+                  class="form-control"
+                  placeholder="e.g. 50.00"
+                  [(ngModel)]="createPromoForm.discountAmount"
+                  name="discountAmount"
+                  min="0"
+                  step="0.01"
+                />
+              </div>
+              <div class="form-text extra-small">Dollar discount credited or applied.</div>
+            </div>
+
+            <div class="col-md-6">
+              <label class="form-label fw-semibold small text-dark">
+                Daily Chat Limit
+              </label>
+              <div class="input-group">
+                <span class="input-group-text bg-light text-muted">
+                  <span class="material-symbols-outlined fs-6">chat</span>
+                </span>
+                <input
+                  type="number"
+                  class="form-control"
+                  placeholder="e.g. 100"
+                  [(ngModel)]="createPromoForm.dailyChatLimit"
+                  name="dailyChatLimit"
+                  min="0"
+                />
+              </div>
+              <div class="form-text extra-small">Upgraded daily candidate chat conversations.</div>
+            </div>
+          </div>
+
+          <!-- Active Switch -->
+          <div class="form-check form-switch mt-3">
+            <input
+              class="form-check-input"
+              type="checkbox"
+              role="switch"
+              id="promoActiveSwitch"
+              [(ngModel)]="createPromoForm.active"
+              name="active"
+            />
+            <label class="form-check-label fw-semibold small text-dark" for="promoActiveSwitch">
+              Set Promo Code Active Immediately
+            </label>
+          </div>
+        </div>
+      </form>
+    </div>
+
+    <!-- Modal Footer -->
+    <div class="p-3 bg-light border-top d-flex justify-content-end gap-2">
+      <button
+        type="button"
+        class="btn btn-outline-secondary px-3"
+        (click)="closeCreatePromoModal()"
+        [disabled]="isCreatingPromoCode"
+      >
+        Cancel
+      </button>
+      <button
+        type="button"
+        class="btn btn-primary px-4 d-flex align-items-center gap-2"
+        (click)="savePromoCode()"
+        [disabled]="isCreatingPromoCode"
+      >
+        <span *ngIf="isCreatingPromoCode" class="spinner-border spinner-border-sm"></span>
+        <span *ngIf="!isCreatingPromoCode" class="material-symbols-outlined fs-5">save</span>
+        <span>{{ isCreatingPromoCode ? 'Saving...' : 'Create Promo Code' }}</span>
+      </button>
+    </div>
+
+  </div>
+</div>
+
+<!-- ==================================================== -->
+<!-- DELETE PROMO CODE CONFIRMATION MODAL -->
+<!-- ==================================================== -->
+<div *ngIf="isDeletePromoModalOpen" class="custom-modal-backdrop d-flex align-items-center justify-content-center">
+  <div class="modal-dialog-box card border-0 shadow-lg rounded-4 overflow-hidden" style="max-width: 480px; width: 95%;">
+
+    <!-- Header -->
+    <div class="p-3 px-4 bg-danger text-white d-flex justify-content-between align-items-center">
+      <div class="d-flex align-items-center gap-2">
+        <span class="material-symbols-outlined fs-4">warning</span>
+        <h5 class="mb-0 fw-bold">Delete Promo Code</h5>
+      </div>
+      <button type="button" class="btn-close btn-close-white" (click)="closeDeletePromoModal()"></button>
+    </div>
+
+    <!-- Body -->
+    <div class="p-4 bg-white text-center">
+      <div class="icon-circle bg-danger-subtle text-danger mx-auto mb-3" style="width: 56px; height: 56px; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+        <span class="material-symbols-outlined fs-2">delete_forever</span>
+      </div>
+
+      <h6 class="fw-bold text-dark mb-2">Are you sure you want to delete this promo code?</h6>
+      <p class="text-muted small mb-3">
+        Promo Code: <strong class="text-danger font-monospace fs-6">{{ selectedPromoForDelete?.promocode }}</strong>
+      </p>
+      <div class="p-3 bg-light rounded-3 text-muted extra-small text-start">
+        If this code has previously been redeemed by employers, it will be deactivated to preserve historical audit records. Unused codes will be removed permanently.
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="p-3 bg-light border-top d-flex justify-content-end gap-2">
+      <button
+        type="button"
+        class="btn btn-outline-secondary px-3"
+        (click)="closeDeletePromoModal()"
+        [disabled]="isDeletingPromoCode"
+      >
+        Cancel
+      </button>
+      <button
+        type="button"
+        class="btn btn-danger px-4 d-flex align-items-center gap-2"
+        (click)="confirmDeletePromoCode()"
+        [disabled]="isDeletingPromoCode"
+      >
+        <span *ngIf="isDeletingPromoCode" class="spinner-border spinner-border-sm"></span>
+        <span *ngIf="!isDeletingPromoCode" class="material-symbols-outlined fs-5">delete</span>
+        <span>{{ isDeletingPromoCode ? 'Deleting...' : 'Confirm Delete' }}</span>
+      </button>
+    </div>
+
+  </div>
+</div>
+
+<!-- ==================================================== -->
+<!-- SIMULATE INBOUND EMAIL MODAL -->
+<!-- ==================================================== -->
+<div *ngIf="isSimulateModalOpen" class="custom-modal-backdrop d-flex align-items-center justify-content-center">
+  <div class="modal-dialog-box card border-0 shadow-lg rounded-4 overflow-hidden" style="max-width: 680px; width: 95%;">
+
+    <!-- Modal Header -->
+    <div class="p-3 px-4 bg-purple text-white d-flex justify-content-between align-items-center">
+      <div class="d-flex align-items-center gap-2">
+        <span class="material-symbols-outlined fs-4">send</span>
+        <h5 class="mb-0 fw-bold">Simulate Inbound Email to jobposting@chathire.com</h5>
+      </div>
+      <button type="button" class="btn-close btn-close-white" (click)="closeSimulateModal()"></button>
+    </div>
+
+    <!-- Modal Body -->
+    <div class="p-4 bg-white" style="max-height: 75vh; overflow-y: auto;">
+      <div class="alert alert-info py-2 px-3 small d-flex align-items-center gap-2 mb-3">
+        <span class="material-symbols-outlined fs-5">info</span>
+        <span>
+          Enter email details as if sent to <strong>jobposting@chathire.com</strong>. The pipeline will verify the sender against primary/alternate email and auto-parse via AI.
+        </span>
+      </div>
+
+      <div class="row g-3">
+        <div class="col-md-7">
+          <label class="form-label fw-semibold small text-dark">
+            Sender Email (Must match registered primary or alternate email) <span class="text-danger">*</span>
+          </label>
+          <div class="input-group input-group-sm">
+            <span class="input-group-text bg-light text-muted">@</span>
+            <input
+              type="email"
+              class="form-control"
+              placeholder="e.g. recruiter@company.com"
+              [(ngModel)]="simulateForm.senderEmail"
+              name="simSenderEmail"
+              required
+            />
+          </div>
+        </div>
+
+        <div class="col-md-5">
+          <label class="form-label fw-semibold small text-dark">Sender Name</label>
+          <input
+            type="text"
+            class="form-control form-control-sm"
+            placeholder="e.g. John Doe"
+            [(ngModel)]="simulateForm.senderName"
+            name="simSenderName"
+          />
+        </div>
+
+        <div class="col-12">
+          <label class="form-label fw-semibold small text-dark">
+            Email Subject <span class="text-danger">*</span>
+          </label>
+          <input
+            type="text"
+            class="form-control form-control-sm"
+            placeholder="e.g. Urgent Requirement: Senior Java Developer - Remote / NYC - $70/hr"
+            [(ngModel)]="simulateForm.emailSubject"
+            name="simSubject"
+            required
+          />
+        </div>
+
+        <div class="col-12">
+          <label class="form-label fw-semibold small text-dark">
+            Email Body Content (Messy text, signature, rate, requirements) <span class="text-danger">*</span>
+          </label>
+          <textarea
+            class="form-control font-monospace small"
+            rows="8"
+            placeholder="Hi Vivek,&#10;&#10;Please find the urgent job requirement below:&#10;&#10;Job Title: Senior Java Full Stack Engineer&#10;Location: New York, NY / Remote&#10;Rate: $65 - $75/hr C2C&#10;Experience: 6+ years&#10;&#10;Requirements:&#10;• Strong Java 17, Spring Boot, Microservices&#10;• Experience with React/Angular and TypeScript&#10;• AWS Cloud, Docker, Kubernetes&#10;• SQL / PostgreSQL&#10;&#10;Thanks & Regards,&#10;John Doe | Tech Recruiter&#10;Phone: +1 555-0199"
+            [(ngModel)]="simulateForm.emailBody"
+            name="simBody"
+            required
+          ></textarea>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal Footer -->
+    <div class="p-3 bg-light border-top d-flex justify-content-end gap-2">
+      <button
+        type="button"
+        class="btn btn-outline-secondary px-3"
+        (click)="closeSimulateModal()"
+        [disabled]="isSimulating"
+      >
+        Cancel
+      </button>
+      <button
+        type="button"
+        class="btn btn-purple text-white px-4 d-flex align-items-center gap-2"
+        (click)="submitSimulateEmail()"
+        [disabled]="isSimulating"
+      >
+        <span *ngIf="isSimulating" class="spinner-border spinner-border-sm"></span>
+        <span *ngIf="!isSimulating" class="material-symbols-outlined fs-5">send</span>
+        <span>{{ isSimulating ? 'Processing...' : 'Send & Ingest Email' }}</span>
+      </button>
+    </div>
+
+  </div>
+</div>
+
+<!-- ==================================================== -->
+<!-- REVIEW & PUBLISH CONFIRMATION MODAL -->
+<!-- ==================================================== -->
+<div *ngIf="isReviewPublishModalOpen" class="custom-modal-backdrop d-flex align-items-center justify-content-center">
+  <div class="modal-dialog-box card border-0 shadow-lg rounded-4 overflow-hidden" style="max-width: 960px; width: 95%;">
+
+    <!-- Modal Header -->
+    <div class="p-3 px-4 bg-primary text-white d-flex justify-content-between align-items-center">
+      <div class="d-flex align-items-center gap-2">
+        <span class="material-symbols-outlined fs-4">rate_review</span>
+        <h5 class="mb-0 fw-bold">Review & Publish Job Posting</h5>
+        <span class="badge bg-white text-primary fw-bold ms-2">Queue #{{ reviewForm.queueId }}</span>
+      </div>
+      <button type="button" class="btn-close btn-close-white" (click)="closeReviewPublishModal()"></button>
+    </div>
+
+    <!-- Modal Body -->
+    <div class="p-4 bg-white" style="max-height: 75vh; overflow-y: auto;">
+      <div class="row g-4">
+        
+        <!-- Left: Raw Inbound Email Context -->
+        <div class="col-lg-5 border-end">
+          <h6 class="fw-bold text-dark d-flex align-items-center gap-1 mb-3">
+            <span class="material-symbols-outlined text-purple fs-5">mail</span>
+            <span>Raw Inbound Email</span>
+          </h6>
+
+          <div class="p-3 bg-light rounded-3 mb-3 small">
+            <div class="mb-1"><strong>Sender:</strong> <span class="text-dark font-monospace">{{ selectedQueueItem?.senderEmail }}</span></div>
+            <div *ngIf="selectedQueueItem?.recruiterName" class="mb-1">
+              <strong>Recruiter:</strong> {{ selectedQueueItem?.recruiterName }}
+              <span class="badge bg-primary-subtle text-primary extra-small">{{ selectedQueueItem?.matchedEmailType }} Email</span>
+            </div>
+            <div class="mb-1"><strong>Subject:</strong> {{ selectedQueueItem?.emailSubject }}</div>
+            <div><strong>Received:</strong> {{ selectedQueueItem?.receivedDate | date:'MMM d, y, h:mm a' }}</div>
+          </div>
+
+          <label class="form-label fw-semibold extra-small text-muted text-uppercase">Raw Email Body</label>
+          <div class="p-2 bg-light border rounded-2 small text-dark font-monospace" style="max-height: 320px; overflow-y: auto; white-space: pre-wrap; font-size: 11.5px;">
+{{ selectedQueueItem?.rawEmailBodyText || selectedQueueItem?.rawEmailBodyHtml }}
+          </div>
+        </div>
+
+        <!-- Right: Editable Structured Job Form -->
+        <div class="col-lg-7">
+          <h6 class="fw-bold text-dark d-flex align-items-center gap-1 mb-3">
+            <span class="material-symbols-outlined text-success fs-5">auto_awesome</span>
+            <span>AI Parsed & Normalized Job Details</span>
+          </h6>
+
+          <div class="row g-3">
+            <div class="col-12">
+              <label class="form-label fw-semibold small text-dark">Job Title <span class="text-danger">*</span></label>
+              <input
+                type="text"
+                class="form-control form-control-sm"
+                [(ngModel)]="reviewForm.name"
+                name="reviewName"
+                required
+              />
+            </div>
+
+            <div class="col-md-6">
+              <label class="form-label fw-semibold small text-dark">Location</label>
+              <input
+                type="text"
+                class="form-control form-control-sm"
+                placeholder="e.g. New York, NY or Remote"
+                [(ngModel)]="reviewForm.jobLocation"
+                name="reviewLocation"
+              />
+            </div>
+
+            <div class="col-md-3">
+              <label class="form-label fw-semibold small text-dark">Min Exp (Yrs)</label>
+              <input
+                type="number"
+                class="form-control form-control-sm"
+                [(ngModel)]="reviewForm.totalExp"
+                name="reviewExp"
+                min="0"
+              />
+            </div>
+
+            <div class="col-md-3">
+              <label class="form-label fw-semibold small text-dark">Openings</label>
+              <input
+                type="number"
+                class="form-control form-control-sm"
+                [(ngModel)]="reviewForm.numberOfOpening"
+                name="reviewOpenings"
+                min="1"
+              />
+            </div>
+
+            <div class="col-md-6">
+              <label class="form-label fw-semibold small text-dark">Rate / Salary From ($)</label>
+              <input
+                type="number"
+                class="form-control form-control-sm"
+                [(ngModel)]="reviewForm.fromAmt"
+                name="reviewFromAmt"
+              />
+            </div>
+
+            <div class="col-md-6">
+              <label class="form-label fw-semibold small text-dark">Rate / Salary To ($)</label>
+              <input
+                type="number"
+                class="form-control form-control-sm"
+                [(ngModel)]="reviewForm.toAmt"
+                name="reviewToAmt"
+              />
+            </div>
+
+            <div class="col-12">
+              <label class="form-label fw-semibold small text-dark">Key Skills (Comma-separated)</label>
+              <input
+                type="text"
+                class="form-control form-control-sm"
+                placeholder="e.g. Java, Spring Boot, React, AWS, Docker"
+                [(ngModel)]="reviewForm.skillsStr"
+                name="reviewSkills"
+              />
+            </div>
+
+            <div class="col-md-6">
+              <label class="form-label fw-semibold small text-dark">Employment Types</label>
+              <input
+                type="text"
+                class="form-control form-control-sm"
+                placeholder="e.g. Contract, Full-time, C2C"
+                [(ngModel)]="reviewForm.employmentTypesStr"
+                name="reviewEmpTypes"
+              />
+            </div>
+
+            <div class="col-md-6">
+              <label class="form-label fw-semibold small text-dark">Visas Accepted</label>
+              <input
+                type="text"
+                class="form-control form-control-sm"
+                placeholder="e.g. US Citizen, Green Card, H1B, Any"
+                [(ngModel)]="reviewForm.visasStr"
+                name="reviewVisas"
+              />
+            </div>
+
+            <div class="col-12">
+              <label class="form-label fw-semibold small text-dark">Job Description (HTML formatted) <span class="text-danger">*</span></label>
+              <textarea
+                class="form-control small font-monospace"
+                rows="6"
+                [(ngModel)]="reviewForm.description"
+                name="reviewDesc"
+                required
+              ></textarea>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Modal Footer -->
+    <div class="p-3 bg-light border-top d-flex justify-content-between align-items-center">
+      <div class="small text-muted">
+        Approving will insert this job into <strong>JobOpening</strong> and decrement the recruiter's plan quota.
+      </div>
+      <div class="d-flex gap-2">
+        <button
+          type="button"
+          class="btn btn-outline-secondary px-3"
+          (click)="closeReviewPublishModal()"
+          [disabled]="isApprovingJob"
+        >
+          Cancel
+        </button>
+        <button
+          type="button"
+          class="btn btn-success px-4 d-flex align-items-center gap-2 fw-semibold text-white shadow-sm"
+          style="background-color: #059669 !important; border-color: #059669 !important; color: #ffffff !important;"
+          (click)="submitApproveJob()"
+          [disabled]="isApprovingJob"
+        >
+          <span *ngIf="isApprovingJob" class="spinner-border spinner-border-sm text-white"></span>
+          <span *ngIf="!isApprovingJob" class="material-symbols-outlined fs-5 text-white">publish</span>
+          <span class="text-white">{{ isApprovingJob ? 'Publishing...' : 'Approve & Post as Regular Job' }}</span>
+        </button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ==================================================== -->
+<!-- RAW EMAIL VIEWER MODAL -->
+<!-- ==================================================== -->
+<div *ngIf="isRawEmailModalOpen" class="custom-modal-backdrop d-flex align-items-center justify-content-center">
+  <div class="modal-dialog-box card border-0 shadow-lg rounded-4 overflow-hidden" style="max-width: 680px; width: 95%;">
+
+    <!-- Header -->
+    <div class="p-3 px-4 bg-dark text-white d-flex justify-content-between align-items-center">
+      <div class="d-flex align-items-center gap-2">
+        <span class="material-symbols-outlined fs-4">mail</span>
+        <h5 class="mb-0 fw-bold">Inbound Email Payload</h5>
+      </div>
+      <button type="button" class="btn-close btn-close-white" (click)="closeRawEmailModal()"></button>
+    </div>
+
+    <!-- Body -->
+    <div class="p-4 bg-white" style="max-height: 70vh; overflow-y: auto;">
+      <div class="p-3 bg-light rounded-3 mb-3 small">
+        <div class="mb-1"><strong>From:</strong> {{ viewingRawEmailItem?.senderEmail }}</div>
+        <div class="mb-1"><strong>Subject:</strong> {{ viewingRawEmailItem?.emailSubject }}</div>
+        <div class="mb-1"><strong>Received:</strong> {{ viewingRawEmailItem?.receivedDate | date:'MMM d, y, h:mm:ss a' }}</div>
+        <div>
+          <strong>Status:</strong>
+          <span class="badge ms-1" [ngClass]="getEmailStatusBadgeClass(viewingRawEmailItem?.status || '')">
+            {{ viewingRawEmailItem?.status }}
+          </span>
+        </div>
+      </div>
+
+      <label class="form-label fw-bold small text-dark">Email Text Content:</label>
+      <pre class="p-3 bg-light border rounded-3 small" style="white-space: pre-wrap; font-size: 12px;">{{ viewingRawEmailItem?.rawEmailBodyText || 'No plain text content available.' }}</pre>
+
+      <div *ngIf="viewingRawEmailItem?.parsedJobJson" class="mt-3">
+        <label class="form-label fw-bold small text-dark">AI Extracted JSON:</label>
+        <pre class="p-3 bg-dark text-light rounded-3 small" style="white-space: pre-wrap; font-size: 11px;">{{ viewingRawEmailItem?.parsedJobJson }}</pre>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="p-3 bg-light border-top d-flex justify-content-end">
+      <button type="button" class="btn btn-outline-secondary px-3" (click)="closeRawEmailModal()">Close</button>
+    </div>
+
+  </div>
+</div>
+
+
 

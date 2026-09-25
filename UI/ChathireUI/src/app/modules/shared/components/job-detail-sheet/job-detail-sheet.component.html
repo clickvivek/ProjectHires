@@ -124,7 +124,7 @@
       >airplane_ticket</span
     >
     <div class="lists">
-      <div class="item text-sm" *ngFor="let item of selectedJob?.visas">
+      <div class="item text-sm" *ngFor="let item of getDisplayVisas(selectedJob?.visas)">
         {{ item }}
       </div>
     </div>
@@ -148,7 +148,20 @@
     <div class="info-wrapper">
       <div class="info">
         <div class="holder">
-          <img src="{{ getProfilePic(selectedJob.profilePic) }}" alt="" />
+          <img
+            *ngIf="selectedJob?.profilePic"
+            [src]="getProfilePic(selectedJob.profilePic)"
+            [alt]="selectedJob.userFName || 'Recruiter'"
+            class="recruiter-avatar-img"
+            (error)="$any($event.target).style.display='none'; recruiterAvatarFallback.style.display='flex'"
+          />
+          <div
+            #recruiterAvatarFallback
+            class="avatar-fallback"
+            [style.display]="selectedJob?.profilePic ? 'none' : 'flex'"
+          >
+            <span>{{ getUserInitial(selectedJob?.userFName, selectedJob?.userLName) }}</span>
+          </div>
         </div>
         <div class="desp">
           <p class="fw-semibold text-secondary-500">
@@ -168,7 +181,6 @@
   </div>
 
   <div class="job-details-container">
-    <p class="text-base mb-2 fw-medium">About the job</p>
     <div
       class="desp"
       [innerHTML]="selectedJob.jobDescription | keepHtml"

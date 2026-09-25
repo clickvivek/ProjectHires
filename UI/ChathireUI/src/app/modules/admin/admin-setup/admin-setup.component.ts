@@ -4,6 +4,14 @@ import { ToastrService } from 'ngx-toastr';
 import { ConsultancyService } from 'src/app/api/api/consultancy.service';
 import { picUrl, defaultProfilePic } from 'src/app/data/various';
 import { environment } from 'src/environments/environment';
+import { PromocodeService, PromocodeDto, CreatePromocodeDto } from 'src/app/core/services/promocode.service';
+import {
+  EmailJobPostingService,
+  EmailJobPostingQueueDto,
+  EmailJobPostingStatsDto,
+  SimulateInboundEmailDto,
+  ApproveEmailJobPostingDto
+} from 'src/app/core/services/email-job-posting.service';
 
 export interface CsvCompanyRow {
   name: string;
@@ -28,7 +36,7 @@ export class AdminSetupComponent implements OnInit {
   @ViewChild('fileInput') fileInput!: ElementRef;
   @ViewChild('logoInput') logoInput!: ElementRef;
 
-  activeTab: 'dau-dashboard' | 'bulk-upload' | 'view-edit' | 'review-companies' | 'user-quotas' | 'admin-users' | 'linkedin-scraper' = 'dau-dashboard';
+  activeTab: 'dau-dashboard' | 'bulk-upload' | 'view-edit' | 'review-companies' | 'user-quotas' | 'admin-users' | 'linkedin-scraper' | 'promo-codes' | 'jobposting-by-email' = 'dau-dashboard';
 
   // --- Tab: Admin Users State ---
   adminUsers: any[] = [];
@@ -140,6 +148,8 @@ export class AdminSetupComponent implements OnInit {
 
   constructor(
     private consultancyService: ConsultancyService,
+    private promocodeService: PromocodeService,
+    private emailJobPostingService: EmailJobPostingService,
     private http: HttpClient,
     private toastr: ToastrService
   ) {}
@@ -149,7 +159,7 @@ export class AdminSetupComponent implements OnInit {
     this.loadAdminUsers();
   }
 
-  setTab(tab: 'dau-dashboard' | 'bulk-upload' | 'view-edit' | 'review-companies' | 'user-quotas' | 'admin-users' | 'linkedin-scraper') {
+  setTab(tab: 'dau-dashboard' | 'bulk-upload' | 'view-edit' | 'review-companies' | 'user-quotas' | 'admin-users' | 'linkedin-scraper' | 'promo-codes' | 'jobposting-by-email') {
     this.activeTab = tab;
     if (tab === 'dau-dashboard' && !this.dauSummary.totalRegisteredUsers) {
       this.loadDauStats();
@@ -159,6 +169,11 @@ export class AdminSetupComponent implements OnInit {
       this.loadUserQuotas();
     } else if (tab === 'admin-users') {
       this.loadAdminUsers();
+    } else if (tab === 'promo-codes') {
+      this.loadPromoCodes();
+    } else if (tab === 'jobposting-by-email') {
+      this.loadEmailJobPostings();
+      this.loadEmailJobStats();
     }
   }
 
@@ -860,12 +875,16 @@ export class AdminSetupComponent implements OnInit {
   }
 
   getUserInitials(name: string): string {
-    if (!name) return 'U';
-    const parts = name.trim().split(' ');
+    if (!name || typeof name !== 'string') return 'U';
+    const clean = name.replace(/undefined/gi, '').replace(/\s+/g, ' ').trim();
+    if (!clean) return 'U';
+    const parts = clean.split(' ').filter(p => p.length > 0);
     if (parts.length >= 2) {
-      return (parts[0][0] + parts[1][0]).toUpperCase();
+      const first = parts[0].charAt(0) || '';
+      const second = parts[1].charAt(0) || '';
+      return (first + second).toUpperCase() || 'U';
     }
-    return name.slice(0, 2).toUpperCase();
+    return clean.slice(0, 2).toUpperCase();
   }
 
   formatDateDisplay(dateVal: any): string {
@@ -1368,5 +1387,582 @@ export class AdminSetupComponent implements OnInit {
     document.body.removeChild(link);
     this.toastr.success('Exported scraper results to CSV.', 'Export Complete');
   }
+
+  // ==========================================
+  // TAB: PROMO CODE MANAGEMENT
+  // ==========================================
+  promoCodes: PromocodeDto[] = [];
+  isLoadingPromoCodes: boolean = false;
+  isCreatingPromoCode: boolean = false;
+  isDeletingPromoCode: boolean = false;
+  promoCodeSearch: string = '';
+  promoCodeFilter: 'all' | 'active' | 'expired' | 'inactive' = 'all';
+  promoCurrentPage: number = 1;
+  promoPageSize: number = 25;
+  promoPageSizeOptions: number[] = [10, 25, 50, 100];
+
+  isCreatePromoModalOpen: boolean = false;
+  isDeletePromoModalOpen: boolean = false;
+  selectedPromoForDelete: PromocodeDto | null = null;
+
+  createPromoForm: CreatePromocodeDto = {
+    promocode: '',
+    description: '',
+    startDate: '',
+    endDate: '',
+    noOfFreeDownloads: null,
+    noOfFreeJobPosting: null,
+    discountAmount: null,
+    dailyChatLimit: null,
+    isSingleUse: true,
+    maxRedemptions: null,
+    active: true
+  };
+  promoFormErrors: { [key: string]: string } = {};
+
+  loadPromoCodes() {
+    this.isLoadingPromoCodes = true;
+    this.promocodeService.getAll().subscribe({
+      next: (res: any) => {
+        this.isLoadingPromoCodes = false;
+        const data = res?.value || res?.data || res || [];
+        this.promoCodes = Array.isArray(data) ? data : [];
+      },
+      error: (err: any) => {
+        this.isLoadingPromoCodes = false;
+        const msg = err?.error?.message || err?.message || 'Failed to load promo codes.';
+        this.toastr.error(msg, 'Error');
+      }
+    });
+  }
+
+  get filteredPromoCodes(): PromocodeDto[] {
+    let list = [...this.promoCodes];
+
+    if (this.promoCodeFilter === 'active') {
+      list = list.filter(p => p.active === true && (!p.endDate || new Date(p.endDate) >= new Date()));
+    } else if (this.promoCodeFilter === 'expired') {
+      list = list.filter(p => p.endDate && new Date(p.endDate) < new Date());
+    } else if (this.promoCodeFilter === 'inactive') {
+      list = list.filter(p => p.active === false || p.active === null);
+    }
+
+    if (this.promoCodeSearch && this.promoCodeSearch.trim()) {
+      const term = this.promoCodeSearch.trim().toLowerCase();
+      list = list.filter(p =>
+        (p.promocode && p.promocode.toLowerCase().includes(term)) ||
+        (p.description && p.description.toLowerCase().includes(term))
+      );
+    }
+
+    return list;
+  }
+
+  get paginatedPromoCodes(): PromocodeDto[] {
+    const start = (this.promoCurrentPage - 1) * this.promoPageSize;
+    return this.filteredPromoCodes.slice(start, start + this.promoPageSize);
+  }
+
+  get totalPromoPages(): number {
+    return Math.ceil(this.filteredPromoCodes.length / this.promoPageSize) || 1;
+  }
+
+  get promoTotalCount(): number {
+    return this.promoCodes.length;
+  }
+
+  get promoActiveCount(): number {
+    return this.promoCodes.filter(p => p.active === true && (!p.endDate || new Date(p.endDate) >= new Date())).length;
+  }
+
+  get promoExpiredCount(): number {
+    return this.promoCodes.filter(p => p.endDate && new Date(p.endDate) < new Date()).length;
+  }
+
+  get promoTotalRedemptions(): number {
+    return this.promoCodes.reduce((sum, p) => sum + (p.redemptionCount || 0), 0);
+  }
+
+  onPromoSearchChange() {
+    this.promoCurrentPage = 1;
+  }
+
+  onPromoFilterChange(filter: 'all' | 'active' | 'expired' | 'inactive') {
+    this.promoCodeFilter = filter;
+    this.promoCurrentPage = 1;
+  }
+
+  onPromoPageChange(page: number) {
+    if (page >= 1 && page <= this.totalPromoPages) {
+      this.promoCurrentPage = page;
+    }
+  }
+
+  onPromoPageSizeChange(size: number) {
+    this.promoPageSize = size;
+    this.promoCurrentPage = 1;
+  }
+
+  openCreatePromoModal() {
+    const today = new Date().toISOString().slice(0, 10);
+    const thirtyDaysLater = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10);
+
+    this.createPromoForm = {
+      promocode: '',
+      description: '',
+      startDate: today,
+      endDate: thirtyDaysLater,
+      noOfFreeDownloads: null,
+      noOfFreeJobPosting: null,
+      discountAmount: null,
+      dailyChatLimit: null,
+      isSingleUse: true,
+      maxRedemptions: null,
+      active: true
+    };
+    this.promoFormErrors = {};
+    this.isCreatePromoModalOpen = true;
+  }
+
+  closeCreatePromoModal() {
+    this.isCreatePromoModalOpen = false;
+    this.promoFormErrors = {};
+  }
+
+  generateRandomPromoCode() {
+    const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+    let code = 'HIRES-';
+    for (let i = 0; i < 6; i++) {
+      code += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    this.createPromoForm.promocode = code;
+  }
+
+  validatePromoForm(): boolean {
+    this.promoFormErrors = {};
+
+    if (!this.createPromoForm.promocode || !this.createPromoForm.promocode.trim()) {
+      this.promoFormErrors['promocode'] = 'Promo Code is required.';
+    }
+
+    if (!this.createPromoForm.startDate) {
+      this.promoFormErrors['startDate'] = 'Start Date is mandatory.';
+    }
+
+    if (!this.createPromoForm.endDate) {
+      this.promoFormErrors['endDate'] = 'End Date is mandatory.';
+    }
+
+    if (this.createPromoForm.startDate && this.createPromoForm.endDate) {
+      if (new Date(this.createPromoForm.endDate) < new Date(this.createPromoForm.startDate)) {
+        this.promoFormErrors['endDate'] = 'End Date must be on or after Start Date.';
+      }
+    }
+
+    return Object.keys(this.promoFormErrors).length === 0;
+  }
+
+  savePromoCode() {
+    if (!this.validatePromoForm()) {
+      this.toastr.warning('Please fix the validation errors.', 'Validation Required');
+      return;
+    }
+
+    this.isCreatingPromoCode = true;
+
+    const payload: CreatePromocodeDto = {
+      promocode: this.createPromoForm.promocode.trim().toUpperCase(),
+      description: this.createPromoForm.description?.trim() || undefined,
+      startDate: new Date(this.createPromoForm.startDate).toISOString(),
+      endDate: new Date(this.createPromoForm.endDate).toISOString(),
+      noOfFreeDownloads: this.createPromoForm.noOfFreeDownloads != null && this.createPromoForm.noOfFreeDownloads !== ('' as any)
+        ? Number(this.createPromoForm.noOfFreeDownloads) : null,
+      noOfFreeJobPosting: this.createPromoForm.noOfFreeJobPosting != null && this.createPromoForm.noOfFreeJobPosting !== ('' as any)
+        ? Number(this.createPromoForm.noOfFreeJobPosting) : null,
+      discountAmount: this.createPromoForm.discountAmount != null && this.createPromoForm.discountAmount !== ('' as any)
+        ? Number(this.createPromoForm.discountAmount) : null,
+      dailyChatLimit: this.createPromoForm.dailyChatLimit != null && this.createPromoForm.dailyChatLimit !== ('' as any)
+        ? Number(this.createPromoForm.dailyChatLimit) : null,
+      active: this.createPromoForm.active !== false
+    };
+
+    this.promocodeService.create(payload).subscribe({
+      next: (res: any) => {
+        this.isCreatingPromoCode = false;
+        this.toastr.success(`Promo Code "${payload.promocode}" created successfully!`, 'Created');
+        this.closeCreatePromoModal();
+        this.loadPromoCodes();
+      },
+      error: (err: any) => {
+        this.isCreatingPromoCode = false;
+        const msg = err?.error?.message || err?.message || 'Failed to create promo code.';
+        this.toastr.error(msg, 'Creation Error');
+      }
+    });
+  }
+
+  openDeletePromoModal(promo: PromocodeDto) {
+    this.selectedPromoForDelete = promo;
+    this.isDeletePromoModalOpen = true;
+  }
+
+  closeDeletePromoModal() {
+    this.isDeletePromoModalOpen = false;
+    this.selectedPromoForDelete = null;
+  }
+
+  confirmDeletePromoCode() {
+    if (!this.selectedPromoForDelete) return;
+
+    this.isDeletingPromoCode = true;
+    const promoId = this.selectedPromoForDelete.id;
+    const codeName = this.selectedPromoForDelete.promocode;
+
+    this.promocodeService.delete(promoId).subscribe({
+      next: (res: any) => {
+        this.isDeletingPromoCode = false;
+        this.toastr.success(`Promo code "${codeName}" removed / deactivated successfully.`, 'Deleted');
+        this.closeDeletePromoModal();
+        this.loadPromoCodes();
+      },
+      error: (err: any) => {
+        this.isDeletingPromoCode = false;
+        const msg = err?.error?.message || err?.message || 'Failed to delete promo code.';
+        this.toastr.error(msg, 'Delete Error');
+      }
+    });
+  }
+
+  togglePromoStatus(promo: PromocodeDto, event: Event) {
+    event.stopPropagation();
+    this.promocodeService.toggleStatus(promo.id).subscribe({
+      next: () => {
+        promo.active = !promo.active;
+        this.toastr.success(`Promo code "${promo.promocode}" is now ${promo.active ? 'Active' : 'Inactive'}.`, 'Status Updated');
+      },
+      error: (err: any) => {
+        const msg = err?.error?.message || err?.message || 'Failed to toggle promo code status.';
+        this.toastr.error(msg, 'Update Error');
+      }
+    });
+  }
+
+  copyPromoCode(code: string) {
+    if (!code) return;
+    navigator.clipboard.writeText(code).then(() => {
+      this.toastr.success(`Copied "${code}" to clipboard!`, 'Copied');
+    }).catch(() => {
+      this.toastr.info(`Code: ${code}`);
+    });
+  }
+
+  isPromoExpired(promo: PromocodeDto): boolean {
+    if (!promo.endDate) return false;
+    return new Date(promo.endDate) < new Date();
+  }
+
+  // ==========================================
+  // TAB 9: JOBPOSTING BY EMAIL
+  // ==========================================
+
+  emailJobPostings: EmailJobPostingQueueDto[] = [];
+  isLoadingEmailJobs = false;
+  emailJobTotalCount = 0;
+  emailJobCurrentPage = 1;
+  emailJobPageSize = 20;
+  emailJobSearch = '';
+  emailJobStatusFilter = 'all';
+  emailJobStats: EmailJobPostingStatsDto = {
+    totalReceived: 0,
+    publishedCount: 0,
+    parsedCount: 0,
+    failedCount: 0,
+    quotaExceededCount: 0,
+    rejectedCount: 0
+  };
+
+  // Simulate Inbound Email Modal State
+  isSimulateModalOpen = false;
+  isSimulating = false;
+  simulateForm: SimulateInboundEmailDto = {
+    senderEmail: '',
+    senderName: '',
+    emailSubject: '',
+    emailBody: '',
+    autoPublish: true
+  };
+
+  // Review & Publish Confirmation Modal State
+  isReviewPublishModalOpen = false;
+  isApprovingJob = false;
+  selectedQueueItem: EmailJobPostingQueueDto | null = null;
+  reviewForm: {
+    queueId: number;
+    name: string;
+    description: string;
+    jobLocation: string;
+    totalExp: number;
+    fromAmt: number;
+    toAmt: number;
+    numberOfOpening: number;
+    skillsStr: string;
+    employmentTypesStr: string;
+    visasStr: string;
+  } = {
+    queueId: 0,
+    name: '',
+    description: '',
+    jobLocation: 'Remote',
+    totalExp: 5,
+    fromAmt: 50,
+    toAmt: 75,
+    numberOfOpening: 1,
+    skillsStr: '',
+    employmentTypesStr: 'Contract',
+    visasStr: 'Any Visa'
+  };
+
+  // Raw Email Viewer Modal State
+  isRawEmailModalOpen = false;
+  viewingRawEmailItem: EmailJobPostingQueueDto | null = null;
+
+  loadEmailJobPostings() {
+    this.isLoadingEmailJobs = true;
+    this.emailJobPostingService.getAll(
+      this.emailJobStatusFilter,
+      this.emailJobSearch,
+      this.emailJobCurrentPage,
+      this.emailJobPageSize
+    ).subscribe({
+      next: (res: any) => {
+        this.emailJobPostings = res?.value || [];
+        this.isLoadingEmailJobs = false;
+      },
+      error: (err: any) => {
+        this.isLoadingEmailJobs = false;
+        this.toastr.error('Failed to load email job postings.', 'Error');
+      }
+    });
+
+    this.emailJobPostingService.getCount(this.emailJobStatusFilter, this.emailJobSearch).subscribe({
+      next: (res: any) => {
+        this.emailJobTotalCount = res?.value || 0;
+      }
+    });
+  }
+
+  loadEmailJobStats() {
+    this.emailJobPostingService.getStats().subscribe({
+      next: (res: any) => {
+        if (res?.value) {
+          this.emailJobStats = res.value;
+        }
+      }
+    });
+  }
+
+  onEmailJobFilterChange(status: string) {
+    this.emailJobStatusFilter = status;
+    this.emailJobCurrentPage = 1;
+    this.loadEmailJobPostings();
+  }
+
+  onEmailJobSearchChange() {
+    this.emailJobCurrentPage = 1;
+    this.loadEmailJobPostings();
+  }
+
+  onEmailJobPageChange(page: number) {
+    if (page < 1 || (page - 1) * this.emailJobPageSize >= this.emailJobTotalCount) return;
+    this.emailJobCurrentPage = page;
+    this.loadEmailJobPostings();
+  }
+
+  // --- Simulate Modal Handlers ---
+  openSimulateModal() {
+    this.simulateForm = {
+      senderEmail: '',
+      senderName: '',
+      emailSubject: '',
+      emailBody: '',
+      autoPublish: true
+    };
+    this.isSimulateModalOpen = true;
+  }
+
+  closeSimulateModal() {
+    this.isSimulateModalOpen = false;
+  }
+
+  submitSimulateEmail() {
+    if (!this.simulateForm.senderEmail || !this.simulateForm.emailSubject || !this.simulateForm.emailBody) {
+      this.toastr.warning('Please enter sender email, subject, and email body.', 'Validation');
+      return;
+    }
+
+    this.isSimulating = true;
+    this.emailJobPostingService.simulate(this.simulateForm).subscribe({
+      next: (res: any) => {
+        this.isSimulating = false;
+        const item = res?.value;
+        if (item?.status === 'Published') {
+          this.toastr.success(`Job automatically parsed and published! (Job ID: ${item.createdJobOpeningId})`, 'Job Published');
+        } else if (item?.status === 'Parsed') {
+          this.toastr.info('Email parsed successfully. You can now review and publish.', 'Parsed');
+        } else {
+          this.toastr.warning(`Processed with status: ${item?.status}. ${item?.errorMessage || ''}`, 'Notice');
+        }
+        this.closeSimulateModal();
+        this.loadEmailJobPostings();
+        this.loadEmailJobStats();
+      },
+      error: (err: any) => {
+        this.isSimulating = false;
+        const msg = err?.error?.message || err?.message || 'Failed to simulate email job posting.';
+        this.toastr.error(msg, 'Simulation Error');
+      }
+    });
+  }
+
+  // --- Review & Publish Modal Handlers ---
+  openReviewPublishModal(item: EmailJobPostingQueueDto) {
+    this.selectedQueueItem = item;
+    const parsed = item.parsedJob;
+    this.reviewForm = {
+      queueId: item.id,
+      name: parsed?.name || item.emailSubject || '',
+      description: parsed?.description || item.rawEmailBodyText || '',
+      jobLocation: parsed?.jobLocation || 'Remote',
+      totalExp: parsed?.totalExp || 5,
+      fromAmt: parsed?.fromAmt || 50,
+      toAmt: parsed?.toAmt || 75,
+      numberOfOpening: parsed?.numberOfOpening || 1,
+      skillsStr: (parsed?.skills || []).join(', '),
+      employmentTypesStr: (parsed?.employmentTypes || ['Contract']).join(', '),
+      visasStr: (parsed?.visas || ['Any Visa']).join(', ')
+    };
+    this.isReviewPublishModalOpen = true;
+  }
+
+  closeReviewPublishModal() {
+    this.isReviewPublishModalOpen = false;
+    this.selectedQueueItem = null;
+  }
+
+  submitApproveJob() {
+    if (!this.reviewForm.name || !this.reviewForm.description) {
+      this.toastr.warning('Please provide a job title and description.', 'Validation');
+      return;
+    }
+
+    const skills = this.reviewForm.skillsStr.split(',').map(s => s.trim()).filter(s => !!s);
+    const employmentTypes = this.reviewForm.employmentTypesStr.split(',').map(s => s.trim()).filter(s => !!s);
+    const visas = this.reviewForm.visasStr.split(',').map(s => s.trim()).filter(s => !!s);
+
+    const dto: ApproveEmailJobPostingDto = {
+      queueId: this.reviewForm.queueId,
+      name: this.reviewForm.name,
+      description: this.reviewForm.description,
+      jobLocation: this.reviewForm.jobLocation,
+      totalExp: this.reviewForm.totalExp,
+      fromAmt: this.reviewForm.fromAmt,
+      toAmt: this.reviewForm.toAmt,
+      numberOfOpening: this.reviewForm.numberOfOpening,
+      skills: skills,
+      employmentTypes: employmentTypes,
+      visas: visas
+    };
+
+    this.isApprovingJob = true;
+    this.emailJobPostingService.approve(dto).subscribe({
+      next: (res: any) => {
+        this.isApprovingJob = false;
+        this.toastr.success('Job successfully approved and published as regular job posting!', 'Success');
+        this.closeReviewPublishModal();
+        this.loadEmailJobPostings();
+        this.loadEmailJobStats();
+      },
+      error: (err: any) => {
+        this.isApprovingJob = false;
+        const msg = err?.error?.message || err?.message || 'Failed to approve and publish job.';
+        this.toastr.error(msg, 'Approval Error');
+      }
+    });
+  }
+
+  // --- Reprocess with AI ---
+  reprocessEmailJob(item: EmailJobPostingQueueDto) {
+    this.toastr.info(`Reprocessing email from ${item.senderEmail}...`, 'Processing');
+    this.emailJobPostingService.process(item.id).subscribe({
+      next: (res: any) => {
+        this.toastr.success('Email reprocessed and structured data updated.', 'Success');
+        this.loadEmailJobPostings();
+        this.loadEmailJobStats();
+      },
+      error: (err: any) => {
+        const msg = err?.error?.message || err?.message || 'Failed to reprocess email.';
+        this.toastr.error(msg, 'Error');
+      }
+    });
+  }
+
+  // --- Reject Queue Item ---
+  rejectEmailJob(item: EmailJobPostingQueueDto) {
+    const reason = prompt(`Enter rejection reason for "${item.emailSubject}":`, 'Did not meet posting criteria / incomplete requirements');
+    if (reason === null) return;
+
+    this.emailJobPostingService.reject({ queueId: item.id, reason: reason }).subscribe({
+      next: () => {
+        this.toastr.info('Job posting request rejected.', 'Rejected');
+        this.loadEmailJobPostings();
+        this.loadEmailJobStats();
+      },
+      error: (err: any) => {
+        const msg = err?.error?.message || err?.message || 'Failed to reject job.';
+        this.toastr.error(msg, 'Error');
+      }
+    });
+  }
+
+  // --- Delete Queue Item ---
+  deleteEmailJob(item: EmailJobPostingQueueDto) {
+    if (!confirm(`Are you sure you want to delete this email queue entry from "${item.senderEmail}"?`)) return;
+
+    this.emailJobPostingService.delete(item.id).subscribe({
+      next: () => {
+        this.toastr.success('Entry removed successfully.', 'Deleted');
+        this.loadEmailJobPostings();
+        this.loadEmailJobStats();
+      },
+      error: (err: any) => {
+        const msg = err?.error?.message || err?.message || 'Failed to delete entry.';
+        this.toastr.error(msg, 'Delete Error');
+      }
+    });
+  }
+
+  // --- Raw Email Modal ---
+  openRawEmailModal(item: EmailJobPostingQueueDto) {
+    this.viewingRawEmailItem = item;
+    this.isRawEmailModalOpen = true;
+  }
+
+  closeRawEmailModal() {
+    this.isRawEmailModalOpen = false;
+    this.viewingRawEmailItem = null;
+  }
+
+  getEmailStatusBadgeClass(status: string): string {
+    switch ((status || '').toLowerCase()) {
+      case 'published': return 'bg-success text-white';
+      case 'parsed': return 'bg-info text-dark';
+      case 'received': return 'bg-secondary text-white';
+      case 'failed': return 'bg-danger text-white';
+      case 'quotaexceeded': return 'bg-warning text-dark';
+      case 'rejected': return 'bg-dark text-white';
+      default: return 'bg-light text-dark';
+    }
+  }
 }
+
 

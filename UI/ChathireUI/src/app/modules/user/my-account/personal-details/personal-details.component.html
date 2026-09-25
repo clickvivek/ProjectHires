@@ -36,6 +36,23 @@
       </div>
     </div>
 
+    <!-- Alert Messages (Success / Error) -->
+    <div *ngIf="successMessage" class="alert alert-success d-flex align-items-center justify-content-between alert-dismissible fade show mb-4 rounded-3 shadow-sm border-0 bg-success-subtle text-success-emphasis" role="alert">
+      <div class="d-flex align-items-center gap-2">
+        <span class="material-symbols-outlined fs-5 text-success">check_circle</span>
+        <strong class="small">{{ successMessage }}</strong>
+      </div>
+      <button type="button" class="btn-close btn-sm" (click)="successMessage = ''" aria-label="Close"></button>
+    </div>
+
+    <div *ngIf="errorMessage" class="alert alert-danger d-flex align-items-center justify-content-between alert-dismissible fade show mb-4 rounded-3 shadow-sm border-0 bg-danger-subtle text-danger-emphasis" role="alert">
+      <div class="d-flex align-items-center gap-2">
+        <span class="material-symbols-outlined fs-5 text-danger">error</span>
+        <strong class="small">{{ errorMessage }}</strong>
+      </div>
+      <button type="button" class="btn-close btn-sm" (click)="errorMessage = ''" aria-label="Close"></button>
+    </div>
+
     <!-- Main Profile Form -->
     <form #myProfileForm="ngForm" name="myProfileForm" (ngSubmit)="submitMyProfileForm()" novalidate>
       

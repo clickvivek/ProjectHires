@@ -3,7 +3,7 @@
     <div class="container-fluid px-3 px-xl-4">
       <a
           class="navbar-brand"
-          [routerLink]="isLoggedIn() ? '/dashboard' : '/home'"
+          [routerLink]="isLoggedIn() ? (isCandidate() ? '/search-jobs' : '/dashboard') : '/home'"
           routerLinkActive="active"
           [routerLinkActiveOptions]="{ exact: true }"
         ><h1 class="logo-text">ChatHire</h1>
@@ -60,7 +60,13 @@
               <li class="nav-item">
                 <a class="nav-link" routerLink="/home" fragment="how-it-works">How It Works</a>
               </li>
-              <li class="nav-item special ms-lg-3">
+              <li class="nav-item">
+                <a class="nav-link referral-header-btn" routerLink="/refer-for-rewards" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
+                  <span class="material-symbols-outlined fs-5 me-1 text-warning">featured_seasonal_and_gifts</span>
+                  <span>Refer for Rewards</span>
+                </a>
+              </li>
+              <li class="nav-item special ms-lg-2">
                 <a class="nav-link btn btn-primary px-4 py-2 text-white fw-bold shadow-sm" style="line-height: 24px; border-radius: 6px;" routerLink="/postjobs" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">Post a Job — <span class="text-uppercase" style="background:transparent; border:none; padding:0; font-size:inherit;">free</span></a>
               </li>
               <li class="nav-item ms-lg-2">
@@ -72,11 +78,118 @@
             </ul>
           </ng-container>
 
-          <ng-container *ngIf="isLoggedIn() && !isConsultancyId()">
-            <a class="btn-logout-subtle" href="javascript:void(0)" (click)="logout()">Logout</a>
+          <!-- Candidate Logged In Navigation -->
+          <ng-container *ngIf="isLoggedIn() && isCandidate()">
+            <ul class="navbar-nav align-items-center">
+              <li class="nav-item">
+                <a
+                  class="nav-link nav-link-custom"
+                  routerLink="/search-jobs"
+                  routerLinkActive="active"
+                  [routerLinkActiveOptions]="{ exact: true }"
+                  ><span class="material-symbols-outlined fs-6 me-1 align-text-bottom">search</span>Find Jobs</a
+                >
+              </li>
+              <li class="nav-item">
+                <a
+                  class="nav-link nav-link-custom"
+                  routerLink="/my-applications"
+                  routerLinkActive="active"
+                  [routerLinkActiveOptions]="{ exact: true }"
+                  ><span class="material-symbols-outlined fs-6 me-1 align-text-bottom">task_alt</span>My Applications</a
+                >
+              </li>
+              <li class="nav-item">
+                <a
+                  class="nav-link nav-link-custom"
+                  routerLink="/my-profile"
+                  routerLinkActive="active"
+                  [routerLinkActiveOptions]="{ exact: true }"
+                  ><span class="material-symbols-outlined fs-6 me-1 align-text-bottom">person</span>My Profile & CV</a
+                >
+              </li>
+              <!-- Chat Icon Button -->
+              <li class="nav-item ms-lg-2 me-lg-2">
+                <a
+                  routerLink="/chat"
+                  routerLinkActive="active"
+                  [routerLinkActiveOptions]="{ exact: true }"
+                  class="header-icon-btn position-relative d-inline-flex align-items-center justify-content-center"
+                  title="Messages"
+                >
+                  <span class="material-symbols-outlined fs-5">forum</span>
+                  <span *ngIf="uneadCount" class="position-absolute top-0 start-100 translate-middle badge rounded-circle bg-purple-badge">
+                    {{ uneadCount }}
+                  </span>
+                </a>
+              </li>
+
+              <!-- Candidate Profile Dropdown -->
+              <li class="nav-item user dropdown order-lg-last order-first ms-lg-1">
+                  <a
+                    href="#"
+                    class="d-flex align-items-center user-profile-link"
+                    role="button"
+                    data-bs-toggle="dropdown"
+                    id="candidateProfileDropDown"
+                    aria-haspopup="true"
+                    aria-expanded="false"
+                  >
+                    <figure class="profile-picture mb-0 me-2">
+                      <img [src]="profilePicUrl || 'assets/images/profile-placehoder-img.png'" (error)="onImageError($event)" id="userProfile" alt="Candidate Profile" />
+                    </figure>
+                    <div class="profile-info d-flex align-items-center gap-1">
+                      <span class="name fw-medium me-1 text-capitalize">
+                        {{ user?.fname }} {{ user?.lname }}
+                      </span>
+                      <span class="badge bg-primary text-white rounded-pill px-2 py-1 text-xs me-1">Candidate</span>
+                      <span class="material-symbols-outlined text-muted fs-6">expand_more</span>
+                    </div>
+                  </a>
+                  <div class="dropdown-menu shadow-sm border-0 dropdown-menu-end" aria-labelledby="candidateProfileDropDown">
+                    <a
+                      class="dropdown-item"
+                      routerLink="/my-profile"
+                      routerLinkActive="active"
+                      [routerLinkActiveOptions]="{ exact: true }"
+                      ><span class="material-symbols-outlined icon me-2">
+                        person</span
+                      >My Profile & CV</a
+                    >
+                    <a
+                      class="dropdown-item"
+                      routerLink="/my-applications"
+                      routerLinkActive="active"
+                      [routerLinkActiveOptions]="{ exact: true }"
+                      ><span class="material-symbols-outlined icon me-2">
+                        task_alt</span
+                      >My Applications</a
+                    >
+                    <a
+                      class="dropdown-item"
+                      routerLink="/refer-for-rewards"
+                      routerLinkActive="active"
+                      [routerLinkActiveOptions]="{ exact: true }"
+                      ><span class="material-symbols-outlined icon me-2 text-warning">
+                        featured_seasonal_and_gifts</span
+                      >Refer for Rewards</a
+                    >
+                    <div class="dropdown-divider"></div>
+                    <a
+                      class="dropdown-item text-danger"
+                      href="javascript:void(0)"
+                      (click)="logout()"
+                      ><span class="material-symbols-outlined icon me-2">
+                        logout</span
+                      >Logout</a
+                    >
+                  </div>
+              </li>
+            </ul>
           </ng-container>
 
-          <ng-container *ngIf="isLoggedIn() && isConsultancyId()">
+          <!-- Recruiter / Bench Sales / Admin Navigation -->
+          <ng-container *ngIf="isLoggedIn() && !isCandidate()">
             
             <ul class="navbar-nav align-items-center">
               <li class="nav-item">
@@ -141,6 +254,16 @@
                       history_edu </span
                     >Posting History</a
                   >
+                  <div class="dropdown-divider"></div>
+                  <a
+                    class="dropdown-item fw-medium"
+                    routerLink="/refer-for-rewards"
+                    routerLinkActive="active"
+                    [routerLinkActiveOptions]="{ exact: true }"
+                    ><span class="material-symbols-outlined icon me-2 text-warning">
+                      featured_seasonal_and_gifts </span
+                    >Refer for Rewards</a
+                  >
                 </div>
               </li>
               <li class="nav-item dropdown">
@@ -172,11 +295,37 @@
                       add_circle </span
                     >Add Candidate</a
                   >
+                  <div class="dropdown-divider"></div>
+                  <a
+                    class="dropdown-item fw-medium"
+                    routerLink="/refer-for-rewards"
+                    routerLinkActive="active"
+                    [routerLinkActiveOptions]="{ exact: true }"
+                    ><span class="material-symbols-outlined icon me-2 text-warning">
+                      featured_seasonal_and_gifts </span
+                    >Refer for Rewards</a
+                  >
                 </div>
               </li>
-              <li class="nav-item">
+              <li class="nav-item" *ngIf="profileId">
                 <a class="nav-link nav-link-custom" routerLink="/profile/{{profileId}}" target="_blank">Public Profile</a>
               </li>
+
+              <!-- Refer for Rewards Button in Header Navbar -->
+              <li class="nav-item ms-lg-1 me-lg-1">
+                <a
+                  class="nav-link referral-header-btn"
+                  routerLink="/refer-for-rewards"
+                  routerLinkActive="active"
+                  [routerLinkActiveOptions]="{ exact: true }"
+                  title="Refer Friends & Colleagues to Earn Free Postings"
+                >
+                  <span class="material-symbols-outlined fs-5 me-1 text-warning">featured_seasonal_and_gifts</span>
+                  <span>Refer for Rewards</span>
+                  <span class="badge bg-warning text-dark ms-1 px-1 py-0 fw-bold rounded-pill" style="font-size: 10px;">Free</span>
+                </a>
+              </li>
+
               <!-- Chat Icon Button -->
               <li class="nav-item ms-lg-2 me-lg-2">
                 <a
@@ -205,7 +354,20 @@
                     aria-expanded="false"
                   >
                     <figure class="profile-picture mb-0 me-2">
-                      <img [src]="profilePicUrl || 'assets/images/profile-placehoder-img.png'" (error)="onImageError($event)" id="userProfile" alt="User Profile" />
+                      <img
+                        *ngIf="user?.profilePic"
+                        [src]="profilePicUrl"
+                        (error)="$any($event.target).style.display='none'; headerAvatarFallback.style.display='flex'"
+                        id="userProfile"
+                        alt="User Profile"
+                      />
+                      <div
+                        #headerAvatarFallback
+                        class="header-avatar-fallback rounded-circle"
+                        [style.display]="user?.profilePic ? 'none' : 'flex'"
+                      >
+                        <span>{{ getUserInitial(user?.fname, user?.lname) }}</span>
+                      </div>
                     </figure>
                     <div class="profile-info d-flex align-items-center gap-1">
                       <span class="name fw-medium me-1 text-capitalize">
@@ -227,6 +389,16 @@
                       >Admin Setup</a
                     >
                     <div *ngIf="isAdmin()" class="dropdown-divider"></div>
+                    <a
+                      class="dropdown-item fw-medium"
+                      routerLink="/refer-for-rewards"
+                      routerLinkActive="active"
+                      [routerLinkActiveOptions]="{ exact: true }"
+                      style="color: #7e22ce;"
+                      ><span class="material-symbols-outlined icon me-2" style="color: #7e22ce;">
+                        redeem</span
+                      >Refer for Rewards <span class="badge bg-warning text-dark ms-1 px-1 py-0 rounded-pill" style="font-size: 10px;">Free</span></a
+                    >
                     <a
                       class="dropdown-item"
                       routerLink="/myaccount"

@@ -73,6 +73,16 @@
             <span class="material-symbols-outlined fs-5">lock_reset</span>
             <span>Change Password</span>
           </button>
+          <button
+            *ngIf="user?.userTypeId !== 5"
+            class="nav-link d-flex align-items-center gap-2"
+            [class.active]="activeTab === 'redeem-promo'"
+            (click)="setTab('redeem-promo')"
+            type="button"
+          >
+            <span class="material-symbols-outlined fs-5">loyalty</span>
+            <span>Redeem Promo Code</span>
+          </button>
         </div>
       </div>
     </div>
@@ -102,6 +112,75 @@
       </div>
       <div *ngIf="activeTab === 'profile-password'">
         <change-password></change-password>
+      </div>
+      <div *ngIf="activeTab === 'redeem-promo'" class="py-3">
+        <div class="mx-auto" style="max-width: 560px;">
+          <div class="text-center mb-4">
+            <div class="icon-circle bg-purple-subtle text-purple mx-auto mb-3" style="width: 56px; height: 56px; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+              <span class="material-symbols-outlined fs-2">loyalty</span>
+            </div>
+            <h4 class="fw-bold text-dark mb-1">Redeem Promo Code</h4>
+            <p class="text-muted small">
+              Enter your promotional reward code below to unlock additional job postings, resume downloads, chat limits, or plan discounts.
+            </p>
+          </div>
+
+          <div class="card border border-2 shadow-none rounded-3 p-4 bg-light mb-4">
+            <label class="form-label fw-bold small text-dark mb-2">Enter Promo Code</label>
+            <div class="input-group input-group-lg mb-2">
+              <span class="input-group-text bg-white border-end-0 text-muted">
+                <span class="material-symbols-outlined">confirmation_number</span>
+              </span>
+              <input
+                type="text"
+                class="form-control font-monospace text-uppercase fw-bold border-start-0 border-end-0"
+                placeholder="e.g. WELCOME100"
+                [(ngModel)]="promoCodeInput"
+                (keyup.enter)="redeemPromoCode()"
+                [disabled]="isRedeeming"
+                maxlength="50"
+              />
+              <button
+                class="btn btn-primary px-4 fw-semibold d-flex align-items-center gap-2"
+                type="button"
+                (click)="redeemPromoCode()"
+                [disabled]="isRedeeming || !promoCodeInput.trim()"
+              >
+                <span *ngIf="isRedeeming" class="spinner-border spinner-border-sm"></span>
+                <span *ngIf="!isRedeeming" class="material-symbols-outlined fs-5">redeem</span>
+                <span>{{ isRedeeming ? 'Applying...' : 'Apply Code' }}</span>
+              </button>
+            </div>
+            <div class="form-text text-muted extra-small">
+              Promo codes are case-insensitive and apply immediately to your active recruitment quota.
+            </div>
+          </div>
+
+          <!-- Success Box -->
+          <div *ngIf="redemptionResult && redemptionResult.success" class="card border-0 shadow-sm rounded-3 p-4 bg-success-subtle border border-success text-success-emphasis mb-3">
+            <div class="d-flex align-items-start gap-3">
+              <span class="material-symbols-outlined fs-2 text-success">task_alt</span>
+              <div>
+                <h6 class="fw-bold mb-1 text-success">Rewards Applied Successfully!</h6>
+                <p class="small mb-3 text-dark">{{ redemptionResult.message }}</p>
+                <div class="d-flex flex-wrap gap-2">
+                  <span *ngIf="redemptionResult.freeJobPostingGranted > 0" class="badge bg-white text-dark border px-2 py-1">
+                    +{{ redemptionResult.freeJobPostingGranted }} Job Postings
+                  </span>
+                  <span *ngIf="redemptionResult.freeDownloadsGranted > 0" class="badge bg-white text-dark border px-2 py-1">
+                    +{{ redemptionResult.freeDownloadsGranted }} Downloads
+                  </span>
+                  <span *ngIf="redemptionResult.dailyChatLimitGranted > 0" class="badge bg-white text-dark border px-2 py-1">
+                    {{ redemptionResult.dailyChatLimitGranted }} Daily Chats
+                  </span>
+                  <span *ngIf="redemptionResult.discountAmount > 0" class="badge bg-white text-dark border px-2 py-1">
+                    ${{ redemptionResult.discountAmount }} Discount
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
 

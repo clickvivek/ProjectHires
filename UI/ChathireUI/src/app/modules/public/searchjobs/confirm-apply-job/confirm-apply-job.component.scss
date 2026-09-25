@@ -57,6 +57,19 @@
         font-size: 13px;
         color: #64748b;
       }
+      .avatar-circle {
+        width: 44px;
+        height: 44px;
+        border-radius: 50%;
+        background-color: #72246c;
+        color: #ffffff;
+        font-weight: 700;
+        font-size: 1.1rem;
+        flex-shrink: 0;
+      }
+      .text-xs {
+        font-size: 0.75rem;
+      }
       .options-box {
         margin: 20px 0 0 0;
         .lists {

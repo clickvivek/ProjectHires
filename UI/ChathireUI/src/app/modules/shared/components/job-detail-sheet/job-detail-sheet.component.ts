@@ -272,4 +272,32 @@ export class JobDetailSheetComponent implements OnInit {
     return name.trim().charAt(0).toUpperCase();
   }
 
+  getUserInitial(fName?: string, lName?: string): string {
+    if (fName && fName.trim().length > 0) {
+      return fName.trim().charAt(0).toUpperCase();
+    }
+    if (lName && lName.trim().length > 0) {
+      return lName.trim().charAt(0).toUpperCase();
+    }
+    return 'R';
+  }
+
+  getDisplayVisas(visas: any): string[] {
+    if (!visas || !Array.isArray(visas) || visas.length === 0) {
+      return ['Any Visa'];
+    }
+    const cleanVisas = visas.filter(v => typeof v === 'string' && v.trim().length > 0);
+    if (cleanVisas.length === 0) {
+      return ['Any Visa'];
+    }
+    const hasAny = cleanVisas.some(v => {
+      const lower = v.trim().toLowerCase();
+      return lower === 'any' || lower === 'any visa' || lower === 'all' || lower === 'all visas' || lower === 'any/all';
+    });
+    if (hasAny || cleanVisas.length >= 6) {
+      return ['Any Visa'];
+    }
+    return cleanVisas;
+  }
+
 }

@@ -20,6 +20,8 @@ export class PersonalDetailsComponent {
 isLoaded:boolean = false;
 isError:boolean = false;
 error = '';
+successMessage: string = '';
+errorMessage: string = '';
 
 userData: UserDetailsDtoForUpdate = {};
 formData: any;
@@ -162,13 +164,19 @@ isFormSubmitted:boolean = false;
   }
 
   scrollToTop() {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
+    const el = document.querySelector('.personal-details-wrapper') || document.querySelector('.my-account-page');
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
   }
 
   handleCancel() {
-    this.isEdit = !this.isEdit
+    this.isEdit = false;
+    this.successMessage = '';
+    this.errorMessage = '';
     if(this.myProfileForm.dirty) {
-      this.reFetchData()
+      this.reFetchData();
     }
   }
 
@@ -189,6 +197,8 @@ isFormSubmitted:boolean = false;
   submitMyProfileForm() {
 
     this.isFormSubmitted = true
+    this.successMessage = '';
+    this.errorMessage = '';
 
     for (const field in this.myProfileForm.controls) {
       if (this.myProfileForm.controls.hasOwnProperty(field)) {
@@ -222,21 +232,29 @@ isFormSubmitted:boolean = false;
       const { ['publicProfileUserName']: _, ...tempObject } = this.formData;
       this.userData.userDtoForUpdate = tempObject
       
-     this.userService.apiUserUpdatePut(this.userData).subscribe({
+      this.userService.apiUserUpdatePut(this.userData).subscribe({
         next:(res:any) => {
-
-          this.toastr.success( 'Personal details updated successfully', '' , {
+          this.isEdit = false;
+          this.successMessage = 'Personal details updated successfully.';
+          this.toastr.success('Personal details updated successfully', '', {
             timeOut: 3000,
             positionClass: 'toast-top-center'
           });
-          this.scrollToTop()
-          this.sharedService.setUserUpdate(true)
-          this.refreshUser()
-          this.isFormSubmitted = false
+          this.scrollToTop();
+          this.sharedService.setUserUpdate(true);
+          this.refreshUser();
+          this.reFetchData();
+          this.isFormSubmitted = false;
 
+          setTimeout(() => {
+            this.successMessage = '';
+          }, 6000);
         },
         error:(error:any) => {
-          this.isFormSubmitted = false
+          this.isFormSubmitted = false;
+          this.errorMessage = error?.error?.message || 'Failed to update personal details. Please try again.';
+          this.toastr.error(this.errorMessage, 'Error');
+          this.scrollToTop();
         },
       })
 

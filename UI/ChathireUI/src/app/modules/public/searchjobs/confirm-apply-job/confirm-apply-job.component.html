@@ -2,7 +2,7 @@
   <div class="modal-header-bar d-flex bg-secondary align-items-center border-bottom px-4 py-3">
     <h6 class="ft-head text-white mb-0">{{ isAppliedSuccess ? 'Application Status' : 'Apply to this job' }}</h6>
     <div
-      class="material-symbols-outlined ms-auto text-white close-btn"
+      class="material-symbols-outlined ms-auto text-white close-btn cursor-pointer"
       mat-button
       [mat-dialog-close]="isAppliedSuccess ? true : false"
     >
@@ -12,33 +12,139 @@
 
   <div class="content" *ngIf="!isAppliedSuccess">
     
-    <div class="desp-area">
-      <h6 class="text-base fw-bold text-dark mb-1">{{ job?.jobOpeningName }}</h6>
-      <div class="info d-flex align-items-center flex-wrap gap-2 text-dark-500 sub-title mb-2">
-        <span *ngIf="job?.companyName" class="fw-medium">{{ job.companyName }}</span>
-        <span *ngIf="job?.companyName && getLocationsText()">•</span>
-        <span *ngIf="getLocationsText()">{{ getLocationsText() }}</span>
-      </div>
-      
-      <ng-container *ngIf="optionSelected == ''">
-        <div class="options-box">
-          <p class="ft-head fw-medium text-base mb-2">
-            Choose one of the option below
-          </p>
-          <div class="lists">
-            <div class="item" (click)="handleOption('hotlist')">
-              I want to choose my candidate from hotlist
-            </div>
-            <div class="item" (click)="handleOption('upload')">
-              I want to choose resume from my computer
-            </div>
+    <div class="desp-area p-4">
+      <div class="d-flex align-items-start justify-content-between mb-2">
+        <div>
+          <h5 class="text-base fw-bold text-dark mb-1">{{ job?.jobOpeningName || job?.name }}</h5>
+          <div class="info d-flex align-items-center flex-wrap gap-2 text-dark-500 sub-title">
+            <span *ngIf="job?.companyName" class="fw-semibold text-primary">{{ job.companyName }}</span>
+            <span *ngIf="job?.companyName && getLocationsText()">•</span>
+            <span *ngIf="getLocationsText()" class="d-flex align-items-center">
+              <span class="material-symbols-outlined fs-6 text-danger me-1">location_on</span>{{ getLocationsText() }}
+            </span>
           </div>
         </div>
+      </div>
+
+      <!-- CANDIDATE DIRECT 1-CLICK APPLY FLOW -->
+      <ng-container *ngIf="isCandidateUser">
+        
+        <div *ngIf="isLoadingCandidateProfile" class="text-center py-4">
+          <div class="spinner-border spinner-border-sm text-primary" role="status"></div>
+          <span class="ms-2 text-muted small">Loading your candidate profile...</span>
+        </div>
+
+        <div *ngIf="!isLoadingCandidateProfile" class="mt-3">
+          
+          <div *ngIf="candidateErrorMessage" class="alert alert-danger py-2 px-3 small d-flex align-items-center mb-3">
+            <span class="material-symbols-outlined me-2 fs-5">error</span>
+            <div>{{ candidateErrorMessage }}</div>
+          </div>
+
+          <!-- Candidate Profile Snapshot Card -->
+          <div class="card border rounded-3 p-3 bg-light mb-3">
+            <div class="d-flex align-items-center gap-3">
+              <div class="avatar-circle bg-primary text-white fw-bold d-flex align-items-center justify-content-center">
+                {{ (candidateProfile?.fname || 'C').charAt(0).toUpperCase() }}
+              </div>
+              <div class="flex-grow-1 overflow-hidden">
+                <div class="d-flex align-items-center gap-2">
+                  <h6 class="fw-bold mb-0 text-dark">{{ candidateProfile?.fname }} {{ candidateProfile?.lname }}</h6>
+                  <span class="badge bg-primary text-white text-xs">Direct Applicant</span>
+                </div>
+                <div class="text-muted small text-truncate">
+                  <span *ngIf="candidateProfile?.details?.headline">{{ candidateProfile?.details?.headline }} • </span>
+                  <span *ngIf="candidateProfile?.details?.visaName" class="text-primary fw-medium">{{ candidateProfile?.details?.visaName }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Resume Selection -->
+          <div class="mb-3">
+            <label class="form-label fw-semibold text-dark small mb-1.5">Select Resume to Attach *</label>
+            
+            <!-- When candidate has saved resumes -->
+            <div *ngIf="(candidateProfile?.resumes?.length || 0) > 0 && !showUploadNewResume">
+              <div class="input-group mb-2">
+                <span class="input-group-text bg-white text-danger">
+                  <span class="material-symbols-outlined fs-5">description</span>
+                </span>
+                <select class="form-select form-select-sm fw-medium" [(ngModel)]="selectedResumeId">
+                  <option *ngFor="let r of candidateProfile?.resumes" [ngValue]="r.id">
+                    {{ r.fileName }} {{ r.isPrimary ? '(Primary Resume)' : '' }}
+                  </option>
+                </select>
+              </div>
+              <div class="text-end">
+                <a href="javascript:void(0)" class="small text-primary fw-medium text-decoration-none" (click)="showUploadNewResume = true">
+                  + Upload a different resume
+                </a>
+              </div>
+            </div>
+
+            <!-- When uploading a new resume on the fly -->
+            <div *ngIf="showUploadNewResume || (candidateProfile?.resumes?.length || 0) === 0" class="border rounded-3 p-3 bg-white text-center">
+              <input type="file" (change)="onCandidateResumeFileSelected($event)" accept=".pdf,.doc,.docx" class="form-control form-control-sm mb-2" />
+              <div class="text-muted text-xs">Accepts PDF, DOC, DOCX up to 10MB</div>
+              <div class="mt-2 text-start" *ngIf="(candidateProfile?.resumes?.length || 0) > 0">
+                <a href="javascript:void(0)" class="small text-muted" (click)="showUploadNewResume = false; newResumeFile = null">
+                  ← Back to saved resumes
+                </a>
+              </div>
+            </div>
+          </div>
+
+          <!-- Cover Note / Pitch -->
+          <div class="mb-3">
+            <label class="form-label fw-semibold text-dark small mb-1">Cover Note / Message to Recruiter (Optional)</label>
+            <textarea
+              class="form-control form-control-sm"
+              rows="3"
+              [(ngModel)]="coverNote"
+              placeholder="Highlight your key skills or why you're a great fit for this position..."
+            ></textarea>
+          </div>
+
+          <!-- Submit Button -->
+          <div class="d-grid gap-2 mt-4">
+            <button
+              type="button"
+              class="btn btn-primary py-2.5 fw-bold shadow-sm"
+              (click)="applyWithCandidateProfile()"
+              [disabled]="isSubmittingCandidateApply"
+            >
+              <span *ngIf="isSubmittingCandidateApply" class="spinner-border spinner-border-sm me-1"></span>
+              {{ isSubmittingCandidateApply ? 'Submitting Application...' : '⚡ 1-Click Submit Application' }}
+            </button>
+          </div>
+
+        </div>
+
       </ng-container>
 
-      <choose-from-hotlist *ngIf="optionSelected == 'hotlist'" (outParams)="onOptionTypeChange($event)" (appliedSuccess)="onAppliedSuccess($event)"></choose-from-hotlist>
+      <!-- BENCH SALES / EMPLOYER FLOW (Existing) -->
+      <ng-container *ngIf="!isCandidateUser">
+        <ng-container *ngIf="optionSelected == ''">
+          <div class="options-box mt-3">
+            <p class="ft-head fw-medium text-base mb-2">
+              Choose one of the options below
+            </p>
+            <div class="lists">
+              <div class="item" (click)="handleOption('hotlist')">
+                I want to choose my candidate from hotlist
+              </div>
+              <div class="item" (click)="handleOption('upload')">
+                I want to choose resume from my computer
+              </div>
+            </div>
+          </div>
+        </ng-container>
 
-      <choose-resume-from-desk *ngIf="optionSelected == 'upload'" (outParams)="onOptionTypeChange($event)" (appliedSuccess)="onAppliedSuccess($event)"></choose-resume-from-desk>
+        <choose-from-hotlist *ngIf="optionSelected == 'hotlist'" (outParams)="onOptionTypeChange($event)" (appliedSuccess)="onAppliedSuccess($event)"></choose-from-hotlist>
+
+        <choose-resume-from-desk *ngIf="optionSelected == 'upload'" (outParams)="onOptionTypeChange($event)" (appliedSuccess)="onAppliedSuccess($event)"></choose-resume-from-desk>
+      </ng-container>
 
     </div>
 
@@ -71,15 +177,18 @@
     <div class="application-summary p-3 rounded-3 mb-4 mx-auto text-start">
       <div class="d-flex justify-content-between align-items-center mb-2 pb-2 border-bottom">
         <span class="text-muted text-xs text-uppercase fw-semibold">Job Title</span>
-        <span class="text-dark fw-semibold text-sm text-end">{{ job?.jobOpeningName }}</span>
+        <span class="text-dark fw-semibold text-sm text-end">{{ job?.jobOpeningName || job?.name }}</span>
       </div>
       <div class="d-flex justify-content-between align-items-center" *ngIf="appliedData?.candidateName">
-        <span class="text-muted text-xs text-uppercase fw-semibold">Candidate</span>
+        <span class="text-muted text-xs text-uppercase fw-semibold">Applicant</span>
         <span class="text-dark fw-semibold text-sm">{{ appliedData.candidateName }}</span>
       </div>
     </div>
 
-    <div class="success-actions">
+    <div class="success-actions d-flex justify-content-center gap-2">
+      <a *ngIf="isCandidateUser" routerLink="/my-applications" (click)="dialogRef.close()" [mat-dialog-close]="true" class="btn btn-outline-primary px-4 py-2 fw-medium">
+        View My Applications
+      </a>
       <button type="button" class="btn btn-primary px-5 py-2 fw-medium" [mat-dialog-close]="true">
         Done
       </button>

@@ -1,5 +1,6 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { NgForm } from '@angular/forms';
+import { Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
 import _ from 'underscore';
 
@@ -159,7 +160,8 @@ export class DashboardComponent implements OnInit {
   	private authService: AuthService,
     private sessionService: SessionService,
     private sharedService: SharedService,
-    private toastr: ToastrService
+    private toastr: ToastrService,
+    private router: Router
   ) { }
 
   isLoggedIn() {
@@ -465,87 +467,113 @@ export class DashboardComponent implements OnInit {
   isSubmitting: boolean = false;
 
   addUser() {
+    this.isSubmitting = true;
 
-    for (const field in this.addUserForm.controls) {
-      if (this.addUserForm.controls.hasOwnProperty(field)) {
-        const control = this.addUserForm.controls[field];
-        if (control.invalid) {
-          console.log(`Invalid field: ${field}`);
-        }
+    let addressVal = "";
+    if (this.selectedRole !== 5) {
+      if (this.formData.recruiterCountry === 'India' || this.formData.recruiterCountry === 'Others') {
+        addressVal = this.formData.recruiterCityIndia || "";
       }
     }
-    if(this.addUserForm.valid) {
-      this.isSubmitting = true;
 
-      let addressVal = "";
-      if (this.selectedRole !== 5) {
-        if (this.formData.recruiterCountry === 'India' || this.formData.recruiterCountry === 'Others') {
-          addressVal = this.formData.recruiterCityIndia || "";
+    let data = {
+      userDtoForUpdate: {
+        id: this.sessionService.userId,
+        fname: this.formData.fname,
+        email: this.sessionService.userEmail,
+        cityId: this.formData.cityId,
+        address: addressVal,
+        hiringforcountry: this.formData.country || "",
+        location: (this.selectedRole !== 5 ? this.formData.recruiterCountry : this.formData.country) || "",
+        phone: this.formData.phone,
+        linkedin: this.formData.linkedin,
+        alternateEmail: this.formData.alternateEmail || "",
+        lname: this.formData.lname,
+        userTypeId: this.selectedRole === 5 ? 5 : 1,
+        roleRecruiter: this.selectedRole === 1,
+        roleBenchSales: this.selectedRole === 2
+      },
+      consultancyID: this.selectedRole === 5 ? null : this.formData.consultancyId,
+      publicProfileUserName: this.formData.publicProfileUserName || ''
+    };
+
+    this.userService.apiUserUpdatePut(data).subscribe({
+      next: (res: any) => {
+        this.isSubmitting = false;
+        this.sessionService.consultancyId = this.formData.consultancyId;
+        this.sessionService.consultancyUserId = res?.value?.consultancyUserId;
+        this.sessionService.userTypeId = this.selectedRole === 5 ? 5 : 1;
+        this.toastr.success('Your profile details have been saved successfully.', 'Profile Updated', {
+            timeOut: 3000,
+            positionClass: 'toast-top-center'
+        });
+        this.sessionService.refreshUser();
+
+        if (this.selectedRole === 5) {
+          this.router.navigate(['/search-jobs']);
         }
+      },
+      error: (error: any) => {
+        this.isSubmitting = false;
+        this.toastr.error('An error occurred while saving your profile. Please try again.', 'Update Failed', {
+            timeOut: 3000,
+            positionClass: 'toast-top-center'
+        });
       }
-
-      let data = {
-        userDtoForUpdate: {
-          id: this.sessionService.userId,
-          fname: this.formData.fname,
-          email: this.sessionService.userEmail,
-          cityId: this.formData.cityId,
-          address: addressVal,
-          hiringforcountry: this.formData.country || "",
-          location: (this.selectedRole !== 5 ? this.formData.recruiterCountry : this.formData.country) || "",
-          phone: this.formData.phone,
-          linkedin: this.formData.linkedin,
-          alternateEmail: this.formData.alternateEmail || "",
-          lname: this.formData.lname,
-          userTypeId: this.selectedRole === 5 ? 5 : 1,
-          roleRecruiter: this.selectedRole === 1,
-          roleBenchSales: this.selectedRole === 2
-        },
-        consultancyID: this.selectedRole === 5 ? null : this.formData.consultancyId,
-        publicProfileUserName: this.formData.publicProfileUserName || ''
-      }
-
-      this.userService.apiUserUpdatePut(data).subscribe({
-        next: (res: any) => {
-          this.isSubmitting = false;
-          this.sessionService.consultancyId = this.formData.consultancyId
-          this.sessionService.consultancyUserId = res.value.consultancyUserId
-          this.toastr.success('Your profile details have been saved successfully.', 'Profile Updated' , {
-              timeOut: 3000,
-              positionClass: 'toast-top-center'
-          });
-          this.sessionService.refreshUser()
-        },
-        error: (error:any) => {
-          this.isSubmitting = false;
-          this.toastr.error('An error occurred while saving your profile. Please try again.', 'Update Failed' , {
-              timeOut: 3000,
-              positionClass: 'toast-top-center'
-          });
-        }
-      })
-
-    }
-
-    
-
+    });
   }
 
   ngOnInit() {
     this.submittedStep2 = false;
 
+    const initialUserTypeId = Number(this.sessionService.userTypeId);
+    if (initialUserTypeId === 5) {
+      this.selectedRole = 5;
+      this.formData.userTypeId = 5;
+    } else if (initialUserTypeId === 2) {
+      this.selectedRole = 2;
+      this.formData.userTypeId = 1;
+    } else {
+      this.selectedRole = 1;
+      this.formData.userTypeId = 1;
+    }
+
+    const cachedUser: any = this.sessionService.getUserDetails();
+    if (cachedUser) {
+      if (Number(cachedUser.userTypeId) === 5) {
+        this.selectedRole = 5;
+        this.formData.userTypeId = 5;
+        if (cachedUser.fname && cachedUser.cityId) {
+          this.router.navigate(['/search-jobs']);
+          return;
+        }
+      } else if (cachedUser.roleBenchSales) {
+        this.selectedRole = 2;
+        this.formData.userTypeId = 1;
+      } else if (cachedUser.roleRecruiter) {
+        this.selectedRole = 1;
+        this.formData.userTypeId = 1;
+      }
+    }
+
     this.sessionService.userdetailscast.subscribe((res: any) => {
-      this.user = res
+      this.user = res;
       if (res) {
-        if (res.roleBenchSales) {
+        if (Number(res.userTypeId) === 5) {
+          this.selectedRole = 5;
+          this.formData.userTypeId = 5;
+          if (res.fname && res.cityId) {
+            this.router.navigate(['/search-jobs']);
+          }
+        } else if (res.roleBenchSales) {
           this.selectedRole = 2;
+          this.formData.userTypeId = 1;
         } else if (res.roleRecruiter) {
           this.selectedRole = 1;
-        } else if (res.userTypeId === 5) {
-          this.selectedRole = 5;
+          this.formData.userTypeId = 1;
         }
       }
-    })
+    });
 
     this.sharedService.inboxunreadcountcast.subscribe((res:any) => {
       if(!_.isEmpty(res)) {

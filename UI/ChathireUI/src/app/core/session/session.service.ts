@@ -108,7 +108,11 @@ export class SessionService {
           
         }
         else {
-          this._router.navigate(['dashboard']);
+          if (Number(data.userTypeId) === 5) {
+            this._router.navigate(['search-jobs']);
+          } else {
+            this._router.navigate(['dashboard']);
+          }
         }
         
         this._sharedService.setUserUpdate(false)

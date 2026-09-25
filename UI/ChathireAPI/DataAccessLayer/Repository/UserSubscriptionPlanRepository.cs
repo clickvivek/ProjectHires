@@ -82,7 +82,7 @@ namespace DataAccessLayer.Repository
                 .Where(c => c.UserId == userId && c.Active == true)
                 .ToListAsync();
 
-            var activePaidPlan = subPlans.FirstOrDefault(p => (p.IsFree != true && (p.SubscriptionPlan == null || p.SubscriptionPlan.IsFree != true)) && p.EndDate >= now);
+            var activePaidPlan = subPlans.FirstOrDefault(p => (p.ActualJobPosting > 15 || p.IsFree == false || (p.SubscriptionPlan != null && p.SubscriptionPlan.IsFree == false)) && (p.EndDate == null || p.EndDate >= now));
 
             DateTime baselineDate = (activePaidPlan != null && activePaidPlan.StartDate.HasValue) 
                 ? activePaidPlan.StartDate.Value 
@@ -287,10 +287,16 @@ namespace DataAccessLayer.Repository
                 else if (user.RoleBenchSales == true) roleName = "Bench Sales";
                 else if (user.UserTypeId == 5) roleName = "Candidate";
 
+                string cleanFname = (user.Fname ?? "").Trim();
+                string cleanLname = (user.Lname ?? "").Trim();
+                string cleanFullName = string.IsNullOrWhiteSpace(cleanFname) && string.IsNullOrWhiteSpace(cleanLname)
+                    ? (user.UserName ?? user.Email ?? "No Name")
+                    : $"{cleanFname} {cleanLname}".Trim();
+
                 items.Add(new UserQuotaDetailDto
                 {
                     UserId = user.Id,
-                    FullName = $"{user.Fname} {user.Lname}".Trim(),
+                    FullName = cleanFullName,
                     Email = user.Email ?? "",
                     CompanyName = compName,
                     UserTypeId = user.UserTypeId,

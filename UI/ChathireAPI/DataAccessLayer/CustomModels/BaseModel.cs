@@ -1,4 +1,4 @@
-﻿using BusinessEntityAndDTO.Common;
+using BusinessEntityAndDTO.Common;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -85,5 +85,10 @@ namespace DataAccessLayer.Models
     public partial class SubscriptionPlan : BaseModel<long> { }
     public partial class UserSubscriptionPlan : BaseModel<long> { }
     
-
+    public partial class DirectCandidateDetail : BaseModel<long> { }
+    public partial class DirectCandidateResume : BaseModel<long> { }
+    public partial class DirectCandidateExperience : BaseModel<long> { }
+    public partial class DirectCandidateEducation : BaseModel<long> { }
+    public partial class Promocode : BaseModel<long> { }
+    public partial class UserReferral : BaseModel<long> { }
 }

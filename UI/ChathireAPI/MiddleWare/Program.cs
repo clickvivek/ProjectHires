@@ -35,6 +35,13 @@ var config = new AutoMapper.MapperConfiguration(
 builder.Services.AddSingleton(config.CreateMapper());
 builder.Services.AddHttpClient<BusinessLayer.Services.IResendEmailService, BusinessLayer.Services.ResendEmailService>();
 builder.Services.AddHttpClient<BusinessLayer.Services.ILinkedInScraperService, BusinessLayer.Services.LinkedInScraperService>();
+builder.Services.AddHttpClient<BusinessLayer.Services.IJobParserService, BusinessLayer.Services.JobParserService>();
+builder.Services.AddHttpClient<BusinessLayer.Services.IHotlistParserService, BusinessLayer.Services.HotlistParserService>();
+builder.Services.AddScoped<DataAccessLayer.Repository.IEmailJobPostingRepository, DataAccessLayer.Repository.EmailJobPostingRepository>();
+builder.Services.AddScoped<BusinessLayer.Manager.IEmailJobPostingManager, BusinessLayer.Manager.EmailJobPostingManager>();
+builder.Services.AddScoped<DataAccessLayer.Repository.IPromocodeRepository, DataAccessLayer.Repository.PromocodeRepository>();
+builder.Services.AddScoped<BusinessLayer.Manager.IPromocodeManager, BusinessLayer.Manager.PromocodeManager>();
+builder.Services.AddScoped<BusinessLayer.Manager.IUserReferralManager, BusinessLayer.Manager.UserReferralManager>();
 DependancyManager.ConfigureAPI(builder.Services);
 builder.Services.AddHostedService<MiddleWare.BackgroundServices.JobExpirationBackgroundService>();
 

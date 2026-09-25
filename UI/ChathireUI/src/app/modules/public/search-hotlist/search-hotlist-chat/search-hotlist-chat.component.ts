@@ -62,4 +62,14 @@ export class SearchHotlistChatComponent {
 
   }
 
+  getUserInitial(fName?: string, lName?: string): string {
+    if (fName && fName.trim().length > 0) {
+      return fName.trim().charAt(0).toUpperCase();
+    }
+    if (lName && lName.trim().length > 0) {
+      return lName.trim().charAt(0).toUpperCase();
+    }
+    return 'R';
+  }
+
 }

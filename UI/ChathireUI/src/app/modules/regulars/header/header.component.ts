@@ -65,6 +65,10 @@ export class HeaderComponent implements OnInit {
     return Number(this.sessionService.userTypeId) === 7;
   }
 
+  isCandidate() {
+    return Number(this.sessionService.userTypeId) === 5 || (this.user && Number(this.user.userTypeId) === 5);
+  }
+
   isConsultancyId() {
     return this.sessionService.consultancyId
   }
@@ -119,8 +123,18 @@ export class HeaderComponent implements OnInit {
     return newData[0]
   }
 
+  getUserInitial(fName?: string, lName?: string): string {
+    if (fName && fName.trim().length > 0) {
+      return fName.trim().charAt(0).toUpperCase();
+    }
+    if (lName && lName.trim().length > 0) {
+      return lName.trim().charAt(0).toUpperCase();
+    }
+    return 'U';
+  }
+
   onImageError(event: any) {
-    event.target.src = defaultProfilePic;
+    event.target.style.display = 'none';
   }
 
   ngOnInit() {
@@ -128,31 +142,31 @@ export class HeaderComponent implements OnInit {
     this.mobileScreen();
 
     this.sessionService.userdetailscast.subscribe((res: any) => {
-      this.user = res
+      this.user = res;
       if (this.user && this.user?.profilePic) {
         if (this.user.profilePic.startsWith('http://') || this.user.profilePic.startsWith('https://')) {
           this.profilePicUrl = this.user.profilePic;
         } else {
           this.profilePicUrl = `${picUrl}${this.user?.profilePic}`;
         }
-      }
-      else {
+      } else {
         this.profilePicUrl = defaultProfilePic;
       }
-      this.profileId = this.user?.consultancyUsers && this.user?.consultancyUsers[0] ? this.user?.consultancyUsers[0].publicProfileUserName : '';
-    })
+      this.profileId = this.user?.consultancyUsers && this.user?.consultancyUsers[0] 
+        ? this.user?.consultancyUsers[0].publicProfileUserName 
+        : (this.user?.directCandidateDetail?.publicProfileSlug || '');
+    });
 
-    this.sharedService.inboxunreadcountcast.subscribe((res:any) => {
-      if(!_.isEmpty(res)) {
-        this.uneadCount = res[0]?.unreadMessageCount
+    this.sharedService.inboxunreadcountcast.subscribe((res: any) => {
+      if (!_.isEmpty(res)) {
+        this.uneadCount = res[0]?.unreadMessageCount;
+      } else {
+        this.uneadCount = 0;
       }
-      else {
-        this.uneadCount = 0
-      }
-    })
+    });
 
-    if(this.isLoggedIn()) {
-      this.sessionService.refreshUser()
+    if (this.isLoggedIn()) {
+      this.sessionService.refreshUser();
     }
 
   }

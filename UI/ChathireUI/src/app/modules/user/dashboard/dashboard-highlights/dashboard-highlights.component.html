@@ -43,6 +43,33 @@
     <!-- Dashboard Card Body (Always Visible) -->
     <div class="card-body px-3 px-md-4 pb-4 pt-0 border-top">
       
+      <!-- REFERRAL PROMO BANNER -->
+      <div class="referral-dashboard-banner my-3 p-3 p-md-4 rounded-3 d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3 cursor-pointer"
+           routerLink="/refer-for-rewards"
+           style="background: linear-gradient(135deg, #1e1b4b 0%, #312e81 40%, #581c87 100%); color: #ffffff; box-shadow: 0 4px 12px rgba(49, 46, 129, 0.15); cursor: pointer;">
+        <div class="d-flex align-items-center gap-3">
+          <div class="p-3 rounded-circle d-flex align-items-center justify-content-center flex-shrink-0" style="background: rgba(255,255,255,0.15); color: #fde047;">
+            <span class="material-symbols-outlined fs-2">featured_seasonal_and_gifts</span>
+          </div>
+          <div>
+            <div class="d-flex align-items-center gap-2 mb-1 flex-wrap">
+              <span class="badge rounded-pill px-2 py-1 text-xs fw-bold" style="background: #fde047; color: #713f12;">FREE POSTINGS REWARD</span>
+              <span class="text-xs text-white-50">Earn 3 Months Free</span>
+            </div>
+            <h4 class="fw-bold mb-1 text-white" style="font-size: 1.15rem;">Refer Friends & Colleagues — Earn Free Postings!</h4>
+            <p class="mb-0 text-white-50 text-sm">
+              Invite 10+ recruiter or bench sales peers. Get +25 job postings and 3 months free extensions upon their sign-up.
+            </p>
+          </div>
+        </div>
+        <div class="flex-shrink-0">
+          <button class="btn btn-warning fw-bold px-3 py-2 rounded-pill d-inline-flex align-items-center gap-1 shadow-sm text-dark" style="font-size: 13.5px;">
+            <span>Refer for Rewards</span>
+            <span class="material-symbols-outlined fs-6">arrow_forward</span>
+          </button>
+        </div>
+      </div>
+
       <!-- SECTION 1: RECRUITMENT -->
       <div class="data-section mt-4 mb-4" *ngIf="showRecruitmentSection()">
         <h2 class="section-heading mb-3">Recruitment</h2>

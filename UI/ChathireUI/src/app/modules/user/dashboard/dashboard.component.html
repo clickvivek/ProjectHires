@@ -47,7 +47,7 @@
                     <span class="material-symbols-outlined">person</span>
                   </div>
                   <div class="flex-grow-1">
-                    <h6 class="fw-bold mb-1 role-card-title">Candidate</h6>
+                    <h6 class="fw-bold mb-1 role-card-title">Job Seeker</h6>
                     <p class="text-muted text-sm mb-0">Looking for C2C or tech job opportunities</p>
                   </div>
                   <div class="role-radio-check ms-3">
@@ -523,8 +523,8 @@
                   </button>
                   
                   <div class="d-flex align-items-center gap-2 ms-auto">
-                    <button type="button" class="btn btn-light border px-3 py-2 text-muted fw-medium" (click)="skipStep3()">
-                      Skip for Now
+                    <button type="button" class="btn btn-skip-step" (click)="skipStep3()" [disabled]="isSubmitting">
+                      Skip for now
                     </button>
                     <button type="submit" class="btn btn-complete-profile" [disabled]="isSubmitting">
                       <span *ngIf="!isSubmitting" class="d-flex align-items-center justify-content-center gap-2">

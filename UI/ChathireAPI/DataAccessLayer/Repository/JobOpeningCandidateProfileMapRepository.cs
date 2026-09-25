@@ -1,4 +1,4 @@
-﻿using BusinessEntityAndDTO.Common;
+using BusinessEntityAndDTO.Common;
 using BusinessEntityAndDTO.DTO;
 using DataAccessLayer.Common;
 using DataAccessLayer.Models;
@@ -50,9 +50,7 @@ namespace DataAccessLayer.Repository
               .ThenInclude(o=>o.Consultancy)
               .Include(o=>o.CurrentLocationCity)
               .ThenInclude(o => o.IdStateNavigation)
-
-
-
+              .Include(o => o.CandidateUser)
               .Where(c => c.JobOpeningId == JobOpeningId);
 
             return await jobOpeningResumeList.ToListAsync();

@@ -87,5 +87,13 @@ public partial class User
 
     public virtual ICollection<UserLogin> UserLogins { get; } = new List<UserLogin>();
 
+    public virtual DirectCandidateDetail? DirectCandidateDetail { get; set; }
+
+    public virtual ICollection<DirectCandidateResume> DirectCandidateResumes { get; } = new List<DirectCandidateResume>();
+
+    public virtual ICollection<DirectCandidateExperience> DirectCandidateExperiences { get; } = new List<DirectCandidateExperience>();
+
+    public virtual ICollection<DirectCandidateEducation> DirectCandidateEducations { get; } = new List<DirectCandidateEducation>();
+
     public virtual UserType? UserType { get; set; }
 }

@@ -55,6 +55,14 @@ public partial class HiresContext : DbContext
 
     public virtual DbSet<Country> Countries { get; set; }
 
+    public virtual DbSet<DirectCandidateDetail> DirectCandidateDetails { get; set; }
+
+    public virtual DbSet<DirectCandidateResume> DirectCandidateResumes { get; set; }
+
+    public virtual DbSet<DirectCandidateExperience> DirectCandidateExperiences { get; set; }
+
+    public virtual DbSet<DirectCandidateEducation> DirectCandidateEducations { get; set; }
+
     public virtual DbSet<Document> Documents { get; set; }
 
     public virtual DbSet<Domain> Domains { get; set; }
@@ -1067,6 +1075,93 @@ public partial class HiresContext : DbContext
                 .HasMaxLength(50)
                 .IsUnicode(false);
             entity.Property(e => e.Updated).HasColumnType("datetime");
+        });
+
+        modelBuilder.Entity<DirectCandidateDetail>(entity =>
+        {
+            entity.HasKey(e => e.CandidateUserId).HasName("PK_DirectCandidateDetails");
+
+            entity.ToTable("DirectCandidateDetails");
+
+            entity.Property(e => e.Headline).HasMaxLength(200);
+            entity.Property(e => e.PreferredWorkType).HasMaxLength(50);
+            entity.Property(e => e.GitHubUrl).HasMaxLength(300);
+            entity.Property(e => e.PublicProfileSlug).HasMaxLength(100);
+            entity.Property(e => e.IsPublicProfileEnabled).HasDefaultValueSql("((0))");
+            entity.Property(e => e.IsShowCompensationPublic).HasDefaultValueSql("((1))");
+            entity.Property(e => e.PreferredLocations).HasMaxLength(500);
+            entity.Property(e => e.TotalYearsOfExp).HasColumnType("decimal(4, 1)");
+            entity.Property(e => e.ExpectedAnnualSalary).HasColumnType("decimal(12, 2)");
+            entity.Property(e => e.ExpectedHourlyRate).HasColumnType("decimal(8, 2)");
+            entity.Property(e => e.VisaExpiryDate).HasColumnType("datetime");
+            entity.Property(e => e.CreatedDate).HasColumnType("datetime").HasDefaultValueSql("(getutcdate())");
+            entity.Property(e => e.UpdatedDate).HasColumnType("datetime");
+            entity.Property(e => e.NoticePeriodDays).HasDefaultValueSql("((0))");
+            entity.Property(e => e.CanRelocate).HasDefaultValueSql("((0))");
+            entity.Property(e => e.RemoteOnly).HasDefaultValueSql("((0))");
+            entity.Property(e => e.IsActivelyLooking).HasDefaultValueSql("((1))");
+
+            entity.HasOne(d => d.CandidateUser).WithOne(p => p.DirectCandidateDetail)
+                .HasForeignKey<DirectCandidateDetail>(d => d.CandidateUserId)
+                .HasConstraintName("FK_DirectCandidateDetails_User");
+
+            entity.HasOne(d => d.Visa).WithMany()
+                .HasForeignKey(d => d.VisaId)
+                .HasConstraintName("FK_DirectCandidateDetails_Visa");
+        });
+
+        modelBuilder.Entity<DirectCandidateResume>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PK_DirectCandidateResumes");
+
+            entity.ToTable("DirectCandidateResumes");
+
+            entity.Property(e => e.FileName).HasMaxLength(255);
+            entity.Property(e => e.BlobUrl).HasMaxLength(500);
+            entity.Property(e => e.IsPrimary).HasDefaultValueSql("((0))");
+            entity.Property(e => e.UploadedDate).HasColumnType("datetime").HasDefaultValueSql("(getutcdate())");
+
+            entity.HasOne(d => d.CandidateUser).WithMany(p => p.DirectCandidateResumes)
+                .HasForeignKey(d => d.CandidateUserId)
+                .HasConstraintName("FK_DirectCandidateResumes_User");
+        });
+
+        modelBuilder.Entity<DirectCandidateExperience>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PK_DirectCandidateExperience");
+
+            entity.ToTable("DirectCandidateExperience");
+
+            entity.Property(e => e.CompanyName).HasMaxLength(200);
+            entity.Property(e => e.Title).HasMaxLength(150);
+            entity.Property(e => e.StartDate).HasColumnType("date");
+            entity.Property(e => e.EndDate).HasColumnType("date");
+            entity.Property(e => e.IsCurrent).HasDefaultValueSql("((0))");
+            entity.Property(e => e.CreatedDate).HasColumnType("datetime").HasDefaultValueSql("(getutcdate())");
+
+            entity.HasOne(d => d.CandidateUser).WithMany(p => p.DirectCandidateExperiences)
+                .HasForeignKey(d => d.CandidateUserId)
+                .HasConstraintName("FK_DirectCandidateExperience_User");
+
+            entity.HasOne(d => d.City).WithMany()
+                .HasForeignKey(d => d.CityId)
+                .HasConstraintName("FK_DirectCandidateExperience_City");
+        });
+
+        modelBuilder.Entity<DirectCandidateEducation>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PK_DirectCandidateEducation");
+
+            entity.ToTable("DirectCandidateEducation");
+
+            entity.Property(e => e.Institution).HasMaxLength(250);
+            entity.Property(e => e.Degree).HasMaxLength(150);
+            entity.Property(e => e.Major).HasMaxLength(150);
+            entity.Property(e => e.CreatedDate).HasColumnType("datetime").HasDefaultValueSql("(getutcdate())");
+
+            entity.HasOne(d => d.CandidateUser).WithMany(p => p.DirectCandidateEducations)
+                .HasForeignKey(d => d.CandidateUserId)
+                .HasConstraintName("FK_DirectCandidateEducation_User");
         });
 
         OnModelCreatingPartial(modelBuilder);

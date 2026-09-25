@@ -1,4 +1,4 @@
-﻿using AutoMapper;
+using AutoMapper;
 using BusinessEntityAndDTO.DTO;
 using DataAccessLayer.Models;
 //using BusinessEntityAndDTO.Entity;
@@ -161,6 +161,22 @@ namespace Middleware.Shared
             _ = CreateMap<State, StateDto>()
                 //.ForMember(c => c.CountryCode, c => c.MapFrom(d => d.IdStateNavigation != null && d.IdStateNavigation.CountryCodeNavigation != null ? d.IdStateNavigation.CountryCodeNavigation.CountryCode : String.Empty))
                 .ForMember(c => c.CountryName, c => c.MapFrom(d => d.CountryCodeNavigation != null ? d.CountryCodeNavigation.Name : String.Empty));
+
+            // Direct Candidate mappings
+            CreateMap<DirectCandidateDetail, DirectCandidateDetailDto>()
+                .ForMember(dest => dest.VisaName, opt => opt.MapFrom(src => src.Visa != null ? src.Visa.Name : null));
+            CreateMap<DirectCandidateDetailDtoForUpdate, DirectCandidateDetail>();
+
+            CreateMap<DirectCandidateResume, DirectCandidateResumeDto>().ReverseMap();
+
+            CreateMap<DirectCandidateExperience, DirectCandidateExperienceDto>()
+                .ForMember(dest => dest.CityName, opt => opt.MapFrom(src => src.City != null ? src.City.City1 : null));
+            CreateMap<DirectCandidateExperienceForInsertDto, DirectCandidateExperience>()
+                .ForMember(dest => dest.Id, opt => opt.Ignore());
+
+            CreateMap<DirectCandidateEducation, DirectCandidateEducationDto>().ReverseMap();
+            CreateMap<DirectCandidateEducationForInsertDto, DirectCandidateEducation>()
+                .ForMember(dest => dest.Id, opt => opt.Ignore());
 
             //CreateMap<Employee, EmployeeDto>()
             //    .ForMember(d => d.Country, o => o.MapFrom(s => s.Country != null ? s.Country.CountryName : String.Empty)); ;

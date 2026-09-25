@@ -1,0 +1,446 @@
+<div class="referral-page-container pb-5">
+  <div class="container py-4">
+
+    <!-- Top Hero Section -->
+    <div class="referral-hero mb-4">
+      <div class="row align-items-center">
+        <div class="col-lg-8">
+          <div class="d-inline-flex align-items-center gap-2 px-3 py-1 mb-3 rounded-pill hero-badge">
+            <span class="material-symbols-outlined fs-6 text-warning">hotel_class</span>
+            <span class="fw-semibold text-xs text-uppercase letter-spacing-1">ChatHire Referral Rewards</span>
+          </div>
+          <h1 class="hero-title fw-bold text-white mb-2">
+            Refer Friends & Earn <span class="highlight-text">Free Job Postings</span>
+          </h1>
+          <p class="hero-desc text-white-50 mb-0">
+            Invite your recruiter and bench sales colleagues to ChatHire. Enter at least 10 emails to send exclusive invitations. When they sign up, everyone unlocks free postings and premium privileges!
+          </p>
+        </div>
+        <div class="col-lg-4 text-center mt-4 mt-lg-0">
+          <div class="hero-reward-pill p-3 rounded-4 shadow-sm bg-white text-dark d-inline-block text-start">
+            <div class="d-flex align-items-center gap-3">
+              <div class="icon-box-reward bg-purple-soft text-purple p-3 rounded-circle">
+                <span class="material-symbols-outlined fs-2">redeem</span>
+              </div>
+              <div>
+                <div class="text-xs text-muted text-uppercase fw-bold">Your Referral Reward</div>
+                <div class="h5 fw-bold mb-0 text-dark">3 Months Free Postings</div>
+                <div class="text-xs text-success fw-medium">+25 Free Postings Per Joined Colleague</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Benefit Cards for Recruiter & Bench Sales -->
+    <div class="row g-3 mb-4">
+      <!-- Recruiter Benefit -->
+      <div class="col-md-6">
+        <div class="benefit-card recruiter-card p-4 rounded-4 h-100 shadow-sm border-0 position-relative overflow-hidden">
+          <div class="d-flex align-items-start gap-3">
+            <div class="benefit-icon bg-primary-soft text-primary p-3 rounded-3">
+              <span class="material-symbols-outlined fs-2">work</span>
+            </div>
+            <div>
+              <span class="badge bg-primary text-white rounded-pill px-3 py-1 text-xs mb-2">For Recruiters</span>
+              <h4 class="fw-bold mb-1 text-dark">3 Months Free Job Postings</h4>
+              <p class="text-muted text-sm mb-3">
+                Post tech and business job openings completely free with zero cost. Get direct applicant resumes sent straight to your inbox.
+              </p>
+              <ul class="benefit-checklist list-unstyled mb-0">
+                <li class="d-flex align-items-center gap-2 mb-2 text-sm text-secondary">
+                  <span class="material-symbols-outlined text-success fs-5">check_circle</span>
+                  <span>Instant job posting activation without subscription fees</span>
+                </li>
+                <li class="d-flex align-items-center gap-2 mb-2 text-sm text-secondary">
+                  <span class="material-symbols-outlined text-success fs-5">check_circle</span>
+                  <span>Direct candidate contact & one-click resume downloads</span>
+                </li>
+                <li class="d-flex align-items-center gap-2 text-sm text-secondary">
+                  <span class="material-symbols-outlined text-success fs-5">check_circle</span>
+                  <span>Unlimited access to search active bench candidates</span>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Bench Sales Benefit -->
+      <div class="col-md-6">
+        <div class="benefit-card bench-card p-4 rounded-4 h-100 shadow-sm border-0 position-relative overflow-hidden">
+          <div class="d-flex align-items-start gap-3">
+            <div class="benefit-icon bg-teal-soft text-teal p-3 rounded-3">
+              <span class="material-symbols-outlined fs-2">groups</span>
+            </div>
+            <div>
+              <span class="badge bg-teal text-white rounded-pill px-3 py-1 text-xs mb-2">For Bench Sales Recruiters</span>
+              <h4 class="fw-bold mb-1 text-dark">Unlimited Hotlist Profile Postings</h4>
+              <p class="text-muted text-sm mb-3">
+                Broadcast and publish consultant profiles across our entire recruiter network with unlimited hotlist placement.
+              </p>
+              <ul class="benefit-checklist list-unstyled mb-0">
+                <li class="d-flex align-items-center gap-2 mb-2 text-sm text-secondary">
+                  <span class="material-symbols-outlined text-teal fs-5">check_circle</span>
+                  <span>Unlimited candidate and consultant profile postings</span>
+                </li>
+                <li class="d-flex align-items-center gap-2 mb-2 text-sm text-secondary">
+                  <span class="material-symbols-outlined text-teal fs-5">check_circle</span>
+                  <span>Instant visibility to thousands of active hiring recruiters</span>
+                </li>
+                <li class="d-flex align-items-center gap-2 text-sm text-secondary">
+                  <span class="material-symbols-outlined text-teal fs-5">check_circle</span>
+                  <span>Real-time direct chat & requirement matching alerts</span>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Referral Submission Form Card -->
+    <div class="card shadow-sm border-0 rounded-4 mb-4 referral-form-card">
+      <div class="card-body p-4 p-md-5">
+        <div class="d-flex flex-wrap justify-content-between align-items-center mb-3">
+          <div>
+            <h3 class="card-title fw-bold text-dark mb-1 d-flex align-items-center gap-2">
+              <span class="material-symbols-outlined text-primary fs-3">forward_to_inbox</span>
+              Invite Friends & Colleagues
+            </h3>
+            <p class="text-muted text-sm mb-0">
+              Enter or paste colleague emails below. <strong>Minimum 10 emails required</strong> to submit referral batch.
+            </p>
+          </div>
+          <div class="mt-2 mt-sm-0">
+            <span class="badge px-3 py-2 rounded-pill fs-6 fw-semibold"
+                  [ngClass]="emailCount >= 10 ? 'bg-success text-white' : 'bg-warning text-dark'">
+              <span class="material-symbols-outlined fs-6 align-text-bottom me-1">
+                {{ emailCount >= 10 ? 'verified' : 'pending' }}
+              </span>
+              {{ emailCount }} / 10 Emails Added
+            </span>
+          </div>
+        </div>
+
+        <!-- Progress Bar towards 10 emails -->
+        <div class="progress mb-3" style="height: 8px; border-radius: 4px;">
+          <div class="progress-bar progress-bar-striped progress-bar-animated"
+               role="progressbar"
+               [style.width.%]="progressPercentage"
+               [ngClass]="emailCount >= 10 ? 'bg-success' : 'bg-primary'"
+               [attr.aria-valuenow]="progressPercentage"
+               aria-valuemin="0"
+               aria-valuemax="100">
+          </div>
+        </div>
+
+        <!-- Email Textarea -->
+        <div class="form-group mb-3">
+          <label class="form-label fw-semibold text-dark d-flex justify-content-between">
+            <span>Email Addresses (1 per line, comma, semicolon, or space-separated):</span>
+            <span class="text-xs text-muted">Press <strong>Ctrl + Enter</strong> to submit</span>
+          </label>
+          <textarea
+            class="form-control referral-textarea"
+            rows="6"
+            [(ngModel)]="emailInputText"
+            (keydown)="onKeyDown($event)"
+            placeholder="Paste your colleague emails here...&#10;example1@techcorp.com&#10;example2@staffing.com, example3@consulting.org&#10;example4@talentgroup.com; example5@recruiting.net"
+          ></textarea>
+        </div>
+
+        <!-- Live Parsed Emails Pills Preview -->
+        <div class="parsed-preview-box p-3 rounded-3 bg-light mb-3" *ngIf="rawTokens.length > 0">
+          <div class="d-flex justify-content-between align-items-center mb-2">
+            <span class="text-xs fw-bold text-uppercase text-muted">
+              Live Validation Summary: {{ emailCount }} Valid Unique Emails
+              <span *ngIf="duplicateCount > 0" class="text-warning ms-2">({{ duplicateCount }} duplicates filtered)</span>
+              <span *ngIf="invalidTokens.length > 0" class="text-danger ms-2">({{ invalidTokens.length }} invalid format)</span>
+            </span>
+            <button class="btn btn-sm btn-link text-danger p-0 text-decoration-none" (click)="emailInputText = ''">
+              Clear All
+            </button>
+          </div>
+          
+          <div class="email-pills-wrap d-flex flex-wrap gap-2">
+            <span *ngFor="let email of parsedEmails.slice(0, 15)" class="badge bg-white text-dark border px-2 py-1 rounded-pill d-inline-flex align-items-center gap-1 shadow-2xs">
+              <span class="material-symbols-outlined text-success fs-6">check</span>
+              {{ email }}
+            </span>
+            <span *ngIf="parsedEmails.length > 15" class="badge bg-secondary text-white px-2 py-1 rounded-pill">
+              +{{ parsedEmails.length - 15 }} more
+            </span>
+            <span *ngFor="let inv of invalidTokens.slice(0, 5)" class="badge bg-danger-soft text-danger border border-danger-subtle px-2 py-1 rounded-pill d-inline-flex align-items-center gap-1">
+              <span class="material-symbols-outlined fs-6">error</span>
+              {{ inv }} (invalid)
+            </span>
+          </div>
+        </div>
+
+        <!-- Custom Personal Message (Collapsible) -->
+        <div class="accordion mb-4" id="customMsgAccordion">
+          <div class="accordion-item border-0 bg-light rounded-3">
+            <h2 class="accordion-header" id="headingMsg">
+              <button class="accordion-button collapsed bg-transparent shadow-none py-2 px-3 fw-medium text-dark text-sm" type="button" data-bs-toggle="collapse" data-bs-target="#collapseMsg" aria-expanded="false" aria-controls="collapseMsg">
+                <span class="material-symbols-outlined fs-5 me-2 text-primary">edit_note</span>
+                Customize Invitation Message (Optional)
+              </button>
+            </h2>
+            <div id="collapseMsg" class="accordion-collapse collapse" aria-labelledby="headingMsg" data-bs-parent="#customMsgAccordion">
+              <div class="accordion-body px-3 pb-3 pt-0">
+                <textarea class="form-control text-sm bg-white" rows="2" [(ngModel)]="customMessage" placeholder="Add a personal note to your invitation..."></textarea>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Submit Action Button -->
+        <div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
+          <div class="text-xs text-muted">
+            <span class="material-symbols-outlined fs-6 text-info align-text-bottom me-1">info</span>
+            Invitations are sent via high-deliverability email with your unique registration link.
+          </div>
+          <button
+            class="btn btn-primary btn-lg px-4 py-2 fw-bold d-inline-flex align-items-center gap-2 shadow"
+            (click)="submitReferrals()"
+            [disabled]="!canSubmit"
+          >
+            <span *ngIf="isSubmitting" class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
+            <span class="material-symbols-outlined fs-5" *ngIf="!isSubmitting">send</span>
+            {{ isSubmitting ? 'Sending Invitations...' : 'Send Referral Invitations' }}
+          </button>
+        </div>
+
+        <!-- Post-Submission Feedback Banner -->
+        <div class="mt-4" *ngIf="submissionResult">
+          <div class="alert rounded-4 p-4" [ngClass]="submissionResult.success ? 'alert-success border-success-subtle bg-success-soft' : 'alert-warning border-warning-subtle bg-warning-soft'">
+            <div class="d-flex align-items-start gap-3">
+              <span class="material-symbols-outlined fs-2" [ngClass]="submissionResult.success ? 'text-success' : 'text-warning'">
+                {{ submissionResult.success ? 'task_alt' : 'warning' }}
+              </span>
+              <div class="w-100">
+                <h5 class="fw-bold mb-1" [ngClass]="submissionResult.success ? 'text-success-emphasis' : 'text-warning-emphasis'">
+                  {{ submissionResult.message }}
+                </h5>
+                
+                <!-- Breakdown Metric Cards -->
+                <div class="row g-2 mt-2">
+                  <div class="col-6 col-md-3">
+                    <div class="p-2 rounded bg-white text-center border shadow-2xs">
+                      <div class="text-xs text-muted">Total Submitted</div>
+                      <div class="h5 fw-bold text-dark mb-0">{{ submissionResult.totalSubmitted }}</div>
+                    </div>
+                  </div>
+                  <div class="col-6 col-md-3">
+                    <div class="p-2 rounded bg-white text-center border border-success shadow-2xs">
+                      <div class="text-xs text-success fw-semibold">Invited Successfully</div>
+                      <div class="h5 fw-bold text-success mb-0">{{ submissionResult.successfullyInvited }}</div>
+                    </div>
+                  </div>
+                  <div class="col-6 col-md-3">
+                    <div class="p-2 rounded bg-white text-center border shadow-2xs">
+                      <div class="text-xs text-primary fw-semibold">Already Registered</div>
+                      <div class="h5 fw-bold text-primary mb-0">{{ submissionResult.alreadyRegistered }}</div>
+                    </div>
+                  </div>
+                  <div class="col-6 col-md-3">
+                    <div class="p-2 rounded bg-white text-center border shadow-2xs">
+                      <div class="text-xs text-warning-emphasis fw-semibold">Already Invited</div>
+                      <div class="h5 fw-bold text-warning-emphasis mb-0">{{ submissionResult.alreadyInvited }}</div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Skipped Details List if any -->
+                <div class="mt-3" *ngIf="submissionResult.skippedDetails && submissionResult.skippedDetails.length > 0">
+                  <div class="text-xs fw-bold text-uppercase text-muted mb-1">Details on Skipped Emails:</div>
+                  <div class="skipped-table-wrap bg-white rounded-3 border p-2 text-sm" style="max-height: 180px; overflow-y: auto;">
+                    <div *ngFor="let s of submissionResult.skippedDetails" class="d-flex justify-content-between py-1 border-bottom border-light">
+                      <span class="text-dark fw-medium">{{ s.email }}</span>
+                      <span class="badge bg-light text-muted border">{{ s.reason }}</span>
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Direct Referral Link & Social Sharing Card -->
+    <div class="card shadow-sm border-0 rounded-4 mb-4 share-card">
+      <div class="card-body p-4 p-md-5">
+        <div class="row align-items-center">
+          <div class="col-lg-6 mb-4 mb-lg-0">
+            <h4 class="fw-bold text-dark mb-1 d-flex align-items-center gap-2">
+              <span class="material-symbols-outlined text-purple fs-3">share</span>
+              Your Unique Referral Link
+            </h4>
+            <p class="text-muted text-sm mb-3">
+              Share your direct referral link anywhere. Anyone who registers using your link automatically counts toward your rewards!
+            </p>
+            
+            <div class="input-group mb-2">
+              <input type="text" class="form-control bg-light fw-medium text-dark" [value]="stats.referralLink || ('https://chathire.com/#/signup?ref=REF' + (currentUser?.id || ''))" readonly />
+              <button class="btn btn-primary fw-bold px-3 d-inline-flex align-items-center gap-1" (click)="copyLink()">
+                <span class="material-symbols-outlined fs-6">{{ isCopiedLink ? 'check' : 'content_copy' }}</span>
+                {{ isCopiedLink ? 'Copied!' : 'Copy Link' }}
+              </button>
+            </div>
+
+            <div class="d-flex align-items-center gap-2 mt-2">
+              <span class="text-xs text-muted">Your Referral Code:</span>
+              <span class="badge bg-purple-soft text-purple fw-bold px-3 py-1 fs-6 cursor-pointer" (click)="copyCode()" title="Click to copy code">
+                {{ stats.referralCode || ('REF' + (currentUser?.id || '')) }}
+                <span class="material-symbols-outlined fs-6 align-text-bottom ms-1">{{ isCopiedCode ? 'check' : 'content_copy' }}</span>
+              </span>
+            </div>
+          </div>
+
+          <div class="col-lg-6 text-lg-end">
+            <div class="text-xs text-uppercase fw-bold text-muted mb-2">Quick Share via:</div>
+            <div class="d-flex flex-wrap justify-content-lg-end gap-2">
+              <button class="btn btn-outline-success d-inline-flex align-items-center gap-2 px-3 py-2 rounded-3" (click)="shareWhatsApp()">
+                <span class="material-symbols-outlined fs-5">chat</span>
+                WhatsApp
+              </button>
+              <button class="btn btn-outline-primary d-inline-flex align-items-center gap-2 px-3 py-2 rounded-3" (click)="shareLinkedIn()">
+                <span class="material-symbols-outlined fs-5">share</span>
+                LinkedIn
+              </button>
+              <button class="btn btn-outline-dark d-inline-flex align-items-center gap-2 px-3 py-2 rounded-3" (click)="shareTwitter()">
+                <span class="material-symbols-outlined fs-5">tag</span>
+                Twitter / X
+              </button>
+              <button class="btn btn-outline-secondary d-inline-flex align-items-center gap-2 px-3 py-2 rounded-3" (click)="shareEmail()">
+                <span class="material-symbols-outlined fs-5">email</span>
+                Email
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Referral Stats & Dashboard Metrics -->
+    <div class="row g-3 mb-4">
+      <div class="col-6 col-md-3">
+        <div class="stat-card p-3 p-md-4 rounded-4 bg-white shadow-sm border-0 text-center">
+          <div class="stat-icon bg-primary-soft text-primary mx-auto mb-2">
+            <span class="material-symbols-outlined fs-4">send</span>
+          </div>
+          <div class="h3 fw-bold text-dark mb-0">{{ stats.totalInvited || 0 }}</div>
+          <div class="text-xs text-muted text-uppercase fw-semibold">Total Invited</div>
+        </div>
+      </div>
+      <div class="col-6 col-md-3">
+        <div class="stat-card p-3 p-md-4 rounded-4 bg-white shadow-sm border-0 text-center">
+          <div class="stat-icon bg-success-soft text-success mx-auto mb-2">
+            <span class="material-symbols-outlined fs-4">how_to_reg</span>
+          </div>
+          <div class="h3 fw-bold text-success mb-0">{{ stats.totalRegistered || 0 }}</div>
+          <div class="text-xs text-muted text-uppercase fw-semibold">Joined / Registered</div>
+        </div>
+      </div>
+      <div class="col-6 col-md-3">
+        <div class="stat-card p-3 p-md-4 rounded-4 bg-white shadow-sm border-0 text-center">
+          <div class="stat-icon bg-purple-soft text-purple mx-auto mb-2">
+            <span class="material-symbols-outlined fs-4">post_add</span>
+          </div>
+          <div class="h3 fw-bold text-purple mb-0">+{{ stats.freePostingsEarned || 0 }}</div>
+          <div class="text-xs text-muted text-uppercase fw-semibold">Free Postings Earned</div>
+        </div>
+      </div>
+      <div class="col-6 col-md-3">
+        <div class="stat-card p-3 p-md-4 rounded-4 bg-white shadow-sm border-0 text-center">
+          <div class="stat-icon bg-warning-soft text-warning mx-auto mb-2">
+            <span class="material-symbols-outlined fs-4">workspace_premium</span>
+          </div>
+          <div class="h3 fw-bold text-warning-emphasis mb-0">{{ stats.freeMonthsEarned || 0 }} mo</div>
+          <div class="text-xs text-muted text-uppercase fw-semibold">Free Months Earned</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Referral History Table Card -->
+    <div class="card shadow-sm border-0 rounded-4">
+      <div class="card-header bg-white border-0 p-4 pb-0 d-flex justify-content-between align-items-center">
+        <div>
+          <h4 class="fw-bold text-dark mb-0">Referral History</h4>
+          <p class="text-muted text-xs mb-0">Track the status of your invitations and earned bonus quota.</p>
+        </div>
+        <button class="btn btn-sm btn-outline-secondary d-inline-flex align-items-center gap-1" (click)="loadStats()" [disabled]="isLoadingStats">
+          <span class="material-symbols-outlined fs-6" [ngClass]="{'spin-animation': isLoadingStats}">refresh</span>
+          Refresh
+        </button>
+      </div>
+      <div class="card-body p-4">
+        <div class="table-responsive" *ngIf="stats.referrals && stats.referrals.length > 0">
+          <table class="table table-hover align-middle mb-0">
+            <thead class="table-light text-muted text-xs text-uppercase">
+              <tr>
+                <th scope="col">Referred Colleague</th>
+                <th scope="col">Invited Date</th>
+                <th scope="col">Status</th>
+                <th scope="col">Registered Date</th>
+                <th scope="col">Reward Granted</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let ref of stats.referrals">
+                <td>
+                  <div class="d-flex align-items-center gap-2">
+                    <div class="avatar-sm bg-light text-primary rounded-circle d-flex align-items-center justify-content-center fw-bold" style="width: 32px; height: 32px;">
+                      {{ ref.referredEmail.charAt(0).toUpperCase() }}
+                    </div>
+                    <span class="fw-medium text-dark">{{ ref.referredEmail }}</span>
+                  </div>
+                </td>
+                <td class="text-sm text-muted">
+                  {{ ref.createdDate | date:'mediumDate' }}
+                </td>
+                <td>
+                  <span class="badge rounded-pill px-3 py-1 text-xs fw-semibold"
+                        [ngClass]="{
+                          'bg-warning-soft text-warning-emphasis border border-warning-subtle': ref.status === 'Invited',
+                          'bg-success-soft text-success border border-success-subtle': ref.status === 'Registered' || ref.status === 'Rewarded'
+                        }">
+                    <span class="material-symbols-outlined fs-6 align-text-bottom me-1">
+                      {{ (ref.status === 'Registered' || ref.status === 'Rewarded') ? 'check_circle' : 'hourglass_top' }}
+                    </span>
+                    {{ ref.status }}
+                  </span>
+                </td>
+                <td class="text-sm text-muted">
+                  {{ ref.registeredDate ? (ref.registeredDate | date:'mediumDate') : '—' }}
+                </td>
+                <td>
+                  <span *ngIf="ref.rewardClaimed" class="badge bg-success text-white rounded-pill px-2 py-1 text-xs">
+                    +25 Free Postings Active
+                  </span>
+                  <span *ngIf="!ref.rewardClaimed" class="text-muted text-xs">
+                    Pending Signup
+                  </span>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="text-center py-5" *ngIf="!stats.referrals || stats.referrals.length === 0">
+          <div class="empty-icon-wrap bg-light p-4 rounded-circle d-inline-block mb-3 text-muted">
+            <span class="material-symbols-outlined fs-1">person_add</span>
+          </div>
+          <h5 class="fw-bold text-dark mb-1">No referrals submitted yet</h5>
+          <p class="text-muted text-sm mb-0">Enter at least 10 colleague emails above and send invitations to earn free job postings!</p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>

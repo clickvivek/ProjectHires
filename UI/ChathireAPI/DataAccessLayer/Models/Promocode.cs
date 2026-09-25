@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 
 namespace DataAccessLayer.Models;
@@ -26,4 +26,8 @@ public partial class Promocode
     public DateTime? Updated { get; set; }
 
     public long? UpdatedBy { get; set; }
+
+    public int? DailyChatLimit { get; set; }
+    public bool? IsSingleUse { get; set; }
+    public int? MaxRedemptions { get; set; }
 }

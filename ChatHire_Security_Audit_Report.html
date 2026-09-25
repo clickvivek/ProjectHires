@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ChatHire - Security Audit & Vulnerability Assessment Report</title>
+  <style>
+    :root {
+      --primary: #4f46e5;
+      --primary-dark: #3730a3;
+      --critical: #dc2626;
+      --high: #ea580c;
+      --medium: #d97706;
+      --low: #2563eb;
+      --bg: #f8fafc;
+      --card-bg: #ffffff;
+      --text: #1e293b;
+      --text-muted: #64748b;
+      --border: #e2e8f0;
+      --code-bg: #0f172a;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      padding: 40px 20px;
+    }
+
+    .container {
+      max-width: 960px;
+      margin: 0 auto;
+    }
+
+    .header-card {
+      background: linear-gradient(135deg, #1e1b4b 0%, #312e81 50%, #4338ca 100%);
+      color: #ffffff;
+      padding: 36px 32px;
+      border-radius: 16px;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.2);
+      margin-bottom: 32px;
+      position: relative;
+    }
+
+    .header-badge {
+      display: inline-block;
+      background: rgba(255, 255, 255, 0.15);
+      backdrop-filter: blur(8px);
+      padding: 4px 12px;
+      border-radius: 9999px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      margin-bottom: 12px;
+    }
+
+    .header-card h1 {
+      font-size: 2rem;
+      font-weight: 800;
+      margin-bottom: 8px;
+    }
+
+    .header-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      font-size: 0.9rem;
+      color: #cbd5e1;
+      margin-top: 16px;
+    }
+
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 24px;
+      margin-bottom: 24px;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+    }
+
+    h2 {
+      font-size: 1.3rem;
+      font-weight: 700;
+      margin-bottom: 16px;
+      color: #0f172a;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* Severity Table */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 16px 0;
+      font-size: 0.9rem;
+    }
+
+    th {
+      background-color: #f1f5f9;
+      color: #475569;
+      font-weight: 700;
+      text-align: left;
+      padding: 12px 14px;
+      border-bottom: 2px solid var(--border);
+      text-transform: uppercase;
+      font-size: 0.75rem;
+      letter-spacing: 0.5px;
+    }
+
+    td {
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--border);
+      vertical-align: middle;
+    }
+
+    tr:last-child td {
+      border-bottom: none;
+    }
+
+    /* Badges */
+    .badge {
+      display: inline-block;
+      padding: 3px 10px;
+      border-radius: 6px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .badge-critical { background-color: #fee2e2; color: var(--critical); border: 1px solid #fca5a5; }
+    .badge-high { background-color: #ffedd5; color: var(--high); border: 1px solid #fdba74; }
+    .badge-medium { background-color: #fef3c7; color: var(--medium); border: 1px solid #fcd34d; }
+    .badge-low { background-color: #dbeafe; color: var(--low); border: 1px solid #93c5fd; }
+
+    /* Finding Item */
+    .finding-card {
+      border-left: 5px solid #cbd5e1;
+      margin-bottom: 20px;
+      padding: 20px;
+      border-radius: 8px;
+      background: #ffffff;
+      border-top: 1px solid var(--border);
+      border-right: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .finding-card.critical { border-left-color: var(--critical); }
+    .finding-card.high { border-left-color: var(--high); }
+    .finding-card.medium { border-left-color: var(--medium); }
+    .finding-card.low { border-left-color: var(--low); }
+
+    .finding-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .finding-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: #0f172a;
+    }
+
+    .finding-section-title {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: #475569;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin: 12px 0 6px 0;
+    }
+
+    p {
+      color: #334155;
+      font-size: 0.95rem;
+      margin-bottom: 8px;
+    }
+
+    /* Code Block */
+    pre {
+      background-color: var(--code-bg);
+      color: #e2e8f0;
+      padding: 14px 16px;
+      border-radius: 8px;
+      font-family: Consolas, Monaco, "Courier New", monospace;
+      font-size: 0.85rem;
+      overflow-x: auto;
+      margin: 10px 0;
+      line-height: 1.5;
+    }
+
+    code {
+      font-family: Consolas, Monaco, "Courier New", monospace;
+      background-color: #f1f5f9;
+      color: #0f172a;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 0.88rem;
+    }
+
+    pre code {
+      background-color: transparent;
+      color: inherit;
+      padding: 0;
+    }
+
+    /* Checklist */
+    .checklist {
+      list-style: none;
+      padding: 0;
+    }
+
+    .checklist-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .checklist-item:last-child {
+      border-bottom: none;
+    }
+
+    .checkbox-box {
+      width: 20px;
+      height: 20px;
+      border-radius: 4px;
+      border: 2px solid #cbd5e1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    /* Print styling */
+    @media print {
+      body {
+        padding: 0;
+        background: #ffffff;
+      }
+      .card, .finding-card {
+        box-shadow: none;
+        page-break-inside: avoid;
+      }
+      .header-card {
+        background: #1e1b4b !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+
+    <!-- Header Section -->
+    <div class="header-card">
+      <div class="header-badge">Security Audit Report</div>
+      <h1>ChatHire Application Security Assessment</h1>
+      <p style="color: #cbd5e1; font-size: 1rem;">Comprehensive codebase vulnerability audit and actionable hardening guide.</p>
+      
+      <div class="header-meta">
+        <div><strong>Application:</strong> ChatHire (.NET Core Web API + Angular)</div>
+        <div><strong>Date:</strong> September 23, 2026</div>
+        <div><strong>Scope:</strong> Backend API, Data Access, Frontend UI, Azure Storage</div>
+      </div>
+    </div>
+
+    <!-- Executive Summary Table -->
+    <div class="card">
+      <h2>📊 Executive Severity Matrix</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Vulnerability Title</th>
+            <th>Severity</th>
+            <th>Impacted File / Layer</th>
+            <th>Exploitability</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>SEC-01</strong></td>
+            <td>Hardcoded Database Password & Azure Keys</td>
+            <td><span class="badge badge-critical">Critical</span></td>
+            <td><code>DependancyManager.cs</code>, <code>FileManager.cs</code></td>
+            <td>Immediate (Repository Leak)</td>
+          </tr>
+          <tr>
+            <td><strong>SEC-02</strong></td>
+            <td>Unenforced Route Authorization Attributes</td>
+            <td><span class="badge badge-high">High</span></td>
+            <td><code>UserController</code>, <code>ConsultancyController</code></td>
+            <td>High (Direct HTTP Invocation)</td>
+          </tr>
+          <tr>
+            <td><strong>SEC-03</strong></td>
+            <td>Overly Permissive Wildcard CORS Policy</td>
+            <td><span class="badge badge-high">High</span></td>
+            <td><code>Program.cs</code> (<code>AllowAnyOrigin</code>)</td>
+            <td>Medium (Cross-Origin Data Leak)</td>
+          </tr>
+          <tr>
+            <td><strong>SEC-04</strong></td>
+            <td>Server-Side Request Forgery (SSRF) in Scraper</td>
+            <td><span class="badge badge-medium">Medium</span></td>
+            <td><code>LinkedInScraperService.cs</code></td>
+            <td>Medium (Internal Port / Meta Scan)</td>
+          </tr>
+          <tr>
+            <td><strong>SEC-05</strong></td>
+            <td>File Upload Extension & MIME Whitelisting</td>
+            <td><span class="badge badge-medium">Medium</span></td>
+            <td><code>FileManager.cs</code></td>
+            <td>Low (Stored File Tampering)</td>
+          </tr>
+          <tr>
+            <td><strong>SEC-06</strong></td>
+            <td>Missing Rate Limiting on OTP & Login Endpoints</td>
+            <td><span class="badge badge-low">Low</span></td>
+            <td><code>UserController.cs</code>, <code>TokenController.cs</code></td>
+            <td>Low (Brute-force / Quota Exhaustion)</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Detailed Findings -->
+    <div class="card">
+      <h2>🔍 Detailed Vulnerability Findings & Code Fixes</h2>
+
+      <!-- Finding 1 -->
+      <div class="finding-card critical">
+        <div class="finding-header">
+          <div class="finding-title">SEC-01: Hardcoded Database Credentials & Master Azure Storage Account Keys</div>
+          <span class="badge badge-critical">Critical</span>
+        </div>
+        <p><strong>Affected Components:</strong> <code>MiddleWare/Shared/DependancyManager.cs</code> (Line 20), <code>BusinessLayer/Manager/FileManager.cs</code> (Line 26)</p>
+        
+        <div class="finding-section-title">Vulnerability Description</div>
+        <p>Plaintext production SQL Server credentials and Azure Blob Storage master keys are hardcoded into compiled C# classes rather than loaded from environment variables or key vaults.</p>
+        <pre><code>// DependancyManager.cs (Line 20)
+options.UseSqlServer("Server=ones.database.windows.net,1433;Initial Catalog=HIRES;User ID=vijisrk;Password=Thayasrk22@@;...")
+
+// FileManager.cs (Line 26)
+_blobServiceClient = new BlobServiceClient("DefaultEndpointsProtocol=https;AccountName=hiresblob;AccountKey=XPt9HT6x...==");</code></pre>
+
+        <div class="finding-section-title">Remediation Steps</div>
+        <p>1. Immediately rotate the database password and Azure Storage keys in the Azure Portal.</p>
+        <p>2. Refactor code to inject <code>IConfiguration</code> dynamically:</p>
+        <pre><code>public static void ConfigureAPI(IServiceCollection _services, IConfiguration configuration)
+{
+    _services.AddDbContext&lt;EFContexts&gt;(options =&gt;
+        options.UseSqlServer(configuration.GetConnectionString("DefaultConnection"))
+               .UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking));
+}</code></pre>
+      </div>
+
+      <!-- Finding 2 -->
+      <div class="finding-card high">
+        <div class="finding-header">
+          <div class="finding-title">SEC-02: Unenforced Route Authorization Attributes on Critical Endpoints</div>
+          <span class="badge badge-high">High</span>
+        </div>
+        <p><strong>Affected Components:</strong> <code>UserController.cs</code>, <code>ConsultancyController.cs</code>, <code>JobOpeningController.cs</code></p>
+        
+        <div class="finding-section-title">Vulnerability Description</div>
+        <p>Several controller endpoints have their authorization annotations commented out (e.g. <code>//[ApiAuthorize("AddUser")]</code>) and use fallback dummy user contexts (<code>context ?? GetDummyUserContext()</code>), allowing unauthenticated actors to execute state-modifying requests.</p>
+
+        <div class="finding-section-title">Remediation Steps</div>
+        <p>Apply <code>[Authorize]</code> across all mutating endpoints and reject requests without valid JWT claims:</p>
+        <pre><code>[HttpPost]
+[Route("Add")]
+[Authorize]
+public Task&lt;Result&lt;UserDto&gt;&gt; AddUser(UserDtoForInsert User)
+{
+    return ExecuteAsync&lt;UserDto&gt;(async () =&gt;
+    {
+        var context = GetUserContext();
+        if (context == null || context.UserId &lt;= 0)
+            throw new UnauthorizedAccessException("Authorization token is required.");
+
+        return await mgr.AddUser(User, context);
+    });
+}</code></pre>
+      </div>
+
+      <!-- Finding 3 -->
+      <div class="finding-card high">
+        <div class="finding-header">
+          <div class="finding-title">SEC-03: Overly Permissive Wildcard CORS Policy (AllowAnyOrigin)</div>
+          <span class="badge badge-high">High</span>
+        </div>
+        <p><strong>Affected Component:</strong> <code>MiddleWare/Program.cs</code> (Line 14)</p>
+        
+        <div class="finding-section-title">Vulnerability Description</div>
+        <p><code>builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader()</code> allows any malicious site to issue cross-origin requests to your API.</p>
+
+        <div class="finding-section-title">Remediation Steps</div>
+        <p>Restrict CORS specifically to trusted domains:</p>
+        <pre><code>builder.Services.AddCors(options =&gt;
+{
+    options.AddPolicy("CorsPolicy", policy =&gt;
+    {
+        policy.WithOrigins(
+            "https://www.chathire.com",
+            "https://chathire.com",
+            "http://localhost:4200" // Dev only
+        )
+        .AllowAnyHeader()
+        .AllowAnyMethod()
+        .AllowCredentials();
+    });
+});</code></pre>
+      </div>
+
+      <!-- Finding 4 -->
+      <div class="finding-card medium">
+        <div class="finding-header">
+          <div class="finding-title">SEC-04: Server-Side Request Forgery (SSRF) Risk in Scraper Service</div>
+          <span class="badge badge-medium">Medium</span>
+        </div>
+        <p><strong>Affected Component:</strong> <code>BusinessLayer/Services/LinkedInScraperService.cs</code></p>
+        
+        <div class="finding-section-title">Vulnerability Description</div>
+        <p>User-supplied URLs are fetched directly by the server via <code>HttpClient</code> without validating destination hostnames or checking private IP addresses.</p>
+
+        <div class="finding-section-title">Remediation Steps</div>
+        <p>Validate that input URLs are strictly <code>http/https</code> and belong to LinkedIn domains before initiating network calls:</p>
+        <pre><code>private bool IsSafeScrapeUrl(string rawUrl)
+{
+    if (!Uri.TryCreate(rawUrl, UriKind.Absolute, out var uri)) return false;
+    if (uri.Scheme != Uri.UriSchemeHttp &amp;&amp; uri.Scheme != Uri.UriSchemeHttps) return false;
+    if (IPAddress.TryParse(uri.Host, out _) || uri.IsLoopback) return false;
+
+    return uri.Host.EndsWith("linkedin.com", StringComparison.OrdinalIgnoreCase);
+}</code></pre>
+      </div>
+
+      <!-- Finding 5 -->
+      <div class="finding-card medium">
+        <div class="finding-header">
+          <div class="finding-title">SEC-05: File Upload Extension & MIME Whitelisting</div>
+          <span class="badge badge-medium">Medium</span>
+        </div>
+        <p><strong>Affected Component:</strong> <code>BusinessLayer/Manager/FileManager.cs</code></p>
+        
+        <div class="finding-section-title">Vulnerability Description</div>
+        <p>File extensions are taken directly from the client filename without enforcing allowed extension lists or checking binary signatures.</p>
+
+        <div class="finding-section-title">Remediation Steps</div>
+        <p>Enforce strict image extension whitelisting (<code>.png</code>, <code>.jpg</code>, <code>.jpeg</code>, <code>.webp</code>):</p>
+        <pre><code>private static readonly HashSet&lt;string&gt; AllowedExtensions = new(StringComparer.OrdinalIgnoreCase)
+{
+    ".png", ".jpg", ".jpeg", ".webp"
+};
+
+public static bool IsValidImageExtension(string fileName)
+{
+    var ext = Path.GetExtension(fileName);
+    return !string.IsNullOrEmpty(ext) &amp;&amp; AllowedExtensions.Contains(ext);
+}</code></pre>
+      </div>
+
+      <!-- Finding 6 -->
+      <div class="finding-card low">
+        <div class="finding-header">
+          <div class="finding-title">SEC-06: Missing Rate Limiting on OTP Verification & Authentication Routes</div>
+          <span class="badge badge-low">Low</span>
+        </div>
+        <p><strong>Affected Components:</strong> <code>UserController.cs</code>, <code>TokenController.cs</code></p>
+        
+        <div class="finding-section-title">Vulnerability Description</div>
+        <p>Lack of request throttling enables attackers to brute-force 6-digit OTP codes or exhaust Resend email credits by flooding <code>/ResendOtp</code>.</p>
+
+        <div class="finding-section-title">Remediation Steps</div>
+        <p>Configure ASP.NET Core built-in rate limiting in <code>Program.cs</code> to cap OTP requests to 5 per minute.</p>
+      </div>
+
+    </div>
+
+    <!-- Remediation Checklist -->
+    <div class="card">
+      <h2>✅ Security Hardening Checklist</h2>
+      <ul class="checklist">
+        <li class="checklist-item">
+          <div class="checkbox-box"></div>
+          <div>
+            <strong>1. Rotate Secrets:</strong> Regenerate Azure SQL database password & Azure Storage account keys in Azure Portal.
+          </div>
+        </li>
+        <li class="checklist-item">
+          <div class="checkbox-box"></div>
+          <div>
+            <strong>2. Clean Source Files:</strong> Remove hardcoded credentials from <code>DependancyManager.cs</code> & <code>FileManager.cs</code>.
+          </div>
+        </li>
+        <li class="checklist-item">
+          <div class="checkbox-box"></div>
+          <div>
+            <strong>3. Enforce CORS Restrictions:</strong> Update <code>Program.cs</code> CORS to allow only <code>chathire.com</code> & <code>localhost:4200</code>.
+          </div>
+        </li>
+        <li class="checklist-item">
+          <div class="checkbox-box"></div>
+          <div>
+            <strong>4. Re-enable Route Authorization:</strong> Reinstate <code>[Authorize]</code> guards on mutating controller actions.
+          </div>
+        </li>
+        <li class="checklist-item">
+          <div class="checkbox-box"></div>
+          <div>
+            <strong>5. Protect Scraper from SSRF:</strong> Restrict outbound scraping URLs strictly to <code>*.linkedin.com</code> domains.
+          </div>
+        </li>
+        <li class="checklist-item">
+          <div class="checkbox-box"></div>
+          <div>
+            <strong>6. Validate Uploaded Images:</strong> Enforce strict file extension checks for logo/profile uploads.
+          </div>
+        </li>
+        <li class="checklist-item">
+          <div class="checkbox-box"></div>
+          <div>
+            <strong>7. Implement Rate Limiting:</strong> Limit OTP generation and verification to 5 requests per minute.
+          </div>
+        </li>
+      </ul>
+    </div>
+
+  </div>
+
+</body>
+</html>
