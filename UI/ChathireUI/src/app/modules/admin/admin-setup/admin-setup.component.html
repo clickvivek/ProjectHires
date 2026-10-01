@@ -2012,11 +2012,12 @@
       <!-- Inline Input Section -->
       <div class="card border-0 shadow-sm p-4 mb-4">
         <div class="d-flex justify-content-between align-items-center mb-3">
-          <h6 class="fw-bold text-dark mb-0 d-flex align-items-center gap-2">
-            <span class="material-symbols-outlined text-success fs-5">input</span>
+          <h5 class="fw-bold text-dark mb-0 d-flex align-items-center gap-2">
+            <span class="material-symbols-outlined text-primary fs-4">travel_explore</span>
             <span>Submit Company Website URLs</span>
-          </h6>
-          <span class="badge bg-light text-secondary border px-2 py-1" *ngIf="parsedCompanyUrlCount > 0">
+          </h5>
+          <span class="badge bg-primary-subtle text-primary border border-primary-subtle px-3 py-2 fw-semibold rounded-pill d-inline-flex align-items-center gap-1" *ngIf="parsedCompanyUrlCount > 0">
+            <span class="material-symbols-outlined fs-6">check_circle</span>
             {{ parsedCompanyUrlCount }} URL(s) detected
           </span>
         </div>
@@ -2024,8 +2025,9 @@
         <div class="row g-3">
           <!-- Textarea input -->
           <div class="col-lg-7">
-            <label class="form-label fw-semibold small text-muted">
-              Enter Company URLs (one per line, comma or tab separated)
+            <label class="form-label fw-bold text-dark small mb-2 d-flex align-items-center gap-1">
+              <span class="material-symbols-outlined fs-5 text-secondary">link</span>
+              <span>Enter Company URLs (one per line, comma or tab separated)</span>
             </label>
             <textarea
               class="form-control font-monospace"
@@ -2034,12 +2036,16 @@
               [(ngModel)]="companyUrlsInput"
               (ngModelChange)="onCompanyUrlInputChanged()"
               [disabled]="isScrapingCompanyUrls"
+              style="min-height: 140px; font-size: 0.875rem;"
             ></textarea>
           </div>
 
           <!-- Drag & Drop Zone -->
           <div class="col-lg-5">
-            <label class="form-label fw-semibold small text-muted">Or upload CSV / TXT file</label>
+            <label class="form-label fw-bold text-dark small mb-2 d-flex align-items-center gap-1">
+              <span class="material-symbols-outlined fs-5 text-secondary">upload_file</span>
+              <span>Or upload CSV / TXT file</span>
+            </label>
             <div
               class="dropzone-box d-flex flex-column align-items-center justify-content-center p-3 text-center border border-2 border-dashed rounded-3 h-75 cursor-pointer position-relative"
               [class.drag-over]="isDraggingCompanyUrlFile"
@@ -2055,10 +2061,10 @@
                 class="d-none"
                 (change)="onCompanyUrlFileSelected($event)"
               />
-              <span class="material-symbols-outlined text-success fs-1 mb-1">cloud_upload</span>
-              <div class="fw-semibold small text-dark">Drag & drop CSV or TXT file here</div>
+              <span class="material-symbols-outlined text-primary fs-1 mb-1">cloud_upload</span>
+              <div class="fw-bold small text-dark">Drag & drop CSV or TXT file here</div>
               <div class="text-muted extra-small">or click to browse from computer</div>
-              <div *ngIf="companyUrlUploadedFileName" class="badge bg-success-subtle text-success mt-2">
+              <div *ngIf="companyUrlUploadedFileName" class="badge bg-primary-subtle text-primary border border-primary-subtle mt-2 px-2 py-1">
                 📄 {{ companyUrlUploadedFileName }}
               </div>
             </div>
@@ -2074,7 +2080,7 @@
               id="autoSaveCompanyUrlToDbSwitch"
               [(ngModel)]="autoSaveCompanyUrlToDb"
             />
-            <label class="form-check-label small fw-semibold text-dark cursor-pointer" for="autoSaveCompanyUrlToDbSwitch">
+            <label class="form-check-label fw-semibold text-dark cursor-pointer ms-2" for="autoSaveCompanyUrlToDbSwitch">
               Automatically save / update in Consultancies database & upload Azure logo
             </label>
           </div>
@@ -2082,21 +2088,22 @@
           <div class="d-flex gap-2">
             <button
               type="button"
-              class="btn btn-outline-secondary btn-sm px-3"
+              class="btn btn-outline-secondary px-3 py-2 d-inline-flex align-items-center gap-1 fw-semibold"
               (click)="clearCompanyUrlInputs()"
               [disabled]="isScrapingCompanyUrls || (!companyUrlsInput && !companyUrlUploadedFileName)"
             >
-              Clear
+              <span class="material-symbols-outlined fs-5">close</span>
+              <span>Clear</span>
             </button>
             <button
               type="button"
-              class="btn btn-primary px-4 d-flex align-items-center gap-2 shadow-sm"
+              class="btn btn-primary px-4 py-2 d-inline-flex align-items-center gap-2 shadow-sm fw-bold text-white"
               (click)="startCompanyUrlScraping()"
               [disabled]="isScrapingCompanyUrls || parsedCompanyUrlCount === 0"
             >
-              <span *ngIf="isScrapingCompanyUrls" class="spinner-border spinner-border-sm"></span>
-              <span *ngIf="!isScrapingCompanyUrls" class="material-symbols-outlined fs-5">bolt</span>
-              <span>{{ isScrapingCompanyUrls ? 'Extracting & Saving...' : 'Extract & Save to DB' }}</span>
+              <span *ngIf="isScrapingCompanyUrls" class="spinner-border spinner-border-sm text-white"></span>
+              <span *ngIf="!isScrapingCompanyUrls" class="material-symbols-outlined fs-5 text-white">bolt</span>
+              <span class="text-white">{{ isScrapingCompanyUrls ? 'Extracting & Saving...' : 'Extract & Save to DB' }}</span>
             </button>
           </div>
         </div>
@@ -2389,11 +2396,12 @@
       <!-- Inline Input Section (Quick URL Extraction) -->
       <div class="card border-0 shadow-sm p-4 mb-4">
         <div class="d-flex justify-content-between align-items-center mb-3">
-          <h6 class="fw-bold text-dark mb-0 d-flex align-items-center gap-2">
-            <span class="material-symbols-outlined text-primary fs-5">input</span>
+          <h5 class="fw-bold text-dark mb-0 d-flex align-items-center gap-2">
+            <span class="material-symbols-outlined text-primary fs-4">travel_explore</span>
             <span>Submit LinkedIn Company URLs</span>
-          </h6>
-          <span class="badge bg-light text-secondary border px-2 py-1" *ngIf="parsedUrlCount > 0">
+          </h5>
+          <span class="badge bg-primary-subtle text-primary border border-primary-subtle px-3 py-2 fw-semibold rounded-pill d-inline-flex align-items-center gap-1" *ngIf="parsedUrlCount > 0">
+            <span class="material-symbols-outlined fs-6">check_circle</span>
             {{ parsedUrlCount }} URL(s) detected
           </span>
         </div>
@@ -2401,8 +2409,9 @@
         <div class="row g-3">
           <!-- Textarea input -->
           <div class="col-lg-7">
-            <label class="form-label fw-semibold small text-muted">
-              Enter LinkedIn URLs (one per line or separated by comma)
+            <label class="form-label fw-bold text-dark small mb-2 d-flex align-items-center gap-1">
+              <span class="material-symbols-outlined fs-5 text-secondary">link</span>
+              <span>Enter LinkedIn URLs (one per line or separated by comma)</span>
             </label>
             <textarea
               class="form-control font-monospace"
@@ -2411,12 +2420,16 @@
               [(ngModel)]="linkedinUrlsInput"
               (ngModelChange)="onLinkedInUrlInputChanged()"
               [disabled]="isScrapingLinkedIn"
+              style="min-height: 140px; font-size: 0.875rem;"
             ></textarea>
           </div>
 
           <!-- Drag & Drop Zone -->
           <div class="col-lg-5">
-            <label class="form-label fw-semibold small text-muted">Or upload CSV / TXT file</label>
+            <label class="form-label fw-bold text-dark small mb-2 d-flex align-items-center gap-1">
+              <span class="material-symbols-outlined fs-5 text-secondary">upload_file</span>
+              <span>Or upload CSV / TXT file</span>
+            </label>
             <div
               class="dropzone-box d-flex flex-column align-items-center justify-content-center p-3 text-center border border-2 border-dashed rounded-3 h-75 cursor-pointer position-relative"
               [class.drag-over]="isDraggingFile"
@@ -2433,9 +2446,9 @@
                 (change)="onLinkedInFileSelected($event)"
               />
               <span class="material-symbols-outlined text-primary fs-1 mb-1">cloud_upload</span>
-              <div class="fw-semibold small text-dark">Drag & drop CSV or TXT file here</div>
+              <div class="fw-bold small text-dark">Drag & drop CSV or TXT file here</div>
               <div class="text-muted extra-small">or click to browse from computer</div>
-              <div *ngIf="uploadedFileName" class="badge bg-primary-subtle text-primary mt-2">
+              <div *ngIf="uploadedFileName" class="badge bg-primary-subtle text-primary border border-primary-subtle mt-2 px-2 py-1">
                 📄 {{ uploadedFileName }}
               </div>
             </div>
@@ -2451,7 +2464,7 @@
               id="autoSaveToDbSwitch"
               [(ngModel)]="autoSaveToDb"
             />
-            <label class="form-check-label small fw-semibold text-dark cursor-pointer" for="autoSaveToDbSwitch">
+            <label class="form-check-label fw-semibold text-dark cursor-pointer ms-2" for="autoSaveToDbSwitch">
               Automatically save / update in Consultancies database & upload Azure logo
             </label>
           </div>
@@ -2459,21 +2472,22 @@
           <div class="d-flex gap-2">
             <button
               type="button"
-              class="btn btn-outline-secondary btn-sm px-3"
+              class="btn btn-outline-secondary px-3 py-2 d-inline-flex align-items-center gap-1 fw-semibold"
               (click)="clearLinkedInInputs()"
               [disabled]="isScrapingLinkedIn || (!linkedinUrlsInput && !uploadedFileName)"
             >
-              Clear
+              <span class="material-symbols-outlined fs-5">close</span>
+              <span>Clear</span>
             </button>
             <button
               type="button"
-              class="btn btn-primary px-4 d-flex align-items-center gap-2 shadow-sm"
+              class="btn btn-primary px-4 py-2 d-inline-flex align-items-center gap-2 shadow-sm fw-bold text-white"
               (click)="startLinkedInScraping()"
               [disabled]="isScrapingLinkedIn || parsedUrlCount === 0"
             >
-              <span *ngIf="isScrapingLinkedIn" class="spinner-border spinner-border-sm"></span>
-              <span *ngIf="!isScrapingLinkedIn" class="material-symbols-outlined fs-5">bolt</span>
-              <span>{{ isScrapingLinkedIn ? 'Extracting & Saving...' : 'Extract & Save to DB' }}</span>
+              <span *ngIf="isScrapingLinkedIn" class="spinner-border spinner-border-sm text-white"></span>
+              <span *ngIf="!isScrapingLinkedIn" class="material-symbols-outlined fs-5 text-white">bolt</span>
+              <span class="text-white">{{ isScrapingLinkedIn ? 'Extracting & Saving...' : 'Extract & Save to DB' }}</span>
             </button>
           </div>
         </div>

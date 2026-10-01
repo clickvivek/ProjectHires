@@ -921,12 +921,19 @@
     }
   }
 
-  .cursor-pointer {
-    cursor: pointer !important;
+  .dropzone-box {
+    background-color: #f8fafc;
+    border-color: #cbd5e1 !important;
+    transition: all 0.2s ease;
+
+    &:hover, &.drag-over {
+      background-color: #f0fdf4;
+      border-color: #39756F !important;
+    }
   }
 
   // Button standardizations
-  .btn-primary {
+  .btn.btn-primary, .btn-primary {
     background-color: #39756F !important;
     border-color: #39756F !important;
     color: #ffffff !important;
@@ -961,7 +968,7 @@
     }
   }
 
-  .btn-success {
+  .btn.btn-success, .btn-success {
     background-color: #10b981 !important;
     border-color: #10b981 !important;
     color: #ffffff !important;
@@ -990,15 +997,24 @@
     }
   }
 
-  .btn-outline-secondary {
-    border-color: #cbd5e1;
-    color: #475569;
-    background-color: #ffffff;
+  .btn.btn-outline-secondary, .btn-outline-secondary {
+    border-color: #cbd5e1 !important;
+    color: #475569 !important;
+    background-color: #ffffff !important;
+    font-weight: 500;
+
+    span, i, .material-symbols-outlined {
+      color: #475569 !important;
+    }
 
     &:hover:not(:disabled) {
-      background-color: #f1f5f9;
-      color: #0f172a;
-      border-color: #94a3b8;
+      background-color: #f1f5f9 !important;
+      color: #0f172a !important;
+      border-color: #94a3b8 !important;
+
+      span, i, .material-symbols-outlined {
+        color: #0f172a !important;
+      }
     }
 
     &:disabled, &[disabled] {
@@ -1007,6 +1023,10 @@
       color: #94a3b8 !important;
       cursor: not-allowed !important;
       opacity: 0.7 !important;
+
+      span, i, .material-symbols-outlined {
+        color: #94a3b8 !important;
+      }
     }
   }
 }
