@@ -91,4 +91,6 @@ namespace DataAccessLayer.Models
     public partial class DirectCandidateEducation : BaseModel<long> { }
     public partial class Promocode : BaseModel<long> { }
     public partial class UserReferral : BaseModel<long> { }
+    public partial class Config : BaseModel<long> { }
+    public partial class Searched : BaseModel<long> { }
 }

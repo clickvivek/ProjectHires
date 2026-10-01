@@ -24,10 +24,11 @@ export class SearchHotlistChatComponent {
   }
 
   getProfilePic(url) {
-    if(url)
-      return `${picUrl}${url}`
-    else
-      return defaultProfilePic
+    if (url) {
+      if (url.startsWith('http://') || url.startsWith('https://')) return url;
+      return `${picUrl}${url}`;
+    }
+    return defaultProfilePic;
   }
 
   isChatDisabled() {

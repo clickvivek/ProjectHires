@@ -13,6 +13,7 @@ import { SessionService } from 'src/app/core/session/session.service';
 import { CommonService, ConsultancyService } from 'src/app/api';
 import { ToastrService } from 'ngx-toastr';
 import html2canvas from 'html2canvas';
+import { getMeaningfulErrorMessage } from 'src/app/modules/shared/utils/error-handler.util';
 
 import _ from 'underscore';
 import { HotlistDeleteConfirmationModalComponent } from './hotlist-delete-confirmation-modal/hotlist-delete-confirmation-modal.component';
@@ -284,7 +285,8 @@ export class MyhotlistComponent implements OnInit {
 
           },
           error: (error:any) => {
-            this.toastr.error('Some error occured', '' , {
+            const msg = getMeaningfulErrorMessage(error, 'Failed to update candidate status. Please try again.');
+            this.toastr.error(msg, '' , {
               timeOut: 5000,
               positionClass: 'toast-top-center'
             });
@@ -329,7 +331,8 @@ handleViewType(type) {
 
         },
         error: (error:any) => {
-          this.toastr.error('Some error occured', '' , {
+          const msg = getMeaningfulErrorMessage(error, 'Failed to delete candidate. Please try again.');
+          this.toastr.error(msg, '' , {
             timeOut: 5000,
             positionClass: 'toast-top-center'
           });
@@ -372,9 +375,8 @@ handleViewType(type) {
     error: (error:any) => {
 
       this.isJobLoaded = true;
-      this.isJobLoaded = true;
-      this.isError = true
-      this.error = "Some error occurred"
+      this.isError = true;
+      this.error = getMeaningfulErrorMessage(error, 'Unable to load hotlist profiles. Please try again.');
 
      }
   })

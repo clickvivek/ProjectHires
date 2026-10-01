@@ -5,6 +5,7 @@ import { ToastrService } from 'ngx-toastr';
 import { JobOpeningService } from 'src/app/api';
 import { SessionService } from 'src/app/core/session/session.service';
 import { CommonService } from 'src/app/api';
+import { getMeaningfulErrorMessage } from 'src/app/modules/shared/utils/error-handler.util';
 import _ from 'underscore';
 
 @Component({
@@ -140,9 +141,10 @@ export class ChooseResumeFromDeskComponent {
         },
         error:(error:any) => {
           this.isSubmitting = false;
+          const msg = getMeaningfulErrorMessage(error, 'Failed to submit application. Please try again.');
           setTimeout(() => {
-            this.toastr.error('Some error occured while submitting', '', {
-              timeOut: 2000,
+            this.toastr.error(msg, '', {
+              timeOut: 4000,
               positionClass: 'toast-top-center'
             });
           }, 100);

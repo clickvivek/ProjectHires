@@ -237,7 +237,7 @@ namespace BusinessLayer.Services
                 string personalizedNote = !string.IsNullOrWhiteSpace(customMessage)
                     ? $@"<div style='background-color: #f8fafc; border-left: 4px solid #39756F; padding: 14px 18px; margin: 20px 0; border-radius: 4px; font-style: italic; color: #334155; font-size: 14px;'>
                             &ldquo;{System.Net.WebUtility.HtmlEncode(customMessage)}&rdquo;
-                            <div style='font-style: normal; font-weight: 600; margin-top: 6px; color: #0f172a; font-size: 13px;'>— {referrerName}</div>
+                            <div style='font-style: normal; font-weight: 600; margin-top: 6px; color: #0f172a; font-size: 13px;'>&mdash; {referrerName}</div>
                          </div>"
                     : "";
 
@@ -283,33 +283,30 @@ namespace BusinessLayer.Services
 
                             <!-- Colorful Reward Cards -->
                             <div style='background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 20px; margin: 24px 0;'>
-                                <div style='font-size: 14px; font-weight: 700; color: #0f172a; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 14px;'>
-                                    🎁 Special Welcome Rewards When You Join:
+                                <div style='font-size: 13px; font-weight: 700; color: #0f172a; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 14px; display: flex; align-items: center;'>
+                                    <span style='display: inline-block; background-color: #fef3c7; color: #92400e; border: 1px solid #fde68a; border-radius: 12px; padding: 2px 8px; font-size: 11px; font-weight: 700; margin-right: 8px;'>&#9733; BONUS</span>
+                                    <span>Special Welcome Rewards When You Join:</span>
                                 </div>
                                 
                                 <table width='100%' cellspacing='0' cellpadding='0' border='0'>
                                     <tr>
                                         <td style='padding: 10px 0; border-bottom: 1px solid #edf2f7;'>
-                                            <div style='display: flex; align-items: flex-start;'>
-                                                <div style='font-size: 20px; margin-right: 12px;'>💼</div>
-                                                <div>
-                                                    <div style='font-weight: 700; color: #1e3a8a; font-size: 15px;'>Recruiters &amp; Employers</div>
-                                                    <div style='color: #475569; font-size: 13px; margin-top: 2px;'>
-                                                        Get <strong>3 Months of Free Job Postings</strong> + instant resume downloads and candidate chat access!
-                                                    </div>
+                                            <div>
+                                                <div style='display: inline-block; background-color: #eff6ff; color: #1d4ed8; border: 1px solid #bfdbfe; border-radius: 4px; padding: 2px 7px; font-size: 10px; font-weight: 800; letter-spacing: 0.5px; margin-bottom: 4px;'>RECRUITER</div>
+                                                <div style='font-weight: 700; color: #1e3a8a; font-size: 15px;'>Recruiters &amp; Employers</div>
+                                                <div style='color: #475569; font-size: 13px; margin-top: 2px;'>
+                                                    Get <strong>3 Months of Free Job Postings</strong> + instant resume downloads and candidate chat access!
                                                 </div>
                                             </div>
                                         </td>
                                     </tr>
                                     <tr>
                                         <td style='padding: 12px 0 4px 0;'>
-                                            <div style='display: flex; align-items: flex-start;'>
-                                                <div style='font-size: 20px; margin-right: 12px;'>⚡</div>
-                                                <div>
-                                                    <div style='font-weight: 700; color: #065f46; font-size: 15px;'>Bench Sales Recruiters</div>
-                                                    <div style='color: #475569; font-size: 13px; margin-top: 2px;'>
-                                                        Enjoy <strong>Unlimited Hotlist &amp; Profile Postings</strong> to market your consultants directly to prime vendors!
-                                                    </div>
+                                            <div>
+                                                <div style='display: inline-block; background-color: #ecfdf5; color: #047857; border: 1px solid #a7f3d0; border-radius: 4px; padding: 2px 7px; font-size: 10px; font-weight: 800; letter-spacing: 0.5px; margin-bottom: 4px;'>BENCH SALES</div>
+                                                <div style='font-weight: 700; color: #065f46; font-size: 15px;'>Bench Sales Recruiters</div>
+                                                <div style='color: #475569; font-size: 13px; margin-top: 2px;'>
+                                                    Enjoy <strong>Unlimited Hotlist &amp; Profile Postings</strong> to market your consultants directly to prime vendors!
                                                 </div>
                                             </div>
                                         </td>
@@ -380,6 +377,65 @@ namespace BusinessLayer.Services
                 _logger.LogError(ex, "Exception occurred while sending referral invite email via Resend to {Email}", toEmail);
                 return false;
             }
+        }
+
+        public async Task<bool> SendJobExpiredEmailAsync(string toEmail, string userName, string jobTitle, string? companyName, long jobId)
+        {
+            var displayName = !string.IsNullOrWhiteSpace(userName) ? userName : "Recruiter";
+            var companyDisplay = !string.IsNullOrWhiteSpace(companyName) ? $" at {companyName}" : "";
+            var subject = $"Job Posting Expired: \"{jobTitle}\"";
+            
+            var htmlBody = $@"
+                <div style='font-family: -apple-system, BlinkMacSystemFont, ""Segoe UI"", Roboto, Helvetica, Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 32px 24px; background-color: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; color: #1e293b;'>
+                    <!-- Header -->
+                    <div style='text-align: center; margin-bottom: 24px;'>
+                        <span style='font-size: 26px; font-weight: 800; color: #4338CA; letter-spacing: -0.5px;'>ChatHire</span>
+                    </div>
+                    
+                    <!-- Main Card -->
+                    <div style='background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 24px; margin-bottom: 24px;'>
+                        <div style='display: inline-block; background-color: #fee2e2; color: #b91c1c; font-size: 12px; font-weight: 700; padding: 4px 10px; border-radius: 9999px; text-transform: uppercase; margin-bottom: 12px;'>
+                            Posting Expired (30 Days)
+                        </div>
+                        <h2 style='color: #0f172a; font-size: 20px; font-weight: 700; margin: 0 0 8px 0;'>
+                            {jobTitle}
+                        </h2>
+                        <p style='color: #64748b; font-size: 14px; margin: 0;'>
+                            {companyDisplay}
+                        </p>
+                    </div>
+
+                    <!-- Message Body -->
+                    <p style='font-size: 15px; line-height: 1.6; color: #334155; margin-bottom: 16px;'>
+                        Hello <strong>{displayName}</strong>,
+                    </p>
+                    <p style='font-size: 15px; line-height: 1.6; color: #334155; margin-bottom: 16px;'>
+                        Your job posting for <strong>{jobTitle}</strong> has reached its <strong>30-day active duration</strong> and has automatically expired. It is no longer appearing in candidate search results.
+                    </p>
+                    <p style='font-size: 15px; line-height: 1.6; color: #334155; margin-bottom: 24px;'>
+                        Still looking for talent? You can easily <strong>repost</strong> this job with a single click to give it a fresh 30-day listing, or <strong>edit</strong> the job details and requirements if anything has changed.
+                    </p>
+
+                    <!-- CTA Button -->
+                    <div style='text-align: center; margin: 32px 0;'>
+                        <a href='https://www.chathire.com/#/posting-history' style='display: inline-block; background: linear-gradient(135deg, #4338CA 0%, #6366F1 100%); color: #ffffff; font-size: 15px; font-weight: 600; text-decoration: none; padding: 12px 28px; border-radius: 8px; box-shadow: 0 4px 6px -1px rgba(79, 70, 229, 0.2);'>
+                            Manage & Repost Job &rarr;
+                        </a>
+                    </div>
+
+                    <div style='background-color: #f1f5f9; border-radius: 6px; padding: 14px; margin-top: 24px; font-size: 13px; color: #475569;'>
+                        <strong>Tip:</strong> If you've already filled this role or received enough applications, you can keep the job inactive or delete it from your history.
+                    </div>
+
+                    <!-- Footer -->
+                    <hr style='border: none; border-top: 1px solid #e2e8f0; margin: 32px 0 20px 0;' />
+                    <p style='color: #94a3b8; font-size: 12px; text-align: center; margin: 0;'>
+                        &copy; {DateTime.UtcNow.Year} ChatHire Co. All rights reserved.<br/>
+                        Automated job status notifications.
+                    </p>
+                </div>";
+
+            return await SendEmailAsync(toEmail, subject, htmlBody);
         }
 
         public async Task<bool> SendEmailAsync(string toEmail, string subject, string htmlContent)

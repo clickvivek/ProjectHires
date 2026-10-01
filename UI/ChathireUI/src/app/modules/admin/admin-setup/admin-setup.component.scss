@@ -658,8 +658,35 @@
   }
 }
 
-// --- LinkedIn Scraper Styles ---
+// --- Company URL & LinkedIn Scraper Styles ---
+.company-url-scraper-area,
 .linkedin-scraper-area {
+  .logo-preview-box {
+    width: 44px;
+    height: 44px;
+    min-width: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    .company-logo-img {
+      width: 44px;
+      height: 44px;
+      object-fit: contain;
+      background-color: #ffffff;
+      border: 1px solid #e2e8f0;
+      padding: 2px;
+    }
+
+    .company-logo-placeholder {
+      width: 44px;
+      height: 44px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid #e2e8f0;
+    }
+  }
   .dropzone-box {
     border-color: #cbd5e1;
     background-color: #f8fafc;
@@ -876,12 +903,111 @@
     }
   }
 
-  .bg-purple {
-    background-color: #6d28d9 !important;
-  }
-
   .spin-anim {
     animation: spin 1s linear infinite;
+  }
+
+  .sortable-header {
+    cursor: pointer !important;
+    user-select: none;
+    transition: background-color 0.15s ease, color 0.15s ease;
+
+    &:hover {
+      background-color: #f1f5f9 !important;
+
+      span {
+        color: #0f172a;
+      }
+    }
+  }
+
+  .cursor-pointer {
+    cursor: pointer !important;
+  }
+
+  // Button standardizations
+  .btn-primary {
+    background-color: #39756F !important;
+    border-color: #39756F !important;
+    color: #ffffff !important;
+    font-weight: 600;
+
+    span, i, .material-symbols-outlined {
+      color: #ffffff !important;
+    }
+
+    &:hover:not(:disabled) {
+      background-color: #2e5e59 !important;
+      border-color: #2e5e59 !important;
+      color: #ffffff !important;
+    }
+
+    &:focus, &:active {
+      background-color: #244b47 !important;
+      border-color: #244b47 !important;
+      color: #ffffff !important;
+    }
+
+    &:disabled, &[disabled] {
+      background-color: #e2e8f0 !important;
+      border-color: #cbd5e1 !important;
+      color: #94a3b8 !important;
+      cursor: not-allowed !important;
+      opacity: 0.85 !important;
+
+      span, i, .material-symbols-outlined {
+        color: #94a3b8 !important;
+      }
+    }
+  }
+
+  .btn-success {
+    background-color: #10b981 !important;
+    border-color: #10b981 !important;
+    color: #ffffff !important;
+    font-weight: 600;
+
+    span, i, .material-symbols-outlined {
+      color: #ffffff !important;
+    }
+
+    &:hover:not(:disabled) {
+      background-color: #059669 !important;
+      border-color: #059669 !important;
+      color: #ffffff !important;
+    }
+
+    &:disabled, &[disabled] {
+      background-color: #e2e8f0 !important;
+      border-color: #cbd5e1 !important;
+      color: #94a3b8 !important;
+      cursor: not-allowed !important;
+      opacity: 0.85 !important;
+
+      span, i, .material-symbols-outlined {
+        color: #94a3b8 !important;
+      }
+    }
+  }
+
+  .btn-outline-secondary {
+    border-color: #cbd5e1;
+    color: #475569;
+    background-color: #ffffff;
+
+    &:hover:not(:disabled) {
+      background-color: #f1f5f9;
+      color: #0f172a;
+      border-color: #94a3b8;
+    }
+
+    &:disabled, &[disabled] {
+      background-color: #f8fafc !important;
+      border-color: #e2e8f0 !important;
+      color: #94a3b8 !important;
+      cursor: not-allowed !important;
+      opacity: 0.7 !important;
+    }
   }
 }
 

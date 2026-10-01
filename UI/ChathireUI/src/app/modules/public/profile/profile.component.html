@@ -284,7 +284,7 @@
               <div class="about-section mt-4 mb-4">
                 <h3 class="section-title">About</h3>
                 <p class="about-body">
-                  Experienced talent acquisition partner specializing in enterprise IT hiring, contract staffing, and C2C recruitment across SAP, Java, DevOps, Cloud Infrastructure, and Salesforce ecosystems.
+                  {{ getAboutMe() }}
                 </p>
               </div>
 
@@ -292,13 +292,7 @@
               <div class="specializations-section">
                 <h3 class="section-title">Specializations</h3>
                 <div class="chips-flex">
-                  <span class="spec-chip">SAP</span>
-                  <span class="spec-chip">Java</span>
-                  <span class="spec-chip">.NET</span>
-                  <span class="spec-chip">Cloud</span>
-                  <span class="spec-chip">DevOps</span>
-                  <span class="spec-chip">Salesforce</span>
-                  <span class="spec-chip">Contract / C2C</span>
+                  <span class="spec-chip" *ngFor="let skill of getSkills()">{{ skill }}</span>
                 </div>
               </div>
 

@@ -58,6 +58,8 @@ namespace BusinessLayer.Manager
         Task<RecruiterStatsDto> GetRecruiterStats(long consultancyUserId, UserContext userContext);
         Task<List<JobOpeningProfileMapSummary1>> GetJobOpeningProfileMapSummary(long ConsultancyUserId, UserContext userContext);
         Task<JobOpeningDto> ActivateDeactivateJob(long Id, bool ActiveDeactive, UserContext userContext);
+        Task<int> ProcessExpiredJobOpeningsAsync(int daysThreshold = 30, UserContext? userContext = null);
+        Task<JobOpeningDto> RepostJobOpening(long jobId, UserContext userContext);
 
         Task<List<JobOpeningSummary>> GetCountJobsPostedByConsultancyUserId(long ConsultancyUserId, DateTime FromDate, DateTime ToDate, UserContext userContext);
         Task<List<JobOpeningSummary>> GetCountActiveJobsAsOfToday(long ConsultancyUserId, UserContext userContext);
@@ -605,6 +607,79 @@ namespace BusinessLayer.Manager
                 var repo = repositoryFactory.Get<IJobOpeningRepository>();
                 return await repo.GetRecruiterStats(consultancyUserId, userContext);
             }, "GetRecruiterStats", userContext);
+        }
+
+        public async Task<int> ProcessExpiredJobOpeningsAsync(int daysThreshold = 30, UserContext? userContext = null)
+        {
+            var dummyContext = userContext ?? new UserContext { UserId = 0 };
+            return await ExecuteAsync<int>(async () =>
+            {
+                var repo = repositoryFactory.Get<IJobOpeningRepository>();
+                var expiredJobs = await repo.GetExpiredJobsToProcessAsync(daysThreshold);
+                if (expiredJobs == null || !expiredJobs.Any())
+                {
+                    return 0;
+                }
+
+                var emailService = serviceProvider?.GetService<IResendEmailService>();
+                int processedCount = 0;
+
+                foreach (var job in expiredJobs)
+                {
+                    job.IsExpired = true;
+                    job.Active = false;
+                    job.Updated = DateTime.UtcNow;
+                    if (dummyContext.UserId > 0)
+                    {
+                        job.UpdatedBy = dummyContext.UserId;
+                    }
+
+                    await repo.Put(job.Id, job, true);
+                    processedCount++;
+
+                    // Send email notification to the recruiter who posted the job
+                    var user = job.ConsultancyUser?.User;
+                    if (user != null && !string.IsNullOrWhiteSpace(user.Email) && emailService != null)
+                    {
+                        try
+                        {
+                            var userName = $"{user.Fname} {user.Lname}".Trim();
+                            var companyName = job.ConsultancyUser?.Consultancy?.Name;
+                            await emailService.SendJobExpiredEmailAsync(user.Email, userName, job.Name ?? "Job Opening", companyName, job.Id);
+                        }
+                        catch (Exception ex)
+                        {
+                            _logger?.LogError(ex, "Failed to send job expired email for job ID {JobId} to {Email}", job.Id, user.Email);
+                        }
+                    }
+                }
+
+                return processedCount;
+            }, "ProcessExpiredJobOpeningsAsync", dummyContext);
+        }
+
+        public async Task<JobOpeningDto> RepostJobOpening(long jobId, UserContext userContext)
+        {
+            return await ExecuteAsync<JobOpeningDto>(async () =>
+            {
+                var repo = repositoryFactory.Get<IJobOpeningRepository>();
+                var existingJob = await repo.GetJobOpeningsById(jobId, userContext);
+                if (existingJob == null)
+                {
+                    throw new KeyNotFoundException($"Job Opening with ID {jobId} not found");
+                }
+
+                var now = DateTime.UtcNow;
+                existingJob.PostedDate = now;
+                existingJob.LastDate = now.AddDays(30);
+                existingJob.IsExpired = false;
+                existingJob.Active = true;
+                existingJob.Updated = now;
+                existingJob.UpdatedBy = userContext.UserId;
+
+                await repo.Put(existingJob.Id, existingJob, true);
+                return mapper.Map<JobOpeningDto>(existingJob);
+            }, "RepostJobOpening", userContext);
         }
 
         private async Task ResolveCustomSkillsForInsert(JobOpeningForInsertDto jobOpening, UserContext userContext)

@@ -274,9 +274,42 @@ namespace MiddleWare.Controllers
         public List<CandidateProfileForSearchResultsDto> SearchCandidateProfile([FromQuery] CandidateProfileForSearchDto? candidateProfile)
         {
             var mgr = managerFactory.Get<ICandidateProfileManager>();
+            var targetSearch = candidateProfile ?? new CandidateProfileForSearchDto();
+            var results = mgr.SearchCandidateProfile(targetSearch, GetDummyUserContext());
 
-            return mgr.SearchCandidateProfile(candidateProfile ?? new CandidateProfileForSearchDto(), GetDummyUserContext());
+            // Asynchronously log search to Searched table
+            try
+            {
+                long? userId = null;
+                try
+                {
+                    var userCtx = GetUserContext();
+                    if (userCtx != null && userCtx.UserId > 0) userId = userCtx.UserId;
+                }
+                catch { }
 
+                string ipAddress = HttpContext?.Connection?.RemoteIpAddress?.ToString() ?? string.Empty;
+                var searchedMgr = managerFactory.Get<ISearchedManager>();
+                string? extraFilters = null;
+                var filterParts = new List<string>();
+                if (targetSearch.visas != null && targetSearch.visas.Any()) filterParts.Add($"Visas: {string.Join(",", targetSearch.visas)}");
+                if (targetSearch.skills != null && targetSearch.skills.Any()) filterParts.Add($"Skills: {string.Join(",", targetSearch.skills)}");
+                if (targetSearch.startYearsOfExp.HasValue || targetSearch.endYearsOfExp.HasValue) filterParts.Add($"Exp: {targetSearch.startYearsOfExp}-{targetSearch.endYearsOfExp} yrs");
+                if (targetSearch.stateIds != null && targetSearch.stateIds.Any()) filterParts.Add($"StateIds: {string.Join(",", targetSearch.stateIds)}");
+                if (filterParts.Any()) extraFilters = string.Join("; ", filterParts);
+
+                _ = Task.Run(async () =>
+                {
+                    try
+                    {
+                        await searchedMgr.LogSearchAsync("HotlistSearch", targetSearch.SearchString, null, targetSearch.cityIds, results?.Count ?? 0, userId, ipAddress, extraFilters);
+                    }
+                    catch { }
+                });
+            }
+            catch { }
+
+            return results;
         }
 
         [HttpPost]

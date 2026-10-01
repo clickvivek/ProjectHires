@@ -288,7 +288,10 @@ export class JobDetailsPageComponent implements OnInit {
   }
 
   getProfilePic(url: string | null | undefined): string {
-    if (url) return `${picUrl}${url}`;
+    if (url) {
+      if (url.startsWith('http://') || url.startsWith('https://')) return url;
+      return `${picUrl}${url}`;
+    }
     return defaultProfilePic;
   }
 

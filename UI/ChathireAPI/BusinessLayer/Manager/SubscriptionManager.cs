@@ -17,6 +17,7 @@ namespace BusinessLayer.Manager
         Task<UserQuotaStatusDto> GetUserQuotaStatus(long userId, UserContext userContext);
         Task<UserQuotaListResponseDto> GetAllUsersQuotas(int page, int pageSize, string? search, string? filter, UserContext userContext);
         Task<bool> UpdateUserQuota(UpdateUserQuotaDto dto, UserContext userContext);
+        Task<InitiateChatResultDto> InitiateChat(long userId, long chatUserId, UserContext userContext);
     }
     public class SubscriptionManager : BaseManager<SubscriptionManager>, ISubscriptionManager
     {
@@ -136,6 +137,19 @@ namespace BusinessLayer.Manager
                 var repo = repositoryFactory.Get<IUserSubscriptionPlanRepository>();
                 return await repo.UpdateUserQuota(dto, userContext);
             }, "UpdateUserQuota", userContext);
+        }
+
+        public async Task<InitiateChatResultDto> InitiateChat(long userId, long chatUserId, UserContext userContext)
+        {
+            return await ExecuteAsync<InitiateChatResultDto>(async () =>
+            {
+                var repo = repositoryFactory.Get<IUserSubscriptionPlanRepository>();
+                if (userId <= 0 && userContext != null)
+                {
+                    userId = userContext.UserId;
+                }
+                return await repo.InitiateChat(userId, chatUserId, userContext);
+            }, "InitiateChat", userContext);
         }
     }
 }

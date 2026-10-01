@@ -240,6 +240,17 @@ namespace BusinessEntityAndDTO.DTO
     public partial class CandidateProfileForSearchDto
     {
         public List<string>? SearchString { get; set; } = new List<string>();
+        public List<string>? searchStrings
+        {
+            get => SearchString;
+            set
+            {
+                if (value != null && value.Any())
+                {
+                    SearchString = value;
+                }
+            }
+        }
         public List<int>? skills { get; set; } = new List<int>();
         public List<int>? cityIds { get; set; } = new List<int>();
         public List<int>? stateIds { get; set; } = new List<int>();

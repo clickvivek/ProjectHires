@@ -13,6 +13,7 @@ import * as moment from 'moment';
 import _ from 'underscore';
 import { SharedService } from 'src/app/modules/shared/services/shared.service';
 import { picUrl } from 'src/app/data/various';
+import { getMeaningfulErrorMessage } from 'src/app/modules/shared/utils/error-handler.util';
 
 @Component({
   selector: 'app-searchjobs',
@@ -66,71 +67,62 @@ export class SearchjobsComponent implements OnInit {
   isJobSheet:boolean = true
 
   constructor(
-  private router: Router,
-  private route: ActivatedRoute,
-  public dialog: MatDialog,
-  private jobOpeningService: JobOpeningService,
-  private sharedService: SharedService
+    private router: Router,
+    private route: ActivatedRoute,
+    public dialog: MatDialog,
+    private jobOpeningService: JobOpeningService,
+    private sharedService: SharedService
   ) {
-
-    this.router.events.pipe(
-      filter(event => event instanceof NavigationEnd)
-    ).subscribe(() => {
-      
-      const params = this.route.snapshot.queryParams;
-
-      if (JSON.stringify(params) !== JSON.stringify(this.previousQueryParams) && !_.isEmpty(params)) {
-        
-        this.previousQueryParams = params;
-
-        this.skill = params['skill'];
-        this.location = params['location'];
-
-         if (!_.isUndefined(params['cid'])) {
-          this.cityId =params['cid'];
-        }
-         else {
-           this.cityId = null
-        }
-
-        if (!_.isUndefined(params['visas'])) {
-          this.visasId =params['visas']?.split(',');
-        }
-        else {
-          this.visasId = []
-        }
-
-        if (!_.isUndefined(params['wm'])) {
-          this.wmIds =params['wm']?.split(',');
-        }
-        else {
-          this.wmIds = []
-        }
-
-        if (!_.isUndefined(params['exp'])) {
-          this.expIds =params['exp']?.split(',');
-        }
-        else {
-          this.expIds = []
-        }
-
-        if (!_.isUndefined(params['date'])) {
-          this.dateString =params['date'];
-        }
-        else {
-          this.dateString = ""
-        }
-        this.handleJobOpenings(this.skill, this.cityId, this.visasId, this.wmIds, this.expIds, this.dateString)
-
-      }
-      else {
-        this.isDataAvailable = false
-        this.skill = ""
-        this.location = ""
-      }
-      
+    this.route.queryParams.subscribe((params: Params) => {
+      this.executeSearchFromParams(params);
     });
+  }
 
+  executeSearchFromParams(params: Params) {
+    if (!_.isEmpty(params)) {
+      this.skill = params['skill'] || '';
+      this.location = params['location'] || '';
+
+      if (!_.isUndefined(params['cid']) && params['cid']) {
+        this.cityId = params['cid'];
+      } else {
+        this.cityId = null;
+      }
+
+      if (!_.isUndefined(params['visas']) && params['visas']) {
+        this.visasId = params['visas'].split(',');
+      } else {
+        this.visasId = [];
+      }
+
+      if (!_.isUndefined(params['wm']) && params['wm']) {
+        this.wmIds = params['wm'].split(',');
+      } else {
+        this.wmIds = [];
+      }
+
+      if (!_.isUndefined(params['exp']) && params['exp']) {
+        this.expIds = params['exp'].split(',');
+      } else {
+        this.expIds = [];
+      }
+
+      if (!_.isUndefined(params['date']) && params['date']) {
+        this.dateString = params['date'];
+      } else {
+        this.dateString = '';
+      }
+
+      if (this.skill || this.location || this.cityId || this.visasId.length || this.wmIds.length || this.expIds.length || this.dateString) {
+        this.handleJobOpenings(this.skill, this.cityId, this.visasId, this.wmIds, this.expIds, this.dateString);
+      } else {
+        this.isDataAvailable = false;
+      }
+    } else {
+      this.isDataAvailable = false;
+      this.skill = '';
+      this.location = '';
+    }
   }
 
   handleJobSheet(event) {
@@ -158,6 +150,50 @@ export class SearchjobsComponent implements OnInit {
       .filter(str => str.length > 0);
 
     return formatted.join(' ; ');
+  }
+
+  isJobRemote(job: any): boolean {
+    if (!job) return false;
+    if (job.employmentTypes && Array.isArray(job.employmentTypes)) {
+      if (job.employmentTypes.some((et: string) => typeof et === 'string' && et.trim().toLowerCase().includes('remote'))) {
+        return true;
+      }
+    }
+    if (job.jobTypes && Array.isArray(job.jobTypes)) {
+      if (job.jobTypes.some((jt: string) => typeof jt === 'string' && jt.trim().toLowerCase().includes('remote'))) {
+        return true;
+      }
+    }
+    if (job.jobLocation && typeof job.jobLocation === 'string' && job.jobLocation.toLowerCase().includes('remote')) {
+      return true;
+    }
+    if (job.jobOpeningName && typeof job.jobOpeningName === 'string' && job.jobOpeningName.toLowerCase().includes('remote')) {
+      return true;
+    }
+    return false;
+  }
+
+  getJobLocationDisplay(job: any): string {
+    if (!job) return '';
+    const formattedLoc = this.getFormattedLocations(job.locations);
+    const isRemote = this.isJobRemote(job);
+
+    if (formattedLoc && formattedLoc.trim().length > 0) {
+      if (isRemote && !formattedLoc.toLowerCase().includes('remote')) {
+        return `${formattedLoc} (Remote)`;
+      }
+      return formattedLoc;
+    }
+
+    if (isRemote) {
+      return 'Remote';
+    }
+
+    if (job.jobLocation && typeof job.jobLocation === 'string' && job.jobLocation.trim().length > 0) {
+      return job.jobLocation.trim();
+    }
+
+    return '';
   }
 
   getDateInMMDDYYYYFormat(daysToAdd) {
@@ -275,10 +311,10 @@ export class SearchjobsComponent implements OnInit {
 
       },
       error: (error: any) => {
-        this.isError = true
-        this.isLoaded = true
-        this.isDataAvailable = false
-        this.error = 'Some error occured';
+        this.isError = true;
+        this.isLoaded = true;
+        this.isDataAvailable = false;
+        this.error = getMeaningfulErrorMessage(error, 'Unable to search jobs at this moment. Please try again.');
       }
     })
   }

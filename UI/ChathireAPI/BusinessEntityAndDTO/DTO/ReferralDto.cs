@@ -27,6 +27,10 @@ namespace BusinessEntityAndDTO.DTO
         public int AlreadyRegistered { get; set; }
         public int AlreadyInvited { get; set; }
         public int InvalidEmails { get; set; }
+        public int NonCompanyEmails { get; set; }
+        public int BonusChatsGranted { get; set; }
+        public int NewDailyChatLimit { get; set; }
+        public int BonusDurationDays { get; set; }
         public List<string> InvitedEmails { get; set; } = new List<string>();
         public List<ReferralSkipDetailDto> SkippedDetails { get; set; } = new List<ReferralSkipDetailDto>();
     }

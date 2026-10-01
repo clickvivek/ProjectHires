@@ -73,6 +73,15 @@ export class HeaderComponent implements OnInit {
     return this.sessionService.consultancyId
   }
 
+  isProfileSetupPending(): boolean {
+    if (!this.isLoggedIn()) return false;
+    if (this.isAdmin()) return false;
+    if (this.isCandidate()) {
+      return !this.user?.fname || !this.user?.cityId;
+    }
+    return !this.isConsultancyId();
+  }
+
   isNotProfile() {
     return !this._router.url.includes('profile');
   }

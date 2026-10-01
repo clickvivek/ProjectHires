@@ -8,6 +8,7 @@ import { ToastrService } from 'ngx-toastr';
 
 import { profileInitialCountSummary } from 'src/app/data/various';
 import * as moment from 'moment';
+import { getMeaningfulErrorMessage } from 'src/app/modules/shared/utils/error-handler.util';
 
 @Component({
   selector: 'inbox-resume-types',
@@ -102,7 +103,7 @@ export class InboxResumeTypesComponent {
         this.router.navigate(['/inbox']);
       },
       error:(error:any) => {
-        this.toastr.error('Some error occured', '' , {
+        this.toastr.error(getMeaningfulErrorMessage(error, 'Failed to update resume status. Please try again.'), '' , {
           timeOut: 3000,
           positionClass: 'toast-top-center'
         });

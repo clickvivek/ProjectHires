@@ -120,5 +120,33 @@ namespace MiddleWare.Controllers
                 return await mgr.UpdateUserQuota(dto, context ?? GetDummyUserContext());
             });
         }
+
+        [HttpPost]
+        [Route("InitiateChat")]
+        public Task<Result<InitiateChatResultDto>> InitiateChat([FromBody] InitiateChatRequestDto dto)
+        {
+            return ExecuteAsync<InitiateChatResultDto>(async () =>
+            {
+                var mgr = managerFactory.Get<ISubscriptionManager>();
+                UserContext context = null;
+                long userId = 0;
+                try
+                {
+                    context = GetUserContext();
+                    if (context != null)
+                    {
+                        userId = context.UserId;
+                    }
+                }
+                catch { }
+
+                if (userId <= 0 && dto?.UserId > 0)
+                {
+                    userId = dto.UserId.Value;
+                }
+
+                return await mgr.InitiateChat(userId, dto?.ChatUserId ?? 0, context ?? GetDummyUserContext());
+            });
+        }
     }
 }

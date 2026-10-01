@@ -111,7 +111,9 @@ namespace BusinessLayer.Manager
                     {
                         throw new ArgumentException("User Already exists");
                     }
-                    existingUser.Password = user.Password;
+                    existingUser.Password = !string.IsNullOrWhiteSpace(user.Password)
+                        ? (SecurePasswordHasher.IsHashSupported(user.Password) ? user.Password : SecurePasswordHasher.Hash(user.Password.Trim()))
+                        : existingUser.Password;
                     existingUser.Otpemail = otpCode;
                     existingUser.OtpemailDate = date.AddMinutes(10);
                     existingUser.Updated = date;
@@ -131,6 +133,12 @@ namespace BusinessLayer.Manager
                     _user.OtpemailDate = date.AddMinutes(10);
                     _user.Fname = FormatTitleCase(user.Fname);
                     _user.Lname = FormatTitleCase(user.Lname);
+                    if (!string.IsNullOrWhiteSpace(user.Password))
+                    {
+                        _user.Password = SecurePasswordHasher.IsHashSupported(user.Password)
+                            ? user.Password
+                            : SecurePasswordHasher.Hash(user.Password.Trim());
+                    }
 
                     targetUser = await repo.Post(_user, true);
                 }
@@ -182,6 +190,20 @@ namespace BusinessLayer.Manager
                 user.Updated = DateTime.UtcNow;
 
                 await repo.Put(user.Id, user, true);
+
+                try
+                {
+                    var referralRepo = repositoryFactory.Get<IUserReferralRepository>();
+                    if (referralRepo != null)
+                    {
+                        await referralRepo.ProcessSignupReferral(user.Email, null, user.Id);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    _logger?.LogWarning(ex, "Failed to process referral for verified user {Email}", user.Email);
+                }
+
                 return true;
             }, "VerifyOtp", userContext);
         }
@@ -294,7 +316,9 @@ namespace BusinessLayer.Manager
                     throw new ArgumentException("Verification code has expired. Please request a new code.");
                 }
 
-                user.Password = newPassword;
+                user.Password = !string.IsNullOrWhiteSpace(newPassword)
+                    ? (SecurePasswordHasher.IsHashSupported(newPassword) ? newPassword : SecurePasswordHasher.Hash(newPassword.Trim()))
+                    : user.Password;
                 user.OtppwdReset = null;
                 user.OtppwdDateTime = null;
                 user.ResetPassword = false;
@@ -319,6 +343,12 @@ namespace BusinessLayer.Manager
                 _user.UpdatedBy = userContext.UserId;
                 _user.Fname = FormatTitleCase(user?.Fname);
                 _user.Lname = FormatTitleCase(user?.Lname);
+                if (!string.IsNullOrWhiteSpace(user?.Password))
+                {
+                    _user.Password = SecurePasswordHasher.IsHashSupported(user.Password)
+                        ? user.Password
+                        : SecurePasswordHasher.Hash(user.Password.Trim());
+                }
                 return await repo.Post(_user, true);
             }, "AddUserWithConsultacy", userContext);
 
@@ -449,7 +479,14 @@ namespace BusinessLayer.Manager
                     _user.UserName = user.UserDtoForUpdate.UserName;
 
                 if (user.UserDtoForUpdate.Password != null)
-                    _user.Password = user.UserDtoForUpdate.Password;
+                {
+                    if (!string.IsNullOrWhiteSpace(user.UserDtoForUpdate.Password))
+                    {
+                        _user.Password = SecurePasswordHasher.IsHashSupported(user.UserDtoForUpdate.Password)
+                            ? user.UserDtoForUpdate.Password
+                            : SecurePasswordHasher.Hash(user.UserDtoForUpdate.Password.Trim());
+                    }
+                }
 
                 if (user.UserDtoForUpdate.ResetPassword != null)
                     _user.ResetPassword = user.UserDtoForUpdate.ResetPassword;
@@ -480,6 +517,12 @@ namespace BusinessLayer.Manager
 
                 if (user.UserDtoForUpdate.RoleBenchSales != null)
                     _user.RoleBenchSales = user.UserDtoForUpdate.RoleBenchSales;
+
+                if (user.UserDtoForUpdate.Aboutme != null)
+                    _user.Aboutme = user.UserDtoForUpdate.Aboutme;
+
+                if (user.UserDtoForUpdate.Myskills != null)
+                    _user.Myskills = user.UserDtoForUpdate.Myskills;
 
                 _user.Updated = date;
                 _user.UpdatedBy = userContext.UserId;

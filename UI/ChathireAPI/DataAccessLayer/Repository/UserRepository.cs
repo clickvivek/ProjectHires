@@ -47,6 +47,11 @@ namespace DataAccessLayer.Repository
                     {
                         if (SecurePasswordHasher.Verify(password, result.Password))
                         {
+                            if (result.EmailVerified == true)
+                            {
+                                try { await ProcessSignupReferral(result.Email, null, result.Id); } catch { }
+                            }
+
                             return new Tuple<string, UserContext, string>(result.UserName, new UserContext
                             {
                                 UserId = result.Id,
@@ -61,6 +66,19 @@ namespace DataAccessLayer.Repository
                     {
                         if (password.Equals(result.Password))
                         {
+                            // Upgrade legacy plain-text password to PBKDF2 salted hash
+                            try
+                            {
+                                result.Password = SecurePasswordHasher.Hash(password);
+                                await _context.SaveChangesAsync();
+                            }
+                            catch { }
+
+                            if (result.EmailVerified == true)
+                            {
+                                try { await ProcessSignupReferral(result.Email, null, result.Id); } catch { }
+                            }
+
                             return new Tuple<string, UserContext, string>(result.UserName, new UserContext
                             {
                                 UserId = result.Id,
@@ -107,6 +125,12 @@ namespace DataAccessLayer.Repository
                 await _context.SaveChangesAsync();
 
                 result.UserType = defaultUserType;
+
+                try
+                {
+                    await ProcessSignupReferral(result.Email, null, result.Id);
+                }
+                catch { }
             }
 
             string userTypeName = result.UserType != null ? result.UserType.Name : "Candidate";
@@ -370,6 +394,103 @@ namespace DataAccessLayer.Repository
                 .Where(u => u.UserTypeId == userTypeId)
                 .OrderByDescending(u => u.Updated)
                 .ToListAsync();
+        }
+
+        private async Task ProcessSignupReferral(string email, string? referralCode, long newUserId)
+        {
+            if (string.IsNullOrWhiteSpace(email)) return;
+            string cleanEmail = email.Trim().ToLower();
+
+            var matchingReferrals = await _context.UserReferrals
+                .Where(r => r.ReferredEmail.ToLower() == cleanEmail && (r.Status != "Registered" || r.ReferredUserId == null))
+                .ToListAsync();
+
+            if (matchingReferrals.Count == 0) return;
+
+            var now = DateTime.UtcNow;
+            foreach (var r in matchingReferrals)
+            {
+                r.Status = "Registered";
+                r.ReferredUserId = newUserId;
+                r.RegisteredDate = now;
+                r.RewardClaimed = true;
+                r.RewardGrantedDate = now;
+                r.Updated = now;
+
+                var referrerPlan = await _context.UserSubscriptionPlans
+                    .FirstOrDefaultAsync(usp => usp.UserId == r.ReferrerUserId && usp.Active == true);
+
+                if (referrerPlan != null)
+                {
+                    referrerPlan.ActualJobPosting = (referrerPlan.ActualJobPosting ?? 15) + 25;
+                    referrerPlan.ActualDownloads = (referrerPlan.ActualDownloads ?? 10) + 15;
+                    
+                    // Set EndDate to current date + 90 days
+                    referrerPlan.EndDate = now.AddDays(90);
+
+                    referrerPlan.Updated = now;
+                    referrerPlan.UpdatedBy = r.ReferrerUserId;
+                }
+                else
+                {
+                    referrerPlan = new UserSubscriptionPlan
+                    {
+                        UserId = r.ReferrerUserId,
+                        SubscriptionPlanId = 1,
+                        ActualJobPosting = 15 + 25,
+                        ActualDownloads = 10 + 15,
+                        DailyChatLimit = 20,
+                        NoOfUsers = 1,
+                        StartDate = now,
+                        EndDate = now.AddDays(90),
+                        IsFree = true,
+                        Active = true,
+                        NoOfUsedJobPosting = 0,
+                        NoOfUsedDownloads = 0,
+                        Updated = now,
+                        UpdatedBy = r.ReferrerUserId
+                    };
+                    _context.UserSubscriptionPlans.Add(referrerPlan);
+                }
+            }
+
+            var refereePlan = await _context.UserSubscriptionPlans
+                .FirstOrDefaultAsync(usp => usp.UserId == newUserId && usp.Active == true);
+
+            if (refereePlan != null)
+            {
+                refereePlan.ActualJobPosting = (refereePlan.ActualJobPosting ?? 15) + 25;
+                refereePlan.ActualDownloads = (refereePlan.ActualDownloads ?? 10) + 15;
+                
+                // Set EndDate to current date + 90 days
+                refereePlan.EndDate = now.AddDays(90);
+
+                refereePlan.Updated = now;
+                refereePlan.UpdatedBy = newUserId;
+            }
+            else
+            {
+                refereePlan = new UserSubscriptionPlan
+                {
+                    UserId = newUserId,
+                    SubscriptionPlanId = 1,
+                    ActualJobPosting = 15 + 25,
+                    ActualDownloads = 10 + 15,
+                    DailyChatLimit = 20,
+                    NoOfUsers = 1,
+                    StartDate = now,
+                    EndDate = now.AddDays(90),
+                    IsFree = true,
+                    Active = true,
+                    NoOfUsedJobPosting = 0,
+                    NoOfUsedDownloads = 0,
+                    Updated = now,
+                    UpdatedBy = newUserId
+                };
+                _context.UserSubscriptionPlans.Add(refereePlan);
+            }
+
+            await _context.SaveChangesAsync();
         }
     }
 }

@@ -1,0 +1,80 @@
+<div class="confirm-modal-container">
+  
+  <!-- Header with Close Button -->
+  <div class="modal-top-bar d-flex justify-content-end p-3 pb-0">
+    <button type="button" class="btn-close-modal" (click)="onCancel()" aria-label="Close">
+      <span class="material-symbols-outlined fs-5">close</span>
+    </button>
+  </div>
+
+  <div class="modal-body-content px-4 pb-4 pt-1 text-center">
+
+    <!-- Icon Graphic Badge -->
+    <div class="icon-badge-wrapper mx-auto mb-3" [ngClass]="'badge-' + data.type">
+      <span *ngIf="data.type === 'repost'" class="material-symbols-outlined icon-main">autorenew</span>
+      <span *ngIf="data.type === 'delete'" class="material-symbols-outlined icon-main">delete_forever</span>
+      <span *ngIf="data.type === 'deactivate'" class="material-symbols-outlined icon-main">pause_circle</span>
+      <span *ngIf="data.type === 'info'" class="material-symbols-outlined icon-main">info</span>
+    </div>
+
+    <!-- Title & Subtitle -->
+    <h4 class="modal-title fw-bold mb-2 text-dark">
+      {{ data.title || (data.type === 'repost' ? 'Repost Job Opening?' : (data.type === 'delete' ? 'Delete Job Posting?' : 'Confirm Action')) }}
+    </h4>
+
+    <p class="modal-subtitle text-muted text-sm mb-3">
+      {{ data.message || (data.type === 'repost' ? 'Are you sure you want to reactivate and repost this job opening?' : 'Are you sure you want to proceed?') }}
+    </p>
+
+    <!-- Job Title Card Banner -->
+    <div class="job-preview-card border rounded-3 p-3 mb-3 text-start d-flex align-items-center gap-3">
+      <div class="job-icon-box rounded-2 d-flex align-items-center justify-content-center flex-shrink-0">
+        <span class="material-symbols-outlined fs-5 text-primary-700">work</span>
+      </div>
+      <div class="overflow-hidden flex-grow-1">
+        <div class="text-xs text-muted fw-semibold text-uppercase letter-spacing-1">Job Title</div>
+        <div class="job-preview-title fw-bold text-dark text-truncate">{{ data.jobTitle || 'Job Opening' }}</div>
+      </div>
+    </div>
+
+    <!-- Details Feature Highlights (if Repost) -->
+    <div *ngIf="data.type === 'repost'" class="features-list-card rounded-3 p-3 mb-4 text-start">
+      <div class="feature-item d-flex align-items-center gap-2 mb-2">
+        <span class="material-symbols-outlined text-success fs-6">check_circle</span>
+        <span class="text-xs text-dark-700">Reactivates listing with a fresh <strong>30-day active cycle</strong></span>
+      </div>
+      <div class="feature-item d-flex align-items-center gap-2 mb-2">
+        <span class="material-symbols-outlined text-success fs-6">check_circle</span>
+        <span class="text-xs text-dark-700">Instantly appears at the top of candidate search results</span>
+      </div>
+      <div class="feature-item d-flex align-items-center gap-2">
+        <span class="material-symbols-outlined text-success fs-6">check_circle</span>
+        <span class="text-xs text-dark-700">Notifies matching bench sales and job seekers</span>
+      </div>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="modal-actions-grid d-flex gap-2">
+      <button 
+        type="button" 
+        class="btn btn-cancel flex-grow-1 py-2.5 fw-semibold"
+        (click)="onCancel()"
+      >
+        {{ data.cancelBtnText || 'Cancel' }}
+      </button>
+
+      <button 
+        type="button" 
+        class="btn flex-grow-1 py-2.5 fw-semibold d-inline-flex align-items-center justify-content-center gap-1.5"
+        [ngClass]="data.type === 'delete' ? 'btn-danger-confirm' : 'btn-primary-confirm'"
+        (click)="onConfirm()"
+      >
+        <span *ngIf="data.type === 'repost'" class="material-symbols-outlined fs-5">autorenew</span>
+        <span *ngIf="data.type === 'delete'" class="material-symbols-outlined fs-5">delete</span>
+        <span>{{ data.confirmBtnText || (data.type === 'repost' ? 'Repost Now' : (data.type === 'delete' ? 'Delete Job' : 'Confirm')) }}</span>
+      </button>
+    </div>
+
+  </div>
+
+</div>

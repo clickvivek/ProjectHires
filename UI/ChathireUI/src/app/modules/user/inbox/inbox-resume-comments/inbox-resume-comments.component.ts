@@ -4,6 +4,7 @@ import { JobOpeningService } from 'src/app/api';
 import { SessionService } from 'src/app/core/session/session.service';
 import { ToastrService } from 'ngx-toastr';
 import * as moment from 'moment';
+import { getMeaningfulErrorMessage } from 'src/app/modules/shared/utils/error-handler.util';
 
 @Component({
   selector: 'inbox-resume-comments',
@@ -42,7 +43,7 @@ export class InboxResumeCommentsComponent {
         });
       },
       error:(error:any) => {
-        this.toastr.error('Some error occured', '' , {
+        this.toastr.error(getMeaningfulErrorMessage(error, 'Failed to delete comment. Please try again.'), '' , {
           timeOut: 3000,
           positionClass: 'toast-top-center'
         });
@@ -70,7 +71,7 @@ export class InboxResumeCommentsComponent {
         });
       },
       error:(error:any) => {
-        this.toastr.error('Some error occured', '' , {
+        this.toastr.error(getMeaningfulErrorMessage(error, 'Failed to add comment. Please try again.'), '' , {
           timeOut: 3000,
           positionClass: 'toast-top-center'
         });

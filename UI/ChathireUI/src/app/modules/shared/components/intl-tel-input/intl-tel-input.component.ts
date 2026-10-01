@@ -12,6 +12,8 @@ export class IntlTelInputComponent implements OnInit, AfterViewInit, OnChanges, 
     
     @Input() phoneNumber = '';
     @Input() cssClass = 'form-control';
+    @Input() showLabel: boolean = false;
+    @Input() labelText: string = 'Phone (Optional)';
     @Output() phoneNumberChange = new EventEmitter<string>();
 
     @Input() edit:boolean = false;

@@ -3,20 +3,36 @@
     <div class="container-fluid px-3 px-xl-4">
       <a
           class="navbar-brand"
-          [routerLink]="isLoggedIn() ? (isCandidate() ? '/search-jobs' : '/dashboard') : '/home'"
+          [routerLink]="isLoggedIn() ? (isProfileSetupPending() ? '/dashboard' : (isCandidate() ? '/search-jobs' : '/dashboard')) : '/home'"
           routerLinkActive="active"
           [routerLinkActiveOptions]="{ exact: true }"
         ><h1 class="logo-text">ChatHire</h1>
           <img class="logo" src="assets/images/logo.png" alt="ChatHire" />
         </a>
-      <button class="navbar-toggle">
-        <div class="navbar-toggler-icon" (click)="showMenuMini()">
-          <span class="top"></span>
-          <span class="middle"></span>
-          <span class="bottom"></span>
+
+      <!-- When profile setup is pending: show only Logout button -->
+      <ng-container *ngIf="isProfileSetupPending()">
+        <div class="ms-auto d-flex align-items-center">
+          <button 
+            type="button" 
+            class="btn btn-outline-danger btn-sm d-inline-flex align-items-center gap-1 px-3 py-1 rounded-3 fw-medium shadow-sm"
+            (click)="logout()"
+          >
+            <span class="material-symbols-outlined fs-6">logout</span>
+            <span>Logout</span>
+          </button>
         </div>
-      </button>
-      <div class="navbar-collapse nav-right justify-content-end" id="navbarSupportedContent">
+      </ng-container>
+
+      <ng-container *ngIf="!isProfileSetupPending()">
+        <button class="navbar-toggle">
+          <div class="navbar-toggler-icon" (click)="showMenuMini()">
+            <span class="top"></span>
+            <span class="middle"></span>
+            <span class="bottom"></span>
+          </div>
+        </button>
+        <div class="navbar-collapse nav-right justify-content-end" id="navbarSupportedContent">
 
         <!-- Public Profile Link in Header on Profile Page -->
         <ng-container *ngIf="!isNotProfile()">
@@ -63,7 +79,7 @@
               <li class="nav-item">
                 <a class="nav-link referral-header-btn" routerLink="/refer-for-rewards" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
                   <span class="material-symbols-outlined fs-5 me-1 text-warning">featured_seasonal_and_gifts</span>
-                  <span>Refer for Rewards</span>
+                  <span>Refer</span>
                 </a>
               </li>
               <li class="nav-item special ms-lg-2">
@@ -172,7 +188,7 @@
                       [routerLinkActiveOptions]="{ exact: true }"
                       ><span class="material-symbols-outlined icon me-2 text-warning">
                         featured_seasonal_and_gifts</span
-                      >Refer for Rewards</a
+                      >Refer</a
                     >
                     <div class="dropdown-divider"></div>
                     <a
@@ -262,7 +278,7 @@
                     [routerLinkActiveOptions]="{ exact: true }"
                     ><span class="material-symbols-outlined icon me-2 text-warning">
                       featured_seasonal_and_gifts </span
-                    >Refer for Rewards</a
+                    >Refer</a
                   >
                 </div>
               </li>
@@ -303,7 +319,7 @@
                     [routerLinkActiveOptions]="{ exact: true }"
                     ><span class="material-symbols-outlined icon me-2 text-warning">
                       featured_seasonal_and_gifts </span
-                    >Refer for Rewards</a
+                    >Refer</a
                   >
                 </div>
               </li>
@@ -311,18 +327,17 @@
                 <a class="nav-link nav-link-custom" routerLink="/profile/{{profileId}}" target="_blank">Public Profile</a>
               </li>
 
-              <!-- Refer for Rewards Button in Header Navbar -->
+              <!-- Refer Button in Header Navbar -->
               <li class="nav-item ms-lg-1 me-lg-1">
                 <a
                   class="nav-link referral-header-btn"
                   routerLink="/refer-for-rewards"
                   routerLinkActive="active"
                   [routerLinkActiveOptions]="{ exact: true }"
-                  title="Refer Friends & Colleagues to Earn Free Postings"
+                  title="Refer & Earn Rewards"
                 >
                   <span class="material-symbols-outlined fs-5 me-1 text-warning">featured_seasonal_and_gifts</span>
-                  <span>Refer for Rewards</span>
-                  <span class="badge bg-warning text-dark ms-1 px-1 py-0 fw-bold rounded-pill" style="font-size: 10px;">Free</span>
+                  <span>Refer</span>
                 </a>
               </li>
 
@@ -397,7 +412,7 @@
                       style="color: #7e22ce;"
                       ><span class="material-symbols-outlined icon me-2" style="color: #7e22ce;">
                         redeem</span
-                      >Refer for Rewards <span class="badge bg-warning text-dark ms-1 px-1 py-0 rounded-pill" style="font-size: 10px;">Free</span></a
+                      >Refer</a
                     >
                     <a
                       class="dropdown-item"
@@ -442,6 +457,7 @@
 
         
       </div>
+      </ng-container>
     </div>
   </nav>
 </header>

@@ -1,4 +1,4 @@
-﻿using BusinessEntityAndDTO.DTO;
+using BusinessEntityAndDTO.DTO;
 using DataAccessLayer.Common;
 using DataAccessLayer.Models;
 using Microsoft.EntityFrameworkCore;
@@ -19,11 +19,27 @@ namespace DataAccessLayer.Repository
         public ConsultancyRepository(EFContexts context) : base(context) { }
 
 
-        //_context.ConsultancyUsers.Where(s => s.ConsultancyId == ConsultancyId && s.UserId == Userid).Count()>0
         public async Task<List<Consultancy>> SearchConsultancies(string conName)
         {
+            if (string.IsNullOrWhiteSpace(conName))
+            {
+                return new List<Consultancy>();
+            }
 
-            return await _context.Consultancies.Where(s => s.Name.StartsWith(conName)).ToListAsync();
+            var clean = conName.Trim();
+            var cleanNoProtocol = clean
+                .Replace("https://", "", StringComparison.OrdinalIgnoreCase)
+                .Replace("http://", "", StringComparison.OrdinalIgnoreCase)
+                .Replace("www.", "", StringComparison.OrdinalIgnoreCase)
+                .Trim('/', ' ', '\\');
+
+            return await _context.Consultancies
+                .Where(s => (s.Active == null || s.Active == true) &&
+                            ((s.Name != null && (s.Name.Contains(clean) || s.Name.Contains(cleanNoProtocol))) ||
+                             (s.Website != null && (s.Website.Contains(clean) || s.Website.Contains(cleanNoProtocol))) ||
+                             (s.Domainname != null && (s.Domainname.Contains(clean) || s.Domainname.Contains(cleanNoProtocol)))))
+                .Take(50)
+                .ToListAsync();
         }
 
     }

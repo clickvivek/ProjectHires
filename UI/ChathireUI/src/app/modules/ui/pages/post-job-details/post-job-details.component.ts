@@ -18,6 +18,7 @@ import { AuthService } from 'src/app/core/auth/auth.service';
 import { TokenService } from 'src/app/api/api/token.service';
 import { HttpClient } from '@angular/common/http';
 import { environment } from 'src/environments/environment';
+import { getMeaningfulErrorMessage } from 'src/app/modules/shared/utils/error-handler.util';
 
 export interface UserQuotaStatus {
   cycleStartDate: string;
@@ -79,7 +80,8 @@ export class PostJobDetailsComponent {
     directClient: null,
     billingRangeId: '',
     fromAmt: 0,
-    toAmt: 0
+    toAmt: 0,
+    projectDurationmonths: null
   }
 
   selectJobPositionTypeList: any;
@@ -586,6 +588,33 @@ export class PostJobDetailsComponent {
     }
   }
 
+  onDurationKeyPress(event: KeyboardEvent) {
+    const charCode = event.which ? event.which : event.keyCode;
+    if (charCode < 48 || charCode > 57) {
+      event.preventDefault();
+      return;
+    }
+    const input = event.target as HTMLInputElement;
+    if (input.value && input.value.length >= 2) {
+      event.preventDefault();
+    }
+  }
+
+  onDurationInput(event: any) {
+    const input = event.target as HTMLInputElement;
+    let val = input.value;
+    if (val) {
+      val = val.replace(/\D/g, '');
+      if (val.length > 2) {
+        val = val.slice(0, 2);
+      }
+      input.value = val;
+      this.formData.projectDurationmonths = val ? parseInt(val, 10) : null;
+    } else {
+      this.formData.projectDurationmonths = null;
+    }
+  }
+
   postJob() {
     
     this.isFormSubmitted = true
@@ -606,6 +635,7 @@ export class PostJobDetailsComponent {
      else {
 
       const parsedTotalExp = (this.formData.totalExp != null && this.formData.totalExp !== '') ? parseInt(this.formData.totalExp, 10) : 0;
+      const parsedDuration = (this.formData.projectDurationmonths != null && this.formData.projectDurationmonths !== '') ? parseInt(this.formData.projectDurationmonths, 10) : null;
       const candidateCountry = this.isRemoteJob()
         ? (this.formData.country || 'USA')
         : (this.formData.jobOpeningLocations?.[0]?.countryName || this.formData.country || 'USA');
@@ -618,6 +648,7 @@ export class PostJobDetailsComponent {
           joiningdays: 0,
           description: this.formData.description,
           totalExp: parsedTotalExp,
+          projectDurationmonths: parsedDuration,
           postedDate: new Date().toISOString(),
           lastDate: new Date().toISOString(),
           numberOfOpening: 0,
@@ -655,6 +686,7 @@ export class PostJobDetailsComponent {
           joiningdays: this.formData.joiningdays,
           description: this.formData.description,
           totalExp: parsedTotalExp,
+          projectDurationmonths: parsedDuration,
           postedDate: new Date().toISOString(),
           lastDate: new Date().toISOString(),
           numberOfOpening: this.formData.numberOfOpening,
@@ -701,9 +733,13 @@ export class PostJobDetailsComponent {
         return;
       }
        
-      this.jobOpeningService.apiJobOpeningAddPost(this.job).subscribe({
+      const saveObservable = this.isEdit
+        ? this.jobOpeningService.apiJobOpeningUpdatePut(this.job)
+        : this.jobOpeningService.apiJobOpeningAddPost(this.job);
+
+      saveObservable.subscribe({
           next: (res : any) => {
-            this.toastr.success(`Job ${this.isEdit ? 'reposted' : 'posted'} successfully`, '' , {
+            this.toastr.success(`Job ${this.isEdit ? 'updated' : 'posted'} successfully`, '' , {
               timeOut: 3000,
               positionClass: 'toast-top-center'
             });
@@ -721,15 +757,15 @@ export class PostJobDetailsComponent {
 
           },
           error: (error:any) => {
-            const errMsg = error?.error?.errors?.[0]?.message || error?.message || 'Some error occured';
-            this.toastr.error(errMsg, 'Job Posting Failed' , {
+            const errMsg = getMeaningfulErrorMessage(error, `Failed to ${this.isEdit ? 'update' : 'post'} job. Please check all required fields and try again.`);
+            this.toastr.error(errMsg, `Job ${this.isEdit ? 'Update' : 'Posting'} Failed` , {
               timeOut: 6000,
               positionClass: 'toast-top-center'
             });
             this.scrollToTop();
             this.isFormSubmitted = false
           }
-        })
+        });
        
 
      }

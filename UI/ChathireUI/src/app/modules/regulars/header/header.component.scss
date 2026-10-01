@@ -39,31 +39,58 @@ header {
     }
 
     .referral-header-btn {
-      background: linear-gradient(135deg, #fdf4ff 0%, #fae8ff 100%) !important;
-      border: 1px solid #f0abfc !important;
-      color: #86198f !important;
+      background-color: #FAF5FA !important;
+      border: 1px solid #E9D8E8 !important;
+      color: #70246D !important;
       border-radius: 20px !important;
-      padding: 5px 12px !important;
+      padding: 5px 14px !important;
       font-weight: 600 !important;
-      font-size: 13px !important;
-      box-shadow: 0 1px 3px rgba(134, 25, 143, 0.1);
+      font-size: 13.5px !important;
+      box-shadow: 0 1px 2px rgba(112, 36, 109, 0.06);
       transition: all 0.2s ease-in-out;
+      display: inline-flex !important;
+      align-items: center;
+      text-decoration: none;
+
+      span {
+        color: #70246D !important;
+        font-weight: 600 !important;
+        transition: color 0.2s ease-in-out;
+      }
+
+      .material-symbols-outlined {
+        color: #D97706 !important;
+        transition: color 0.2s ease-in-out;
+      }
 
       &:hover {
-        background: linear-gradient(135deg, #fae8ff 0%, #f5d0fe 100%) !important;
-        border-color: #e879f9 !important;
-        color: #701a75 !important;
+        background-color: #70246D !important;
+        border-color: #70246D !important;
+        color: #ffffff !important;
         transform: translateY(-1px);
-        box-shadow: 0 4px 8px rgba(134, 25, 143, 0.15);
+        box-shadow: 0 3px 8px rgba(112, 36, 109, 0.2);
+
+        span {
+          color: #ffffff !important;
+        }
+
+        .material-symbols-outlined {
+          color: #FDE047 !important;
+        }
       }
 
       &.active {
-        background: #86198f !important;
+        background-color: #70246D !important;
         color: #ffffff !important;
-        border-color: #86198f !important;
+        border-color: #70246D !important;
+        box-shadow: 0 2px 6px rgba(112, 36, 109, 0.25);
+
+        span {
+          color: #ffffff !important;
+        }
 
         .material-symbols-outlined {
-          color: #fde047 !important;
+          color: #FDE047 !important;
         }
 
         .badge {
@@ -328,18 +355,66 @@ header {
             transition: color 0.2s ease-in-out;
             display: inline-flex;
             align-items: center;
-            &:hover,
-            &.active {
+            &:not(.referral-header-btn):hover,
+            &:not(.referral-header-btn).active {
               color: #2E625D !important;
             }
+
+            &.referral-header-btn {
+              background-color: #FAF5FA !important;
+              border: 1px solid #E9D8E8 !important;
+              color: #70246D !important;
+              border-radius: 20px !important;
+              padding: 5px 14px !important;
+              font-weight: 600 !important;
+              font-size: 13.5px !important;
+              box-shadow: 0 1px 2px rgba(112, 36, 109, 0.06);
+
+              span {
+                color: #70246D !important;
+              }
+
+              .material-symbols-outlined {
+                color: #D97706 !important;
+              }
+
+              &:hover {
+                background-color: #70246D !important;
+                border-color: #70246D !important;
+                color: #ffffff !important;
+
+                span {
+                  color: #ffffff !important;
+                }
+
+                .material-symbols-outlined {
+                  color: #FDE047 !important;
+                }
+              }
+
+              &.active {
+                background-color: #70246D !important;
+                border-color: #70246D !important;
+                color: #ffffff !important;
+
+                span {
+                  color: #ffffff !important;
+                }
+
+                .material-symbols-outlined {
+                  color: #FDE047 !important;
+                }
+              }
+            }
+
             @include hires-breakpoint("lg") {
               font-size: 13px;
             }
             @include hires-breakpoint("lt-lg") {
               font-size: 16px;
               padding: 0;
-              &:hover,
-              &.active {
+              &:not(.referral-header-btn):hover,
+              &:not(.referral-header-btn).active {
                 color: #2E625D !important;
               }
             }

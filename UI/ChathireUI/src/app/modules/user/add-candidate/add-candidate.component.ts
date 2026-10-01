@@ -10,6 +10,7 @@ import { CommonService } from 'src/app/api';
 import { ToastrService } from 'ngx-toastr';
 import { forkJoin, Subject, of } from 'rxjs';
 import { switchMap, catchError } from 'rxjs/operators';
+import { getMeaningfulErrorMessage } from 'src/app/modules/shared/utils/error-handler.util';
 
 import _ from 'underscore';
 
@@ -330,7 +331,7 @@ export class AddCandidateComponent implements OnInit, OnDestroy {
         this.successToast()
       },
       error: (error: any) => { 
-        this.errorToast()
+        this.errorToast(error)
       }
     })
   }
@@ -343,9 +344,10 @@ export class AddCandidateComponent implements OnInit, OnDestroy {
     this.scrollToTop();
   }
 
-  errorToast() {
-    this.toastr.error('Some error occured', '' , {
-      timeOut: 3000,
+  errorToast(error?: any) {
+    const msg = getMeaningfulErrorMessage(error, 'Failed to save candidate. Please verify the entered information and try again.');
+    this.toastr.error(msg, '' , {
+      timeOut: 4000,
       positionClass: 'toast-top-center'
     });
     this.scrollToTop();
@@ -410,7 +412,7 @@ export class AddCandidateComponent implements OnInit, OnDestroy {
             }
           },
           error: (error:any) => {
-            this.errorToast()
+            this.errorToast(error)
             this.isFormSubmitted = false
             this.isCandidatePosted = true;
           }
@@ -469,7 +471,7 @@ export class AddCandidateComponent implements OnInit, OnDestroy {
           error: (error:any) => {
             this.isFormSubmitted = false
             this.isCandidatePosted = true;
-            this.errorToast()
+            this.errorToast(error)
           }
         })
 

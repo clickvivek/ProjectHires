@@ -48,6 +48,11 @@ export class SearchFieldComponent implements OnInit, OnChanges, OnDestroy {
   @Output() inputChange = new EventEmitter();
   @Output() createNewClick = new EventEmitter();
 
+  formatWebsite(website: string | null | undefined): string {
+    if (!website) return '';
+    return website.replace(/^https?:\/\//i, '').replace(/\/$/, '');
+  }
+
   isCompanyItem(item: any): boolean {
     return !!(item && (item.logo !== undefined || item.domainname !== undefined || item.website !== undefined || this.fieldName === 'consultancyId' || this.fieldName === 'companyId'));
   }
@@ -121,21 +126,29 @@ export class SearchFieldComponent implements OnInit, OnChanges, OnDestroy {
   clearList() {
     this.fieldModel = "";
     this.selectedItem = null;
+    this.isExpanded = false;
+    this.fieldList = [];
+    this.inputChange.emit(null);
   }
 
   handleModelChange(){
-    if(this.fieldModel && this.fieldModel.length > 1) {
+    if (this.selectedItem && this.getItemData(this.selectedItem) !== this.fieldModel) {
+      this.selectedItem = null;
+      this.inputChange.emit(null);
+    }
+    if (this.fieldModel && this.fieldModel.trim().length > 1) {
       this.isExpanded = true;
       this.searchSubject.next(this.fieldModel.trim());
     }
     else {
       this.isExpanded = false;
+      this.fieldList = [];
     }
   }
 
   ngOnInit() {
     this.searchSubscription = this.searchSubject.pipe(
-      debounceTime(250),
+      debounceTime(150),
       distinctUntilChanged()
     ).subscribe((term: string) => {
       this.queryChange.emit(term);

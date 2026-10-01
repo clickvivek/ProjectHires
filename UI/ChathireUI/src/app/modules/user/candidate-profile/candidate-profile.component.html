@@ -254,12 +254,10 @@
                         <div class="col-md-7">
                           <label class="form-label fw-semibold small text-secondary">Your Custom Profile Handle / URL</label>
                           <div class="input-group">
-                            <span class="input-group-text bg-light text-muted small border-end-0">
-                              {{ publicProfileUrlPrefix }}
-                            </span>
+                            <span class="input-group-text bg-light text-muted small border-end-0 ps-3 pe-0">{{ publicProfileUrlPrefix }}</span>
                             <input
                               type="text"
-                              class="form-control border-start-0 font-monospace"
+                              class="form-control border-start-0 font-monospace ps-0"
                               formControlName="publicProfileSlug"
                               placeholder="e.g. john-doe"
                               (input)="onSlugInput()"

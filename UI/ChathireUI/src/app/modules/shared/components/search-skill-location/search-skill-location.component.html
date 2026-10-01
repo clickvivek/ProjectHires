@@ -99,17 +99,19 @@
           </div>
         </div>
 
-        <button type="submit"  class="item go-btn submit-btn fw-bold px-4 text-white text-uppercase" *ngIf="page == 'home'" style="border-radius: 6px;">
-          <span class="d-md-none text-base">Search {{type == 'jobs' ? 'Jobs' : 'Talent'}}</span>
-          <span class="d-none d-md-block">SEARCH {{type == 'jobs' ? 'JOBS' : 'TALENT'}}</span>
+        <button type="submit" class="item go-btn submit-btn fw-bold px-4 text-white text-uppercase d-inline-flex align-items-center justify-content-center gap-2" *ngIf="page == 'home'" style="border-radius: 6px;" [disabled]="isSearching">
+          <span *ngIf="isSearching" class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
+          <span class="d-md-none text-base">{{ isSearching ? 'Searching...' : ('Search ' + (type == 'jobs' ? 'Jobs' : 'Talent')) }}</span>
+          <span class="d-none d-md-block">{{ isSearching ? 'SEARCHING...' : ('SEARCH ' + (type == 'jobs' ? 'JOBS' : 'TALENT')) }}</span>
         </button>
 
       </div>
 
       <div class="search-btn-box" *ngIf="page != 'home'">
-        <button type="submit" class="btn btn-primary submit-btn">
-          Search {{type == 'jobs' ? 'Jobs' : 'Resumes / Hotlist'}}
-         </button>
+        <button type="submit" class="btn btn-primary submit-btn d-inline-flex align-items-center justify-content-center gap-2" [disabled]="isSearching">
+          <span *ngIf="isSearching" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+          <span>{{ isSearching ? 'Searching...' : ('Search ' + (type == 'jobs' ? 'Jobs' : 'Resumes / Hotlist')) }}</span>
+        </button>
       </div>
 
      

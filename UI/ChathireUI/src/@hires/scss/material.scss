@@ -74,6 +74,18 @@
       }
     }
   }
+
+  &.confirm-action-dialog-panel {
+    border-radius: 16px !important;
+    overflow: hidden !important;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2) !important;
+    .mat-dialog-container {
+      padding: 0 !important;
+      border-radius: 16px !important;
+      background: #ffffff !important;
+      overflow: hidden !important;
+    }
+  }
 }
 
 .mat-drawer-container {

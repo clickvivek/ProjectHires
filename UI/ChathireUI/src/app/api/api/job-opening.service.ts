@@ -1979,4 +1979,23 @@ export class JobOpeningService {
         );
     }
 
+    public apiJobOpeningRepostPost(jobId: number, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext}): Observable<any> {
+        let localVarHeaders = this.defaultHeaders;
+        let localVarCredential = this.configuration.lookupCredential('Bearer');
+        if (localVarCredential) {
+            localVarHeaders = localVarHeaders.set('Authorization', localVarCredential);
+        }
+        let localVarQueryParameters = new HttpParams({encoder: this.encoder});
+        localVarQueryParameters = localVarQueryParameters.set('jobId', <any>jobId);
+        let localVarPath = `/api/JobOpening/Repost`;
+        return this.httpClient.request<any>('post', `${this.configuration.basePath}${localVarPath}`,
+            {
+                params: localVarQueryParameters,
+                headers: localVarHeaders,
+                observe: observe,
+                reportProgress: reportProgress
+            }
+        );
+    }
+
 }

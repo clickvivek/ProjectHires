@@ -26,22 +26,28 @@
 
             <!-- Stats Metrics Row -->
             <div class="row g-3 mt-2 pt-3 border-top">
-              <div class="col-4 col-sm-3 col-md-2">
+              <div class="col-6 col-sm-3 col-md-2">
                 <div class="stat-mini-box" (click)="setFilterTab('all')" [class.stat-active]="filterTab === 'all'">
                   <span class="stat-count text-dark">{{ initialDataList.length }}</span>
                   <span class="stat-label">Total Jobs</span>
                 </div>
               </div>
-              <div class="col-4 col-sm-3 col-md-2">
+              <div class="col-6 col-sm-3 col-md-2">
                 <div class="stat-mini-box" (click)="setFilterTab('active')" [class.stat-active]="filterTab === 'active'">
                   <span class="stat-count text-success">{{ getActiveCount() }}</span>
                   <span class="stat-label">Active</span>
                 </div>
               </div>
-              <div class="col-4 col-sm-3 col-md-2">
+              <div class="col-6 col-sm-3 col-md-2">
                 <div class="stat-mini-box" (click)="setFilterTab('inactive')" [class.stat-active]="filterTab === 'inactive'">
                   <span class="stat-count text-muted">{{ getInactiveCount() }}</span>
                   <span class="stat-label">Inactive</span>
+                </div>
+              </div>
+              <div class="col-6 col-sm-3 col-md-2">
+                <div class="stat-mini-box" (click)="setFilterTab('expired')" [class.stat-active]="filterTab === 'expired'">
+                  <span class="stat-count text-danger">{{ getExpiredCount() }}</span>
+                  <span class="stat-label">Expired</span>
                 </div>
               </div>
             </div>
@@ -98,6 +104,14 @@
                     (click)="setFilterTab('inactive')"
                   >
                     Inactive ({{ getInactiveCount() }})
+                  </button>
+                  <button
+                    type="button"
+                    class="btn btn-sm btn-filter-tab"
+                    [class.active]="filterTab === 'expired'"
+                    (click)="setFilterTab('expired')"
+                  >
+                    Expired ({{ getExpiredCount() }})
                   </button>
                 </div>
               </div>

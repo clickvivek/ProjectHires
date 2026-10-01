@@ -964,6 +964,10 @@ public partial class HiresContext : DbContext
             entity.Property(e => e.UserName)
                 .HasMaxLength(100)
                 .IsUnicode(false);
+            entity.Property(e => e.Aboutme)
+                .IsUnicode(true);
+            entity.Property(e => e.Myskills)
+                .IsUnicode(true);
 
             entity.HasOne(d => d.City).WithMany(p => p.Users)
                 .HasForeignKey(d => d.CityId)

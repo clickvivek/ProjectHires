@@ -1,10 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
+import { MatDialog } from '@angular/material/dialog';
 import * as moment from 'moment';
 import { SessionService } from 'src/app/core/session/session.service';
 import { CandidateProfileService } from 'src/app/api/api/candidate-profile.service';
 import { JobOpeningService, ConsultancyService } from 'src/app/api';
 import { SharedService } from '../../../shared/services/shared.service';
+import { ReferralModalComponent } from '../../../shared/components/referral-modal/referral-modal.component';
 import { picUrl } from 'src/app/data/various';
 
 @Component({
@@ -39,7 +41,8 @@ export class DashboardHighlightsComponent implements OnInit {
     private sharedService: SharedService,
     private candidateProfileService: CandidateProfileService,
     private jobOpeningService: JobOpeningService,
-    private consultancyService: ConsultancyService
+    private consultancyService: ConsultancyService,
+    private dialog: MatDialog
   ) { }
 
   ngOnInit() {
@@ -290,6 +293,18 @@ export class DashboardHighlightsComponent implements OnInit {
       (c.name && c.name.toLowerCase().includes(term)) ||
       (c.title && c.title.toLowerCase().includes(term))
     );
+  }
+
+  openReferralModal(event?: Event): void {
+    if (event) {
+      event.preventDefault();
+      event.stopPropagation();
+    }
+    this.dialog.open(ReferralModalComponent, {
+      width: '680px',
+      maxWidth: '95vw',
+      panelClass: 'referral-modal-panel'
+    });
   }
 
 }

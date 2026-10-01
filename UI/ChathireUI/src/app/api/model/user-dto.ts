@@ -44,6 +44,8 @@ export interface UserDto {
     consultancyUserId?: number | null;
     roleRecruiter?: boolean | null;
     roleBenchSales?: boolean | null;
+    aboutme?: string | null;
+    myskills?: string | null;
     consultancyUsers?: Array<ConsultancyUserDtoForReturn> | null;
 }
 

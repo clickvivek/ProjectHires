@@ -30,6 +30,7 @@ namespace DataAccessLayer.Repository
         Task<List<JobOpeningSummary>> GetCountJobsPostedByConsultancyUserId(long ConsultancyUserId, DateTime FromDate, DateTime ToDate);
         Task<List<JobOpeningSummary>> GetCountActiveJobsAsOfToday(long ConsultancyUserId, UserContext userContext);
         Task<int> ExpireOldJobOpeningsAsync(int daysThreshold = 30);
+        Task<List<JobOpening>> GetExpiredJobsToProcessAsync(int daysThreshold = 30);
         Task<RecruiterStatsDto> GetRecruiterStats(long consultancyUserId, UserContext userContext);
 
     }
@@ -261,6 +262,7 @@ namespace DataAccessLayer.Repository
                     result.UserName = reader["UserName"].ToString();
                     result.ProfilePic = reader["ProfilePic"].ToString();
                     result.CompanyLogo = HasColumn(reader, "CompanyLogo") && reader["CompanyLogo"] != DBNull.Value ? reader["CompanyLogo"].ToString() : null;
+                    result.ProjectDurationmonths = HasColumn(reader, "ProjectDurationmonths") && reader["ProjectDurationmonths"] != DBNull.Value ? reader["ProjectDurationmonths"].ToString() : null;
                     result.Skills = reader["Skills"].ToString().Split('|').ToList();
                     result.Locations = reader["Locations"].ToString().Split('|').ToList();
                     result.Visas = reader["Visas"].ToString().Split('|').ToList();
@@ -441,6 +443,20 @@ namespace DataAccessLayer.Repository
                     .SetProperty(j => j.IsExpired, true)
                     .SetProperty(j => j.Active, false)
                     .SetProperty(j => j.Updated, DateTime.UtcNow));
+        }
+
+        public async Task<List<JobOpening>> GetExpiredJobsToProcessAsync(int daysThreshold = 30)
+        {
+            var cutoffDate = DateTime.UtcNow.AddDays(-daysThreshold);
+            var today = DateTime.UtcNow.Date;
+            return await _context.JobOpenings
+                .Include(j => j.ConsultancyUser)
+                    .ThenInclude(cu => cu.User)
+                .Include(j => j.ConsultancyUser)
+                    .ThenInclude(cu => cu.Consultancy)
+                .Where(j => (j.IsExpired == null || j.IsExpired == false) &&
+                            ((j.PostedDate != null && j.PostedDate < cutoffDate) || (j.LastDate != null && j.LastDate < today)))
+                .ToListAsync();
         }
 
         public async Task<RecruiterStatsDto> GetRecruiterStats(long consultancyUserId, UserContext userContext)

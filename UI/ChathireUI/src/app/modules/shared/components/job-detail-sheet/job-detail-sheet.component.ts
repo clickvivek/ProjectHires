@@ -154,6 +154,50 @@ export class JobDetailSheetComponent implements OnInit {
     return formatted.join(' ; ');
   }
 
+  isJobRemote(job: any): boolean {
+    if (!job) return false;
+    if (job.employmentTypes && Array.isArray(job.employmentTypes)) {
+      if (job.employmentTypes.some((et: string) => typeof et === 'string' && et.trim().toLowerCase().includes('remote'))) {
+        return true;
+      }
+    }
+    if (job.jobTypes && Array.isArray(job.jobTypes)) {
+      if (job.jobTypes.some((jt: string) => typeof jt === 'string' && jt.trim().toLowerCase().includes('remote'))) {
+        return true;
+      }
+    }
+    if (job.jobLocation && typeof job.jobLocation === 'string' && job.jobLocation.toLowerCase().includes('remote')) {
+      return true;
+    }
+    if (job.jobOpeningName && typeof job.jobOpeningName === 'string' && job.jobOpeningName.toLowerCase().includes('remote')) {
+      return true;
+    }
+    return false;
+  }
+
+  getJobLocationDisplay(job: any): string {
+    if (!job) return '';
+    const formattedLoc = this.getFormattedLocations(job.locations);
+    const isRemote = this.isJobRemote(job);
+
+    if (formattedLoc && formattedLoc.trim().length > 0) {
+      if (isRemote && !formattedLoc.toLowerCase().includes('remote')) {
+        return `${formattedLoc} (Remote)`;
+      }
+      return formattedLoc;
+    }
+
+    if (isRemote) {
+      return 'Remote';
+    }
+
+    if (job.jobLocation && typeof job.jobLocation === 'string' && job.jobLocation.trim().length > 0) {
+      return job.jobLocation.trim();
+    }
+
+    return '';
+  }
+
   getVisaDetails(visas: any) {
     if(!_.isEmpty(visas))
     return visas.join(',');
@@ -162,10 +206,11 @@ export class JobDetailSheetComponent implements OnInit {
   }
 
   getProfilePic(url) {
-    if(url)
-      return `${picUrl}${url}`
-    else
-      return defaultProfilePic
+    if (url) {
+      if (url.startsWith('http://') || url.startsWith('https://')) return url;
+      return `${picUrl}${url}`;
+    }
+    return defaultProfilePic;
   }
 
   generateJobId(userSpecificNumber) {

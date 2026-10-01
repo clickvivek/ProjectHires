@@ -1,5 +1,6 @@
 import { Component, Input, Output, EventEmitter, HostListener, SimpleChanges } from '@angular/core';
 import { JobOpeningService } from 'src/app/api';
+import { getMeaningfulErrorMessage } from 'src/app/modules/shared/utils/error-handler.util';
 import _ from 'underscore';
 
 @Component({
@@ -137,7 +138,7 @@ export class ProfileJobPostingHistoryComponent {
             this.isJobLoaded = true;
             this.isJobAvailable = false;
             this.isError = true;
-            this.error = "Some error occured";
+            this.error = getMeaningfulErrorMessage(error, 'Unable to load job postings for this profile.');
             this.outParams.emit(false);
           }
         });

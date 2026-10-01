@@ -19,6 +19,7 @@ namespace DataAccessLayer.Repository
         Task<UserQuotaStatusDto> GetUserQuotaStatus(long userId, UserContext userContext);
         Task<UserQuotaListResponseDto> GetAllUsersQuotas(int page, int pageSize, string? search, string? filter, UserContext userContext);
         Task<bool> UpdateUserQuota(UpdateUserQuotaDto dto, UserContext userContext);
+        Task<InitiateChatResultDto> InitiateChat(long userId, long chatUserId, UserContext userContext);
     }
 
     public class UserSubscriptionPlanRepository : BaseRepository<UserSubscriptionPlan, long>, IUserSubscriptionPlanRepository
@@ -141,6 +142,27 @@ namespace DataAccessLayer.Repository
             double postingPct = maxJobPostings > 0 ? Math.Min(100.0, Math.Round((double)usedJobPostings / maxJobPostings * 100.0, 1)) : 0;
             double downloadPct = maxDownloads > 0 ? Math.Min(100.0, Math.Round((double)usedDownloads / maxDownloads * 100.0, 1)) : 0;
 
+            var windowStart = now.AddHours(-24);
+            var recentChats = await _context.ChatHistories
+                .Where(c => c.UserId == userId && c.ChatTime >= windowStart)
+                .OrderBy(c => c.ChatTime)
+                .ToListAsync();
+            int usedChatsToday = recentChats.Count;
+            int remainingChatsToday = Math.Max(0, dailyChatLimit - usedChatsToday);
+
+            DateTime? nextSlotAvailableAtUtc = null;
+            long? nextSlotWaitSeconds = null;
+            string nextSlotWaitText = string.Empty;
+
+            if (usedChatsToday >= dailyChatLimit && recentChats.Any())
+            {
+                var earliest = recentChats.First();
+                nextSlotAvailableAtUtc = earliest.ChatTime.AddHours(24);
+                var wait = nextSlotAvailableAtUtc.Value > now ? (nextSlotAvailableAtUtc.Value - now) : TimeSpan.Zero;
+                nextSlotWaitSeconds = (long)Math.Ceiling(wait.TotalSeconds);
+                nextSlotWaitText = FormatWaitDuration(wait);
+            }
+
             return new UserQuotaStatusDto
             {
                 CycleStartDate = cycleStartDate,
@@ -153,8 +175,11 @@ namespace DataAccessLayer.Repository
                 UsedDownloads = usedDownloads,
                 RemainingDownloads = remainingDownloads,
                 DailyChatLimit = dailyChatLimit,
-                UsedChatsToday = 0,
-                RemainingChatsToday = dailyChatLimit,
+                UsedChatsToday = usedChatsToday,
+                RemainingChatsToday = remainingChatsToday,
+                NextSlotAvailableAtUtc = nextSlotAvailableAtUtc,
+                NextSlotWaitSeconds = nextSlotWaitSeconds,
+                NextSlotWaitText = nextSlotWaitText,
                 IsFreeTier = isFreeTier,
                 PlanName = planName,
                 IsLimitReached = remainingJobPostings <= 0,
@@ -380,6 +405,178 @@ namespace DataAccessLayer.Repository
 
             await _context.SaveChangesAsync();
             return true;
+        }
+
+        private static string FormatWaitDuration(TimeSpan timeSpan)
+        {
+            if (timeSpan.TotalSeconds <= 0) return "a few seconds";
+
+            int totalMinutes = (int)Math.Ceiling(timeSpan.TotalMinutes);
+            int hours = (int)timeSpan.TotalHours;
+            int minutes = timeSpan.Minutes;
+
+            if (hours >= 1)
+            {
+                if (minutes > 0)
+                {
+                    return $"{hours} hr{(hours > 1 ? "s" : "")} {minutes} min{(minutes > 1 ? "s" : "")}";
+                }
+                return $"{hours} hr{(hours > 1 ? "s" : "")}";
+            }
+
+            if (totalMinutes > 1)
+            {
+                return $"{totalMinutes} mins";
+            }
+
+            if (totalMinutes == 1)
+            {
+                return "1 min";
+            }
+
+            int seconds = Math.Max(1, (int)timeSpan.TotalSeconds);
+            return $"{seconds} sec{(seconds > 1 ? "s" : "")}";
+        }
+
+        public async Task<InitiateChatResultDto> InitiateChat(long userId, long chatUserId, UserContext userContext)
+        {
+            var now = DateTime.UtcNow;
+            var windowStart = now.AddHours(-24);
+
+            var configRepo = new ConfigRepository(_context);
+            int inactiveDays = await configRepo.GetConfigIntAsync("InactiveChatPurgeDays", 30);
+            int defaultDailyLimit = await configRepo.GetConfigIntAsync("DefaultDailyChatLimit", 20);
+
+            if (userId <= 0)
+            {
+                return new InitiateChatResultDto
+                {
+                    CanChat = false,
+                    DailyChatLimit = defaultDailyLimit,
+                    UsedChatsToday = 0,
+                    RemainingChatsToday = 0,
+                    Message = "Please log in to initiate chat."
+                };
+            }
+
+            // Get user active plan
+            var subPlans = await _context.UserSubscriptionPlans
+                .Include(o => o.SubscriptionPlan)
+                .Where(c => c.UserId == userId && c.Active == true)
+                .ToListAsync();
+
+            var activePaidPlan = subPlans.FirstOrDefault(p => (p.ActualJobPosting > 15 || p.IsFree == false || (p.SubscriptionPlan != null && p.SubscriptionPlan.IsFree == false)) && (p.EndDate == null || p.EndDate >= now));
+
+            int dailyChatLimit = defaultDailyLimit;
+            if (activePaidPlan != null)
+            {
+                dailyChatLimit = (activePaidPlan.DailyChatLimit.HasValue && activePaidPlan.DailyChatLimit.Value > 0)
+                    ? activePaidPlan.DailyChatLimit.Value
+                    : (activePaidPlan.IsFree == false ? 500 : defaultDailyLimit);
+            }
+            else
+            {
+                var freePlan = subPlans.FirstOrDefault();
+                if (freePlan != null && freePlan.DailyChatLimit.HasValue && freePlan.DailyChatLimit.Value > 0)
+                {
+                    dailyChatLimit = freePlan.DailyChatLimit.Value;
+                }
+            }
+
+            var recentChats = await _context.ChatHistories
+                .Where(c => c.UserId == userId && c.ChatTime >= windowStart && (c.IsActive == true || c.IsActive == null))
+                .OrderBy(c => c.ChatTime)
+                .ToListAsync();
+
+            int usedChatsInWindow = recentChats.Count;
+
+            if (chatUserId <= 0 || chatUserId == userId)
+            {
+                return new InitiateChatResultDto
+                {
+                    CanChat = true,
+                    DailyChatLimit = dailyChatLimit,
+                    UsedChatsToday = usedChatsInWindow,
+                    RemainingChatsToday = Math.Max(0, dailyChatLimit - usedChatsInWindow),
+                    IsExistingConversationToday = true,
+                    Message = "Valid session."
+                };
+            }
+
+            // Check if conversation was already logged in the last 24 hours with this partner
+            bool alreadyChattedInLast24Hours = recentChats.Any(c => c.ChatUserId == chatUserId);
+
+            if (alreadyChattedInLast24Hours)
+            {
+                return new InitiateChatResultDto
+                {
+                    CanChat = true,
+                    DailyChatLimit = dailyChatLimit,
+                    UsedChatsToday = usedChatsInWindow,
+                    RemainingChatsToday = Math.Max(0, dailyChatLimit - usedChatsInWindow),
+                    IsExistingConversationToday = true,
+                    Message = "Continuing existing conversation."
+                };
+            }
+
+            // Check if there was any active chat within the configured inactiveDays (e.g. 30 days)
+            var inactivityThreshold = now.AddDays(-inactiveDays);
+            var lastChatWithPartner = await _context.ChatHistories
+                .Where(c => c.UserId == userId && c.ChatUserId == chatUserId)
+                .OrderByDescending(c => c.ChatTime)
+                .FirstOrDefaultAsync();
+
+            bool isChatOlderThanInactivityWindow = lastChatWithPartner == null 
+                || lastChatWithPartner.ChatTime < inactivityThreshold 
+                || lastChatWithPartner.IsActive == false;
+
+            if (usedChatsInWindow >= dailyChatLimit)
+            {
+                var earliest = recentChats.First();
+                var nextSlotUtc = earliest.ChatTime.AddHours(24);
+                var wait = nextSlotUtc > now ? (nextSlotUtc - now) : TimeSpan.Zero;
+                long waitSec = (long)Math.Ceiling(wait.TotalSeconds);
+                string waitTxt = FormatWaitDuration(wait);
+
+                return new InitiateChatResultDto
+                {
+                    CanChat = false,
+                    DailyChatLimit = dailyChatLimit,
+                    UsedChatsToday = usedChatsInWindow,
+                    RemainingChatsToday = 0,
+                    IsExistingConversationToday = false,
+                    NextSlotAvailableAtUtc = nextSlotUtc,
+                    NextSlotWaitSeconds = waitSec,
+                    NextSlotWaitText = waitTxt,
+                    Message = $"You have reached your limit of {dailyChatLimit} chats in the last 24 hours. Please wait {waitTxt} to initiate your next chat, or refer colleagues to earn +50 chats."
+                };
+            }
+
+            // Insert new chat record
+            var record = new ChatHistory
+            {
+                UserId = userId,
+                ChatUserId = chatUserId,
+                ChatTime = now,
+                IsActive = true,
+                Updated = now,
+                UpdatedBy = userId
+            };
+            _context.ChatHistories.Add(record);
+            await _context.SaveChangesAsync();
+
+            usedChatsInWindow++;
+            int remainingChatsToday = Math.Max(0, dailyChatLimit - usedChatsInWindow);
+
+            return new InitiateChatResultDto
+            {
+                CanChat = true,
+                DailyChatLimit = dailyChatLimit,
+                UsedChatsToday = usedChatsInWindow,
+                RemainingChatsToday = remainingChatsToday,
+                IsExistingConversationToday = false,
+                Message = "Chat initiated successfully."
+            };
         }
     }
 }

@@ -8,12 +8,16 @@
 		(ngModelChange)="handleModelChange()"
     	[required]="fieldRequired"
 		[disabled]="fieldDisabled"
-		autocomplete="off">
+		autocomplete="new-password"
+		data-lpignore="true"
+		autocorrect="off"
+		autocapitalize="off"
+		spellcheck="false">
 	<span class="search-control" (click)="clearList()" *ngIf="!fieldDisabled">
     <i class="fa fa-search" aria-hidden="true" *ngIf="!selectedItem"></i>
     <i class="fa fa-times pointer" aria-hidden="true" *ngIf="selectedItem"></i>
   </span>
-	<div class="dropdown-wrapper show" *ngIf="isExpanded">
+	<div class="dropdown-wrapper show" *ngIf="isExpanded && fieldList && fieldList.length > 0">
 		<div class="list-group dropdown">
 			<ng-container *ngFor="let item of fieldList; let i = index">
 				<li class="list-group-item search-suggestion-item" (click)="getSelectedItem(item)">
@@ -32,9 +36,12 @@
 							</div>
 						</div>
 						<div class="company-details flex-grow-1 min-w-0">
-							<div class="company-name text-truncate fw-medium">{{ getItemData(item) }}</div>
-							<div class="company-domain text-muted text-xs text-truncate" *ngIf="item.domainname || item.website">
-								{{ item.domainname || item.website }}
+							<div class="company-name text-truncate fw-medium d-flex align-items-center flex-wrap gap-1">
+								<span class="text-dark">{{ getItemData(item) }}</span>
+								<span *ngIf="item.website" class="company-website text-muted text-xs fw-normal">({{ formatWebsite(item.website) }})</span>
+							</div>
+							<div class="company-domain text-muted text-xs text-truncate" *ngIf="item.domainname">
+								{{ item.domainname }}
 							</div>
 						</div>
 					</div>
@@ -45,7 +52,11 @@
 					</div>
 				</li>
 			</ng-container>
-			<div *ngIf="showCreateOption && (!fieldList || fieldList.length === 0)" class="p-3 text-center bg-white border-top">
+		</div>
+	</div>
+	<div class="dropdown-wrapper show" *ngIf="isExpanded && showCreateOption && (!fieldList || fieldList.length === 0)">
+		<div class="list-group dropdown">
+			<div class="p-3 text-center bg-white">
 				<p class="text-muted text-xs mb-2">No matching company found</p>
 				<button type="button" class="btn btn-sm btn-purple-outline d-inline-flex align-items-center gap-1" (click)="triggerCreateNew($event)">
 					<i class="fa fa-plus-circle"></i>

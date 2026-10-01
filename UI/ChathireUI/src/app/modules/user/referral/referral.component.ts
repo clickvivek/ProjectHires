@@ -197,14 +197,18 @@ export class ReferralComponent implements OnInit {
     }
   }
 
+  private getFullReferralLink(): string {
+    return this.stats.referralLink || `https://chathire.com/#/signup?ref=${this.stats.referralCode || ('REF' + (this.currentUser?.id || ''))}`;
+  }
+
   shareWhatsApp(): void {
-    const link = encodeURIComponent(this.stats.referralLink || 'https://chathire.com');
-    const msg = encodeURIComponent(`Hey! Sign up on ChatHire with my invite link to get 3 Months Free Job Postings and unlimited candidate connections: `) + link;
+    const link = this.getFullReferralLink();
+    const msg = encodeURIComponent(`Hey! Sign up on ChatHire with my invite link to get Free Job Postings & candidate connections: ${link}`);
     window.open(`https://api.whatsapp.com/send?text=${msg}`, '_blank');
   }
 
   shareLinkedIn(): void {
-    const link = encodeURIComponent(this.stats.referralLink || 'https://chathire.com');
+    const link = encodeURIComponent(this.getFullReferralLink());
     window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${link}`, '_blank');
   }
 

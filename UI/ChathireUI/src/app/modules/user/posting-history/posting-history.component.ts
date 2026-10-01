@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 
+import * as moment from 'moment';
 import _ from 'underscore';
 
 import { JobOpeningService } from 'src/app/api';
@@ -24,7 +25,7 @@ export class PostingHistoryComponent implements OnInit, OnDestroy {
   isError: boolean = false;
 
   searchData: string = "";
-  filterTab: 'all' | 'active' | 'inactive' = 'all';
+  filterTab: 'all' | 'active' | 'inactive' | 'expired' = 'all';
 
   ItemStartIndex: number = 0;
   ItemEndIndex: number = 10;
@@ -52,7 +53,7 @@ export class PostingHistoryComponent implements OnInit, OnDestroy {
     this.filterData();
   }
 
-  setFilterTab(tab: 'all' | 'active' | 'inactive') {
+  setFilterTab(tab: 'all' | 'active' | 'inactive' | 'expired') {
     this.filterTab = tab;
     this.filterData();
   }
@@ -63,21 +64,45 @@ export class PostingHistoryComponent implements OnInit, OnDestroy {
     this.filterData();
   }
 
+  isJobExpired(job: any): boolean {
+    if (!job) return false;
+    if (job.isExpired === true) return true;
+    if (job.postedDate) {
+      const days = moment().diff(moment(job.postedDate), 'days');
+      if (days >= 30) return true;
+    }
+    return false;
+  }
+
+  isJobActive(job: any): boolean {
+    return !!job?.active && !this.isJobExpired(job);
+  }
+
+  isJobInactive(job: any): boolean {
+    return !job?.active && !this.isJobExpired(job);
+  }
+
   getActiveCount(): number {
-    return this.initialDataList.filter(item => item.active).length;
+    return this.initialDataList.filter(item => this.isJobActive(item)).length;
   }
 
   getInactiveCount(): number {
-    return this.initialDataList.filter(item => !item.active).length;
+    return this.initialDataList.filter(item => this.isJobInactive(item)).length;
+  }
+
+  getExpiredCount(): number {
+    return this.initialDataList.filter(item => this.isJobExpired(item)).length;
   }
 
   filterData() {
     let list = this.initialDataList;
 
     if (this.filterTab === 'active') {
-      list = list.filter(item => item.active);
+      list = list.filter(item => this.isJobActive(item));
     } else if (this.filterTab === 'inactive') {
-      list = list.filter(item => !item.active);
+      list = list.filter(item => this.isJobInactive(item));
+    } else if (this.filterTab === 'expired') {
+      list = list.filter(item => this.isJobExpired(item));
     }
 
     if (this.searchData && this.searchData.trim()) {

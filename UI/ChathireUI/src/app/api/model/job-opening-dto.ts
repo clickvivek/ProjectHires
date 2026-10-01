@@ -42,6 +42,7 @@ export interface JobOpeningDto {
     localCandidatePref?: boolean | null;
     localCandidateOnly?: boolean | null;
     isExpired?: boolean | null;
+    projectDurationmonths?: number | null;
     jobOpeningSkills?: Array<JobOpeningSkillDto> | null;
     jobOpeningVisaMaps?: Array<JobOpeningVisaMapDto> | null;
     jobOpeningLocations?: Array<JobOpeningLocationDto> | null;

@@ -47,17 +47,33 @@ export class SearchSkillLocationComponent  {
     
   }
 
+  isSearching: boolean = false;
+
   submitSkillLocationForm() {
-
     if (this.searchSkillLocationForm.valid) {
-      if (this.type == 'jobs') {
-        this.router.navigate(['/search-jobs'], { queryParamsHandling: 'merge', queryParams: {skill: this.skill, location: this.location, cid: this.cityId} });
-      } 
-      else {
-        this.router.navigate(['/search-hotlist'], {queryParamsHandling: 'merge', queryParams: { skill: this.skill, location: this.location, cid: this.cityId } });
-      }
-    }
+      this.isSearching = true;
+      const targetUrl = this.type === 'jobs' ? '/search-jobs' : '/search-hotlist';
+      const timestamp = new Date().getTime();
 
+      const queryParams: any = {
+        skill: this.skill || '',
+        location: this.location || '',
+        cid: this.cityId || null,
+        _t: timestamp
+      };
+
+      this.router.navigate([targetUrl], {
+        queryParams: queryParams
+      }).then(() => {
+        setTimeout(() => {
+          this.isSearching = false;
+        }, 1000);
+      }).catch(() => {
+        setTimeout(() => {
+          this.isSearching = false;
+        }, 1000);
+      });
+    }
   }
 
   @HostListener('document:click', ['$event'])

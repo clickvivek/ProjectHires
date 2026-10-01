@@ -6,7 +6,10 @@ import _ from 'underscore';
 
 import { JobOpeningService } from 'src/app/api';
 import { ToastrService } from 'ngx-toastr';
+import { MatDialog } from '@angular/material/dialog';
 import { SharedService } from 'src/app/modules/shared/services/shared.service';
+import { getMeaningfulErrorMessage } from 'src/app/modules/shared/utils/error-handler.util';
+import { ConfirmActionModalComponent } from '../confirm-action-modal/confirm-action-modal.component';
 
 @Component({
   selector: 'posting-history-list',
@@ -42,6 +45,7 @@ export class PostingHistoryListComponent {
     private jobOpeningService: JobOpeningService,
     private toastr: ToastrService,
     private sharedService: SharedService,
+    private dialog: MatDialog,
   ) { }
 
   getFormattedLocation(locations: any): string {
@@ -124,6 +128,35 @@ export class PostingHistoryListComponent {
     }
   }
 
+  isExpired(): boolean {
+    if (!this.item) return false;
+    if (this.item.isExpired === true) return true;
+    if (this.item.postedDate) {
+      const days = moment().diff(moment(this.item.postedDate), 'days');
+      if (days >= 30) return true;
+    }
+    return false;
+  }
+
+  getRemainingDays(): number {
+    if (!this.item?.postedDate) return 30;
+    const daysPassed = moment().diff(moment(this.item.postedDate), 'days');
+    return Math.max(0, 30 - daysPassed);
+  }
+
+  getRemainingDaysText(): string {
+    const rem = this.getRemainingDays();
+    if (rem === 0) return 'Expires today';
+    if (rem === 1) return 'Expires tomorrow';
+    return `Expires in ${rem} days`;
+  }
+
+  getExpiredDateText(): string {
+    if (!this.item?.postedDate) return '';
+    const expiryDate = moment(this.item.postedDate).add(30, 'days');
+    return expiryDate.format('MMM D, YYYY');
+  }
+
   handleActiveToggle(newStatus: boolean) {
     this.jobOpeningService.apiJobOpeningActivateDeactivateJobPut(this.item.id, newStatus).subscribe({
       next: (res: any) => {
@@ -142,24 +175,75 @@ export class PostingHistoryListComponent {
     });
   }
 
+  repostPost(item: any) {
+    const dialogRef = this.dialog.open(ConfirmActionModalComponent, {
+      width: '450px',
+      panelClass: ['material', 'confirm-action-dialog-panel'],
+      data: {
+        type: 'repost',
+        title: 'Repost Job Opening?',
+        jobTitle: item.name,
+        message: 'Reactivate this job posting for an additional 30 days to start receiving new candidate applications.',
+        confirmBtnText: 'Repost Now',
+        cancelBtnText: 'Cancel'
+      }
+    });
+
+    dialogRef.afterClosed().subscribe((confirmed: boolean) => {
+      if (confirmed) {
+        this.jobOpeningService.apiJobOpeningRepostPost(item.id).subscribe({
+          next: (res: any) => {
+            this.toastr.success('Job reposted successfully with a fresh 30-day listing!', 'Job Reposted', {
+              timeOut: 3000,
+              positionClass: 'toast-top-center'
+            });
+            this.deleteParams.emit(true);
+          },
+          error: (err: any) => {
+            const errMsg = getMeaningfulErrorMessage(err, 'Failed to repost job. Please check your posting quota.');
+            this.toastr.error(errMsg, 'Repost Failed', {
+              timeOut: 4000,
+              positionClass: 'toast-top-center'
+            });
+          }
+        });
+      }
+    });
+  }
+
   deletePost(item: any) {
-    if (confirm(`Are you sure you want to delete "${item.name}"?`)) {
-      this.jobOpeningService.apiJobOpeningDeleteJobOpeningDelete(item.id).subscribe({
-        next: (res: any) => {
-          this.deleteParams.emit(true);
-          this.toastr.success('Job deleted successfully', '', {
-            timeOut: 2000,
-            positionClass: 'toast-top-center'
-          });
-        },
-        error: (err: any) => {
-          this.toastr.error('Failed to delete job. Please try again.', '', {
-            timeOut: 2000,
-            positionClass: 'toast-top-center'
-          });
-        }
-      });
-    }
+    const dialogRef = this.dialog.open(ConfirmActionModalComponent, {
+      width: '450px',
+      panelClass: ['material', 'confirm-action-dialog-panel'],
+      data: {
+        type: 'delete',
+        title: 'Delete Job Posting?',
+        jobTitle: item.name,
+        message: 'Are you sure you want to permanently delete this job posting? This action cannot be undone.',
+        confirmBtnText: 'Delete Job',
+        cancelBtnText: 'Cancel'
+      }
+    });
+
+    dialogRef.afterClosed().subscribe((confirmed: boolean) => {
+      if (confirmed) {
+        this.jobOpeningService.apiJobOpeningDeleteJobOpeningDelete(item.id).subscribe({
+          next: (res: any) => {
+            this.deleteParams.emit(true);
+            this.toastr.success('Job deleted successfully', '', {
+              timeOut: 2000,
+              positionClass: 'toast-top-center'
+            });
+          },
+          error: (err: any) => {
+            this.toastr.error('Failed to delete job. Please try again.', '', {
+              timeOut: 2000,
+              positionClass: 'toast-top-center'
+            });
+          }
+        });
+      }
+    });
   }
 
   editPost(item: any) {

@@ -1,5 +1,9 @@
 <div class="posting-card-wrapper mb-3">
-  <div class="job-history-card bg-white border rounded-3 p-3 p-md-4 position-relative transition-all" [class.job-inactive]="!item?.active">
+  <div 
+    class="job-history-card bg-white border rounded-3 p-3 p-md-4 position-relative transition-all" 
+    [class.job-inactive]="!item?.active && !isExpired()"
+    [class.job-expired]="isExpired()"
+  >
     
     <!-- Top Row: Title, Location, and Status Toggle -->
     <div class="d-flex align-items-start justify-content-between gap-3 flex-wrap flex-md-nowrap">
@@ -9,10 +13,28 @@
           <h5 class="job-card-title fw-bold mb-0 text-dark" (click)="editPost(item)" role="button" title="Edit this job">
             {{ item?.name }}
           </h5>
-          <span class="status-pill" [ngClass]="item?.active ? 'status-active' : 'status-inactive'">
-            <span class="status-dot"></span>
-            {{ item?.active ? 'Active' : 'Inactive' }}
-          </span>
+
+          <!-- Status Pill: Expired vs Active vs Inactive -->
+          <ng-container *ngIf="isExpired()">
+            <span class="status-pill status-expired">
+              <span class="status-dot"></span>
+              Expired
+            </span>
+          </ng-container>
+
+          <ng-container *ngIf="!isExpired() && item?.active">
+            <span class="status-pill status-active">
+              <span class="status-dot"></span>
+              Active ({{ getRemainingDaysText() }})
+            </span>
+          </ng-container>
+
+          <ng-container *ngIf="!isExpired() && !item?.active">
+            <span class="status-pill status-inactive">
+              <span class="status-dot"></span>
+              Inactive / Paused
+            </span>
+          </ng-container>
         </div>
 
         <!-- Meta Info Row (Location with Country, Posted Date) -->
@@ -28,22 +50,37 @@
             <span class="material-symbols-outlined fs-6 me-1 flex-shrink-0">calendar_today</span>
             <span>Posted on {{ getDate(item?.postedDate) }}</span>
           </div>
+
+          <!-- Project Duration (if provided) -->
+          <div class="meta-item d-flex align-items-center text-dark-700" *ngIf="item?.projectDurationmonths">
+            <span class="material-symbols-outlined fs-6 text-primary me-1 flex-shrink-0">timelapse</span>
+            <span class="fw-medium">{{ item.projectDurationmonths }} {{ item.projectDurationmonths == 1 ? 'Month' : 'Months' }} Duration</span>
+          </div>
         </div>
       </div>
 
-      <!-- Right: Toggle Switch -->
+      <!-- Right: Toggle Switch or Expired Notice -->
       <div class="status-toggle-box flex-shrink-0 d-flex align-items-center gap-2 ms-auto ms-md-0">
-        <span class="toggle-status-label text-sm fw-medium d-none d-sm-inline" [class.text-success]="item?.active" [class.text-muted]="!item?.active">
-          {{ item?.active ? 'Active' : 'Inactive' }}
-        </span>
-        <label class="switch-custom mb-0" title="Toggle Active / Inactive">
-          <input
-            type="checkbox"
-            [checked]="item?.active"
-            (change)="handleActiveToggle(!item?.active)"
-          />
-          <span class="slider-round"></span>
-        </label>
+        <ng-container *ngIf="isExpired()">
+          <span class="badge bg-danger-subtle text-danger border border-danger-subtle px-2 py-1 rounded-pill small fw-semibold d-inline-flex align-items-center gap-1">
+            <span class="material-symbols-outlined" style="font-size: 14px;">event_busy</span>
+            <span>Expired on {{ getExpiredDateText() }}</span>
+          </span>
+        </ng-container>
+
+        <ng-container *ngIf="!isExpired()">
+          <span class="toggle-status-label text-sm fw-medium d-none d-sm-inline" [class.text-success]="item?.active" [class.text-muted]="!item?.active">
+            {{ item?.active ? 'Active' : 'Inactive' }}
+          </span>
+          <label class="switch-custom mb-0" title="Toggle Active / Inactive (Pause)">
+            <input
+              type="checkbox"
+              [checked]="item?.active"
+              (change)="handleActiveToggle(!item?.active)"
+            />
+            <span class="slider-round"></span>
+          </label>
+        </ng-container>
       </div>
     </div>
 
@@ -67,11 +104,23 @@
 
       <!-- Action Buttons -->
       <div class="d-flex align-items-center gap-2">
+        <!-- Repost Button (for expired or paused jobs) -->
+        <button
+          *ngIf="isExpired()"
+          type="button"
+          class="btn btn-sm btn-action-repost d-inline-flex align-items-center gap-1"
+          (click)="repostPost(item)"
+          title="Repost with a fresh 30-day listing"
+        >
+          <span class="material-symbols-outlined fs-6">autorenew</span>
+          <span>Repost Job</span>
+        </button>
+
         <button
           type="button"
           class="btn btn-sm btn-action-edit d-inline-flex align-items-center gap-1"
           (click)="editPost(item)"
-          title="Edit Job Posting"
+          title="Edit Job Details"
         >
           <span class="material-symbols-outlined fs-6">edit</span>
           <span>Edit</span>

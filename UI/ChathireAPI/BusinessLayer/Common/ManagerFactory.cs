@@ -54,6 +54,10 @@ namespace BusinessLayer.Common
             
             _bslObjects.Add(typeof(IUserReferralManager), new Lazy<IManager>(() => new UserReferralManager(services, services.GetService<ILogger<UserReferralManager>>(), services.GetService<IMapper>())));
             
+            _bslObjects.Add(typeof(IConfigManager), new Lazy<IManager>(() => new ConfigManager(services, services.GetService<ILogger<ConfigManager>>(), services.GetService<IMapper>())));
+
+            _bslObjects.Add(typeof(ISearchedManager), new Lazy<IManager>(() => new SearchedManager(services, services.GetService<ILogger<SearchedManager>>(), services.GetService<IMapper>())));
+
             _bslObjects.Add(typeof(IEmailJobPostingManager), new Lazy<IManager>(() => new EmailJobPostingManager(services, services.GetService<EFContexts>(), services.GetService<IJobParserService>(), services.GetService<IHotlistParserService>(), services.GetService<IResendEmailService>(), services.GetService<Microsoft.Extensions.Configuration.IConfiguration>(), services.GetService<ILogger<EmailJobPostingManager>>(), services.GetService<IMapper>())));
         }
 

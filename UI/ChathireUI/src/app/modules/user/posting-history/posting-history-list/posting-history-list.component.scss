@@ -24,6 +24,15 @@
       }
     }
 
+    &.job-expired {
+      background-color: #FFFBFB;
+      border-color: #FECDCA !important;
+
+      .job-card-title {
+        color: #374151 !important;
+      }
+    }
+
     .job-card-title {
       font-size: 17px !important;
       font-weight: 700 !important;
@@ -72,6 +81,16 @@
           background-color: #98A2B3;
         }
       }
+
+      &.status-expired {
+        background-color: #FEF3F2;
+        color: #B42318;
+        border: 1px solid #FECDCA;
+
+        .status-dot {
+          background-color: #F04438;
+        }
+      }
     }
 
     .location-text {
@@ -100,6 +119,34 @@
         span {
           color: #51264C !important;
         }
+      }
+    }
+
+    .btn-action-repost {
+      background: linear-gradient(135deg, #72246C 0%, #9B3893 100%) !important;
+      border: 1px solid #72246C !important;
+      color: #ffffff !important;
+      font-weight: 600 !important;
+      font-size: 13.5px !important;
+      border-radius: 8px !important;
+      padding: 6px 14px !important;
+      display: inline-flex !important;
+      align-items: center !important;
+      gap: 6px !important;
+      box-shadow: 0 2px 4px rgba(114, 36, 108, 0.2) !important;
+      transition: all 0.15s ease-in-out !important;
+
+      span, .material-symbols-outlined {
+        color: #ffffff !important;
+        font-size: 17px !important;
+        line-height: 1 !important;
+        display: inline-block !important;
+      }
+
+      &:hover {
+        background: linear-gradient(135deg, #5b1c56 0%, #72246C 100%) !important;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 8px rgba(114, 36, 108, 0.25) !important;
       }
     }
 

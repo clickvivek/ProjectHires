@@ -81,6 +81,7 @@
                   placeholder="Enter first name"
                   [(ngModel)]="formData.fname"
                   (ngModelChange)="onNameChange()"
+                  (blur)="onNameBlur()"
                   name="firstName"
                   required
                   autocomplete="off"
@@ -112,6 +113,7 @@
                   placeholder="Enter last name"
                   [(ngModel)]="formData.lname"
                   (ngModelChange)="onNameChange()"
+                  (blur)="onNameBlur()"
                   name="lastName"
                   required
                   autocomplete="off"
@@ -238,7 +240,7 @@
                   class="form-control border-start-0"
                   [ngClass]="{'bg-light text-dark': !isEdit}"
                   placeholder="https://example.com"
-                  [(ngModel)]="companyData.email"
+                  [(ngModel)]="companyData.website"
                   name="companyUrl"
                   required
                   autocomplete="off"
@@ -277,12 +279,10 @@
                 <span class="text-muted fw-normal" style="font-size: 0.72rem;">Unique profile URL</span>
               </label>
               <div class="input-group">
-                <span class="input-group-text bg-light text-muted border-end-0 font-monospace small px-2">
-                  {{ publicProfileUrlPrefix }}
-                </span>
+                <span class="input-group-text bg-light text-muted border-end-0 font-monospace small ps-3 pe-0">{{ publicProfileUrlPrefix }}</span>
                 <input
                   type="text"
-                  class="form-control border-start-0 font-monospace"
+                  class="form-control border-start-0 font-monospace ps-0"
                   [ngClass]="{'bg-light text-dark': !isEdit}"
                   placeholder="username"
                   [(ngModel)]="formData.publicProfileUserName"
@@ -426,6 +426,69 @@
                 </p>
               </div>
             </label>
+          </div>
+        </div>
+      </div>
+
+      <!-- Section 4: About Me & Specializations -->
+      <div class="form-section-card p-3 p-md-4 rounded-3 border bg-white mb-4">
+        <div class="d-flex align-items-center gap-2 mb-3 pb-2 border-bottom">
+          <span class="material-symbols-outlined text-teal fs-5">description</span>
+          <div>
+            <h6 class="fw-bold mb-0 text-dark">About Me & Specializations</h6>
+            <span class="text-muted small">Showcase your bio, recruitment background, and core technology skill areas on your public profile.</span>
+          </div>
+        </div>
+
+        <div class="row g-3">
+          <!-- About Me -->
+          <div class="col-12">
+            <div class="form-group mb-0">
+              <label class="form-label fw-semibold small text-secondary d-flex justify-content-between align-items-center">
+                <span>About Me / Professional Bio</span>
+                <span class="text-muted fw-normal" style="font-size: 0.72rem;">Accepts long paragraphs</span>
+              </label>
+              <textarea
+                class="form-control"
+                [ngClass]="{'bg-light text-dark': !isEdit}"
+                rows="4"
+                placeholder="Write a brief professional summary about yourself, your recruitment experience, industry domains, and how you help clients and candidates..."
+                [(ngModel)]="formData.aboutme"
+                name="aboutme"
+                [disabled]="!isEdit"
+              ></textarea>
+            </div>
+          </div>
+
+          <!-- My Skills -->
+          <div class="col-12">
+            <div class="form-group mb-0">
+              <label class="form-label fw-semibold small text-secondary d-flex justify-content-between align-items-center">
+                <span>My Skills / Specializations</span>
+                <span class="text-muted fw-normal" style="font-size: 0.72rem;">Comma-separated (e.g., SAP, Java, .NET, Cloud, DevOps, Salesforce, C2C)</span>
+              </label>
+              <div class="input-group">
+                <span class="input-group-text bg-light text-muted border-end-0">
+                  <span class="material-symbols-outlined fs-6">psychology</span>
+                </span>
+                <input
+                  type="text"
+                  class="form-control border-start-0"
+                  [ngClass]="{'bg-light text-dark': !isEdit}"
+                  placeholder="e.g. SAP, Java, .NET, Cloud, DevOps, Salesforce, Contract Staffing"
+                  [(ngModel)]="formData.myskills"
+                  name="myskills"
+                  [disabled]="!isEdit"
+                />
+              </div>
+
+              <!-- Live Chips Preview -->
+              <div class="d-flex flex-wrap gap-1 mt-2" *ngIf="getSkillChips().length > 0">
+                <span *ngFor="let s of getSkillChips()" class="badge bg-teal-subtle text-teal border border-teal-subtle px-2 py-1 rounded-pill small">
+                  {{ s }}
+                </span>
+              </div>
+            </div>
           </div>
         </div>
       </div>

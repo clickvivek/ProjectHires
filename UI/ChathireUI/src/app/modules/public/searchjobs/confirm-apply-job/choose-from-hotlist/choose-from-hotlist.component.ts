@@ -6,6 +6,7 @@ import { ToastrService } from 'ngx-toastr';
 
 import { JobOpeningService } from 'src/app/api';
 import { JobOpeningCandidateProfileMapDtoForInsert } from 'src/app/api/model/job-opening-candidate-profile-map-dto-for-insert';
+import { getMeaningfulErrorMessage } from 'src/app/modules/shared/utils/error-handler.util';
 import _ from 'underscore';
 
 @Component({
@@ -138,9 +139,10 @@ export class ChooseFromHotlistComponent {
       },
       error: (error:any) => {
         this.isSubmitting = false;
+        const msg = getMeaningfulErrorMessage(error, 'Failed to submit candidate from hotlist. Please try again.');
         setTimeout(() => {
-          this.toastr.error('Some error occured while submitting', '', {
-            timeOut: 2000,
+          this.toastr.error(msg, '', {
+            timeOut: 4000,
             positionClass: 'toast-top-center'
           });
         }, 100);

@@ -255,9 +255,41 @@ namespace MiddleWare.Controllers
         public List<JobOpeningForSearchResultsDto> SearchJobOpenings([FromQuery] JobOpeningForSearchDto job)
         {
             var mgr = managerFactory.Get<IJobOpeningManager>();
+            var results = mgr.SearchJobOpenings(job, GetDummyUserContext());
 
-            return mgr.SearchJobOpenings(job, GetDummyUserContext());
+            // Asynchronously log search to Searched table
+            try
+            {
+                long? userId = null;
+                try
+                {
+                    var userCtx = GetUserContext();
+                    if (userCtx != null && userCtx.UserId > 0) userId = userCtx.UserId;
+                }
+                catch { }
 
+                string ipAddress = HttpContext?.Connection?.RemoteIpAddress?.ToString() ?? string.Empty;
+                var searchedMgr = managerFactory.Get<ISearchedManager>();
+                string? extraFilters = null;
+                var filterParts = new List<string>();
+                if (job.visas != null && job.visas.Any()) filterParts.Add($"Visas: {string.Join(",", job.visas)}");
+                if (job.employmentTypes != null && job.employmentTypes.Any()) filterParts.Add($"EmploymentTypes: {string.Join(",", job.employmentTypes)}");
+                if (job.jobTypes != null && job.jobTypes.Any()) filterParts.Add($"JobTypes: {string.Join(",", job.jobTypes)}");
+                if (job.startYearsOfExp.HasValue || job.endYearsOfExp.HasValue) filterParts.Add($"Exp: {job.startYearsOfExp}-{job.endYearsOfExp} yrs");
+                if (filterParts.Any()) extraFilters = string.Join("; ", filterParts);
+
+                _ = Task.Run(async () =>
+                {
+                    try
+                    {
+                        await searchedMgr.LogSearchAsync("JobSearch", job.searchStrings, null, job.cityIds, results?.Count ?? 0, userId, ipAddress, extraFilters);
+                    }
+                    catch { }
+                });
+            }
+            catch { }
+
+            return results;
         }
 
         [HttpDelete]
@@ -414,6 +446,41 @@ namespace MiddleWare.Controllers
             {
                 var mgr = managerFactory.Get<IJobOpeningManager>();
                 return await mgr.GetRecruiterStats(consultancyUserId, GetDummyUserContext());
+            });
+        }
+
+        [HttpPost]
+        [Route("ProcessExpirations")]
+        [AllowAnonymous]
+        public Task<Result<int>> ProcessExpirations([FromQuery] int daysThreshold = 30)
+        {
+            return ExecuteAsync<int>(async () =>
+            {
+                var mgr = managerFactory.Get<IJobOpeningManager>();
+                return await mgr.ProcessExpiredJobOpeningsAsync(daysThreshold, GetUserContext() ?? GetDummyUserContext());
+            });
+        }
+
+        [HttpPost]
+        [Route("Repost")]
+        public Task<Result<JobOpeningDto>> RepostJobOpening([FromQuery] long jobId)
+        {
+            return ExecuteAsync<JobOpeningDto>(async () =>
+            {
+                var user = GetUserContext() ?? GetDummyUserContext();
+                var subscriptionManager = managerFactory.Get<ISubscriptionManager>();
+
+                if (user != null && user.UserId > 0)
+                {
+                    var quota = await subscriptionManager.GetUserQuotaStatus(user.UserId, user);
+                    if (quota != null && quota.RemainingJobPostings <= 0)
+                    {
+                        throw new Exception($"Job Posting Limit Reached: You have reached your limit of {quota.MaxJobPostings} job postings for this 30-day period. Please upgrade your plan to repost jobs.");
+                    }
+                }
+
+                var mgr = managerFactory.Get<IJobOpeningManager>();
+                return await mgr.RepostJobOpening(jobId, user);
             });
         }
 

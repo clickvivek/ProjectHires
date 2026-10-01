@@ -30,9 +30,9 @@
             {{ selectedJob.companyName }}
           </div>
         </div>
-        <div class="text-dark-500 text-sm location-info d-flex align-items-center mt-1" *ngIf="getFormattedLocations(selectedJob?.locations)">
+        <div class="text-dark-500 text-sm location-info d-flex align-items-center mt-1" *ngIf="getJobLocationDisplay(selectedJob)">
           <span class="material-symbols-outlined text-danger me-1" style="font-size: 16px;">location_on</span>
-          <span>{{ getFormattedLocations(selectedJob?.locations) }}</span>
+          <span>{{ getJobLocationDisplay(selectedJob) }}</span>
         </div>
       </div>
       <div class="text-secondary-500 fw-medium text-sm mt-1">
@@ -104,6 +104,12 @@
           >{{ item }}</span
         >
       </ng-container>
+      <span
+        *ngIf="selectedJob?.projectDurationmonths"
+        class="item text-primary-900 bg-purple-50 text-smr fw-medium"
+      >
+        Duration: {{ selectedJob.projectDurationmonths }} {{ selectedJob.projectDurationmonths == '1' ? 'Month' : 'Months' }}
+      </span>
     </div>
   </div>
 

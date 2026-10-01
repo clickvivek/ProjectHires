@@ -77,6 +77,16 @@
         </button>
         <button
           class="nav-link d-flex align-items-center gap-2"
+          [class.active]="activeTab === 'company-url-scraper'"
+          (click)="setTab('company-url-scraper')"
+          type="button"
+        >
+          <span class="material-symbols-outlined fs-5">language</span>
+          <span>Add Company (URL)</span>
+          <span *ngIf="companyUrlScrapedResults.length > 0" class="badge rounded-pill bg-success ms-1">{{ companyUrlScrapedResults.length }}</span>
+        </button>
+        <button
+          class="nav-link d-flex align-items-center gap-2"
           [class.active]="activeTab === 'linkedin-scraper'"
           (click)="setTab('linkedin-scraper')"
           type="button"
@@ -754,6 +764,17 @@
               </button>
             </div>
 
+            <!-- Sort Filter -->
+            <div class="d-flex align-items-center gap-1">
+              <span class="text-muted small">Sort:</span>
+              <select class="form-select form-select-sm" style="min-width: 175px;" [(ngModel)]="companySortOption" (ngModelChange)="onCompanySortOptionChange($event)">
+                <option value="name_asc">Company Name (A → Z)</option>
+                <option value="name_desc">Company Name (Z → A)</option>
+                <option value="id_asc">ID (Oldest First)</option>
+                <option value="id_desc">ID (Newest First)</option>
+              </select>
+            </div>
+
             <!-- Page Size -->
             <div class="d-flex align-items-center gap-2">
               <span class="text-muted small">Show:</span>
@@ -805,7 +826,14 @@
               <tr>
                 <th scope="col" style="width: 45px;">#</th>
                 <th scope="col" style="width: 45px;">Logo</th>
-                <th scope="col" style="min-width: 260px;">Company Name</th>
+                <th scope="col" style="min-width: 260px;" class="sortable-header cursor-pointer" (click)="toggleCompanySort('name')" title="Click to sort by Company Name (A-Z / Z-A)">
+                  <div class="d-flex align-items-center gap-1">
+                    <span>Company Name</span>
+                    <span class="material-symbols-outlined fs-6 text-muted" *ngIf="companySortColumn !== 'name'">swap_vert</span>
+                    <span class="material-symbols-outlined fs-6 text-primary fw-bold" *ngIf="companySortColumn === 'name' && companySortDirection === 'asc'">arrow_upward</span>
+                    <span class="material-symbols-outlined fs-6 text-primary fw-bold" *ngIf="companySortColumn === 'name' && companySortDirection === 'desc'">arrow_downward</span>
+                  </div>
+                </th>
                 <th scope="col" style="min-width: 220px;">Contact Info</th>
                 <th scope="col" class="text-center" style="width: 110px;">Status</th>
                 <th scope="col" class="text-end" style="width: 80px;">Action</th>
@@ -1002,6 +1030,17 @@
               </button>
             </div>
 
+            <!-- Sort Filter -->
+            <div class="d-flex align-items-center gap-1">
+              <span class="text-muted small">Sort:</span>
+              <select class="form-select form-select-sm" style="min-width: 165px;" [(ngModel)]="reviewSortOption" (ngModelChange)="onReviewSortOptionChange($event)">
+                <option value="name_asc">Company Name (A → Z)</option>
+                <option value="name_desc">Company Name (Z → A)</option>
+                <option value="id_asc">ID (Oldest First)</option>
+                <option value="id_desc">ID (Newest First)</option>
+              </select>
+            </div>
+
             <!-- Page Size Dropdown -->
             <div class="d-flex align-items-center gap-1">
               <span class="text-muted small">Per page:</span>
@@ -1067,7 +1106,14 @@
               <tr>
                 <th scope="col" style="width: 45px;">#</th>
                 <th scope="col" style="width: 45px;">Logo</th>
-                <th scope="col" style="min-width: 240px;">Company Name</th>
+                <th scope="col" style="min-width: 240px;" class="sortable-header cursor-pointer" (click)="toggleReviewSort('name')" title="Click to sort by Company Name (A-Z / Z-A)">
+                  <div class="d-flex align-items-center gap-1">
+                    <span>Company Name</span>
+                    <span class="material-symbols-outlined fs-6 text-muted" *ngIf="reviewSortColumn !== 'name'">swap_vert</span>
+                    <span class="material-symbols-outlined fs-6 text-primary fw-bold" *ngIf="reviewSortColumn === 'name' && reviewSortDirection === 'asc'">arrow_upward</span>
+                    <span class="material-symbols-outlined fs-6 text-primary fw-bold" *ngIf="reviewSortColumn === 'name' && reviewSortDirection === 'desc'">arrow_downward</span>
+                  </div>
+                </th>
                 <th scope="col" style="min-width: 200px;">Contact Info</th>
                 <th scope="col" style="min-width: 140px;">Created Date</th>
                 <th scope="col" class="text-center" style="width: 130px;">Active Status</th>
@@ -1851,6 +1897,396 @@
           </p>
         </div>
 
+      </div>
+
+    </div>
+
+    <!-- ==================================================== -->
+    <!-- TAB: ADD COMPANY BY WEBSITE URL -->
+    <!-- ==================================================== -->
+    <div *ngIf="activeTab === 'company-url-scraper'" class="tab-content-area company-url-scraper-area">
+
+      <!-- Header & Action Bar -->
+      <div class="card border-0 shadow-sm p-3 mb-4">
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center gap-3">
+          <div>
+            <h5 class="mb-1 fw-bold text-dark d-flex align-items-center gap-2">
+              <span class="material-symbols-outlined text-success fs-4">language</span>
+              <span>Add Company by Website URL</span>
+            </h5>
+            <p class="text-muted small mb-0">
+              Enter company website URLs (e.g. <code>stripe.com</code>, <code>https://databricks.com</code>). The scraper discovers the company name, LinkedIn page URL, domain, and logo, and saves/updates them in the database.
+            </p>
+          </div>
+          <div class="d-flex gap-2">
+            <button
+              type="button"
+              class="btn btn-outline-secondary btn-sm d-flex align-items-center gap-1"
+              (click)="exportCompanyUrlResults()"
+              [disabled]="companyUrlScrapedResults.length === 0"
+            >
+              <span class="material-symbols-outlined fs-5">download</span>
+              <span>Export CSV</span>
+            </button>
+            <button
+              type="button"
+              class="btn btn-outline-primary btn-sm d-flex align-items-center gap-1"
+              (click)="fillSampleCompanyUrls()"
+            >
+              <span class="material-symbols-outlined fs-5">data_object</span>
+              <span>Sample URLs</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Summary Metric Cards -->
+      <div class="row g-3 mb-4">
+        <div class="col-6 col-md">
+          <div class="card border-0 shadow-sm p-3 h-100 bg-white border-start border-4 border-primary">
+            <div class="d-flex justify-content-between align-items-center">
+              <div>
+                <div class="text-muted small text-uppercase fw-semibold">Processed</div>
+                <div class="fs-4 fw-bold text-dark mt-1">{{ getCompanyUrlStats().total }}</div>
+              </div>
+              <div class="stat-icon-circle bg-primary-subtle text-primary">
+                <span class="material-symbols-outlined">link</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-6 col-md">
+          <div class="card border-0 shadow-sm p-3 h-100 bg-white border-start border-4 border-success">
+            <div class="d-flex justify-content-between align-items-center">
+              <div>
+                <div class="text-muted small text-uppercase fw-semibold">Saved to DB</div>
+                <div class="fs-4 fw-bold text-success mt-1">{{ getCompanyUrlStats().completed }}</div>
+              </div>
+              <div class="stat-icon-circle bg-success-subtle text-success">
+                <span class="material-symbols-outlined">check_circle</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-6 col-md">
+          <div class="card border-0 shadow-sm p-3 h-100 bg-white border-start border-4 border-info">
+            <div class="d-flex justify-content-between align-items-center">
+              <div>
+                <div class="text-muted small text-uppercase fw-semibold">New Added</div>
+                <div class="fs-4 fw-bold text-info mt-1">{{ getCompanyUrlStats().newRecords }}</div>
+              </div>
+              <div class="stat-icon-circle bg-info-subtle text-info">
+                <span class="material-symbols-outlined">domain_add</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-6 col-md">
+          <div class="card border-0 shadow-sm p-3 h-100 bg-white border-start border-4 border-warning">
+            <div class="d-flex justify-content-between align-items-center">
+              <div>
+                <div class="text-muted small text-uppercase fw-semibold">Updated Existing</div>
+                <div class="fs-4 fw-bold text-warning mt-1">{{ getCompanyUrlStats().updatedRecords }}</div>
+              </div>
+              <div class="stat-icon-circle bg-warning-subtle text-warning">
+                <span class="material-symbols-outlined">update</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-6 col-md">
+          <div class="card border-0 shadow-sm p-3 h-100 bg-white border-start border-4 border-danger">
+            <div class="d-flex justify-content-between align-items-center">
+              <div>
+                <div class="text-muted small text-uppercase fw-semibold">Failed</div>
+                <div class="fs-4 fw-bold text-danger mt-1">{{ getCompanyUrlStats().failed }}</div>
+              </div>
+              <div class="stat-icon-circle bg-danger-subtle text-danger">
+                <span class="material-symbols-outlined">error</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Inline Input Section -->
+      <div class="card border-0 shadow-sm p-4 mb-4">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h6 class="fw-bold text-dark mb-0 d-flex align-items-center gap-2">
+            <span class="material-symbols-outlined text-success fs-5">input</span>
+            <span>Submit Company Website URLs</span>
+          </h6>
+          <span class="badge bg-light text-secondary border px-2 py-1" *ngIf="parsedCompanyUrlCount > 0">
+            {{ parsedCompanyUrlCount }} URL(s) detected
+          </span>
+        </div>
+
+        <div class="row g-3">
+          <!-- Textarea input -->
+          <div class="col-lg-7">
+            <label class="form-label fw-semibold small text-muted">
+              Enter Company URLs (one per line, comma or tab separated)
+            </label>
+            <textarea
+              class="form-control font-monospace"
+              rows="5"
+              placeholder="https://stripe.com&#10;https://databricks.com&#10;infosys.com&#10;https://www.mongodb.com"
+              [(ngModel)]="companyUrlsInput"
+              (ngModelChange)="onCompanyUrlInputChanged()"
+              [disabled]="isScrapingCompanyUrls"
+            ></textarea>
+          </div>
+
+          <!-- Drag & Drop Zone -->
+          <div class="col-lg-5">
+            <label class="form-label fw-semibold small text-muted">Or upload CSV / TXT file</label>
+            <div
+              class="dropzone-box d-flex flex-column align-items-center justify-content-center p-3 text-center border border-2 border-dashed rounded-3 h-75 cursor-pointer position-relative"
+              [class.drag-over]="isDraggingCompanyUrlFile"
+              (dragover)="onCompanyUrlDragOver($event)"
+              (dragleave)="onCompanyUrlDragLeave($event)"
+              (drop)="onCompanyUrlDrop($event)"
+              (click)="companyUrlFileInput.click()"
+            >
+              <input
+                #companyUrlFileInput
+                type="file"
+                accept=".csv,.txt"
+                class="d-none"
+                (change)="onCompanyUrlFileSelected($event)"
+              />
+              <span class="material-symbols-outlined text-success fs-1 mb-1">cloud_upload</span>
+              <div class="fw-semibold small text-dark">Drag & drop CSV or TXT file here</div>
+              <div class="text-muted extra-small">or click to browse from computer</div>
+              <div *ngIf="companyUrlUploadedFileName" class="badge bg-success-subtle text-success mt-2">
+                📄 {{ companyUrlUploadedFileName }}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Actions Bar -->
+        <div class="d-flex flex-column flex-sm-row justify-content-between align-items-sm-center gap-3 mt-4 pt-3 border-top">
+          <div class="form-check form-switch mb-0">
+            <input
+              class="form-check-input cursor-pointer"
+              type="checkbox"
+              id="autoSaveCompanyUrlToDbSwitch"
+              [(ngModel)]="autoSaveCompanyUrlToDb"
+            />
+            <label class="form-check-label small fw-semibold text-dark cursor-pointer" for="autoSaveCompanyUrlToDbSwitch">
+              Automatically save / update in Consultancies database & upload Azure logo
+            </label>
+          </div>
+
+          <div class="d-flex gap-2">
+            <button
+              type="button"
+              class="btn btn-outline-secondary btn-sm px-3"
+              (click)="clearCompanyUrlInputs()"
+              [disabled]="isScrapingCompanyUrls || (!companyUrlsInput && !companyUrlUploadedFileName)"
+            >
+              Clear
+            </button>
+            <button
+              type="button"
+              class="btn btn-primary px-4 d-flex align-items-center gap-2 shadow-sm"
+              (click)="startCompanyUrlScraping()"
+              [disabled]="isScrapingCompanyUrls || parsedCompanyUrlCount === 0"
+            >
+              <span *ngIf="isScrapingCompanyUrls" class="spinner-border spinner-border-sm"></span>
+              <span *ngIf="!isScrapingCompanyUrls" class="material-symbols-outlined fs-5">bolt</span>
+              <span>{{ isScrapingCompanyUrls ? 'Extracting & Saving...' : 'Extract & Save to DB' }}</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Results Table Card -->
+      <div class="card border-0 shadow-sm">
+        <div class="card-header bg-white border-bottom p-3">
+          <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center gap-3">
+            <div class="d-flex align-items-center gap-2">
+              <h6 class="mb-0 fw-bold text-dark">Discovered Companies & LinkedIn Pages</h6>
+              <span *ngIf="companyUrlScrapedResults.length > 0" class="badge bg-secondary rounded-pill">
+                {{ companyUrlScrapedResults.length }}
+              </span>
+            </div>
+
+            <div class="d-flex flex-wrap align-items-center gap-2 w-100 w-md-auto">
+              <!-- Filter Buttons -->
+              <div class="btn-group btn-group-sm" role="group">
+                <button
+                  type="button"
+                  class="btn"
+                  [ngClass]="companyUrlFilter === 'all' ? 'btn-primary text-white' : 'btn-outline-secondary'"
+                  (click)="companyUrlFilter = 'all'"
+                >
+                  All ({{ companyUrlScrapedResults.length }})
+                </button>
+                <button
+                  type="button"
+                  class="btn"
+                  [ngClass]="companyUrlFilter === 'new' ? 'btn-primary text-white' : 'btn-outline-secondary'"
+                  (click)="companyUrlFilter = 'new'"
+                >
+                  New ({{ getCompanyUrlStats().newRecords }})
+                </button>
+                <button
+                  type="button"
+                  class="btn"
+                  [ngClass]="companyUrlFilter === 'updated' ? 'btn-primary text-white' : 'btn-outline-secondary'"
+                  (click)="companyUrlFilter = 'updated'"
+                >
+                  Updated ({{ getCompanyUrlStats().updatedRecords }})
+                </button>
+                <button
+                  type="button"
+                  class="btn"
+                  [ngClass]="companyUrlFilter === 'failed' ? 'btn-primary text-white' : 'btn-outline-secondary'"
+                  (click)="companyUrlFilter = 'failed'"
+                >
+                  Failed ({{ getCompanyUrlStats().failed }})
+                </button>
+              </div>
+
+              <!-- Search Input -->
+              <div class="input-group input-group-sm search-group">
+                <span class="input-group-text bg-light border-end-0">
+                  <span class="material-symbols-outlined fs-6 text-muted">search</span>
+                </span>
+                <input
+                  type="text"
+                  class="form-control border-start-0 bg-light"
+                  placeholder="Search extracted companies..."
+                  [(ngModel)]="companyUrlSearchTerm"
+                />
+              </div>
+
+              <button
+                *ngIf="companyUrlScrapedResults.length > 0"
+                type="button"
+                class="btn btn-outline-danger btn-sm d-flex align-items-center gap-1"
+                (click)="clearCompanyUrlScrapedResults()"
+              >
+                <span class="material-symbols-outlined fs-6">delete_sweep</span>
+                <span>Clear</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Table Body -->
+        <div class="table-responsive">
+          <table class="table table-hover align-middle mb-0 custom-scraper-table">
+            <thead class="table-light">
+              <tr>
+                <th style="width: 50px;">#</th>
+                <th style="width: 65px;">Logo</th>
+                <th>Company Name</th>
+                <th>Website URL</th>
+                <th>Discovered LinkedIn Page</th>
+                <th>DB Status</th>
+                <th>Details</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let item of getFilteredCompanyUrlResults(); let i = index">
+                <td class="text-muted small">{{ i + 1 }}</td>
+                <td>
+                  <div class="logo-preview-box">
+                    <img
+                      *ngIf="item.azureLogoFileName"
+                      [src]="picBaseUrl + item.azureLogoFileName"
+                      [alt]="item.companyName"
+                      class="company-logo-img rounded shadow-xs"
+                      (error)="item.azureLogoFileName = null"
+                    />
+                    <div *ngIf="!item.azureLogoFileName" class="company-logo-placeholder bg-light rounded text-muted">
+                      <span class="material-symbols-outlined fs-5">business</span>
+                    </div>
+                  </div>
+                </td>
+                <td>
+                  <div class="fw-bold text-dark">{{ item.companyName || 'N/A' }}</div>
+                  <div class="text-muted extra-small font-monospace" *ngIf="item.domainName">
+                    {{ item.domainName }}
+                  </div>
+                </td>
+                <td>
+                  <a
+                    *ngIf="item.normalizedWebsiteUrl"
+                    [href]="item.normalizedWebsiteUrl"
+                    target="_blank"
+                    rel="noopener"
+                    class="d-inline-flex align-items-center gap-1 text-decoration-none text-primary small"
+                  >
+                    <span class="text-truncate" style="max-width: 180px;">{{ item.normalizedWebsiteUrl }}</span>
+                    <span class="material-symbols-outlined fs-6">open_in_new</span>
+                  </a>
+                  <span *ngIf="!item.normalizedWebsiteUrl" class="text-muted small">-</span>
+                </td>
+                <td>
+                  <div *ngIf="item.linkedinUrl" class="d-inline-flex align-items-center gap-1">
+                    <a
+                      [href]="item.linkedinUrl"
+                      target="_blank"
+                      rel="noopener"
+                      class="btn btn-xs btn-outline-primary d-inline-flex align-items-center gap-1 px-2 py-1 text-decoration-none"
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 16 16">
+                        <path d="M0 1.146C0 .513.526 0 1.175 0h13.65C15.474 0 16 .513 16 1.146v13.708c0 .633-.526 1.146-1.175 1.146H1.175C.526 16 0 15.487 0 14.854V1.146zm4.943 12.248V6.169H2.542v7.225h2.401zm-1.2-8.212c.837 0 1.358-.554 1.358-1.248-.015-.709-.52-1.248-1.342-1.248-.822 0-1.359.54-1.359 1.248 0 .694.521 1.248 1.327 1.248h.016zm4.908 8.212V9.359c0-.216.016-.432.08-.586.173-.431.568-.878 1.232-.878.869 0 1.216.662 1.216 1.634v3.865h2.401V9.25c0-2.22-1.184-3.252-2.764-3.252-1.274 0-1.845.7-2.165 1.193v.025h-.016a5.54 5.54 0 0 1 .016-.025V6.169h-2.4c.03.678 0 7.225 0 7.225h2.4z"/>
+                      </svg>
+                      <span class="text-truncate" style="max-width: 150px;">{{ item.linkedinUrl.replace('https://www.linkedin.com/company/', '') }}</span>
+                      <span class="material-symbols-outlined fs-6">open_in_new</span>
+                    </a>
+                  </div>
+                  <div *ngIf="!item.linkedinUrl" class="badge bg-light text-muted border">
+                    No LinkedIn Link Found
+                  </div>
+                </td>
+                <td>
+                  <span
+                    *ngIf="item.status === 'Completed' && item.isNewRecord"
+                    class="badge bg-success-subtle text-success border border-success-subtle px-2 py-1"
+                  >
+                    ✨ New Added (ID: {{ item.consultancyId }})
+                  </span>
+                  <span
+                    *ngIf="item.status === 'Completed' && !item.isNewRecord"
+                    class="badge bg-info-subtle text-info border border-info-subtle px-2 py-1"
+                  >
+                    🔄 Updated (ID: {{ item.consultancyId }})
+                  </span>
+                  <span
+                    *ngIf="item.status === 'Failed'"
+                    class="badge bg-danger-subtle text-danger border border-danger-subtle px-2 py-1"
+                  >
+                    ❌ Failed
+                  </span>
+                </td>
+                <td class="small text-muted">
+                  {{ item.statusMessage || '-' }}
+                </td>
+              </tr>
+
+              <!-- Empty State -->
+              <tr *ngIf="getFilteredCompanyUrlResults().length === 0">
+                <td colspan="7" class="text-center py-5">
+                  <div class="d-flex flex-column align-items-center justify-content-center">
+                    <span class="material-symbols-outlined text-muted fs-1 mb-2">language</span>
+                    <h6 class="fw-bold text-dark mb-1">
+                      {{ companyUrlScrapedResults.length === 0 ? 'No Company URLs Extracted Yet' : 'No results match your filter' }}
+                    </h6>
+                    <p class="text-muted small mb-0" style="max-width: 450px;">
+                      {{ companyUrlScrapedResults.length === 0 ? 'Enter company website URLs above or upload a CSV file and click "Extract & Save to DB" to discover company names and LinkedIn pages.' : 'Try clearing your search term or selecting another filter.' }}
+                    </p>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </div>
 
     </div>

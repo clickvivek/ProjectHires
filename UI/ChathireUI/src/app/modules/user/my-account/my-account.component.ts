@@ -33,6 +33,21 @@ export class MyAccountComponent implements OnInit {
     });
   }
 
+  getProfilePicUrl(): string {
+    if (!this.user?.profilePic) {
+      return this.defaultPic;
+    }
+    const pic = this.user.profilePic;
+    if (pic.startsWith('http://') || pic.startsWith('https://') || pic.startsWith('data:')) {
+      return pic;
+    }
+    return `${this.picBase}${pic}`;
+  }
+
+  onImageError(event: any) {
+    event.target.src = this.defaultPic;
+  }
+
   setTab(tab: 'profile-details' | 'profile-pic' | 'profile-password' | 'redeem-promo') {
     this.activeTab = tab;
   }

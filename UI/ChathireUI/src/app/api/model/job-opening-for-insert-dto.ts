@@ -41,6 +41,7 @@ export interface JobOpeningForInsertDto {
     localCandidatePref?: boolean | null;
     localCandidateOnly?: boolean | null;
     isExpired?: boolean | null;
+    projectDurationmonths?: number | null;
     jobOpeningSkills?: Array<JobOpeningSkillForInsertDto> | null;
     jobOpeningVisaMaps?: Array<JobOpeningVisaMapForInsertDto> | null;
     jobOpeningLocations?: Array<JobOpeningLocationForInsertDto> | null;

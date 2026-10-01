@@ -183,18 +183,26 @@ body.login, body.signup {
   @extend .ft-head;
   letter-spacing: 0.4px;
   min-width: 120px;
-  &:not([class*="btn-outline"]) {
+  &:not([class*="btn-outline"]):not(:disabled):not([disabled]):not(.disabled) {
     color: white;
   }
-  &:focus,
-  &:hover,
-  &:active {
+  &:focus:not(:disabled):not([disabled]):not(.disabled),
+  &:hover:not(:disabled):not([disabled]):not(.disabled),
+  &:active:not(:disabled):not([disabled]):not(.disabled) {
     color: white !important;
   }
+  &:disabled,
+  &[disabled],
   &.disabled {
-    background-color: pick-color(dark, 300);
-    border: 1px solid pick-color(dark, 300);
-    color: pick-color(dark, 500);
+    background-color: pick-color(dark, 300) !important;
+    border: 1px solid pick-color(dark, 300) !important;
+    color: pick-color(dark, 500) !important;
+    cursor: not-allowed !important;
+    opacity: 0.75 !important;
+
+    span, i, .material-symbols-outlined {
+      color: pick-color(dark, 500) !important;
+    }
   }
 
   /* loader */

@@ -14,15 +14,34 @@ export interface SubmitReferralRequestDto {
 }
 
 export interface SubmitReferralResponseDto {
-  success: boolean;
-  message: string;
-  totalSubmitted: number;
-  successfullyInvited: number;
-  alreadyRegistered: number;
-  alreadyInvited: number;
-  invalidEmails: number;
+  success?: boolean;
+  message?: string;
+  totalSubmitted?: number;
+  successfullyInvited?: number;
+  alreadyRegistered?: number;
+  alreadyInvited?: number;
+  invalidEmails?: number;
+  nonCompanyEmails?: number;
+  bonusChatsGranted?: number;
+  newDailyChatLimit?: number;
+  bonusDurationDays?: number;
   invitedEmails?: string[];
   skippedDetails?: ReferralSkipDetailDto[];
+
+  // PascalCase aliases for .NET JSON serialization compatibility
+  Success?: boolean;
+  Message?: string;
+  TotalSubmitted?: number;
+  SuccessfullyInvited?: number;
+  AlreadyRegistered?: number;
+  AlreadyInvited?: number;
+  InvalidEmails?: number;
+  NonCompanyEmails?: number;
+  BonusChatsGranted?: number;
+  NewDailyChatLimit?: number;
+  BonusDurationDays?: number;
+  InvitedEmails?: string[];
+  SkippedDetails?: ReferralSkipDetailDto[];
 }
 
 export interface UserReferralDto {

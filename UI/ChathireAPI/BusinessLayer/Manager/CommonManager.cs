@@ -1,4 +1,4 @@
-﻿using AutoMapper;
+using AutoMapper;
 using BusinessEntityAndDTO.Common;
 using BusinessEntityAndDTO.DTO;
 using BusinessLayer.Common;
@@ -139,7 +139,7 @@ namespace BusinessLayer.Manager
                             uniqueResult.Add(city);
 
                     }
-                    else if (uniqueResult.Where(u => u.City1 == city.City1 && u.IdState == city.IdState).FirstOrDefault() == null)
+                    else if (uniqueResult.Where(u => u.Id == city.Id || (u.City1 == city.City1 && u.IdState == city.IdState && u.Zip == city.Zip)).FirstOrDefault() == null)
                     {
                         uniqueResult.Add(city);
                     }

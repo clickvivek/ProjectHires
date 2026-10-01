@@ -49,6 +49,9 @@ import { MultiSelectCheckFieldComponent } from './components/multi-select-check-
 import { SubmitBtnComponent } from './components/submit-btn/submit-btn.component';
 import { FancyPageSearchComponent } from './components/fancy-page-search/fancy-page-search.component';
 import { LoginModalComponent } from './components/login-modal/login-modal.component';
+import { ReferralBannerComponent } from './components/referral-banner/referral-banner.component';
+import { ChatLimitModalComponent } from './components/chat-limit-modal/chat-limit-modal.component';
+import { ReferralModalComponent } from './components/referral-modal/referral-modal.component';
 
 @NgModule({
   declarations: [
@@ -86,7 +89,10 @@ import { LoginModalComponent } from './components/login-modal/login-modal.compon
     MultiSelectCheckFieldComponent,
     SubmitBtnComponent,
     FancyPageSearchComponent,
-    LoginModalComponent
+    LoginModalComponent,
+    ReferralBannerComponent,
+    ChatLimitModalComponent,
+    ReferralModalComponent
 ],
   imports: [
     CommonModule,
@@ -125,6 +131,9 @@ import { LoginModalComponent } from './components/login-modal/login-modal.compon
     SubmitBtnComponent,
     FancyPageSearchComponent,
     LoginModalComponent,
+    ReferralBannerComponent,
+    ChatLimitModalComponent,
+    ReferralModalComponent,
     SimpleSearchPipe,
     EscapeHtmlPipe,
     subStringPipe,

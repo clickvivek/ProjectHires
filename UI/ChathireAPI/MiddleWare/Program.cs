@@ -33,8 +33,10 @@ var config = new AutoMapper.MapperConfiguration(
         //cf.ValidateInlineMaps = false;
     });
 builder.Services.AddSingleton(config.CreateMapper());
+builder.Services.AddHttpClient();
 builder.Services.AddHttpClient<BusinessLayer.Services.IResendEmailService, BusinessLayer.Services.ResendEmailService>();
 builder.Services.AddHttpClient<BusinessLayer.Services.ILinkedInScraperService, BusinessLayer.Services.LinkedInScraperService>();
+builder.Services.AddHttpClient<BusinessLayer.Services.ICompanyUrlScraperService, BusinessLayer.Services.CompanyUrlScraperService>();
 builder.Services.AddHttpClient<BusinessLayer.Services.IJobParserService, BusinessLayer.Services.JobParserService>();
 builder.Services.AddHttpClient<BusinessLayer.Services.IHotlistParserService, BusinessLayer.Services.HotlistParserService>();
 builder.Services.AddScoped<DataAccessLayer.Repository.IEmailJobPostingRepository, DataAccessLayer.Repository.EmailJobPostingRepository>();
@@ -42,8 +44,13 @@ builder.Services.AddScoped<BusinessLayer.Manager.IEmailJobPostingManager, Busine
 builder.Services.AddScoped<DataAccessLayer.Repository.IPromocodeRepository, DataAccessLayer.Repository.PromocodeRepository>();
 builder.Services.AddScoped<BusinessLayer.Manager.IPromocodeManager, BusinessLayer.Manager.PromocodeManager>();
 builder.Services.AddScoped<BusinessLayer.Manager.IUserReferralManager, BusinessLayer.Manager.UserReferralManager>();
+builder.Services.AddScoped<DataAccessLayer.Repository.IConfigRepository, DataAccessLayer.Repository.ConfigRepository>();
+builder.Services.AddScoped<BusinessLayer.Manager.IConfigManager, BusinessLayer.Manager.ConfigManager>();
+builder.Services.AddScoped<DataAccessLayer.Repository.ISearchedRepository, DataAccessLayer.Repository.SearchedRepository>();
+builder.Services.AddScoped<BusinessLayer.Manager.ISearchedManager, BusinessLayer.Manager.SearchedManager>();
 DependancyManager.ConfigureAPI(builder.Services);
 builder.Services.AddHostedService<MiddleWare.BackgroundServices.JobExpirationBackgroundService>();
+builder.Services.AddHostedService<MiddleWare.BackgroundServices.ChatCleanupBackgroundService>();
 
 //builder.Services.AddScoped(_ =>
 //{

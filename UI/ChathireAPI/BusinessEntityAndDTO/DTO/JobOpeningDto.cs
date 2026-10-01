@@ -52,6 +52,8 @@ namespace BusinessEntityAndDTO.DTO
 
         public bool? IsExpired { get; set; }
 
+        public int? ProjectDurationmonths { get; set; }
+
         public List<JobOpeningSkillDto> JobOpeningSkills { get; set; } = new List<JobOpeningSkillDto>();
         public List<JobOpeningVisaMapDto> JobOpeningVisaMaps { get; set; } = new List<JobOpeningVisaMapDto>();
         public List<JobOpeningLocationDto> JobOpeningLocations { get; set; } = new List<JobOpeningLocationDto>();
@@ -210,6 +212,8 @@ namespace BusinessEntityAndDTO.DTO
 
         public bool? IsExpired { get; set; }
 
+        public int? ProjectDurationmonths { get; set; }
+
         public List<JobOpeningSkillForInsertDto> JobOpeningSkills { get; set; } = new List<JobOpeningSkillForInsertDto>();
         public List<JobOpeningVisaMapForInsertDto> JobOpeningVisaMaps { get; set; } = new List<JobOpeningVisaMapForInsertDto>();
         public List<JobOpeningLocationForInsertDto> JobOpeningLocations { get; set; } = new List<JobOpeningLocationForInsertDto>();
@@ -257,6 +261,7 @@ namespace BusinessEntityAndDTO.DTO
         public string UserLName { get; set; }
         public string? ProfilePic { get; set; }
         public string? CompanyLogo { get; set; }
+        public string? ProjectDurationmonths { get; set; }
         public List<string> Skills { get; set; }
         public List<string> Locations { get; set; }
         public List<string> Visas { get; set; }
@@ -316,6 +321,8 @@ namespace BusinessEntityAndDTO.DTO
         public bool? LocalCandidateOnly { get; set; }
 
         public bool? IsExpired { get; set; }
+
+        public int? ProjectDurationmonths { get; set; }
 
         public List<JobOpeningSkillForUpdateDto>? JobOpeningSkills { get; set; } = new List<JobOpeningSkillForUpdateDto>();
         public List<JobOpeningVisaMapForUpdateDto>? JobOpeningVisaMaps { get; set; } = new List<JobOpeningVisaMapForUpdateDto>();

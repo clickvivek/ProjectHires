@@ -99,6 +99,12 @@ public partial class EFContexts : DbContext
 
     public virtual DbSet<UserReferral> UserReferrals { get; set; }
 
+    public virtual DbSet<Config> Configs { get; set; }
+
+    public virtual DbSet<Searched> Searcheds { get; set; }
+
+    public virtual DbSet<ChatHistory> ChatHistories { get; set; }
+
     public virtual DbSet<EmailJobPostingQueue> EmailJobPostingQueues { get; set; }
 
     public virtual DbSet<Skill> Skills { get; set; }
@@ -890,6 +896,14 @@ public partial class EFContexts : DbContext
             entity.Property(e => e.Updated).HasColumnType("datetime");
         });
 
+        modelBuilder.Entity<ChatHistory>(entity =>
+        {
+            entity.ToTable("ChatHistory");
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.ChatTime).HasColumnType("datetime");
+            entity.Property(e => e.Updated).HasColumnType("datetime");
+        });
+
         modelBuilder.Entity<Skill>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("PK_KeySkill");
@@ -1041,6 +1055,10 @@ public partial class EFContexts : DbContext
             entity.Property(e => e.UserName)
                 .HasMaxLength(100)
                 .IsUnicode(false);
+            entity.Property(e => e.Aboutme)
+                .IsUnicode(true);
+            entity.Property(e => e.Myskills)
+                .IsUnicode(true);
 
             entity.HasOne(d => d.City).WithMany(p => p.Users)
                 .HasForeignKey(d => d.CityId)
@@ -1294,6 +1312,32 @@ public partial class EFContexts : DbContext
             entity.Property(e => e.Status).HasMaxLength(50).HasDefaultValue("Received");
             entity.Property(e => e.ReceivedDate).HasColumnType("datetime").HasDefaultValueSql("(getutcdate())");
             entity.Property(e => e.ProcessedDate).HasColumnType("datetime");
+        });
+
+        modelBuilder.Entity<Config>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.ToTable("Config");
+            entity.Property(e => e.ConfigKey).HasMaxLength(100).IsUnicode(false);
+            entity.Property(e => e.ConfigValue).HasMaxLength(500).IsUnicode(false);
+            entity.Property(e => e.Description).HasMaxLength(500);
+            entity.Property(e => e.Active).HasDefaultValue(true);
+            entity.Property(e => e.CreatedDate).HasColumnType("datetime").HasDefaultValueSql("(getutcdate())");
+            entity.Property(e => e.Updated).HasColumnType("datetime");
+        });
+
+        modelBuilder.Entity<Searched>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.ToTable("Searched");
+            entity.Property(e => e.SearchType).HasMaxLength(50).IsUnicode(false);
+            entity.Property(e => e.Keywords).HasMaxLength(500);
+            entity.Property(e => e.Location).HasMaxLength(200);
+            entity.Property(e => e.Filters).HasMaxLength(1000);
+            entity.Property(e => e.TotalResults).HasDefaultValue(0);
+            entity.Property(e => e.IpAddress).HasMaxLength(100).IsUnicode(false);
+            entity.Property(e => e.CreatedDate).HasColumnType("datetime").HasDefaultValueSql("(getutcdate())");
+            entity.Property(e => e.Active).HasDefaultValue(true);
         });
 
         OnModelCreatingPartial(modelBuilder);

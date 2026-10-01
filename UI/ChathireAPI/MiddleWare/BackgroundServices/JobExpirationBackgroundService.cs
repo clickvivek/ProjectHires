@@ -57,14 +57,14 @@ namespace MiddleWare.BackgroundServices
                 _logger.LogInformation("Running scheduled job expiration check...");
 
                 using var scope = _serviceProvider.CreateScope();
-                var repositoryFactory = scope.ServiceProvider.GetRequiredService<IRepositoryFactory>();
-                var jobOpeningRepository = repositoryFactory.Get<IJobOpeningRepository>();
+                var managerFactory = scope.ServiceProvider.GetRequiredService<BusinessLayer.Common.IManagerFactory>();
+                var jobOpeningManager = managerFactory.Get<BusinessLayer.Manager.IJobOpeningManager>();
 
-                var expiredCount = await jobOpeningRepository.ExpireOldJobOpeningsAsync(30);
+                var expiredCount = await jobOpeningManager.ProcessExpiredJobOpeningsAsync(30);
 
                 if (expiredCount > 0)
                 {
-                    _logger.LogInformation("Job expiration check completed: {Count} job opening(s) older than 30 days marked as expired.", expiredCount);
+                    _logger.LogInformation("Job expiration check completed: {Count} job opening(s) older than 30 days marked as expired and notification emails dispatched.", expiredCount);
                 }
                 else
                 {

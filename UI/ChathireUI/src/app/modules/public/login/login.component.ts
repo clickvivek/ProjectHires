@@ -7,6 +7,7 @@ import { TokenService } from 'src/app/api/api/token.service';
 import { UserService } from 'src/app/api/api/user.service';
 import { SessionService } from 'src/app/core/session/session.service';
 import { AuthService } from 'src/app/core/auth/auth.service';
+import { getMeaningfulErrorMessage } from 'src/app/modules/shared/utils/error-handler.util';
 
 declare var google: any;
 
@@ -346,13 +347,9 @@ export class LoginComponent implements OnInit, OnDestroy {
           this.isFormSubmitted = false;
 
           if (error.status == 422) {
-            this.error = error.error?.errors[0].message;
-          } else if (error.status == 0) {
-            this.error = "Network Error";
-          } else if (error.error && typeof error.error === 'string') {
-            this.error = error.error;
+            this.error = error.error?.errors?.[0]?.message || 'Validation error occurred.';
           } else {
-            this.error = "Invalid email or password. Please try again.";
+            this.error = getMeaningfulErrorMessage(error, 'Invalid email or password. Please try again.');
           }
         }
       });

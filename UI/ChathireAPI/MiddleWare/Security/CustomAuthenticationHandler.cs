@@ -52,8 +52,10 @@ namespace Middleware.Security
 
         protected override async Task<AuthenticateResult> HandleAuthenticateAsync()
         {
-            if ((Request.Path.Equals("/api/Token") && Request.Method.Equals("POST")||(Request.Path.StartsWithSegments("/api/Common")))
-                )
+            var path = Request.Path.Value ?? string.Empty;
+            if ((path.Equals("/api/Token", StringComparison.OrdinalIgnoreCase) && Request.Method.Equals("POST", StringComparison.OrdinalIgnoreCase)) ||
+                path.StartsWith("/api/Common", StringComparison.OrdinalIgnoreCase) ||
+                path.StartsWith("/api/JobOpening/ProcessExpirations", StringComparison.OrdinalIgnoreCase))
             {
                 var claims = new List<Claim>();
                 var identity = new ClaimsIdentity(claims, Scheme.Name);

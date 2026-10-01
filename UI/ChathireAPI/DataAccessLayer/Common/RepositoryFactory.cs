@@ -187,6 +187,16 @@ namespace DataAccessLayer.Common
                 return new EmailJobPostingRepository(_context) as T;
             }
 
+            if (typeof(T) == typeof(IConfigRepository))
+            {
+                return new ConfigRepository(_context) as T;
+            }
+
+            if (typeof(T) == typeof(ISearchedRepository))
+            {
+                return new SearchedRepository(_context) as T;
+            }
+
             //if (typeof(T) == typeof(IJobOpeningSkillsRepository))
             //{
             //    return new JobOpeningSkillsRepository(_context) as T;

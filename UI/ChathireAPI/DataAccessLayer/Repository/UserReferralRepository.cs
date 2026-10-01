@@ -24,6 +24,22 @@ namespace DataAccessLayer.Repository
 
         public UserReferralRepository(EFContexts context) : base(context) { }
 
+        private static readonly HashSet<string> PublicEmailDomains = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+        {
+            "gmail.com", "googlemail.com", "yahoo.com", "yahoo.co.in", "yahoo.co.uk", "yahoo.ca", "ymail.com",
+            "hotmail.com", "outlook.com", "live.com", "msn.com", "icloud.com", "me.com", "mac.com",
+            "aol.com", "mail.com", "zoho.com", "protonmail.com", "proton.me", "yandex.com", "gmx.com", "gmx.net"
+        };
+
+        private static bool IsCompanyEmail(string email)
+        {
+            if (string.IsNullOrWhiteSpace(email)) return false;
+            var parts = email.Split('@');
+            if (parts.Length != 2) return false;
+            string domain = parts[1].Trim().ToLower();
+            return !PublicEmailDomains.Contains(domain) && domain.Contains('.');
+        }
+
         public async Task<SubmitReferralResponseDto> SubmitReferrals(SubmitReferralRequestDto dto, UserContext userContext)
         {
             if (userContext == null || userContext.UserId <= 0)
@@ -59,7 +75,7 @@ namespace DataAccessLayer.Repository
                 return new SubmitReferralResponseDto
                 {
                     Success = false,
-                    Message = "Please provide at least 10 email addresses."
+                    Message = "Please provide 10 company email addresses."
                 };
             }
 
@@ -74,7 +90,7 @@ namespace DataAccessLayer.Repository
                 return new SubmitReferralResponseDto
                 {
                     Success = false,
-                    Message = $"Minimum 10 email addresses are required to submit referrals. You provided {rawEmails.Count} valid email(s)."
+                    Message = $"Minimum 10 company email addresses are required to claim the +10 chat sessions award. You provided {rawEmails.Count} email(s)."
                 };
             }
 
@@ -83,6 +99,7 @@ namespace DataAccessLayer.Repository
             var skippedDetails = new List<ReferralSkipDetailDto>();
 
             int invalidCount = 0;
+            int nonCompanyCount = 0;
             int alreadyRegisteredCount = 0;
             int alreadyInvitedCount = 0;
 
@@ -96,6 +113,18 @@ namespace DataAccessLayer.Repository
                     {
                         Email = email,
                         Reason = "Invalid email format"
+                    });
+                    continue;
+                }
+
+                if (!IsCompanyEmail(email))
+                {
+                    nonCompanyCount++;
+                    var domain = email.Split('@')[1];
+                    skippedDetails.Add(new ReferralSkipDetailDto
+                    {
+                        Email = email,
+                        Reason = $"Personal email domain (@{domain}) not allowed. Please provide business/company email IDs."
                     });
                     continue;
                 }
@@ -124,14 +153,15 @@ namespace DataAccessLayer.Repository
                 validEmailsToProcess.Add(email);
             }
 
-            if (validEmailsToProcess.Count == 0)
+            if (validEmailsToProcess.Count < 10)
             {
                 return new SubmitReferralResponseDto
                 {
                     Success = false,
-                    Message = "No valid unique email addresses found in the submitted list.",
+                    Message = $"At least 10 valid company email addresses are required. {validEmailsToProcess.Count} valid company email(s) found.",
                     TotalSubmitted = rawEmails.Count,
                     InvalidEmails = invalidCount,
+                    NonCompanyEmails = nonCompanyCount,
                     SkippedDetails = skippedDetails
                 };
             }
@@ -196,22 +226,63 @@ namespace DataAccessLayer.Repository
                 newlyInvitedEmails.Add(email);
             }
 
-            if (newlyInvitedEmails.Count > 0)
+            // Immediately grant +10 daily chat sessions for the next 10 days
+            var referrerPlan = await _context.UserSubscriptionPlans
+                .FirstOrDefaultAsync(usp => usp.UserId == userContext.UserId && usp.Active == true);
+
+            int newDailyChatLimit = 30;
+            if (referrerPlan != null)
             {
-                await _context.SaveChangesAsync();
+                referrerPlan.DailyChatLimit = (referrerPlan.DailyChatLimit.HasValue && referrerPlan.DailyChatLimit.Value > 0)
+                    ? referrerPlan.DailyChatLimit.Value + 10
+                    : 30;
+
+                if (referrerPlan.EndDate == null || referrerPlan.EndDate < now.AddDays(10))
+                {
+                    referrerPlan.EndDate = now.AddDays(10);
+                }
+                referrerPlan.Updated = now;
+                referrerPlan.UpdatedBy = userContext.UserId;
+                newDailyChatLimit = referrerPlan.DailyChatLimit.Value;
             }
+            else
+            {
+                referrerPlan = new UserSubscriptionPlan
+                {
+                    UserId = userContext.UserId,
+                    SubscriptionPlanId = 1,
+                    ActualJobPosting = 15,
+                    ActualDownloads = 10,
+                    DailyChatLimit = 30, // 20 standard + 10 bonus
+                    NoOfUsers = 1,
+                    StartDate = now,
+                    EndDate = now.AddDays(10),
+                    IsFree = true,
+                    Active = true,
+                    NoOfUsedJobPosting = 0,
+                    NoOfUsedDownloads = 0,
+                    Updated = now,
+                    UpdatedBy = userContext.UserId
+                };
+                _context.UserSubscriptionPlans.Add(referrerPlan);
+                newDailyChatLimit = 30;
+            }
+
+            await _context.SaveChangesAsync();
 
             return new SubmitReferralResponseDto
             {
                 Success = true,
-                Message = newlyInvitedEmails.Count > 0
-                    ? $"Successfully sent {newlyInvitedEmails.Count} referral invitation(s)! You will earn 3 months of free postings when your friends join."
-                    : "No new invitations sent. All submitted emails were either already registered or already invited.",
+                Message = $"🎉 Instant Award Activated! You have been granted +10 Daily Chat Sessions for the next 10 days (Your daily limit is now {newDailyChatLimit} chats). Invitations sent to {newlyInvitedEmails.Count} colleague(s). When they sign up, you will also receive bonus free job postings!",
                 TotalSubmitted = rawEmails.Count,
                 SuccessfullyInvited = newlyInvitedEmails.Count,
                 AlreadyRegistered = alreadyRegisteredCount,
                 AlreadyInvited = alreadyInvitedCount,
                 InvalidEmails = invalidCount,
+                NonCompanyEmails = nonCompanyCount,
+                BonusChatsGranted = 10,
+                NewDailyChatLimit = newDailyChatLimit,
+                BonusDurationDays = 10,
                 InvitedEmails = newlyInvitedEmails,
                 SkippedDetails = skippedDetails
             };
@@ -236,7 +307,7 @@ namespace DataAccessLayer.Repository
             int totalInvited = list.Count;
             int totalRegistered = list.Count(r => r.Status == "Registered" || r.Status == "Rewarded" || r.ReferredUserId.HasValue);
             int freePostingsEarned = totalRegistered * 25; // 25 free postings per joined colleague
-            int freeMonthsEarned = totalRegistered >= 3 ? (totalRegistered / 3) * 3 : (totalRegistered > 0 ? 1 : 0);
+            int freeMonthsEarned = totalRegistered > 0 ? 3 : 0; // Capped to 3 months max from start date
 
             var dtoList = list.Select(r => new UserReferralDto
             {
@@ -270,12 +341,13 @@ namespace DataAccessLayer.Repository
             string cleanEmail = email.Trim().ToLower();
             string cleanCode = (referralCode ?? "").Trim().ToUpper();
 
-            // 1. Match by email first
-            var referral = await _context.UserReferrals
-                .FirstOrDefaultAsync(r => r.ReferredEmail.ToLower() == cleanEmail);
+            // 1. Match all referrals by email
+            var matchingReferrals = await _context.UserReferrals
+                .Where(r => r.ReferredEmail.ToLower() == cleanEmail)
+                .ToListAsync();
 
             // 2. If not found by email, but signed up via referral link/code
-            if (referral == null && !string.IsNullOrEmpty(cleanCode))
+            if (matchingReferrals.Count == 0 && !string.IsNullOrEmpty(cleanCode))
             {
                 long referrerUserId = 0;
                 if (cleanCode.StartsWith("REF") && long.TryParse(cleanCode.Substring(3), out long parsedId))
@@ -285,7 +357,7 @@ namespace DataAccessLayer.Repository
 
                 if (referrerUserId > 0 && referrerUserId != newUserId)
                 {
-                    referral = new UserReferral
+                    var newReferral = new UserReferral
                     {
                         ReferrerUserId = referrerUserId,
                         ReferredEmail = cleanEmail,
@@ -295,48 +367,111 @@ namespace DataAccessLayer.Repository
                         CreatedDate = DateTime.UtcNow,
                         Updated = DateTime.UtcNow
                     };
-                    _context.UserReferrals.Add(referral);
+                    _context.UserReferrals.Add(newReferral);
+                    matchingReferrals.Add(newReferral);
                 }
             }
 
-            if (referral == null) return false;
+            if (matchingReferrals.Count == 0) return false;
 
             var now = DateTime.UtcNow;
-            referral.Status = "Registered";
-            referral.ReferredUserId = newUserId;
-            referral.RegisteredDate = now;
-            referral.RewardClaimed = true;
-            referral.RewardGrantedDate = now;
-            referral.Updated = now;
+            bool updatedAny = false;
 
-            // Grant bonus quota to referrer (e.g. +25 job postings / 3 months extended)
-            var referrerPlan = await _context.UserSubscriptionPlans
-                .FirstOrDefaultAsync(usp => usp.UserId == referral.ReferrerUserId && usp.Active == true);
-
-            if (referrerPlan != null)
+            foreach (var referral in matchingReferrals)
             {
-                referrerPlan.ActualJobPosting = (referrerPlan.ActualJobPosting ?? 15) + 25;
-                referrerPlan.ActualDownloads = (referrerPlan.ActualDownloads ?? 10) + 15;
-                referrerPlan.EndDate = (referrerPlan.EndDate ?? now).AddDays(90); // 3 months free extension
-                referrerPlan.Updated = now;
-                referrerPlan.UpdatedBy = referral.ReferrerUserId;
+                if (referral.Status != "Registered" || referral.ReferredUserId == null)
+                {
+                    referral.Status = "Registered";
+                    referral.ReferredUserId = newUserId;
+                    referral.RegisteredDate = now;
+                    referral.RewardClaimed = true;
+                    referral.RewardGrantedDate = now;
+                    referral.Updated = now;
+                    updatedAny = true;
+
+                    // Grant bonus quota to referrer (e.g. +25 job postings / 3 months extended max)
+                    var referrerPlan = await _context.UserSubscriptionPlans
+                        .FirstOrDefaultAsync(usp => usp.UserId == referral.ReferrerUserId && usp.Active == true);
+
+                    if (referrerPlan != null)
+                    {
+                        referrerPlan.ActualJobPosting = (referrerPlan.ActualJobPosting ?? 15) + 25;
+                        referrerPlan.ActualDownloads = (referrerPlan.ActualDownloads ?? 10) + 15;
+                        
+                        // Set EndDate to current date + 90 days
+                        referrerPlan.EndDate = now.AddDays(90);
+
+                        referrerPlan.Updated = now;
+                        referrerPlan.UpdatedBy = referral.ReferrerUserId;
+                    }
+                    else
+                    {
+                        referrerPlan = new UserSubscriptionPlan
+                        {
+                            UserId = referral.ReferrerUserId,
+                            SubscriptionPlanId = 1,
+                            ActualJobPosting = 15 + 25,
+                            ActualDownloads = 10 + 15,
+                            DailyChatLimit = 20,
+                            NoOfUsers = 1,
+                            StartDate = now,
+                            EndDate = now.AddDays(90),
+                            IsFree = true,
+                            Active = true,
+                            NoOfUsedJobPosting = 0,
+                            NoOfUsedDownloads = 0,
+                            Updated = now,
+                            UpdatedBy = referral.ReferrerUserId
+                        };
+                        _context.UserSubscriptionPlans.Add(referrerPlan);
+                    }
+                }
             }
 
-            // Grant bonus quota to referee (new user)
-            var refereePlan = await _context.UserSubscriptionPlans
-                .FirstOrDefaultAsync(usp => usp.UserId == newUserId && usp.Active == true);
-
-            if (refereePlan != null)
+            // Grant bonus quota to referee (new user) if at least one referral was processed
+            if (updatedAny)
             {
-                refereePlan.ActualJobPosting = (refereePlan.ActualJobPosting ?? 15) + 25;
-                refereePlan.ActualDownloads = (refereePlan.ActualDownloads ?? 10) + 15;
-                refereePlan.EndDate = (refereePlan.EndDate ?? now).AddDays(90);
-                refereePlan.Updated = now;
-                refereePlan.UpdatedBy = newUserId;
+                var refereePlan = await _context.UserSubscriptionPlans
+                    .FirstOrDefaultAsync(usp => usp.UserId == newUserId && usp.Active == true);
+
+                if (refereePlan != null)
+                {
+                    refereePlan.ActualJobPosting = (refereePlan.ActualJobPosting ?? 15) + 25;
+                    refereePlan.ActualDownloads = (refereePlan.ActualDownloads ?? 10) + 15;
+                    
+                    // Set EndDate to current date + 90 days
+                    refereePlan.EndDate = now.AddDays(90);
+
+                    refereePlan.Updated = now;
+                    refereePlan.UpdatedBy = newUserId;
+                }
+                else
+                {
+                    refereePlan = new UserSubscriptionPlan
+                    {
+                        UserId = newUserId,
+                        SubscriptionPlanId = 1,
+                        ActualJobPosting = 15 + 25,
+                        ActualDownloads = 10 + 15,
+                        DailyChatLimit = 20,
+                        NoOfUsers = 1,
+                        StartDate = now,
+                        EndDate = now.AddDays(90),
+                        IsFree = true,
+                        Active = true,
+                        NoOfUsedJobPosting = 0,
+                        NoOfUsedDownloads = 0,
+                        Updated = now,
+                        UpdatedBy = newUserId
+                    };
+                    _context.UserSubscriptionPlans.Add(refereePlan);
+                }
+
+                await _context.SaveChangesAsync();
+                return true;
             }
 
-            await _context.SaveChangesAsync();
-            return true;
+            return false;
         }
     }
 }

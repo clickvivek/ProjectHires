@@ -2,6 +2,7 @@ import { Component, Input, Output, EventEmitter, HostListener, OnChanges, Simple
 import { CandidateProfileService } from 'src/app/api/api/candidate-profile.service';
 import { SessionService } from 'src/app/core/session/session.service';
 import { CommonService } from 'src/app/api';
+import { getMeaningfulErrorMessage } from 'src/app/modules/shared/utils/error-handler.util';
 import _ from 'underscore';
 
 @Component({
@@ -92,7 +93,7 @@ export class ProfileAvailableResourcesComponent {
           this.isJobLoaded = true;
           this.isJobAvailable = false;
           this.isError = true;
-          this.error = "Some error occured";
+          this.error = getMeaningfulErrorMessage(error, 'Unable to load candidate resources for this profile.');
           this.outParams.emit(false);
         }
       });

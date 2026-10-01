@@ -9,6 +9,7 @@ import { CandidateProfileService } from 'src/app/api/api/candidate-profile.servi
 import { CommonService } from 'src/app/api';
 import { SharedService } from 'src/app/modules/shared/services/shared.service';
 import { filterexperienceLevel } from 'src/app/data/filter-data';
+import { getMeaningfulErrorMessage } from 'src/app/modules/shared/utils/error-handler.util';
 
 import { AuthService } from 'src/app/core/auth/auth.service';
 
@@ -68,47 +69,50 @@ export class SearchHotlistComponent implements OnInit {
     private authService: AuthService,
 	  private sharedService:SharedService
   ) {
-
-    this._router.events.pipe(
-      filter(event => event instanceof NavigationEnd)
-    ).subscribe(() => {
-      
-      // Get the current query parameters
-      const params = this.route.snapshot.queryParams;
-
-      // Check if query parameters have changed
-      if (JSON.stringify(params) !== JSON.stringify(this.previousQueryParams)) {
-        // Update the previous query parameters
-        this.previousQueryParams = params;
-
-        this.skill = params['skill'];
-        this.location = params['location'];
-        
-        if (!_.isUndefined(params['cid'])) {
-          this.cityId = params['cid'];
-        }
-
-        if (!_.isUndefined(params['cid'])) {
-          this.stateId = params['stid'];
-        }
-
-        if (!_.isUndefined(params['visas'])) {
-          this.visasId =params['visas']?.split(',');
-        }
-
-        if (!_.isUndefined(params['exp'])) {
-          this.expIds =params['exp']?.split(',');
-        }
-        else {
-          this.expIds = []
-        }
-
-        this.handleHotlistSearch(this.skill, undefined, this.cityId, this.stateId, this.visasId, this.expIds)
-
-      }
+    this.route.queryParams.subscribe((params: Params) => {
+      this.executeSearchFromParams(params);
     });
+  }
 
+  executeSearchFromParams(params: Params) {
+    if (!_.isEmpty(params)) {
+      this.skill = params['skill'] || '';
+      this.location = params['location'] || '';
 
+      if (!_.isUndefined(params['cid']) && params['cid']) {
+        this.cityId = params['cid'];
+      } else {
+        this.cityId = null;
+      }
+
+      if (!_.isUndefined(params['stid']) && params['stid']) {
+        this.stateId = params['stid'];
+      } else {
+        this.stateId = null;
+      }
+
+      if (!_.isUndefined(params['visas']) && params['visas']) {
+        this.visasId = params['visas'].split(',');
+      } else {
+        this.visasId = [];
+      }
+
+      if (!_.isUndefined(params['exp']) && params['exp']) {
+        this.expIds = params['exp'].split(',');
+      } else {
+        this.expIds = [];
+      }
+
+      if (this.skill || this.location || this.cityId || this.visasId.length || this.expIds.length) {
+        this.handleHotlistSearch(this.skill, undefined, this.cityId, this.stateId, this.visasId, this.expIds);
+      } else {
+        this.isDataAvailable = false;
+      }
+    } else {
+      this.isDataAvailable = false;
+      this.skill = '';
+      this.location = '';
+    }
   }
 
   getIndexParams(event){
@@ -157,10 +161,11 @@ export class SearchHotlistComponent implements OnInit {
   }
 
   getProfilePic(url) {
-    if(url)
-      return `${picUrl}${url}`
-    else
-      return defaultProfilePic
+    if (url) {
+      if (url.startsWith('http://') || url.startsWith('https://')) return url;
+      return `${picUrl}${url}`;
+    }
+    return defaultProfilePic;
   }
 
   isSkills(item: any) {
@@ -271,7 +276,7 @@ export class SearchHotlistComponent implements OnInit {
         this.isError = true;
         this.isLoaded = true;
         this.isDataAvailable = false;
-        this.error = 'Some error occured';
+        this.error = getMeaningfulErrorMessage(error, 'Unable to search candidate profiles at this moment. Please try again.');
       }
     });
 

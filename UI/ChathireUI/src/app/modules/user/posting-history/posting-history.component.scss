@@ -105,28 +105,33 @@
 
     .filter-tab-group {
       background-color: #F3F4F6;
-      padding: 3px;
+      padding: 4px;
       border-radius: 8px;
+      display: inline-flex;
+      gap: 3px;
 
       .btn-filter-tab {
-        border: none;
-        border-radius: 6px;
-        font-size: 13px;
-        font-weight: 500;
-        color: #4B5563;
-        padding: 6px 14px;
-        background: transparent;
+        border: none !important;
+        border-radius: 6px !important;
+        font-size: 13px !important;
+        font-weight: 500 !important;
+        color: #4B5563 !important;
+        padding: 6px 14px !important;
+        background: transparent !important;
         transition: all 0.15s ease;
+        box-shadow: none !important;
+        cursor: pointer;
 
         &.active {
-          background-color: #ffffff;
-          color: #72246C;
-          font-weight: 600;
-          box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+          background-color: #72246C !important;
+          color: #ffffff !important;
+          font-weight: 600 !important;
+          box-shadow: 0 1px 4px rgba(114, 36, 108, 0.3) !important;
         }
 
         &:hover:not(.active) {
-          color: #111827;
+          color: #111827 !important;
+          background-color: #E5E7EB !important;
         }
       }
     }
@@ -142,5 +147,11 @@
       height: 64px;
       background-color: #F3F4F6;
     }
+  }
+
+  .sticky-referral-sidebar {
+    position: sticky;
+    top: 90px;
+    z-index: 2;
   }
 }

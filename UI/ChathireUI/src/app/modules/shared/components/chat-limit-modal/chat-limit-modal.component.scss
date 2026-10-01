@@ -1,0 +1,137 @@
+.chat-limit-modal {
+  background: #ffffff;
+  border-radius: 16px;
+  overflow: hidden;
+  font-family: inherit;
+
+  .modal-close-btn {
+    font-size: 0.8rem;
+    z-index: 10;
+    opacity: 0.6;
+    transition: opacity 0.2s ease;
+
+    &:hover {
+      opacity: 1;
+    }
+  }
+
+  .limit-icon-wrapper {
+    width: 64px;
+    height: 64px;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    .limit-icon-circle {
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      box-shadow: 0 4px 12px rgba(255, 152, 0, 0.15);
+
+      .limit-icon {
+        font-size: 32px;
+        color: #f57c00;
+      }
+
+      .limit-badge-icon {
+        position: absolute;
+        bottom: -2px;
+        right: -2px;
+        background: #e65100;
+        color: #ffffff;
+        font-size: 14px;
+        padding: 3px;
+        border-radius: 50%;
+        border: 2px solid #ffffff;
+      }
+    }
+  }
+
+  .limit-modal-title {
+    color: #1a202c;
+    font-size: 1.25rem;
+  }
+
+  .limit-modal-subtitle {
+    font-size: 0.9rem;
+    line-height: 1.5;
+  }
+
+  .wait-time-box {
+    background: #fffbeb;
+    border: 1px solid #fef3c7;
+
+    .wait-icon-circle {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      background: #fde68a;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      .text-amber {
+        color: #d97706;
+      }
+    }
+
+    .wait-title {
+      font-size: 0.95rem;
+      color: #92400e;
+    }
+
+    .wait-sub {
+      color: #b45309;
+      font-size: 0.8rem;
+    }
+  }
+
+  .referral-offer-card {
+    background: linear-gradient(135deg, #f0fdf4 0%, #e0f2fe 100%);
+    border-color: #bbf7d0 !important;
+
+    .gift-icon {
+      font-size: 22px;
+      color: #0284c7 !important;
+    }
+
+    .offer-title {
+      font-size: 0.95rem;
+      color: #0f172a;
+    }
+
+    .offer-desc {
+      font-size: 0.85rem;
+      color: #334155;
+    }
+
+    .perks-list {
+      font-size: 0.825rem;
+
+      .perk-check {
+        font-size: 16px;
+      }
+    }
+  }
+
+  .btn-referral-cta {
+    background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+    color: #ffffff;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    transition: all 0.2s ease-in-out;
+
+    &:hover {
+      background: linear-gradient(135deg, #0369a1 0%, #075985 100%);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(2, 132, 199, 0.35);
+    }
+  }
+}

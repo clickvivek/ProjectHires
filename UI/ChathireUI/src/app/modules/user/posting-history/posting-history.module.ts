@@ -7,13 +7,15 @@ import { PostingHistoryRoutingModule } from './posting-history-routing.module';
 import { PostingHistoryComponent } from './posting-history.component';
 import { PostingHistoryListComponent } from './posting-history-list/posting-history-list.component';
 import { PostingEditComponent } from './posting-edit/posting-edit.component';
+import { ConfirmActionModalComponent } from './confirm-action-modal/confirm-action-modal.component';
 
 
 @NgModule({
   declarations: [
     PostingHistoryComponent,
     PostingHistoryListComponent,
-    PostingEditComponent
+    PostingEditComponent,
+    ConfirmActionModalComponent
   ],
   imports: [
     CommonModule,

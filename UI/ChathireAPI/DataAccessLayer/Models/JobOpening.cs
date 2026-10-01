@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 
 namespace DataAccessLayer.Models;
@@ -60,6 +60,8 @@ public partial class JobOpening
     public long? ReviewedBy { get; set; }
 
     public bool? IsExpired { get; set; }
+
+    public int? ProjectDurationmonths { get; set; }
 
     public virtual Category? Category { get; set; }
 

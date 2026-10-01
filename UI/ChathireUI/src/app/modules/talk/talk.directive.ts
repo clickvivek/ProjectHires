@@ -1,4 +1,4 @@
-import { Directive, OnInit, Input, ElementRef, Output, EventEmitter, HostListener} from '@angular/core';
+import { Directive, OnInit, Input, ElementRef, Output, EventEmitter, HostListener, OnChanges, OnDestroy } from '@angular/core';
 import {  Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import Talk from 'talkjs';
@@ -12,6 +12,7 @@ import { SessionService } from 'src/app/core/session/session.service';
 import { SharedService } from '../shared/services/shared.service';
 import { TalkService } from './talk.service';
 import { LoginModalComponent } from '../shared/components/login-modal/login-modal.component';
+import { ChatLimitModalComponent } from '../shared/components/chat-limit-modal/chat-limit-modal.component';
 
 declare var $:JQueryStatic;
 
@@ -129,6 +130,43 @@ export class ChatButtonDirective implements OnInit {
     }
   }
 
+  private handleChatClick(): void {
+    if (!this.chatUser) return;
+    const targetUserId = this.chatUser?.userId || this.chatUser?.id;
+
+    if (!targetUserId) {
+      this.openChatPopup();
+      return;
+    }
+
+    this.talkService.initiateChat(targetUserId).subscribe({
+      next: (res: any) => {
+        const result = res?.value;
+        if (result && result.canChat === false) {
+          this.dialog.open(ChatLimitModalComponent, {
+            width: '460px',
+            panelClass: 'chat-limit-modal-panel',
+            data: {
+              dailyLimit: result.dailyChatLimit,
+              usedChatsToday: result.usedChatsToday,
+              remainingChatsToday: result.remainingChatsToday,
+              nextSlotAvailableAtUtc: result.nextSlotAvailableAtUtc,
+              nextSlotWaitSeconds: result.nextSlotWaitSeconds,
+              nextSlotWaitText: result.nextSlotWaitText,
+              message: result.message
+            }
+          });
+        } else {
+          this.openChatPopup();
+        }
+      },
+      error: (err: any) => {
+        console.error('Chat limit check error:', err);
+        this.openChatPopup();
+      }
+    });
+  }
+
   @HostListener("click", ["$event"])
   onClick(event: any): void {
     if (this.popup) {
@@ -146,14 +184,14 @@ export class ChatButtonDirective implements OnInit {
         if (res && res.success) {
           // Open chat immediately on the current page without changing the URL
           setTimeout(() => {
-            this.openChatPopup();
+            this.handleChatClick();
           }, 300);
         }
       });
       return;
     }
 
-    this.openChatPopup();
+    this.handleChatClick();
   }
 
   initChat(chatUser: any): void {
@@ -188,90 +226,192 @@ export class ChatButtonDirective implements OnInit {
   selector: '#inboxContainer'
 })
 
-export class InboxDirective  {
+export class InboxDirective implements OnInit, OnChanges, OnDestroy {
 
-  @Input() user;
-  @Input() chatUser;
+  @Input() user: any;
+  @Input() chatUser: any;
 
-  @Output() onUnreadEvent = new EventEmitter()
+  @Output() onUnreadEvent = new EventEmitter();
 
   APP_ID = environment.talkJsAppId;
-  session:any;
-  conversation:any;
+  session: any;
+  conversation: any;
+  inbox: any;
+  private isMounted = false;
 
   constructor(
     private element: ElementRef,
-    private sharedService: SharedService
-  ) {
-    
-  }
+    private sharedService: SharedService,
+    private sessionService: SessionService,
+    private talkService: TalkService,
+    public dialog: MatDialog
+  ) {}
 
-  generateRandomId() {
+  generateRandomId(): number {
     return Math.floor(Math.random() * (99 - 10 + 1)) + 10;
   }
 
-  initInbox(user, chatUser) {
-
-    const userCompanyName = user.consultancyUsers[0].consultancy.name
-    const userProfileUrl = `${publicProfileUrlPrefix}${user.consultancyUsers[0].publicProfileUserName}` 
-
-    const chatUserCompanyName = chatUser.consultancyUsers[0].consultancy.name
-    const chatUserProfileUrl = `${publicProfileUrlPrefix}${chatUser.consultancyUsers[0].publicProfileUserName}` 
+  private buildMeUser(): any {
+    const cachedDetails = this.user || this.sessionService.getUserDetails();
+    const uid = cachedDetails?.id || this.sessionService.userId || this.generateRandomId();
+    const fname = cachedDetails?.fname || '';
+    const lname = cachedDetails?.lname || '';
+    const email = cachedDetails?.email || this.sessionService.userEmail || '';
+    const name = (fname || lname) ? `${fname} ${lname}`.trim() : (email ? email.split('@')[0] : 'User');
     
+    let photoUrl = defaultProfilePic;
+    if (cachedDetails?.profilePic) {
+      photoUrl = (cachedDetails.profilePic.startsWith('http://') || cachedDetails.profilePic.startsWith('https://'))
+        ? cachedDetails.profilePic
+        : `${picUrl}${cachedDetails.profilePic}`;
+    }
 
-    const other =  new Talk.User({
-      id: chatUser.id,
-      name: `${chatUser.fname} ${chatUser.lname}`,
-      photoUrl: `${picUrl}${chatUser.profilePic}`,
-      //welcomeMessage: 'Hey there! How are you? :-)',
-      role: 'PremiumRecruiters',
-      custom: {
-        companyName: chatUserCompanyName,
-        profileUrl: chatUserProfileUrl
-      },
-    })
+    let userCompanyName = '';
+    let userProfileUrl = '';
+    if (cachedDetails?.consultancyUsers && cachedDetails.consultancyUsers.length > 0) {
+      userCompanyName = cachedDetails.consultancyUsers[0]?.consultancy?.name || '';
+      if (cachedDetails.consultancyUsers[0]?.publicProfileUserName) {
+        userProfileUrl = `${publicProfileUrlPrefix}${cachedDetails.consultancyUsers[0].publicProfileUserName}`;
+      }
+    } else if (cachedDetails?.directCandidateDetail?.publicProfileSlug) {
+      userProfileUrl = `${publicProfileUrlPrefix}${cachedDetails.directCandidateDetail.publicProfileSlug}`;
+    }
 
-    const me = new Talk.User({
-      id: user.id,
-      name: `${user.fname} ${user.lname}`,
-      photoUrl: user.profilePic ? `${picUrl}${user.profilePic}` : defaultProfilePic,
+    return new Talk.User({
+      id: String(uid),
+      name: name,
+      photoUrl: photoUrl,
       role: 'PremiumRecruiters',
       custom: {
         companyName: userCompanyName,
         profileUrl: userProfileUrl
-      },
-    })
-
-    this.session = new Talk.Session({
-      appId: this.APP_ID,
-      me: me
+      }
     });
+  }
 
-   
-
-    this.conversation = this.session.getOrCreateConversation(
-      Talk.oneOnOneId(me, other)
-    );
-
-    this.conversation.setParticipant(other);
-    this.conversation.setParticipant(me);
+  private buildOtherUser(chatUser: any): any {
+    if (!chatUser) return null;
+    const uid = chatUser?.userId || chatUser?.id;
+    if (!uid) return null;
+    const fname = chatUser?.userFName || chatUser?.fname || '';
+    const lname = chatUser?.userLName || chatUser?.lname || '';
+    const name = (fname || lname) ? `${fname} ${lname}`.trim() : (chatUser?.userName || 'Recruiter');
+    const photo = chatUser?.profilePic;
+    const photoUrl = photo ? (photo.startsWith('http') ? photo : `${picUrl}${photo}`) : defaultProfilePic;
     
-    const inbox = this.session.createInbox()
-    inbox.select(this.conversation);
+    let companyName = chatUser?.companyName || '';
+    let profileUrl = '';
+    if (chatUser?.consultancyUsers && chatUser.consultancyUsers.length > 0) {
+      companyName = companyName || chatUser.consultancyUsers[0]?.consultancy?.name || '';
+      if (chatUser.consultancyUsers[0]?.publicProfileUserName) {
+        profileUrl = `${publicProfileUrlPrefix}${chatUser.consultancyUsers[0].publicProfileUserName}`;
+      }
+    } else if (chatUser?.profileUserName) {
+      profileUrl = `${publicProfileUrlPrefix}${chatUser.profileUserName}`;
+    }
 
-    const msgArea = this.element.nativeElement.querySelector('.message-area')
-    inbox.mount(msgArea);
-
-    this.session.unreads.on("change", (unreadConversations) => {
-      this.sharedService.setInboxUnReadCount(unreadConversations)
-    })
-
+    return new Talk.User({
+      id: String(uid),
+      name: name,
+      photoUrl: photoUrl,
+      role: 'PremiumRecruiters',
+      custom: {
+        companyName: companyName,
+        profileUrl: profileUrl
+      }
+    });
   }
 
-  ngOnChanges() {
-      if(this.user && this.chatUser)
-      this.initInbox(this.user, this.chatUser)
+  async initInbox(): Promise<void> {
+    if (this.isMounted) return;
 
+    try {
+      await Talk.ready;
+      const me = this.buildMeUser();
+
+      this.session = new Talk.Session({
+        appId: this.APP_ID,
+        me: me
+      });
+
+      this.inbox = this.session.createInbox();
+
+      if (this.chatUser) {
+        const targetUserId = this.chatUser?.userId || this.chatUser?.id;
+        if (targetUserId) {
+          this.talkService.initiateChat(targetUserId).subscribe({
+            next: (res: any) => {
+              const result = res?.value;
+              if (result && result.canChat === false) {
+                this.dialog.open(ChatLimitModalComponent, {
+                  width: '460px',
+                  panelClass: 'chat-limit-modal-panel',
+                  data: {
+                    dailyLimit: result.dailyChatLimit,
+                    usedChatsToday: result.usedChatsToday,
+                    remainingChatsToday: result.remainingChatsToday,
+                    nextSlotAvailableAtUtc: result.nextSlotAvailableAtUtc,
+                    nextSlotWaitSeconds: result.nextSlotWaitSeconds,
+                    nextSlotWaitText: result.nextSlotWaitText,
+                    message: result.message
+                  }
+                });
+              }
+            },
+            error: () => {}
+          });
+        }
+
+        const other = this.buildOtherUser(this.chatUser);
+        if (other) {
+          this.conversation = this.session.getOrCreateConversation(
+            Talk.oneOnOneId(me, other)
+          );
+          this.conversation.setParticipant(me);
+          this.conversation.setParticipant(other);
+          this.inbox.select(this.conversation);
+        }
+      }
+
+      const msgArea = this.element.nativeElement.querySelector('.message-area');
+      if (msgArea) {
+        msgArea.innerHTML = '';
+        await this.inbox.mount(msgArea);
+        this.isMounted = true;
+      }
+
+      this.session.unreads.on('change', (unreadConversations: any) => {
+        this.sharedService.setInboxUnReadCount(unreadConversations);
+      });
+    } catch (err) {
+      console.error('TalkJS Inbox initialization error:', err);
+    }
   }
 
+  ngOnInit(): void {
+    this.sessionService.userdetailscast.subscribe((res: any) => {
+      if (res) {
+        this.user = res;
+        this.initInbox();
+      }
+    });
+    if (this.sessionService.getUserDetails() || this.sessionService.userId) {
+      this.initInbox();
+    }
+  }
+
+  ngOnChanges(): void {
+    if (this.user || this.sessionService.getUserDetails() || this.sessionService.userId) {
+      this.initInbox();
+    }
+  }
+
+  ngOnDestroy(): void {
+    if (this.inbox) {
+      this.inbox.destroy();
+    }
+    if (this.session) {
+      this.session.destroy();
+    }
+  }
 }

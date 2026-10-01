@@ -15,9 +15,18 @@
               <div class="d-flex align-items-center justify-content-between mb-4 flex-wrap gap-2">
                 <div class="onboarding-step-badge d-inline-flex align-items-center gap-2">
                   <span class="step-dot"></span>
-                  <span class="step-text">Profile setup • Step 1 of 3</span>
+                  <span class="step-text">Profile setup • Step 1 of {{ selectedRole === 5 ? '3' : '4' }}</span>
                 </div>
-                <div class="step-flow d-none d-sm-flex align-items-center gap-2 text-sm">
+                <div class="step-flow d-none d-sm-flex align-items-center gap-2 text-sm" *ngIf="selectedRole !== 5">
+                  <span class="fw-bold text-dark">Role</span>
+                  <span class="text-muted">→</span>
+                  <span class="text-muted">Profile</span>
+                  <span class="text-muted">→</span>
+                  <span class="text-muted">Contact Info</span>
+                  <span class="text-muted">→</span>
+                  <span class="text-muted">Profile URL</span>
+                </div>
+                <div class="step-flow d-none d-sm-flex align-items-center gap-2 text-sm" *ngIf="selectedRole === 5">
                   <span class="fw-bold text-dark">Role</span>
                   <span class="text-muted">→</span>
                   <span class="text-muted">Profile</span>
@@ -117,9 +126,18 @@
               <div class="d-flex align-items-center justify-content-between mb-4 flex-wrap gap-2">
                 <div class="onboarding-step-badge d-inline-flex align-items-center gap-2">
                   <span class="step-dot"></span>
-                  <span class="step-text">Profile setup • Step 2 of 3</span>
+                  <span class="step-text">Profile setup • Step 2 of {{ selectedRole === 5 ? '3' : '4' }}</span>
                 </div>
-                <div class="step-flow d-none d-sm-flex align-items-center gap-2 text-sm">
+                <div class="step-flow d-none d-sm-flex align-items-center gap-2 text-sm" *ngIf="selectedRole !== 5">
+                  <span class="text-success fw-medium">Role ✓</span>
+                  <span class="text-muted">→</span>
+                  <span class="fw-bold text-dark">Profile</span>
+                  <span class="text-muted">→</span>
+                  <span class="text-muted">Contact Info</span>
+                  <span class="text-muted">→</span>
+                  <span class="text-muted">Profile URL</span>
+                </div>
+                <div class="step-flow d-none d-sm-flex align-items-center gap-2 text-sm" *ngIf="selectedRole === 5">
                   <span class="text-success fw-medium">Role ✓</span>
                   <span class="text-muted">→</span>
                   <span class="fw-bold text-dark">Profile</span>
@@ -156,6 +174,7 @@
                           placeholder="First name"
                           [(ngModel)]="formData.fname"
                           (ngModelChange)="onNameChange()"
+                          (blur)="onNameBlur()"
                           name="fname"
                           required
                           autocomplete="off"
@@ -177,6 +196,7 @@
                           placeholder="Last name"
                           [(ngModel)]="formData.lname"
                           (ngModelChange)="onNameChange()"
+                          (blur)="onNameBlur()"
                           name="lname"
                           required
                           autocomplete="off"
@@ -184,43 +204,6 @@
                         <div *ngIf="submittedStep2 && !formData.lname" class="text-danger text-xs mt-1 fw-medium">
                           Last name is required.
                         </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  <!-- Unified Profile URL (Recruiter / Bench Sales only) -->
-                  <div class="form-group mb-3" *ngIf="selectedRole !== 5">
-                    <label for="profileId" class="form-label field-label">Profile URL</label>
-                    <div class="unified-url-input-group d-flex align-items-stretch">
-                      <span class="input-group-text url-prefix">{{publicProfileUrlPrefix}}</span>
-                      <input
-                        type="text"
-                        class="form-control url-input"
-                        placeholder="your-name"
-                        [(ngModel)]="formData.publicProfileUserName"
-                        name="profileId"
-                        autocomplete="off"
-                        (ngModelChange)="handleProfileId()"
-                      />
-                      <button 
-                        type="button" 
-                        class="btn btn-check-url flex-shrink-0" 
-                        [disabled]="!formData.publicProfileUserName"
-                        (click)="checkProfileId()"
-                      >
-                        Check availability
-                      </button>
-                    </div>
-                    
-                    <!-- Status message -->
-                    <div class="mt-2 text-sm" *ngIf="isProfileIdAvailable !== null && formData.publicProfileUserName">
-                      <div *ngIf="isProfileIdAvailable === 'true'" class="text-success d-flex align-items-center gap-1 fw-medium">
-                        <span class="material-symbols-outlined fs-6">check_circle</span>
-                        <span>✓ Profile URL is available</span>
-                      </div>
-                      <div *ngIf="isProfileIdAvailable === 'false'" class="text-danger text-xs mt-1 fw-medium">
-                        <span class="material-symbols-outlined fs-6">error</span>
-                        <span>That profile URL is already taken. Try another.</span>
                       </div>
                     </div>
                   </div>
@@ -274,7 +257,7 @@
                           <app-search-field
                             fieldName="cityId"
                             fieldText="City & State or Zipcode"
-                            fieldType="city1,stateName,countryName"
+                            fieldType="city1,stateCode,zip,countryName"
                             fieldPlaceholder="Enter Zipcode or City Name"
                             [fieldRequired]="true"
                             [fieldList]="selectLocationList"
@@ -295,7 +278,7 @@
                           <app-search-field
                             fieldName="cityId"
                             fieldText="City & Province/Territory"
-                            fieldType="city1,stateName,countryName"
+                            fieldType="city1,stateCode,zip,countryName"
                             fieldPlaceholder="Search city or province"
                             [fieldRequired]="true"
                             [fieldList]="selectLocationList"
@@ -362,7 +345,7 @@
                           <app-search-field
                             fieldName="cityId"
                             fieldText="City & State or Zipcode"
-                            fieldType="city1,stateName,countryName"
+                            fieldType="city1,stateCode,zip,countryName"
                             fieldPlaceholder="Enter Zipcode or City Name"
                             [fieldRequired]="true"
                             [fieldList]="selectLocationList"
@@ -445,9 +428,18 @@
               <div class="d-flex align-items-center justify-content-between mb-4 flex-wrap gap-2">
                 <div class="onboarding-step-badge d-inline-flex align-items-center gap-2">
                   <span class="step-dot"></span>
-                  <span class="step-text">Profile setup • Step 3 of 3</span>
+                  <span class="step-text">Profile setup • Step 3 of {{ selectedRole === 5 ? '3' : '4' }}</span>
                 </div>
-                <div class="step-flow d-none d-sm-flex align-items-center gap-2 text-sm">
+                <div class="step-flow d-none d-sm-flex align-items-center gap-2 text-sm" *ngIf="selectedRole !== 5">
+                  <span class="text-success fw-medium">Role ✓</span>
+                  <span class="text-muted">→</span>
+                  <span class="text-success fw-medium">Profile ✓</span>
+                  <span class="text-muted">→</span>
+                  <span class="fw-bold text-dark">Contact Info</span>
+                  <span class="text-muted">→</span>
+                  <span class="text-muted">Profile URL</span>
+                </div>
+                <div class="step-flow d-none d-sm-flex align-items-center gap-2 text-sm" *ngIf="selectedRole === 5">
                   <span class="text-success fw-medium">Role ✓</span>
                   <span class="text-muted">→</span>
                   <span class="text-success fw-medium">Profile ✓</span>
@@ -464,7 +456,7 @@
                 </p>
               </div>
 
-              <form #addUserForm="ngForm" (ngSubmit)="addUser()" novalidate>
+              <form #addUserForm="ngForm" (ngSubmit)="nextStepFrom3()" novalidate>
                 
                 <!-- SECTION 3: Contact Information -->
                 <div class="form-section mb-4">
@@ -506,6 +498,9 @@
                     <!-- Phone -->
                     <div class="col-12 col-md-6">
                       <div class="form-group mb-0">
+                        <label for="intlPhone" class="form-label field-label d-flex justify-content-between">
+                          <span>Phone <span class="text-muted fw-normal small ms-1">(Optional)</span></span>
+                        </label>
                         <app-intl-tel-input
                           [phoneNumber]="formData.phone"
                           (phoneNumberChange)="formData.phone = $event"
@@ -524,6 +519,115 @@
                   
                   <div class="d-flex align-items-center gap-2 ms-auto">
                     <button type="button" class="btn btn-skip-step" (click)="skipStep3()" [disabled]="isSubmitting">
+                      Skip for now
+                    </button>
+                    
+                    <!-- If Candidate: Finish on Step 3 -->
+                    <button *ngIf="selectedRole === 5" type="submit" class="btn btn-complete-profile" [disabled]="isSubmitting">
+                      <span *ngIf="!isSubmitting" class="d-flex align-items-center justify-content-center gap-2">
+                        <span>Complete Profile</span>
+                        <span class="material-symbols-outlined fs-6">arrow_forward</span>
+                      </span>
+                      <span *ngIf="isSubmitting" class="d-flex align-items-center justify-content-center">
+                        <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                        Saving...
+                      </span>
+                    </button>
+
+                    <!-- If Recruiter / Bench Sales: Next to Step 4 -->
+                    <button *ngIf="selectedRole !== 5" type="submit" class="btn btn-complete-profile">
+                      <span class="d-flex align-items-center justify-content-center gap-2">
+                        <span>Next: Profile URL</span>
+                        <span class="material-symbols-outlined fs-6">arrow_forward</span>
+                      </span>
+                    </button>
+                  </div>
+                </div>
+
+              </form>
+
+            </ng-container>
+
+            <!-- STEP 4: PUBLIC PROFILE URL (RECRUITER / BENCH SALES) -->
+            <ng-container *ngIf="currentStep === 4 && selectedRole !== 5">
+              
+              <!-- Progress Tracker Header -->
+              <div class="d-flex align-items-center justify-content-between mb-4 flex-wrap gap-2">
+                <div class="onboarding-step-badge d-inline-flex align-items-center gap-2">
+                  <span class="step-dot"></span>
+                  <span class="step-text">Profile setup • Step 4 of 4</span>
+                </div>
+                <div class="step-flow d-none d-sm-flex align-items-center gap-2 text-sm">
+                  <span class="text-success fw-medium">Role ✓</span>
+                  <span class="text-muted">→</span>
+                  <span class="text-success fw-medium">Profile ✓</span>
+                  <span class="text-muted">→</span>
+                  <span class="text-success fw-medium">Contact Info ✓</span>
+                  <span class="text-muted">→</span>
+                  <span class="fw-bold text-dark">Profile URL</span>
+                </div>
+              </div>
+
+              <!-- Main Header / Title -->
+              <div class="mb-4">
+                <div class="d-flex align-items-center justify-content-between mb-2 flex-wrap gap-2">
+                  <h1 class="onboarding-title mb-0">Public Profile URL</h1>
+                  <span class="badge bg-light text-secondary border px-2 py-1 text-xs">Auto-generated from your name</span>
+                </div>
+                <p class="onboarding-subtitle mb-0">
+                  Share this verified link directly with candidates and clients to showcase your hiring activity.
+                </p>
+              </div>
+
+              <form #step4Form="ngForm" (ngSubmit)="addUser()" novalidate>
+                
+                <!-- SECTION 4: Profile URL -->
+                <div class="form-section mb-4">
+                  <div class="form-group mb-0">
+                    <label for="profileId" class="form-label field-label">Custom Profile URL</label>
+                    <div class="unified-url-input-group d-flex align-items-stretch">
+                      <span class="input-group-text url-prefix">{{publicProfileUrlPrefix}}</span>
+                      <input
+                        type="text"
+                        class="form-control url-input"
+                        placeholder="your-name"
+                        [(ngModel)]="formData.publicProfileUserName"
+                        name="profileId"
+                        autocomplete="off"
+                        (ngModelChange)="handleProfileId()"
+                      />
+                      <button 
+                        type="button" 
+                        class="btn btn-check-url flex-shrink-0" 
+                        [disabled]="!formData.publicProfileUserName"
+                        (click)="checkProfileId()"
+                      >
+                        Check availability
+                      </button>
+                    </div>
+                    
+                    <!-- Status message -->
+                    <div class="mt-2 text-sm" *ngIf="isProfileIdAvailable !== null && formData.publicProfileUserName">
+                      <div *ngIf="isProfileIdAvailable === 'true'" class="text-success d-flex align-items-center gap-1 fw-medium">
+                        <span class="material-symbols-outlined fs-6">check_circle</span>
+                        <span>✓ Profile URL is available</span>
+                      </div>
+                      <div *ngIf="isProfileIdAvailable === 'false'" class="text-danger text-xs mt-1 fw-medium">
+                        <span class="material-symbols-outlined fs-6">error</span>
+                        <span>That profile URL is already taken. Try another.</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Step 4 Action Buttons with Skip option -->
+                <div class="pt-4 border-top mt-4 d-flex align-items-center justify-content-between flex-wrap gap-2">
+                  <button type="button" class="btn btn-outline-secondary px-3 py-2" (click)="goToStep(3)">
+                    ← Back
+                  </button>
+                  
+                  <div class="d-flex align-items-center gap-2 ms-auto">
+                    <button type="button" class="btn btn-skip-step" (click)="skipStep4()" [disabled]="isSubmitting">
                       Skip for now
                     </button>
                     <button type="submit" class="btn btn-complete-profile" [disabled]="isSubmitting">
@@ -641,7 +745,7 @@
                 <app-search-field
                   fieldName="newCompCityId"
                   fieldText="City & State or Zipcode"
-                  fieldType="city1,stateName,countryName"
+                  fieldType="city1,stateCode,zip,countryName"
                   fieldPlaceholder="Enter Zipcode or City Name"
                   [fieldRequired]="true"
                   [fieldList]="selectNewCompanyLocationList"

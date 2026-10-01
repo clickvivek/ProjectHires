@@ -122,6 +122,23 @@ export class ProfileComponent implements OnInit {
     return url.replace(/^https?:\/\//i, '').replace(/\/$/, '');
   }
 
+  getAboutMe(): string {
+    if (this.user?.aboutme && this.user.aboutme.trim() !== '') {
+      return this.user.aboutme.trim();
+    }
+    return 'Experienced talent acquisition partner specializing in enterprise IT hiring, contract staffing, and C2C recruitment across SAP, Java, DevOps, Cloud Infrastructure, and Salesforce ecosystems.';
+  }
+
+  getSkills(): string[] {
+    if (this.user?.myskills && this.user.myskills.trim() !== '') {
+      return this.user.myskills
+        .split(',')
+        .map((s: string) => s.trim())
+        .filter((s: string) => s.length > 0);
+    }
+    return ['SAP', 'Java', '.NET', 'Cloud', 'DevOps', 'Salesforce', 'Contract / C2C'];
+  }
+
   getLinkedInUrl(): string {
     const link = this.user?.linkedin || this.company?.linkedin;
     if (!link) return '';
@@ -262,7 +279,7 @@ export class ProfileComponent implements OnInit {
           this.isCandidate = false;
           let consultancyId = publicUser.consultancyUsers && publicUser.consultancyUsers[0]?.consultancyId;
           this.consultancyUserId = publicUser.consultancyUsers && publicUser.consultancyUsers[0]?.id;
-          this.user = publicUser.consultancyUsers && publicUser.consultancyUsers[0]?.user;
+          this.user = { ...publicUser, ...(publicUser.consultancyUsers && publicUser.consultancyUsers[0]?.user ? publicUser.consultancyUsers[0].user : {}) };
           if (consultancyId) {
             this.fetchCompanyDetails(consultancyId);
           }

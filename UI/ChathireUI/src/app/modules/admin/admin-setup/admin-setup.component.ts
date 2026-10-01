@@ -36,7 +36,7 @@ export class AdminSetupComponent implements OnInit {
   @ViewChild('fileInput') fileInput!: ElementRef;
   @ViewChild('logoInput') logoInput!: ElementRef;
 
-  activeTab: 'dau-dashboard' | 'bulk-upload' | 'view-edit' | 'review-companies' | 'user-quotas' | 'admin-users' | 'linkedin-scraper' | 'promo-codes' | 'jobposting-by-email' = 'dau-dashboard';
+  activeTab: 'dau-dashboard' | 'bulk-upload' | 'view-edit' | 'review-companies' | 'user-quotas' | 'admin-users' | 'company-url-scraper' | 'linkedin-scraper' | 'promo-codes' | 'jobposting-by-email' = 'dau-dashboard';
 
   // --- Tab: Admin Users State ---
   adminUsers: any[] = [];
@@ -133,6 +133,9 @@ export class AdminSetupComponent implements OnInit {
   currentPage = 1;
   pageSize = 100;
   pageSizeOptions = [25, 50, 100, 200, 500];
+  companySortColumn: string = 'name';
+  companySortDirection: 'asc' | 'desc' = 'asc';
+  companySortOption: string = 'name_asc';
 
   // Edit Modal State
   isEditModalOpen = false;
@@ -159,7 +162,7 @@ export class AdminSetupComponent implements OnInit {
     this.loadAdminUsers();
   }
 
-  setTab(tab: 'dau-dashboard' | 'bulk-upload' | 'view-edit' | 'review-companies' | 'user-quotas' | 'admin-users' | 'linkedin-scraper' | 'promo-codes' | 'jobposting-by-email') {
+  setTab(tab: 'dau-dashboard' | 'bulk-upload' | 'view-edit' | 'review-companies' | 'user-quotas' | 'admin-users' | 'company-url-scraper' | 'linkedin-scraper' | 'promo-codes' | 'jobposting-by-email') {
     this.activeTab = tab;
     if (tab === 'dau-dashboard' && !this.dauSummary.totalRegisteredUsers) {
       this.loadDauStats();
@@ -506,6 +509,37 @@ export class AdminSetupComponent implements OnInit {
     this.applyFilters();
   }
 
+  onCompanySortOptionChange(val: string) {
+    this.companySortOption = val;
+    if (val === 'name_asc') {
+      this.companySortColumn = 'name';
+      this.companySortDirection = 'asc';
+    } else if (val === 'name_desc') {
+      this.companySortColumn = 'name';
+      this.companySortDirection = 'desc';
+    } else if (val === 'id_asc') {
+      this.companySortColumn = 'id';
+      this.companySortDirection = 'asc';
+    } else if (val === 'id_desc') {
+      this.companySortColumn = 'id';
+      this.companySortDirection = 'desc';
+    }
+    this.currentPage = 1;
+    this.applyFilters();
+  }
+
+  toggleCompanySort(column: string) {
+    if (this.companySortColumn === column) {
+      this.companySortDirection = this.companySortDirection === 'asc' ? 'desc' : 'asc';
+    } else {
+      this.companySortColumn = column;
+      this.companySortDirection = 'asc';
+    }
+    this.companySortOption = `${this.companySortColumn}_${this.companySortDirection}`;
+    this.currentPage = 1;
+    this.applyFilters();
+  }
+
   applyFilters() {
     let list = [...this.allCompanies];
 
@@ -528,10 +562,62 @@ export class AdminSetupComponent implements OnInit {
       );
     }
 
+    // Sorting
+    if (this.companySortColumn) {
+      list.sort((a, b) => {
+        let valA = a[this.companySortColumn];
+        let valB = b[this.companySortColumn];
+
+        if (valA == null) valA = '';
+        if (valB == null) valB = '';
+
+        if (typeof valA === 'string' || typeof valB === 'string') {
+          valA = (valA || '').toString().trim().toLowerCase();
+          valB = (valB || '').toString().trim().toLowerCase();
+          const comparison = valA.localeCompare(valB, undefined, { numeric: true, sensitivity: 'base' });
+          return this.companySortDirection === 'asc' ? comparison : -comparison;
+        } else {
+          return this.companySortDirection === 'asc' ? (valA > valB ? 1 : valA < valB ? -1 : 0) : (valA < valB ? 1 : valA > valB ? -1 : 0);
+        }
+      });
+    }
+
     this.filteredCompanies = list;
   }
 
   // --- Review User Companies Getters & Handlers ---
+  reviewSortColumn: string = 'name';
+  reviewSortDirection: 'asc' | 'desc' = 'asc';
+  reviewSortOption: string = 'name_asc';
+
+  onReviewSortOptionChange(val: string) {
+    this.reviewSortOption = val;
+    if (val === 'name_asc') {
+      this.reviewSortColumn = 'name';
+      this.reviewSortDirection = 'asc';
+    } else if (val === 'name_desc') {
+      this.reviewSortColumn = 'name';
+      this.reviewSortDirection = 'desc';
+    } else if (val === 'id_asc') {
+      this.reviewSortColumn = 'id';
+      this.reviewSortDirection = 'asc';
+    } else if (val === 'id_desc') {
+      this.reviewSortColumn = 'id';
+      this.reviewSortDirection = 'desc';
+    }
+    this.reviewCurrentPage = 1;
+  }
+
+  toggleReviewSort(column: string) {
+    if (this.reviewSortColumn === column) {
+      this.reviewSortDirection = this.reviewSortDirection === 'asc' ? 'desc' : 'asc';
+    } else {
+      this.reviewSortColumn = column;
+      this.reviewSortDirection = 'asc';
+    }
+    this.reviewSortOption = `${this.reviewSortColumn}_${this.reviewSortDirection}`;
+    this.reviewCurrentPage = 1;
+  }
 
   get userAddedCompanies(): any[] {
     return this.allCompanies.filter(c => c.isDirectCompany === true || c.isDirectCompany === 1 || c.statusId === 1);
@@ -563,6 +649,25 @@ export class AdminSetupComponent implements OnInit {
         (c.phone && c.phone.toLowerCase().includes(term)) ||
         (c.address && c.address.toLowerCase().includes(term))
       );
+    }
+
+    if (this.reviewSortColumn) {
+      list = [...list].sort((a, b) => {
+        let valA = a[this.reviewSortColumn];
+        let valB = b[this.reviewSortColumn];
+
+        if (valA == null) valA = '';
+        if (valB == null) valB = '';
+
+        if (typeof valA === 'string' || typeof valB === 'string') {
+          valA = (valA || '').toString().trim().toLowerCase();
+          valB = (valB || '').toString().trim().toLowerCase();
+          const comparison = valA.localeCompare(valB, undefined, { numeric: true, sensitivity: 'base' });
+          return this.reviewSortDirection === 'asc' ? comparison : -comparison;
+        } else {
+          return this.reviewSortDirection === 'asc' ? (valA > valB ? 1 : valA < valB ? -1 : 0) : (valA < valB ? 1 : valA > valB ? -1 : 0);
+        }
+      });
     }
 
     return list;
@@ -1162,6 +1267,239 @@ export class AdminSetupComponent implements OnInit {
 
   toggleAdminPasswordVisibility() {
     this.showAdminPassword = !this.showAdminPassword;
+  }
+
+  // ==========================================
+  // --- Tab: Add Company (URL) Scraper State & Methods ---
+  // ==========================================
+  companyUrlsInput: string = '';
+  isScrapingCompanyUrls: boolean = false;
+  companyUrlScrapedResults: any[] = [];
+  companyUrlFilter: 'all' | 'completed' | 'new' | 'updated' | 'failed' = 'all';
+  companyUrlSearchTerm: string = '';
+  isDraggingCompanyUrlFile: boolean = false;
+  companyUrlUploadedFileName: string = '';
+  autoSaveCompanyUrlToDb: boolean = true;
+  showAddCompanyUrlModal: boolean = false;
+  parsedCompanyUrlCount: number = 0;
+
+  openAddCompanyUrlModal() {
+    this.showAddCompanyUrlModal = true;
+  }
+
+  closeAddCompanyUrlModal() {
+    this.showAddCompanyUrlModal = false;
+  }
+
+  onCompanyUrlInputChanged() {
+    const urls = this.extractCompanyUrlsFromText(this.companyUrlsInput);
+    this.parsedCompanyUrlCount = urls.length;
+  }
+
+  onCompanyUrlDragOver(event: DragEvent) {
+    event.preventDefault();
+    event.stopPropagation();
+    this.isDraggingCompanyUrlFile = true;
+  }
+
+  onCompanyUrlDragLeave(event: DragEvent) {
+    event.preventDefault();
+    event.stopPropagation();
+    this.isDraggingCompanyUrlFile = false;
+  }
+
+  onCompanyUrlDrop(event: DragEvent) {
+    event.preventDefault();
+    event.stopPropagation();
+    this.isDraggingCompanyUrlFile = false;
+
+    if (event.dataTransfer && event.dataTransfer.files && event.dataTransfer.files.length > 0) {
+      const file = event.dataTransfer.files[0];
+      this.processCompanyUrlFile(file);
+    }
+  }
+
+  onCompanyUrlFileSelected(event: any) {
+    if (event.target.files && event.target.files.length > 0) {
+      const file = event.target.files[0];
+      this.processCompanyUrlFile(file);
+    }
+  }
+
+  processCompanyUrlFile(file: File) {
+    const ext = file.name.split('.').pop()?.toLowerCase();
+    if (ext !== 'csv' && ext !== 'txt') {
+      this.toastr.warning('Please upload a valid .csv or .txt file.', 'Invalid File Format');
+      return;
+    }
+
+    this.companyUrlUploadedFileName = file.name;
+    const reader = new FileReader();
+    reader.onload = (e: any) => {
+      const content = e.target.result;
+      const extractedUrls = this.extractCompanyUrlsFromText(content);
+      if (extractedUrls.length === 0) {
+        this.toastr.warning('No valid URLs found in the uploaded file.', 'Empty / Invalid File');
+        return;
+      }
+
+      if (this.companyUrlsInput.trim()) {
+        this.companyUrlsInput = this.companyUrlsInput.trim() + '\n' + extractedUrls.join('\n');
+      } else {
+        this.companyUrlsInput = extractedUrls.join('\n');
+      }
+
+      this.onCompanyUrlInputChanged();
+      this.toastr.info(`Loaded ${extractedUrls.length} Company URL(s) from "${file.name}".`, 'File Processed');
+    };
+    reader.readAsText(file);
+  }
+
+  extractCompanyUrlsFromText(text: string): string[] {
+    if (!text || !text.trim()) return [];
+    const tokens = text.split(/[\r\n,;\t]+/).map(t => t.trim()).filter(t => t.length > 0);
+    const validUrls: string[] = [];
+    for (const token of tokens) {
+      // Remove surrounding quotes
+      let clean = token.replace(/^["']|["']$/g, '').trim();
+      if (!clean) continue;
+      // Skip pure header rows if any
+      if (clean.toLowerCase() === 'url' || clean.toLowerCase() === 'company url' || clean.toLowerCase() === 'website') continue;
+      
+      validUrls.push(clean);
+    }
+    return Array.from(new Set(validUrls));
+  }
+
+  fillSampleCompanyUrls() {
+    this.companyUrlsInput = [
+      'https://stripe.com',
+      'https://databricks.com',
+      'https://www.infosys.com',
+      'mongodb.com',
+      'snowflake.com'
+    ].join('\n');
+    this.onCompanyUrlInputChanged();
+  }
+
+  startCompanyUrlScraping() {
+    const urls = this.extractCompanyUrlsFromText(this.companyUrlsInput);
+    if (urls.length === 0) {
+      this.toastr.warning('Please enter at least one valid company URL.', 'Validation Error');
+      return;
+    }
+
+    this.isScrapingCompanyUrls = true;
+    const payload = {
+      urls: urls,
+      autoSaveToDb: this.autoSaveCompanyUrlToDb
+    };
+
+    const endpoint = `${environment.rootUrl}/api/Consultancy/ScrapeAndAddCompanyUrls`;
+    this.http.post<any>(endpoint, payload).subscribe({
+      next: (res: any) => {
+        this.isScrapingCompanyUrls = false;
+        const results = res?.value || res?.data || res || [];
+        
+        // Merge into current session results (prepend)
+        this.companyUrlScrapedResults = [...results, ...this.companyUrlScrapedResults];
+        
+        const successCount = results.filter((r: any) => r.status === 'Completed').length;
+        const failCount = results.filter((r: any) => r.status === 'Failed').length;
+        const newCount = results.filter((r: any) => r.isNewRecord).length;
+        const updatedCount = results.filter((r: any) => r.status === 'Completed' && !r.isNewRecord).length;
+
+        if (successCount > 0) {
+          this.toastr.success(`Processed ${results.length} company URLs (${newCount} new added, ${updatedCount} updated in database).`, 'Extraction Complete');
+          // Reload companies list in background
+          this.loadCompanies();
+        } else {
+          this.toastr.warning(`Completed processing with ${failCount} errors.`, 'Extraction Finished');
+        }
+
+        this.closeAddCompanyUrlModal();
+      },
+      error: (err: any) => {
+        this.isScrapingCompanyUrls = false;
+        const msg = err?.error?.message || err?.message || 'Failed to extract company data.';
+        this.toastr.error(msg, 'Scraper Error');
+      }
+    });
+  }
+
+  clearCompanyUrlInputs() {
+    this.companyUrlsInput = '';
+    this.companyUrlUploadedFileName = '';
+    this.parsedCompanyUrlCount = 0;
+  }
+
+  clearCompanyUrlScrapedResults() {
+    this.companyUrlScrapedResults = [];
+    this.toastr.info('Cleared extracted company results.', 'Cleared');
+  }
+
+  getFilteredCompanyUrlResults(): any[] {
+    let list = this.companyUrlScrapedResults;
+    if (this.companyUrlFilter === 'completed') {
+      list = list.filter(r => r.status === 'Completed');
+    } else if (this.companyUrlFilter === 'new') {
+      list = list.filter(r => r.status === 'Completed' && r.isNewRecord);
+    } else if (this.companyUrlFilter === 'updated') {
+      list = list.filter(r => r.status === 'Completed' && !r.isNewRecord);
+    } else if (this.companyUrlFilter === 'failed') {
+      list = list.filter(r => r.status === 'Failed');
+    }
+
+    if (this.companyUrlSearchTerm.trim()) {
+      const term = this.companyUrlSearchTerm.toLowerCase().trim();
+      list = list.filter(r => 
+        (r.companyName && r.companyName.toLowerCase().includes(term)) ||
+        (r.domainName && r.domainName.toLowerCase().includes(term)) ||
+        (r.normalizedWebsiteUrl && r.normalizedWebsiteUrl.toLowerCase().includes(term)) ||
+        (r.linkedinUrl && r.linkedinUrl.toLowerCase().includes(term)) ||
+        (r.inputUrl && r.inputUrl.toLowerCase().includes(term))
+      );
+    }
+    return list;
+  }
+
+  getCompanyUrlStats() {
+    const total = this.companyUrlScrapedResults.length;
+    const completed = this.companyUrlScrapedResults.filter(r => r.status === 'Completed').length;
+    const failed = this.companyUrlScrapedResults.filter(r => r.status === 'Failed').length;
+    const newRecords = this.companyUrlScrapedResults.filter(r => r.isNewRecord).length;
+    const updatedRecords = this.companyUrlScrapedResults.filter(r => r.status === 'Completed' && !r.isNewRecord).length;
+    return { total, completed, failed, newRecords, updatedRecords };
+  }
+
+  exportCompanyUrlResults() {
+    if (this.companyUrlScrapedResults.length === 0) {
+      this.toastr.warning('No results to export.', 'Export Empty');
+      return;
+    }
+
+    const headers = ['Company Name', 'Domain', 'Website URL', 'Discovered LinkedIn URL', 'Azure Logo', 'Status', 'Message', 'Consultancy ID', 'Is New Record'];
+    const rows = this.companyUrlScrapedResults.map(r => [
+      `"${(r.companyName || '').replace(/"/g, '""')}"`,
+      `"${(r.domainName || '').replace(/"/g, '""')}"`,
+      `"${(r.normalizedWebsiteUrl || r.inputUrl || '').replace(/"/g, '""')}"`,
+      `"${(r.linkedinUrl || '').replace(/"/g, '""')}"`,
+      `"${(r.azureLogoFileName || '').replace(/"/g, '""')}"`,
+      `"${(r.status || '').replace(/"/g, '""')}"`,
+      `"${(r.statusMessage || '').replace(/"/g, '""')}"`,
+      `"${r.consultancyId || ''}"`,
+      `"${r.isNewRecord ? 'Yes' : 'No'}"`
+    ]);
+
+    const csvContent = 'data:text/csv;charset=utf-8,' + [headers.join(','), ...rows.map(e => e.join(','))].join('\n');
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement('a');
+    link.setAttribute('href', encodedUri);
+    link.setAttribute('download', `Companies_By_URL_${new Date().toISOString().slice(0,10)}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    this.toastr.success('Exported company URL results to CSV.', 'Export Complete');
   }
 
   // ==========================================

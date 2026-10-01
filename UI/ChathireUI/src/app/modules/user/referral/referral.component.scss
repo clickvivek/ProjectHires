@@ -156,6 +156,52 @@
   border: 1px solid #e2e8f0;
 }
 
+.btn-social-whatsapp {
+  background-color: #ffffff;
+  border: 1.5px solid #25D366;
+  color: #128C7E;
+  transition: all 0.2s ease-in-out;
+
+  svg {
+    fill: #25D366;
+    transition: fill 0.2s ease-in-out;
+  }
+
+  &:hover {
+    background-color: #25D366;
+    border-color: #25D366;
+    color: #ffffff;
+    box-shadow: 0 4px 10px rgba(37, 211, 102, 0.3);
+
+    svg {
+      fill: #ffffff;
+    }
+  }
+}
+
+.btn-social-linkedin {
+  background-color: #ffffff;
+  border: 1.5px solid #0A66C2;
+  color: #0A66C2;
+  transition: all 0.2s ease-in-out;
+
+  svg {
+    fill: #0A66C2;
+    transition: fill 0.2s ease-in-out;
+  }
+
+  &:hover {
+    background-color: #0A66C2;
+    border-color: #0A66C2;
+    color: #ffffff;
+    box-shadow: 0 4px 10px rgba(10, 102, 194, 0.3);
+
+    svg {
+      fill: #ffffff;
+    }
+  }
+}
+
 .text-xs {
   font-size: 0.75rem;
 }

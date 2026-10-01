@@ -74,6 +74,10 @@ namespace BusinessEntityAndDTO.DTO
 
         public bool? RoleBenchSales { get; set; }
 
+        public string? Aboutme { get; set; }
+
+        public string? Myskills { get; set; }
+
         public List<ConsultancyUserDtoForReturn>? ConsultancyUsers { get; set; }
 
     }
@@ -138,6 +142,10 @@ namespace BusinessEntityAndDTO.DTO
 
         public bool? RoleBenchSales { get; set; }
 
+        public string? Aboutme { get; set; }
+
+        public string? Myskills { get; set; }
+
     }
 
     public partial class UserDtoForReturn
@@ -174,6 +182,10 @@ namespace BusinessEntityAndDTO.DTO
         public bool? RoleRecruiter { get; set; }
 
         public bool? RoleBenchSales { get; set; }
+
+        public string? Aboutme { get; set; }
+
+        public string? Myskills { get; set; }
 
         public List<ConsultancyUserDto>? ConsultancyUsers { get; set; } 
 

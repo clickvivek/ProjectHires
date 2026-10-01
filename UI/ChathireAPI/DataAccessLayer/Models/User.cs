@@ -69,6 +69,10 @@ public partial class User
 
     public bool? RoleBenchSales { get; set; }
 
+    public string? Aboutme { get; set; }
+
+    public string? Myskills { get; set; }
+
     public virtual ICollection<CandidateProfile> CandidateProfiles { get; } = new List<CandidateProfile>();
 
     public virtual City? City { get; set; }

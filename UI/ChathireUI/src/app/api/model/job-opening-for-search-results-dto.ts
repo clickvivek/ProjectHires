@@ -33,5 +33,6 @@ export interface JobOpeningForSearchResultsDto {
     jobTypes?: Array<string> | null;
     radiusByMiles?: string | null;
     companyLogo?: string | null;
+    projectDurationmonths?: string | null;
 }
 

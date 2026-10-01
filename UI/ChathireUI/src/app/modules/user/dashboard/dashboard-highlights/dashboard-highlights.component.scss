@@ -102,6 +102,60 @@
       padding: 3px 10px;
       display: inline-block;
     }
+
+    /* Thin Compact Referral Banner */
+    .referral-dashboard-banner {
+      background: linear-gradient(135deg, #1e1b4b 0%, #312e81 45%, #581c87 100%);
+      color: #ffffff;
+      box-shadow: 0 2px 8px rgba(49, 46, 129, 0.12);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      min-height: 48px;
+      transition: all 0.2s ease-in-out;
+
+      &:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 14px rgba(49, 46, 129, 0.22);
+        filter: brightness(1.05);
+      }
+
+      .referral-icon-pill {
+        width: 32px;
+        height: 32px;
+        min-width: 32px;
+        background: rgba(255, 255, 255, 0.12);
+        color: #fde047;
+      }
+
+      .referral-badge {
+        background: #fde047;
+        color: #713f12;
+        font-size: 10px;
+        font-weight: 700;
+        letter-spacing: 0.3px;
+        padding: 2px 7px;
+      }
+
+      .referral-title {
+        font-size: 13.5px;
+        letter-spacing: -0.1px;
+      }
+
+      .referral-cta-btn {
+        font-size: 12px;
+        font-weight: 600;
+        padding: 4px 12px;
+        background-color: #fde047;
+        border-color: #fde047;
+        color: #1e1b4b !important;
+        transition: all 0.15s ease-in-out;
+
+        &:hover {
+          background-color: #facc15;
+          border-color: #facc15;
+          transform: scale(1.02);
+        }
+      }
+    }
   }
 
   /* Section Headings */

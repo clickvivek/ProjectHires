@@ -10,6 +10,7 @@ import { JobOpeningService } from 'src/app/api';
 import { SessionService } from 'src/app/core/session/session.service';
 import { ToastrService } from 'ngx-toastr';
 import { SharedService } from '../../shared/services/shared.service';
+import { getMeaningfulErrorMessage } from 'src/app/modules/shared/utils/error-handler.util';
 
 @Component({
   selector: 'app-inbox',
@@ -83,8 +84,9 @@ export class InboxComponent implements OnInit, OnDestroy {
         });
       },
       error:(res) => {
-        this.toastr.error('Some error occured', '' , {
-          timeOut: 1000,
+        const msg = getMeaningfulErrorMessage(res, 'Failed to update job status. Please try again.');
+        this.toastr.error(msg, '' , {
+          timeOut: 2500,
           positionClass: 'toast-top-center'
         });
       }
@@ -167,7 +169,7 @@ export class InboxComponent implements OnInit, OnDestroy {
       error:(error:any) => {
         this.isError = true;
         this.isLoaded = true;
-        this.error = 'Some error occured';
+        this.error = getMeaningfulErrorMessage(error, 'Unable to load inbox job applicants. Please try again.');
       }
     });
   }

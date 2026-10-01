@@ -4,6 +4,7 @@ import { NgForm } from '@angular/forms';
 import { UserService } from 'src/app/api';
 import { SessionService } from 'src/app/core/session/session.service';
 import { ToastrService } from 'ngx-toastr';
+import { getMeaningfulErrorMessage } from 'src/app/modules/shared/utils/error-handler.util';
 
 @Component({
   selector: 'change-password',
@@ -107,7 +108,7 @@ export class ChangePasswordComponent {
         console.log(error)
         this.isLoaded = true
         this.isError = true
-        this.error = 'Some error occured'
+        this.error = getMeaningfulErrorMessage(error, 'Unable to load password data. Please try again.')
       }
     })
 

@@ -88,6 +88,33 @@ namespace MiddleWare.Controllers
         }
 
         [HttpPost]
+        [Route("ScrapeAndAddCompanyUrls")]
+        public Task<Result<List<CompanyUrlScrapedDto>>> ScrapeAndAddCompanyUrls([FromBody] CompanyUrlScrapeRequestDto request)
+        {
+            return ExecuteAsync<List<CompanyUrlScrapedDto>>(async () =>
+            {
+                var scraperService = _serviceProvider.GetService<BusinessLayer.Services.ICompanyUrlScraperService>();
+                if (scraperService == null)
+                {
+                    throw new InvalidOperationException("CompanyUrlScraperService is not registered.");
+                }
+
+                long? adminUserId = null;
+                try
+                {
+                    var userContext = GetUserContext();
+                    if (userContext != null && userContext.UserId > 0)
+                    {
+                        adminUserId = userContext.UserId;
+                    }
+                }
+                catch { }
+
+                return await scraperService.ScrapeAndSaveCompanyUrlsAsync(request.Urls, request.AutoSaveToDb, adminUserId);
+            });
+        }
+
+        [HttpPost]
         [Route("UploadCompanyLogo")]
         public Task<Result<string>> UploadCompanyLogo([FromForm] FileModel model, [FromQuery] string? websiteUrl = null)
         {

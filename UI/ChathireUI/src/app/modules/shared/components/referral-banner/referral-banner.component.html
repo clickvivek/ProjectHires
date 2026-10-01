@@ -1,0 +1,143 @@
+<!-- SIDEBAR CARD LAYOUT (Default) -->
+<div *ngIf="layout === 'sidebar'" class="referral-sidebar-card rounded-4 p-4 shadow-sm position-relative overflow-hidden">
+  
+  <!-- Decorative Glowing Orb Elements -->
+  <div class="glow-orb orb-top"></div>
+  <div class="glow-orb orb-bottom"></div>
+
+  <!-- Top Badge -->
+  <div class="d-flex align-items-center justify-content-between mb-3 position-relative z-1">
+    <div class="reward-pill d-inline-flex align-items-center gap-1.5 px-2.5 py-1 rounded-pill">
+      <span class="material-symbols-outlined fs-6 text-warning">hotel_class</span>
+      <span class="text-xs fw-bold text-uppercase letter-spacing-1">Referral Award</span>
+    </div>
+    <span class="badge bg-warning text-dark fw-bold px-2 py-1 rounded-pill text-xs">+50 CHATS</span>
+  </div>
+
+  <!-- Main Headline & Subtitle -->
+  <div class="position-relative z-1 mb-3">
+    <h5 class="fw-bold text-white banner-title mb-1">
+      Refer & Increase Chat Limit
+    </h5>
+    <p class="text-white-75 text-xs mb-0">
+      Invite recruiter & bench sales colleagues to unlock higher direct messaging limits and premium privileges.
+    </p>
+  </div>
+
+  <!-- Perks List -->
+  <div class="perks-list-box rounded-3 p-3 mb-3 position-relative z-1">
+    <div class="perk-item d-flex align-items-center gap-2.5 mb-2">
+      <div class="perk-icon-wrap bg-white-15 rounded-circle d-flex align-items-center justify-content-center flex-shrink-0">
+        <span class="material-symbols-outlined text-warning fs-6">forum</span>
+      </div>
+      <div class="text-xs text-white">
+        <strong>+50 Direct Chats</strong> per active colleague
+      </div>
+    </div>
+
+    <div class="perk-item d-flex align-items-center gap-2.5 mb-2">
+      <div class="perk-icon-wrap bg-white-15 rounded-circle d-flex align-items-center justify-content-center flex-shrink-0">
+        <span class="material-symbols-outlined text-teal fs-6">bolt</span>
+      </div>
+      <div class="text-xs text-white">
+        <strong>Zero chat limits</strong> with verified candidates
+      </div>
+    </div>
+
+    <div class="perk-item d-flex align-items-center gap-2.5">
+      <div class="perk-icon-wrap bg-white-15 rounded-circle d-flex align-items-center justify-content-center flex-shrink-0">
+        <span class="material-symbols-outlined text-success fs-6">redeem</span>
+      </div>
+      <div class="text-xs text-white">
+        <strong>3 Months Free</strong> unlimited job postings
+      </div>
+    </div>
+  </div>
+
+  <!-- Quick Copy Invite Link Box -->
+  <div class="quick-link-box bg-white-10 rounded-3 p-2 mb-3 position-relative z-1" *ngIf="referralLink">
+    <div class="d-flex align-items-center justify-content-between gap-2">
+      <div class="link-text text-truncate text-white-75 text-xs ps-1">
+        {{ referralLink }}
+      </div>
+      <button 
+        type="button" 
+        class="btn btn-sm btn-copy-link d-inline-flex align-items-center gap-1 flex-shrink-0"
+        (click)="copyLink($event)"
+        [title]="isCopied ? 'Copied!' : 'Copy Referral Link'"
+      >
+        <span class="material-symbols-outlined fs-6">{{ isCopied ? 'done' : 'content_copy' }}</span>
+        <span>{{ isCopied ? 'Copied' : 'Copy' }}</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Primary CTA Action -->
+  <div class="position-relative z-1 mb-2">
+    <button 
+      type="button"
+      (click)="openReferralModal($event)" 
+      class="btn btn-cta-refer w-100 py-2.5 fw-bold d-inline-flex align-items-center justify-content-center gap-2 shadow-sm text-decoration-none border-0"
+    >
+      <span class="material-symbols-outlined fs-5">rocket_launch</span>
+      <span>Refer & Claim Award</span>
+    </button>
+  </div>
+
+  <!-- Subtle Micro-copy -->
+  <div class="text-center position-relative z-1">
+    <span class="text-white-50 text-xxs">
+      ✨ Enter 10 company emails for instant +10 chats for 10 days!
+    </span>
+  </div>
+
+</div>
+
+<!-- HORIZONTAL STRIP BANNER LAYOUT -->
+<div *ngIf="layout === 'horizontal'" class="referral-horizontal-card rounded-4 p-3 p-md-4 shadow-sm position-relative overflow-hidden">
+  <div class="glow-orb orb-top"></div>
+  <div class="glow-orb orb-bottom"></div>
+
+  <div class="row align-items-center position-relative z-1 g-3">
+    <div class="col-12 col-md-7 col-lg-8">
+      <div class="d-flex align-items-start gap-3">
+        <div class="referral-badge-icon bg-white-15 text-warning p-3 rounded-circle d-none d-sm-flex align-items-center justify-content-center flex-shrink-0">
+          <span class="material-symbols-outlined fs-3">hotel_class</span>
+        </div>
+        <div>
+          <div class="d-flex align-items-center gap-2 mb-1 flex-wrap">
+            <span class="badge bg-warning text-dark fw-bold px-2.5 py-1 rounded-pill text-xs">REFERRAL AWARD</span>
+            <span class="text-white-50 text-xs">⚡ Instant +10 Daily Chats Bonus</span>
+          </div>
+          <h5 class="fw-bold text-white mb-1">
+            Refer Colleagues & Increase Chat Limit
+          </h5>
+          <p class="text-white-75 text-xs mb-0">
+            Enter 10 company email addresses to <strong>instantly unlock +10 chats/day for 10 days</strong> without waiting for signup! Plus free job postings when they join.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-12 col-md-5 col-lg-4 text-md-end d-flex flex-column flex-sm-row flex-md-column gap-2 justify-content-md-center">
+      <button 
+        type="button"
+        (click)="openReferralModal($event)" 
+        class="btn btn-cta-refer py-2 px-3 fw-bold d-inline-flex align-items-center justify-content-center gap-2 shadow-sm text-decoration-none border-0"
+      >
+        <span class="material-symbols-outlined fs-5">rocket_launch</span>
+        <span>Refer & Claim Award</span>
+      </button>
+
+      <button 
+        *ngIf="referralLink"
+        type="button" 
+        class="btn btn-sm btn-outline-light-soft py-1.5 px-3 fw-medium d-inline-flex align-items-center justify-content-center gap-1"
+        (click)="copyLink($event)"
+      >
+        <span class="material-symbols-outlined fs-6">{{ isCopied ? 'done' : 'content_copy' }}</span>
+        <span>{{ isCopied ? 'Link Copied!' : 'Copy Invite Link' }}</span>
+      </button>
+    </div>
+  </div>
+</div>

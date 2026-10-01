@@ -8,7 +8,8 @@
           <!-- Avatar Wrap with quick edit badge -->
           <div class="position-relative profile-avatar-wrap pointer" (click)="setTab('profile-pic')" title="Change profile picture">
             <img
-              [src]="user?.profilePic ? (picBase + user?.profilePic) : 'assets/images/profile-placehoder-img.png'"
+              [src]="getProfilePicUrl()"
+              (error)="onImageError($event)"
               class="rounded-circle border border-3 border-white shadow-sm object-fit-cover"
               style="width: 64px; height: 64px;"
               alt="Avatar"
