@@ -788,6 +788,12 @@
               <span class="material-symbols-outlined fs-5" [class.spin]="isLoadingCompanies">refresh</span>
               <span>Refresh</span>
             </button>
+
+            <!-- Export CSV button -->
+            <button class="btn btn-outline-success btn-sm d-flex align-items-center gap-1 fw-semibold" (click)="exportCompaniesToCsv()" [disabled]="isLoadingCompanies || allCompanies.length === 0" title="Export Consultancies to CSV">
+              <span class="material-symbols-outlined fs-5">download</span>
+              <span>Export CSV</span>
+            </button>
           </div>
         </div>
       </div>
@@ -1053,6 +1059,12 @@
             <button class="btn btn-outline-secondary btn-sm d-flex align-items-center gap-1" (click)="loadCompanies()" [disabled]="isLoadingCompanies" title="Refresh List">
               <span class="material-symbols-outlined fs-6" [class.spin]="isLoadingCompanies">refresh</span>
               <span>Refresh</span>
+            </button>
+
+            <!-- Export CSV button -->
+            <button class="btn btn-outline-success btn-sm d-flex align-items-center gap-1 fw-semibold" (click)="exportReviewCompaniesToCsv()" [disabled]="isLoadingCompanies || userAddedCompanies.length === 0" title="Export Review Companies to CSV">
+              <span class="material-symbols-outlined fs-6">download</span>
+              <span>Export CSV</span>
             </button>
           </div>
         </div>

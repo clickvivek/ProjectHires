@@ -1029,6 +1029,39 @@
       }
     }
   }
+
+  .btn.btn-outline-success, .btn-outline-success {
+    border-color: #10b981 !important;
+    color: #059669 !important;
+    background-color: #ffffff !important;
+    font-weight: 600;
+
+    span, i, .material-symbols-outlined {
+      color: #059669 !important;
+    }
+
+    &:hover:not(:disabled) {
+      background-color: #10b981 !important;
+      color: #ffffff !important;
+      border-color: #10b981 !important;
+
+      span, i, .material-symbols-outlined {
+        color: #ffffff !important;
+      }
+    }
+
+    &:disabled, &[disabled] {
+      background-color: #f8fafc !important;
+      border-color: #e2e8f0 !important;
+      color: #94a3b8 !important;
+      cursor: not-allowed !important;
+      opacity: 0.7 !important;
+
+      span, i, .material-symbols-outlined {
+        color: #94a3b8 !important;
+      }
+    }
+  }
 }
 
 

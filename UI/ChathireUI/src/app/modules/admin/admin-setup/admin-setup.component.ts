@@ -585,6 +585,117 @@ export class AdminSetupComponent implements OnInit {
     this.filteredCompanies = list;
   }
 
+  exportCompaniesToCsv() {
+    const listToExport = (this.filteredCompanies && this.filteredCompanies.length > 0)
+      ? this.filteredCompanies
+      : this.allCompanies;
+
+    if (!listToExport || listToExport.length === 0) {
+      this.toastr.warning('No company records available to export.', 'Export CSV');
+      return;
+    }
+
+    const headers = ['ID', 'Name', 'Website', 'Linkedin', 'Email', 'Phone', 'Address', 'Active', 'Updated', 'Logo', 'Domain'];
+
+    const escapeCsv = (val: any) => {
+      if (val === null || val === undefined) return '';
+      const str = String(val).replace(/"/g, '""');
+      if (str.includes(',') || str.includes('"') || str.includes('\n') || str.includes('\r')) {
+        return `"${str}"`;
+      }
+      return str;
+    };
+
+    const csvRows = [headers.join(',')];
+
+    for (const comp of listToExport) {
+      const row = [
+        escapeCsv(comp.id),
+        escapeCsv(comp.name),
+        escapeCsv(comp.website),
+        escapeCsv(comp.linkedin),
+        escapeCsv(comp.email),
+        escapeCsv(comp.phone),
+        escapeCsv(comp.address),
+        escapeCsv(comp.active === true || comp.active === 1 ? 'true' : 'false'),
+        escapeCsv(comp.updated ? new Date(comp.updated).toISOString().split('T')[0] : ''),
+        escapeCsv(comp.logo),
+        escapeCsv(comp.domainname || '')
+      ];
+      csvRows.push(row.join(','));
+    }
+
+    const csvContent = csvRows.join('\r\n');
+    const blob = new Blob(['\uFEFF' + csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    const timestamp = new Date().toISOString().slice(0, 10);
+    const filterSuffix = this.statusFilter !== 'all' ? `_${this.statusFilter}` : '';
+    a.href = url;
+    a.download = `consultancies_export${filterSuffix}_${timestamp}.csv`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    window.URL.revokeObjectURL(url);
+
+    this.toastr.success(`Exported ${listToExport.length} companies to CSV.`, 'Export Successful');
+  }
+
+  exportReviewCompaniesToCsv() {
+    const listToExport = (this.filteredReviewCompanies && this.filteredReviewCompanies.length > 0)
+      ? this.filteredReviewCompanies
+      : this.userAddedCompanies;
+
+    if (!listToExport || listToExport.length === 0) {
+      this.toastr.warning('No review company records available to export.', 'Export CSV');
+      return;
+    }
+
+    const headers = ['ID', 'Name', 'Website', 'Linkedin', 'Email', 'Phone', 'Address', 'Active', 'Updated', 'Logo', 'Domain'];
+
+    const escapeCsv = (val: any) => {
+      if (val === null || val === undefined) return '';
+      const str = String(val).replace(/"/g, '""');
+      if (str.includes(',') || str.includes('"') || str.includes('\n') || str.includes('\r')) {
+        return `"${str}"`;
+      }
+      return str;
+    };
+
+    const csvRows = [headers.join(',')];
+
+    for (const comp of listToExport) {
+      const row = [
+        escapeCsv(comp.id),
+        escapeCsv(comp.name),
+        escapeCsv(comp.website),
+        escapeCsv(comp.linkedin),
+        escapeCsv(comp.email),
+        escapeCsv(comp.phone),
+        escapeCsv(comp.address),
+        escapeCsv(comp.active === true || comp.active === 1 ? 'true' : 'false'),
+        escapeCsv(comp.updated ? new Date(comp.updated).toISOString().split('T')[0] : ''),
+        escapeCsv(comp.logo),
+        escapeCsv(comp.domainname || '')
+      ];
+      csvRows.push(row.join(','));
+    }
+
+    const csvContent = csvRows.join('\r\n');
+    const blob = new Blob(['\uFEFF' + csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    const timestamp = new Date().toISOString().slice(0, 10);
+    a.href = url;
+    a.download = `review_companies_export_${timestamp}.csv`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    window.URL.revokeObjectURL(url);
+
+    this.toastr.success(`Exported ${listToExport.length} review companies to CSV.`, 'Export Successful');
+  }
+
   // --- Review User Companies Getters & Handlers ---
   reviewSortColumn: string = 'name';
   reviewSortDirection: 'asc' | 'desc' = 'asc';
