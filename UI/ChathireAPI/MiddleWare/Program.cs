@@ -94,6 +94,27 @@ builder.Services.AddSwaggerGen(c =>
 
 var app = builder.Build();
 
+using (var scope = app.Services.CreateScope())
+{
+    try
+    {
+        var db = scope.ServiceProvider.GetRequiredService<DataAccessLayer.Models.EFContexts>();
+        db.Database.ExecuteSqlRaw(@"
+IF NOT EXISTS (
+    SELECT * FROM sys.columns 
+    WHERE object_id = OBJECT_ID(N'[dbo].[Consultancy]') 
+    AND name = 'website2'
+)
+BEGIN
+    ALTER TABLE [dbo].[Consultancy] ADD [website2] VARCHAR(255) NULL;
+END");
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"Error running Consultancy table migration: {ex.Message}");
+    }
+}
+
 app.UseCors("CorsPolicy");
 app.UseAuthentication();
 app.UseSwagger();

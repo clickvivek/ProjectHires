@@ -19,6 +19,7 @@ export interface ConsultancyForInsertDto {
     active?: boolean | null;
     updated?: string | null;
     website?: string | null;
+    website2?: string | null;
     linkedin?: string | null;
     logo?: string | null;
     cityId?: number | null;

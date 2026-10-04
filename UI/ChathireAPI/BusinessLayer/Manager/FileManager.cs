@@ -54,7 +54,25 @@ namespace BusinessLayer.Manager
             string finalFileName = cleanName.EndsWith(ext, StringComparison.OrdinalIgnoreCase) ? cleanName : cleanName + ext;
             var blobClient = blobContainer.GetBlobClient(finalFileName);
 
-            await blobClient.UploadAsync(fileModel.ImageFile.OpenReadStream(), overwrite: true);
+            string contentType = ext.ToLowerInvariant() switch
+            {
+                ".jpg" or ".jpeg" => "image/jpeg",
+                ".png" => "image/png",
+                ".webp" => "image/webp",
+                ".svg" => "image/svg+xml",
+                _ => "image/png"
+            };
+
+            var options = new Azure.Storage.Blobs.Models.BlobUploadOptions
+            {
+                HttpHeaders = new Azure.Storage.Blobs.Models.BlobHttpHeaders
+                {
+                    ContentType = contentType,
+                    CacheControl = "no-cache, no-store, must-revalidate"
+                }
+            };
+
+            await blobClient.UploadAsync(fileModel.ImageFile.OpenReadStream(), options);
 
             return blobClient.Name;
         }

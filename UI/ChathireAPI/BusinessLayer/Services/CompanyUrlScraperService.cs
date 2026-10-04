@@ -203,7 +203,7 @@ namespace BusinessLayer.Services
         private async Task<Consultancy> SaveOrUpdateConsultancyAsync(CompanyUrlScrapedDto dto, long? adminUserId)
         {
             var now = DateTime.UtcNow;
-            string domain = Truncate(dto.DomainName?.Trim().ToLowerInvariant(), 255);
+            string domain = Truncate(DataAccessLayer.Repository.ConsultancyRepository.ExtractNormalizedDomain(dto.DomainName ?? dto.NormalizedWebsiteUrl), 255);
             string linkedin = Truncate(dto.LinkedinUrl?.Trim(), 255);
             string name = Truncate(dto.CompanyName?.Trim(), 50);
             string website = Truncate(dto.NormalizedWebsiteUrl?.Trim(), 255);
@@ -215,38 +215,50 @@ namespace BusinessLayer.Services
             dto.NormalizedWebsiteUrl = website;
             dto.LinkedinUrl = string.IsNullOrEmpty(linkedin) ? null : linkedin;
 
+            string linkedinSlug = DataAccessLayer.Repository.ConsultancyRepository.ExtractLinkedInSlug(linkedin);
+            string cleanName = name?.Trim().ToLowerInvariant() ?? string.Empty;
+
             // Search for existing record by domain, linkedin, or exact name
             Consultancy? existing = null;
 
             if (!string.IsNullOrEmpty(domain))
             {
                 existing = await _context.Consultancies.FirstOrDefaultAsync(c => 
-                    c.Domainname == domain || 
+                    (c.Domainname != null && (c.Domainname.ToLower() == domain || c.Domainname.ToLower().Contains(domain) || domain.Contains(c.Domainname.ToLower()))) || 
                     (c.Website != null && c.Website.ToLower().Contains(domain)));
             }
 
-            if (existing == null && !string.IsNullOrEmpty(linkedin))
+            if (existing == null && !string.IsNullOrEmpty(linkedinSlug))
             {
-                var slugMatch = Regex.Match(linkedin, @"linkedin\.com\/(?:company|school)\/([a-zA-Z0-9\-_%]+)", RegexOptions.IgnoreCase);
-                string slug = slugMatch.Success ? slugMatch.Groups[1].Value : linkedin;
                 existing = await _context.Consultancies.FirstOrDefaultAsync(c => 
-                    c.Linkedin != null && c.Linkedin.ToLower().Contains(slug.ToLower()));
+                    c.Linkedin != null && c.Linkedin.ToLower().Contains(linkedinSlug));
             }
 
-            if (existing == null && !string.IsNullOrEmpty(name))
+            if (existing == null && !string.IsNullOrEmpty(cleanName))
             {
                 existing = await _context.Consultancies.FirstOrDefaultAsync(c => 
-                    c.Name != null && c.Name.ToLower() == name.ToLower());
+                    c.Name != null && c.Name.ToLower() == cleanName);
             }
 
             if (existing != null)
             {
                 // Update existing record with newly discovered information if missing
-                if (!string.IsNullOrWhiteSpace(website) && string.IsNullOrWhiteSpace(existing.Website))
+                if (!string.IsNullOrWhiteSpace(website))
                 {
-                    existing.Website = website;
+                    if (string.IsNullOrWhiteSpace(existing.Website) || existing.Website.Length < website.Length)
+                    {
+                        if (!string.IsNullOrWhiteSpace(existing.Website) && !string.Equals(existing.Website, website, StringComparison.OrdinalIgnoreCase) && string.IsNullOrWhiteSpace(existing.Website2))
+                        {
+                            existing.Website2 = existing.Website;
+                        }
+                        existing.Website = website;
+                    }
+                    else if (!string.Equals(existing.Website, website, StringComparison.OrdinalIgnoreCase) && string.IsNullOrWhiteSpace(existing.Website2))
+                    {
+                        existing.Website2 = website;
+                    }
                 }
-                if (!string.IsNullOrWhiteSpace(domain) && string.IsNullOrWhiteSpace(existing.Domainname))
+                if (!string.IsNullOrWhiteSpace(domain) && (string.IsNullOrWhiteSpace(existing.Domainname) || existing.Domainname.Contains("IT Services") || existing.Domainname.Contains(" ")))
                 {
                     existing.Domainname = domain;
                 }
@@ -524,17 +536,44 @@ namespace BusinessLayer.Services
 
         private string? ExtractFaviconOrLogo(string html, Uri baseUri)
         {
-            // Check apple-touch-icon or icon
-            var iconMatch = Regex.Match(html, @"<link\s+[^>]*rel=[""'](?:shortcut\s+icon|icon|apple-touch-icon)[""'][^>]*href=[""']([^""']+)[""']", RegexOptions.IgnoreCase);
-            if (!iconMatch.Success)
+            // 1. Check <link> tags (icon, apple-touch-icon, shortcut icon)
+            var linkMatches = Regex.Matches(html, @"<link\b[^>]+>", RegexOptions.IgnoreCase);
+            foreach (Match m in linkMatches)
             {
-                iconMatch = Regex.Match(html, @"<link\s+[^>]*href=[""']([^""']+)[""'][^>]*rel=[""'](?:shortcut\s+icon|icon|apple-touch-icon)[""']", RegexOptions.IgnoreCase);
+                string tag = m.Value;
+                var relMatch = Regex.Match(tag, @"rel=[""']([^""']+)[""']", RegexOptions.IgnoreCase);
+                var hrefMatch = Regex.Match(tag, @"href=[""']([^""']+)[""']", RegexOptions.IgnoreCase);
+                if (relMatch.Success && hrefMatch.Success)
+                {
+                    string rel = relMatch.Groups[1].Value.ToLowerInvariant();
+                    if (rel.Contains("icon") || rel.Contains("apple-touch-icon"))
+                    {
+                        string href = WebUtility.HtmlDecode(hrefMatch.Groups[1].Value);
+                        if (!string.IsNullOrWhiteSpace(href) && !href.EndsWith(".svg", StringComparison.OrdinalIgnoreCase) && !href.StartsWith("data:", StringComparison.OrdinalIgnoreCase))
+                        {
+                            return ResolveAbsoluteUrl(href, baseUri);
+                        }
+                    }
+                }
             }
 
-            if (iconMatch.Success)
+            // 2. Check <img> tags with logo in class, id, alt, or src
+            var imgMatches = Regex.Matches(html, @"<img\b[^>]+>", RegexOptions.IgnoreCase);
+            foreach (Match m in imgMatches)
             {
-                string href = WebUtility.HtmlDecode(iconMatch.Groups[1].Value);
-                return ResolveAbsoluteUrl(href, baseUri);
+                string tag = m.Value;
+                if (tag.IndexOf("logo", StringComparison.OrdinalIgnoreCase) >= 0)
+                {
+                    var srcMatch = Regex.Match(tag, @"src=[""']([^""']+)[""']", RegexOptions.IgnoreCase);
+                    if (srcMatch.Success)
+                    {
+                        string src = WebUtility.HtmlDecode(srcMatch.Groups[1].Value);
+                        if (!string.IsNullOrWhiteSpace(src) && !src.EndsWith(".svg", StringComparison.OrdinalIgnoreCase) && !src.StartsWith("data:", StringComparison.OrdinalIgnoreCase) && src.Length > 5)
+                        {
+                            return ResolveAbsoluteUrl(src, baseUri);
+                        }
+                    }
+                }
             }
 
             return null;
@@ -565,7 +604,8 @@ namespace BusinessLayer.Services
                 try
                 {
                     using var req = new HttpRequestMessage(HttpMethod.Get, originalLogoUrl);
-                    req.Headers.Add("User-Agent", "Mozilla/5.0");
+                    req.Headers.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Safari/537.36");
+                    req.Headers.Add("Accept", "image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8");
                     using var resp = await _httpClient.SendAsync(req);
                     if (resp.IsSuccessStatusCode)
                     {
@@ -584,7 +624,9 @@ namespace BusinessLayer.Services
                 string clearbitUrl = $"https://logo.clearbit.com/{domain}";
                 try
                 {
-                    using var resp = await _httpClient.GetAsync(clearbitUrl);
+                    using var req = new HttpRequestMessage(HttpMethod.Get, clearbitUrl);
+                    req.Headers.Add("User-Agent", "Mozilla/5.0");
+                    using var resp = await _httpClient.SendAsync(req);
                     if (resp.IsSuccessStatusCode)
                     {
                         imageBytes = await resp.Content.ReadAsByteArrayAsync();
@@ -599,7 +641,9 @@ namespace BusinessLayer.Services
                 string googleFaviconUrl = $"https://www.google.com/s2/favicons?domain={domain}&sz=128";
                 try
                 {
-                    using var resp = await _httpClient.GetAsync(googleFaviconUrl);
+                    using var req = new HttpRequestMessage(HttpMethod.Get, googleFaviconUrl);
+                    req.Headers.Add("User-Agent", "Mozilla/5.0");
+                    using var resp = await _httpClient.SendAsync(req);
                     if (resp.IsSuccessStatusCode)
                     {
                         imageBytes = await resp.Content.ReadAsByteArrayAsync();
@@ -619,17 +663,26 @@ namespace BusinessLayer.Services
 
                     var blobClient = containerClient.GetBlobClient(fileName);
                     using var stream = new MemoryStream(imageBytes);
-                    await blobClient.UploadAsync(stream, overwrite: true);
+                    var options = new Azure.Storage.Blobs.Models.BlobUploadOptions
+                    {
+                        HttpHeaders = new Azure.Storage.Blobs.Models.BlobHttpHeaders
+                        {
+                            ContentType = "image/png",
+                            CacheControl = "no-cache, no-store, must-revalidate"
+                        }
+                    };
+                    await blobClient.UploadAsync(stream, options);
 
                     return fileName;
                 }
                 catch (Exception ex)
                 {
                     _logger.LogError(ex, "Failed uploading logo to Azure Blob Storage: {FileName}", fileName);
+                    return string.Empty;
                 }
             }
 
-            return fileName;
+            return string.Empty;
         }
 
         private string NormalizeUrl(string rawUrl)

@@ -472,6 +472,10 @@ public partial class HiresContext : DbContext
                 .HasMaxLength(255)
                 .IsUnicode(false)
                 .HasColumnName("website");
+            entity.Property(e => e.Website2)
+                .HasMaxLength(255)
+                .IsUnicode(false)
+                .HasColumnName("website2");
 
             entity.HasOne(d => d.City).WithMany(p => p.Consultancies)
                 .HasForeignKey(d => d.CityId)

@@ -88,6 +88,27 @@ namespace MiddleWare.Controllers
         }
 
         [HttpPost]
+        [Route("ReviewAndUpdateLinkedInWebsites")]
+        public Task<Result<LinkedInBatchUpdateResultDto>> ReviewAndUpdateLinkedInWebsites([FromBody] LinkedInBatchUpdateRequestDto? request)
+        {
+            return ExecuteAsync<LinkedInBatchUpdateResultDto>(async () =>
+            {
+                var scraperService = _serviceProvider.GetService<BusinessLayer.Services.ILinkedInScraperService>();
+                if (scraperService == null)
+                {
+                    throw new InvalidOperationException("LinkedInScraperService is not registered.");
+                }
+
+                int? limit = request?.Limit ?? 50;
+                int? offset = request?.Offset ?? 0;
+                int concurrency = request?.Concurrency > 0 ? request.Concurrency : 3;
+                long? specificId = request?.SpecificConsultancyId;
+
+                return await scraperService.ReviewAndUpdateLinkedInWebsitesAsync(limit, offset, concurrency, specificId);
+            });
+        }
+
+        [HttpPost]
         [Route("ScrapeAndAddCompanyUrls")]
         public Task<Result<List<CompanyUrlScrapedDto>>> ScrapeAndAddCompanyUrls([FromBody] CompanyUrlScrapeRequestDto request)
         {
@@ -138,7 +159,19 @@ namespace MiddleWare.Controllers
             });
         }
 
-       
+        [HttpPost]
+        [Route("CheckAndUpdateLogo")]
+        public Task<Result<ConsultancyDto>> CheckAndUpdateLogo([FromQuery] long consultancyId, [FromQuery] string? linkedinUrl = null)
+        {
+            return ExecuteAsync<ConsultancyDto>(async () =>
+            {
+                var mgr = managerFactory.Get<IConsultancyManager>();
+                UserContext context = null;
+                try { context = GetUserContext(); } catch { }
+                return await mgr.CheckAndUpdateLogo(consultancyId, linkedinUrl, context ?? GetDummyUserContext());
+            });
+        }
+
         [HttpPut]
         [Route("Update")]
         //[ApiAuthorize("UpdateConsultancy")]

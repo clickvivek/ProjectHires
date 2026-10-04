@@ -589,5 +589,34 @@ export class ConsultancyService {
         );
     }
 
+    public checkAndUpdateLogo(consultancyId: number, linkedinUrl?: string, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<any> {
+        let localVarHeaders = this.defaultHeaders;
+        let localVarCredential: string | undefined;
+        localVarCredential = this.configuration.lookupCredential('Bearer');
+        if (localVarCredential) {
+            localVarHeaders = localVarHeaders.set('Authorization', localVarCredential);
+        }
+
+        let localVarQueryParameters = new HttpParams();
+        if (consultancyId !== undefined && consultancyId !== null) {
+            localVarQueryParameters = localVarQueryParameters.append('consultancyId', consultancyId.toString());
+        }
+        if (linkedinUrl) {
+            localVarQueryParameters = localVarQueryParameters.append('linkedinUrl', linkedinUrl);
+        }
+
+        let localVarPath = `/api/Consultancy/CheckAndUpdateLogo`;
+        return this.httpClient.request<any>('post', `${this.configuration.basePath}${localVarPath}`,
+            {
+                params: localVarQueryParameters,
+                responseType: 'json',
+                withCredentials: this.configuration.withCredentials,
+                headers: localVarHeaders,
+                observe: observe,
+                reportProgress: reportProgress
+            }
+        );
+    }
+
 }
 

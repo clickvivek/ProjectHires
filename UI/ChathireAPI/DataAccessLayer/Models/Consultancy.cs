@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 
 namespace DataAccessLayer.Models;
@@ -20,6 +20,8 @@ public partial class Consultancy
     public DateTime? Updated { get; set; }
 
     public string? Website { get; set; }
+ 
+    public string? Website2 { get; set; }
 
     public string? Linkedin { get; set; }
 

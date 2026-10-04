@@ -25,6 +25,13 @@ namespace BusinessLayer.Manager
         Task<List<CandidateProfileMappingStatusDto>> GetCandidateProfileMappingStatus(UserContext userContext);
         Task<List<VisaDto>> GetVisa(UserContext userContext);
         Task<List<SkillDto>> GetSkills(string? skill, UserContext userContext);
+        Task<SkillsAdminSummaryDto> GetSkillsAdminSummary(bool? isUserDefined, bool? active, string? searchTerm, UserContext userContext);
+        Task<BulkAddSkillsResultDto> BulkAddSkills(BulkAddSkillsRequestDto request, UserContext userContext);
+        Task<SkillDto> AddSkill(CreateSkillRequestDto request, UserContext userContext);
+        Task<SkillDto?> UpdateSkill(UpdateSkillRequestDto request, UserContext userContext);
+        Task<bool> ToggleSkillStatus(int id, bool active, UserContext userContext);
+        Task<bool> ConvertSkillUserDefined(int id, bool isUserDefined, UserContext userContext);
+        Task<DeleteSkillResultDto> DeleteSkill(int id, UserContext userContext);
         Task<List<CityDto>> GetCity(string? searchString, int? state, bool isState, UserContext userContext);
 
         Task<List<StateDto>> GetState(string? searchString, UserContext userContext);
@@ -121,6 +128,71 @@ namespace BusinessLayer.Manager
                 var repo = repositoryFactory.Get<ISkillsRepository>();
                 return mapper.Map<List<SkillDto>>(await repo.GetSkills(skill));
             }, "GetSkills", userContext);
+        }
+
+        public async Task<SkillsAdminSummaryDto> GetSkillsAdminSummary(bool? isUserDefined, bool? active, string? searchTerm, UserContext userContext)
+        {
+            return await ExecuteAsync<SkillsAdminSummaryDto>(async () =>
+            {
+                var repo = repositoryFactory.Get<ISkillsRepository>();
+                return await repo.GetSkillsAdminSummaryAsync(isUserDefined, active, searchTerm);
+            }, "GetSkillsAdminSummary", userContext);
+        }
+
+        public async Task<BulkAddSkillsResultDto> BulkAddSkills(BulkAddSkillsRequestDto request, UserContext userContext)
+        {
+            return await ExecuteAsync<BulkAddSkillsResultDto>(async () =>
+            {
+                var repo = repositoryFactory.Get<ISkillsRepository>();
+                return await repo.BulkAddSkillsAsync(request, userContext.UserId);
+            }, "BulkAddSkills", userContext);
+        }
+
+        public async Task<SkillDto> AddSkill(CreateSkillRequestDto request, UserContext userContext)
+        {
+            return await ExecuteAsync<SkillDto>(async () =>
+            {
+                var repo = repositoryFactory.Get<ISkillsRepository>();
+                var skill = await repo.AddSkillAsync(request, userContext.UserId);
+                return mapper.Map<SkillDto>(skill);
+            }, "AddSkill", userContext);
+        }
+
+        public async Task<SkillDto?> UpdateSkill(UpdateSkillRequestDto request, UserContext userContext)
+        {
+            return await ExecuteAsync<SkillDto?>(async () =>
+            {
+                var repo = repositoryFactory.Get<ISkillsRepository>();
+                var skill = await repo.UpdateSkillAsync(request, userContext.UserId);
+                return skill != null ? mapper.Map<SkillDto>(skill) : null;
+            }, "UpdateSkill", userContext);
+        }
+
+        public async Task<bool> ToggleSkillStatus(int id, bool active, UserContext userContext)
+        {
+            return await ExecuteAsync<bool>(async () =>
+            {
+                var repo = repositoryFactory.Get<ISkillsRepository>();
+                return await repo.ToggleSkillStatusAsync(id, active, userContext.UserId);
+            }, "ToggleSkillStatus", userContext);
+        }
+
+        public async Task<bool> ConvertSkillUserDefined(int id, bool isUserDefined, UserContext userContext)
+        {
+            return await ExecuteAsync<bool>(async () =>
+            {
+                var repo = repositoryFactory.Get<ISkillsRepository>();
+                return await repo.ConvertSkillUserDefinedAsync(id, isUserDefined, userContext.UserId);
+            }, "ConvertSkillUserDefined", userContext);
+        }
+
+        public async Task<DeleteSkillResultDto> DeleteSkill(int id, UserContext userContext)
+        {
+            return await ExecuteAsync<DeleteSkillResultDto>(async () =>
+            {
+                var repo = repositoryFactory.Get<ISkillsRepository>();
+                return await repo.DeleteSkillAsync(id);
+            }, "DeleteSkill", userContext);
         }
 
         public async Task<List<CityDto>> GetCity(string? searchString, int? state, bool isState, UserContext userContext)

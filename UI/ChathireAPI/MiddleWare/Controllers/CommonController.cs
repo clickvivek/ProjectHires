@@ -1,4 +1,4 @@
-﻿using AutoMapper;
+using AutoMapper;
 using BusinessEntityAndDTO.DTO;
 using BusinessLayer.Manager;
 using DataAccessLayer.Models;
@@ -144,6 +144,90 @@ namespace MiddleWare.Controllers
                 var mgr = managerFactory.Get<ICommonManager>();
 
                 return await mgr.GetSkills(Skill,GetDummyUserContext());
+            });
+        }
+
+        [HttpGet]
+        [Route("AdminSkills")]
+        public Task<Result<SkillsAdminSummaryDto>> GetSkillsAdmin(bool? isUserDefined, bool? active, string? search)
+        {
+            return ExecuteAsync<SkillsAdminSummaryDto>(async () =>
+            {
+                var mgr = managerFactory.Get<ICommonManager>();
+                var context = TryGetUserId != null ? GetUserContext() : GetDummyUserContext();
+                return await mgr.GetSkillsAdminSummary(isUserDefined, active, search, context);
+            });
+        }
+
+        [HttpPost]
+        [Route("BulkAddSkills")]
+        public Task<Result<BulkAddSkillsResultDto>> BulkAddSkills([FromBody] BulkAddSkillsRequestDto request)
+        {
+            return ExecuteAsync<BulkAddSkillsResultDto>(async () =>
+            {
+                var mgr = managerFactory.Get<ICommonManager>();
+                var context = TryGetUserId != null ? GetUserContext() : GetDummyUserContext();
+                return await mgr.BulkAddSkills(request, context);
+            });
+        }
+
+        [HttpPost]
+        [Route("AddSkill")]
+        public Task<Result<SkillDto>> AddSkill([FromBody] CreateSkillRequestDto request)
+        {
+            return ExecuteAsync<SkillDto>(async () =>
+            {
+                var mgr = managerFactory.Get<ICommonManager>();
+                var context = TryGetUserId != null ? GetUserContext() : GetDummyUserContext();
+                return await mgr.AddSkill(request, context);
+            });
+        }
+
+        [HttpPut]
+        [Route("UpdateSkill")]
+        public Task<Result<SkillDto?>> UpdateSkill([FromBody] UpdateSkillRequestDto request)
+        {
+            return ExecuteAsync<SkillDto?>(async () =>
+            {
+                var mgr = managerFactory.Get<ICommonManager>();
+                var context = TryGetUserId != null ? GetUserContext() : GetDummyUserContext();
+                return await mgr.UpdateSkill(request, context);
+            });
+        }
+
+        [HttpPost]
+        [Route("ToggleSkillStatus")]
+        public Task<Result<bool>> ToggleSkillStatus([FromBody] ToggleSkillStatusDto request)
+        {
+            return ExecuteAsync<bool>(async () =>
+            {
+                var mgr = managerFactory.Get<ICommonManager>();
+                var context = TryGetUserId != null ? GetUserContext() : GetDummyUserContext();
+                return await mgr.ToggleSkillStatus(request.Id, request.Active, context);
+            });
+        }
+
+        [HttpPost]
+        [Route("ConvertSkillUserDefined")]
+        public Task<Result<bool>> ConvertSkillUserDefined([FromBody] ConvertSkillUserDefinedDto request)
+        {
+            return ExecuteAsync<bool>(async () =>
+            {
+                var mgr = managerFactory.Get<ICommonManager>();
+                var context = TryGetUserId != null ? GetUserContext() : GetDummyUserContext();
+                return await mgr.ConvertSkillUserDefined(request.Id, request.IsUserDefined, context);
+            });
+        }
+
+        [HttpDelete]
+        [Route("DeleteSkill/{id}")]
+        public Task<Result<DeleteSkillResultDto>> DeleteSkill(int id)
+        {
+            return ExecuteAsync<DeleteSkillResultDto>(async () =>
+            {
+                var mgr = managerFactory.Get<ICommonManager>();
+                var context = TryGetUserId != null ? GetUserContext() : GetDummyUserContext();
+                return await mgr.DeleteSkill(id, context);
             });
         }
 

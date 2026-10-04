@@ -115,6 +115,16 @@
           <span>Jobposting by email</span>
           <span *ngIf="emailJobStats.totalReceived > 0" class="badge rounded-pill bg-purple text-white ms-1">{{ emailJobStats.totalReceived }}</span>
         </button>
+        <button
+          class="nav-link d-flex align-items-center gap-2"
+          [class.active]="activeTab === 'skills-maintenance'"
+          (click)="setTab('skills-maintenance')"
+          type="button"
+        >
+          <span class="material-symbols-outlined fs-5">psychology</span>
+          <span>Skills</span>
+          <span *ngIf="skillsSummary.totalCount > 0" class="badge rounded-pill bg-purple text-white ms-1">{{ skillsSummary.totalCount }}</span>
+        </button>
       </div>
     </div>
 
@@ -852,15 +862,31 @@
                   {{ (currentPage - 1) * pageSize + i + 1 }}
                 </td>
 
-                <!-- Logo Avatar -->
+                <!-- Logo Avatar with Hover Zoom -->
                 <td>
-                  <div class="company-logo-avatar mini-logo">
+                  <div class="company-logo-avatar mini-logo logo-zoom-container">
                     <img
-                      [src]="getCompanyLogoUrl(comp.logo)"
+                      [src]="getCompanyLogoUrl(comp.logo, comp.logoVersion)"
                       (error)="onImageError($event)"
                       [alt]="comp.name"
-                      class="rounded border"
+                      class="rounded border mini-logo-img"
                     />
+                    <!-- Zoomed Large Preview Card on Hover -->
+                    <div class="logo-zoom-popup shadow-lg">
+                      <div class="logo-zoom-img-box">
+                        <img
+                          [src]="getCompanyLogoUrl(comp.logo, comp.logoVersion)"
+                          (error)="onImageError($event)"
+                          [alt]="comp.name"
+                        />
+                      </div>
+                      <div class="logo-zoom-details">
+                        <span class="logo-zoom-title text-truncate" [title]="comp.name">{{ comp.name }}</span>
+                        <span *ngIf="comp.logo && !isLogoMissing(comp.logo)" class="logo-zoom-file text-truncate" [title]="comp.logo">
+                          {{ comp.logo }}
+                        </span>
+                      </div>
+                    </div>
                   </div>
                 </td>
 
@@ -871,7 +897,7 @@
                       {{ comp.name }}
                     </div>
 
-                    <!-- On-Hover Links for Website and LinkedIn -->
+                    <!-- On-Hover Links for Website, Website2, and LinkedIn -->
                     <div class="company-hover-links d-flex align-items-center gap-1">
                       <a
                         *ngIf="comp.website"
@@ -882,6 +908,16 @@
                       >
                         <span class="material-symbols-outlined fs-6">language</span>
                         <span>Website</span>
+                      </a>
+                      <a
+                        *ngIf="comp.website2"
+                        [href]="comp.website2.startsWith('http') ? comp.website2 : 'https://' + comp.website2"
+                        target="_blank"
+                        class="badge bg-secondary-subtle text-secondary border border-secondary-subtle hover-link-pill d-inline-flex align-items-center gap-1"
+                        [title]="'Visit alternative website: ' + comp.website2"
+                      >
+                        <span class="material-symbols-outlined fs-6">public</span>
+                        <span>Web 2</span>
                       </a>
                       <a
                         *ngIf="comp.linkedin"
@@ -933,14 +969,26 @@
 
                 <!-- Actions -->
                 <td class="text-end">
-                  <button
-                    class="btn btn-sm btn-outline-primary py-0 px-2 btn-edit-quota d-inline-flex align-items-center gap-1"
-                    (click)="openEditModal(comp)"
-                    title="Edit Company Details & Logo"
-                  >
-                    <span class="material-symbols-outlined fs-6">edit</span>
-                    <span>Edit</span>
-                  </button>
+                  <div class="d-inline-flex align-items-center gap-1">
+                    <button
+                      class="btn btn-sm btn-outline-primary py-0 px-2 btn-edit-quota d-inline-flex align-items-center gap-1"
+                      (click)="openEditModal(comp)"
+                      title="Edit Company Details & Logo"
+                    >
+                      <span class="material-symbols-outlined fs-6">edit</span>
+                      <span>Edit</span>
+                    </button>
+                    <button
+                      class="btn btn-sm btn-outline-info py-0 px-2 btn-check-logo d-inline-flex align-items-center gap-1"
+                      (click)="checkAndUpdateCompanyLogo(comp, $event)"
+                      [disabled]="checkingLogoCompanyId === comp.id"
+                      title="Check & Fetch Logo from LinkedIn / Website"
+                    >
+                      <span *ngIf="checkingLogoCompanyId === comp.id" class="spinner-border spinner-border-sm" style="width: 0.75rem; height: 0.75rem;"></span>
+                      <span *ngIf="checkingLogoCompanyId !== comp.id" class="material-symbols-outlined fs-6">image_search</span>
+                      <span>Check</span>
+                    </button>
+                  </div>
                 </td>
               </tr>
             </tbody>
@@ -1139,15 +1187,31 @@
                   {{ (reviewCurrentPage - 1) * reviewPageSize + i + 1 }}
                 </td>
 
-                <!-- Logo Avatar -->
+                <!-- Logo Avatar with Hover Zoom -->
                 <td>
-                  <div class="company-logo-avatar mini-logo">
+                  <div class="company-logo-avatar mini-logo logo-zoom-container">
                     <img
-                      [src]="getCompanyLogoUrl(comp.logo)"
+                      [src]="getCompanyLogoUrl(comp.logo, comp.logoVersion)"
                       (error)="onImageError($event)"
                       [alt]="comp.name"
-                      class="rounded border"
+                      class="rounded border mini-logo-img"
                     />
+                    <!-- Zoomed Large Preview Card on Hover -->
+                    <div class="logo-zoom-popup shadow-lg">
+                      <div class="logo-zoom-img-box">
+                        <img
+                          [src]="getCompanyLogoUrl(comp.logo, comp.logoVersion)"
+                          (error)="onImageError($event)"
+                          [alt]="comp.name"
+                        />
+                      </div>
+                      <div class="logo-zoom-details">
+                        <span class="logo-zoom-title text-truncate" [title]="comp.name">{{ comp.name }}</span>
+                        <span *ngIf="comp.logo && !isLogoMissing(comp.logo)" class="logo-zoom-file text-truncate" [title]="comp.logo">
+                          {{ comp.logo }}
+                        </span>
+                      </div>
+                    </div>
                   </div>
                 </td>
 
@@ -1163,7 +1227,7 @@
                       </span>
                     </div>
 
-                    <!-- On-Hover Links for Website and LinkedIn -->
+                    <!-- On-Hover Links for Website, Website2, and LinkedIn -->
                     <div class="company-hover-links d-flex align-items-center gap-1">
                       <a
                         *ngIf="comp.website"
@@ -1174,6 +1238,16 @@
                       >
                         <span class="material-symbols-outlined fs-6">language</span>
                         <span>Website</span>
+                      </a>
+                      <a
+                        *ngIf="comp.website2"
+                        [href]="comp.website2.startsWith('http') ? comp.website2 : 'https://' + comp.website2"
+                        target="_blank"
+                        class="badge bg-secondary-subtle text-secondary border border-secondary-subtle hover-link-pill d-inline-flex align-items-center gap-1"
+                        [title]="'Visit alternative website: ' + comp.website2"
+                      >
+                        <span class="material-symbols-outlined fs-6">public</span>
+                        <span>Web 2</span>
                       </a>
                       <a
                         *ngIf="comp.linkedin"
@@ -1255,6 +1329,19 @@
                     >
                       <span class="material-symbols-outlined" style="font-size: 0.85rem;">edit</span>
                       <span>Edit</span>
+                    </button>
+
+                    <!-- Check Logo button -->
+                    <button
+                      class="btn btn-sm btn-outline-info py-0 px-2 btn-check-logo d-inline-flex align-items-center gap-1"
+                      (click)="checkAndUpdateCompanyLogo(comp, $event)"
+                      [disabled]="checkingLogoCompanyId === comp.id"
+                      title="Check & Fetch Logo from LinkedIn / Website"
+                      style="font-size: 0.72rem; height: 26px;"
+                    >
+                      <span *ngIf="checkingLogoCompanyId === comp.id" class="spinner-border spinner-border-sm" style="width: 0.75rem; height: 0.75rem;"></span>
+                      <span *ngIf="checkingLogoCompanyId !== comp.id" class="material-symbols-outlined" style="font-size: 0.85rem;">image_search</span>
+                      <span>Check</span>
                     </button>
                   </div>
                 </td>
@@ -2731,7 +2818,12 @@
         <div class="flex-grow-1">
           <label class="form-label fw-semibold mb-1 d-block small">Company Logo</label>
           <span class="text-muted d-block small mb-2">
-            Uploaded to Azure Blob Storage as <code>{{ (editingCompany.website || editingCompany.name || 'company') | lowercase }}</code>
+            <span *ngIf="editingCompany.logo && !isLogoMissing(editingCompany.logo)" class="text-success fw-medium">
+              <span class="material-symbols-outlined fs-6 align-middle text-success">verified</span> Azure Logo: <code>{{ editingCompany.logo }}</code>
+            </span>
+            <span *ngIf="!editingCompany.logo || isLogoMissing(editingCompany.logo)" class="text-warning fw-medium">
+              <span class="material-symbols-outlined fs-6 align-middle text-warning">warning</span> Logo missing or not set
+            </span>
           </span>
           <input
             #logoInput
@@ -2740,17 +2832,30 @@
             class="d-none"
             (change)="onLogoFileSelected($event)"
           />
-          <button
-            type="button"
-            class="btn btn-sm btn-outline-primary d-inline-flex align-items-center gap-1"
-            (click)="logoInput.click()"
-            [disabled]="isSavingCompany || isUploadingLogo"
-          >
-            <span class="material-symbols-outlined fs-6">photo_camera</span>
-            <span>{{ selectedLogoFile ? 'Change Selected Logo' : 'Upload New Logo' }}</span>
-          </button>
-          <span *ngIf="selectedLogoFile" class="ms-2 text-success small fw-medium">
-            <span class="material-symbols-outlined fs-6 align-middle">check</span> {{ selectedLogoFile.name }}
+          <div class="d-flex flex-wrap align-items-center gap-2">
+            <button
+              type="button"
+              class="btn btn-sm btn-outline-primary d-inline-flex align-items-center gap-1"
+              (click)="logoInput.click()"
+              [disabled]="isSavingCompany || isUploadingLogo || isCheckingLogoInModal"
+            >
+              <span class="material-symbols-outlined fs-6">photo_camera</span>
+              <span>{{ selectedLogoFile ? 'Change Selected File' : 'Upload File' }}</span>
+            </button>
+            <button
+              type="button"
+              class="btn btn-sm btn-outline-info d-inline-flex align-items-center gap-1"
+              (click)="checkAndUpdateModalLogo()"
+              [disabled]="isSavingCompany || isUploadingLogo || isCheckingLogoInModal"
+              title="Scrape and fetch logo from LinkedIn or company website"
+            >
+              <span *ngIf="isCheckingLogoInModal" class="spinner-border spinner-border-sm"></span>
+              <span *ngIf="!isCheckingLogoInModal" class="material-symbols-outlined fs-6">image_search</span>
+              <span>{{ isCheckingLogoInModal ? 'Fetching Logo...' : 'Fetch from LinkedIn' }}</span>
+            </button>
+          </div>
+          <span *ngIf="selectedLogoFile" class="d-block mt-2 text-success small fw-medium">
+            <span class="material-symbols-outlined fs-6 align-middle">check</span> {{ selectedLogoFile.name }} (Ready to upload on save)
           </span>
         </div>
       </div>
@@ -2781,6 +2886,22 @@
               class="form-control"
               [(ngModel)]="editingCompany.website"
               placeholder="e.g. https://acmetech.com"
+            />
+          </div>
+        </div>
+
+        <!-- Alternative Website (Website 2) -->
+        <div class="col-md-6">
+          <label class="form-label fw-semibold small">Website 2 <span class="text-muted fw-normal">(Alternative URL)</span></label>
+          <div class="input-group">
+            <span class="input-group-text bg-white text-muted">
+              <span class="material-symbols-outlined fs-6">public</span>
+            </span>
+            <input
+              type="text"
+              class="form-control"
+              [(ngModel)]="editingCompany.website2"
+              placeholder="e.g. https://acmetech.io"
             />
           </div>
         </div>
@@ -3914,6 +4035,611 @@
 
   </div>
 
+    <!-- ==================================================== -->
+    <!-- TAB: SKILLS MAINTENANCE -->
+    <!-- ==================================================== -->
+    <div *ngIf="activeTab === 'skills-maintenance'" class="tab-content-area skills-maintenance-area">
+
+      <!-- Header & Actions -->
+      <div class="card border-0 shadow-sm p-4 mb-4">
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center gap-3">
+          <div>
+            <h5 class="mb-1 fw-bold text-dark d-flex align-items-center gap-2">
+              <span class="material-symbols-outlined text-purple">psychology</span>
+              <span>Skills Catalog & Maintenance</span>
+            </h5>
+            <p class="text-muted small mb-0">
+              Manage standardized system skills and candidate/user-defined skills, bulk upload skills via textbox, toggle activation status, or promote user-defined skills.
+            </p>
+          </div>
+
+          <div class="d-flex align-items-center gap-2">
+            <button
+              type="button"
+              class="btn btn-purple text-white btn-sm d-flex align-items-center gap-1 shadow-sm"
+              (click)="showBulkUploadPanel = !showBulkUploadPanel"
+            >
+              <span class="material-symbols-outlined fs-6">upload_file</span>
+              <span>{{ showBulkUploadPanel ? 'Hide Upload Panel' : 'Upload Skills (Textbox)' }}</span>
+            </button>
+
+            <button
+              type="button"
+              class="btn btn-primary btn-sm d-flex align-items-center gap-1 shadow-sm"
+              (click)="openCreateSkillModal()"
+            >
+              <span class="material-symbols-outlined fs-6">add</span>
+              <span>Add Skill</span>
+            </button>
+
+            <button
+              type="button"
+              class="btn btn-outline-secondary btn-sm d-flex align-items-center gap-1"
+              (click)="loadSkills()"
+              [disabled]="isLoadingSkills"
+            >
+              <span *ngIf="isLoadingSkills" class="spinner-border spinner-border-sm"></span>
+              <span *ngIf="!isLoadingSkills" class="material-symbols-outlined fs-6">refresh</span>
+              <span>Refresh</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Metric Stat Cards -->
+        <div class="row g-3 mt-3">
+          <!-- Total Skills -->
+          <div class="col-sm-6 col-lg-3">
+            <div class="p-3 bg-light rounded-3 border h-100 d-flex align-items-center justify-content-between">
+              <div>
+                <span class="text-muted extra-small text-uppercase fw-bold">Total Skills</span>
+                <h3 class="mb-0 fw-bold text-dark">{{ skillsSummary.totalCount }}</h3>
+                <span class="text-muted small">{{ skillsSummary.activeCount }} Active / {{ skillsSummary.inactiveCount }} Inactive</span>
+              </div>
+              <div class="rounded-circle bg-purple-subtle p-3 text-purple d-flex align-items-center justify-content-center">
+                <span class="material-symbols-outlined fs-4">psychology</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- System Defined Skills -->
+          <div class="col-sm-6 col-lg-3">
+            <div
+              class="p-3 bg-light rounded-3 border h-100 d-flex align-items-center justify-content-between"
+              (click)="onSkillTypeFilterChange('system')"
+              title="Click to view System Defined Skills"
+              style="cursor: pointer;"
+            >
+              <div>
+                <span class="text-primary extra-small text-uppercase fw-bold">System Defined</span>
+                <h3 class="mb-0 fw-bold text-primary">{{ skillsSummary.systemDefinedCount }}</h3>
+                <span class="badge bg-primary-subtle text-primary border border-primary-subtle">Standard Catalog</span>
+              </div>
+              <div class="rounded-circle bg-primary-subtle p-3 text-primary d-flex align-items-center justify-content-center">
+                <span class="material-symbols-outlined fs-4">verified</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- User Defined Skills -->
+          <div class="col-sm-6 col-lg-3">
+            <div
+              class="p-3 bg-light rounded-3 border h-100 d-flex align-items-center justify-content-between"
+              (click)="onSkillTypeFilterChange('user-defined')"
+              title="Click to view User Defined Skills"
+              style="cursor: pointer;"
+            >
+              <div>
+                <span class="text-warning extra-small text-uppercase fw-bold">User Defined</span>
+                <h3 class="mb-0 fw-bold text-dark">{{ skillsSummary.userDefinedCount }}</h3>
+                <span class="badge bg-warning-subtle text-dark border border-warning-subtle">Custom / User Added</span>
+              </div>
+              <div class="rounded-circle bg-warning-subtle p-3 text-warning d-flex align-items-center justify-content-center">
+                <span class="material-symbols-outlined fs-4">person</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Active Ratio -->
+          <div class="col-sm-6 col-lg-3">
+            <div class="p-3 bg-light rounded-3 border h-100 d-flex align-items-center justify-content-between">
+              <div>
+                <span class="text-success extra-small text-uppercase fw-bold">Active Ratio</span>
+                <h3 class="mb-0 fw-bold text-success">
+                  {{ skillsSummary.totalCount ? Math.round((skillsSummary.activeCount / skillsSummary.totalCount) * 100) : 0 }}%
+                </h3>
+                <span class="text-muted small">{{ skillsSummary.activeCount }} active skills</span>
+              </div>
+              <div class="rounded-circle bg-success-subtle p-3 text-success d-flex align-items-center justify-content-center">
+                <span class="material-symbols-outlined fs-4">toggle_on</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Row for Bulk Upload Textbox & Quick Add (Collapsible) -->
+      <div *ngIf="showBulkUploadPanel" class="row g-4 mb-4">
+        <!-- Card: Bulk Upload Skills via Textbox -->
+        <div class="col-lg-8">
+          <div class="card border-0 shadow-sm h-100">
+            <div class="card-header bg-white border-bottom p-3 d-flex justify-content-between align-items-center">
+              <h6 class="mb-0 fw-bold text-dark d-flex align-items-center gap-2">
+                <span class="material-symbols-outlined text-purple fs-5">upload_file</span>
+                <span>Bulk Upload Skills (via Textbox)</span>
+              </h6>
+              <div class="d-flex align-items-center gap-2">
+                <span class="badge bg-light text-dark border">
+                  {{ parsedBulkSkillsCount }} detected
+                </span>
+                <button type="button" class="btn-close btn-sm" (click)="showBulkUploadPanel = false" title="Close upload panel"></button>
+              </div>
+            </div>
+            <div class="card-body p-4">
+              <p class="text-muted small mb-2">
+                Paste or type skills separated by <strong>commas</strong>, <strong>semicolons</strong>, or <strong>new lines</strong>. Existing duplicates will be automatically ignored without errors.
+              </p>
+
+              <div class="mb-3">
+                <textarea
+                  class="form-control font-monospace"
+                  rows="5"
+                  placeholder="e.g. Angular, React, Vue.js, Node.js, Python, AWS, Docker, Kubernetes&#10;TypeScript, GraphQL, PostgreSQL"
+                  [(ngModel)]="bulkSkillsText"
+                  (input)="onBulkSkillsInputChange()"
+                ></textarea>
+              </div>
+
+              <!-- Options -->
+              <div class="row g-3 align-items-center mb-3">
+                <div class="col-md-7">
+                  <label class="form-label extra-small fw-bold text-uppercase text-muted d-block mb-1">Target Skill Type</label>
+                  <div class="d-flex align-items-center gap-4">
+                    <div class="form-check">
+                      <input
+                        class="form-check-input"
+                        type="radio"
+                        id="bulkTypeSystem"
+                        [value]="false"
+                        [(ngModel)]="bulkSkillsIsUserDefined"
+                        name="bulkSkillType"
+                      />
+                      <label class="form-check-label small fw-semibold text-dark" for="bulkTypeSystem">
+                        <span class="material-symbols-outlined fs-6 align-middle text-primary me-1">verified</span>
+                        System / Standard Skill
+                      </label>
+                    </div>
+                    <div class="form-check">
+                      <input
+                        class="form-check-input"
+                        type="radio"
+                        id="bulkTypeUser"
+                        [value]="true"
+                        [(ngModel)]="bulkSkillsIsUserDefined"
+                        name="bulkSkillType"
+                      />
+                      <label class="form-check-label small fw-semibold text-dark" for="bulkTypeUser">
+                        <span class="material-symbols-outlined fs-6 align-middle text-warning me-1">person</span>
+                        User Defined Skill
+                      </label>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="col-md-5">
+                  <label class="form-label extra-small fw-bold text-uppercase text-muted d-block mb-1">Status</label>
+                  <div class="form-check form-switch mt-1">
+                    <input
+                      class="form-check-input"
+                      type="checkbox"
+                      id="bulkSkillsActiveSwitch"
+                      [(ngModel)]="bulkSkillsActive"
+                    />
+                    <label class="form-check-label small fw-semibold text-dark" for="bulkSkillsActiveSwitch">
+                      {{ bulkSkillsActive ? 'Active immediately' : 'Inactive' }}
+                    </label>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Action buttons -->
+              <div class="d-flex align-items-center gap-2">
+                <button
+                  type="button"
+                  class="btn btn-purple text-white px-4 d-flex align-items-center gap-2"
+                  (click)="submitBulkSkills()"
+                  [disabled]="isBulkUploadingSkills || parsedBulkSkillsCount === 0"
+                >
+                  <span *ngIf="isBulkUploadingSkills" class="spinner-border spinner-border-sm"></span>
+                  <span *ngIf="!isBulkUploadingSkills" class="material-symbols-outlined fs-5">upload</span>
+                  <span>{{ isBulkUploadingSkills ? 'Uploading...' : 'Upload ' + parsedBulkSkillsCount + ' Skills' }}</span>
+                </button>
+
+                <button
+                  type="button"
+                  class="btn btn-outline-secondary px-3"
+                  (click)="clearBulkSkillsInput()"
+                  [disabled]="isBulkUploadingSkills || !bulkSkillsText"
+                >
+                  Clear
+                </button>
+              </div>
+
+              <!-- Last Result Feedback -->
+              <div *ngIf="lastBulkResult" class="mt-3 p-3 bg-light rounded-3 border">
+                <div class="d-flex align-items-center gap-2 text-dark fw-semibold small mb-1">
+                  <span class="material-symbols-outlined fs-5 text-success">check_circle</span>
+                  <span>Last Upload Summary:</span>
+                </div>
+                <div class="d-flex flex-wrap gap-2 text-muted small">
+                  <span>Total Processed: <strong>{{ lastBulkResult.totalProcessed }}</strong></span>
+                  <span>•</span>
+                  <span class="text-success">Newly Added: <strong>{{ lastBulkResult.addedCount }}</strong></span>
+                  <span>•</span>
+                  <span class="text-muted">Skipped (Existing): <strong>{{ lastBulkResult.skippedDuplicateCount }}</strong></span>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+
+        <!-- Card: Quick Add Single Skill -->
+        <div class="col-lg-4">
+          <div class="card border-0 shadow-sm h-100">
+            <div class="card-header bg-white border-bottom p-3">
+              <h6 class="mb-0 fw-bold text-dark d-flex align-items-center gap-2">
+                <span class="material-symbols-outlined text-primary fs-5">add_circle</span>
+                <span>Quick Add Skill</span>
+              </h6>
+            </div>
+            <div class="card-body p-4 d-flex flex-column justify-content-between">
+              <div>
+                <p class="text-muted small mb-3">Add a single skill immediately into the catalog.</p>
+
+                <div class="mb-3">
+                  <label class="form-label fw-semibold small text-dark">Skill Name <span class="text-danger">*</span></label>
+                  <input
+                    type="text"
+                    class="form-control form-control-sm"
+                    placeholder="e.g. Apache Kafka"
+                    [(ngModel)]="quickSkillName"
+                    (keyup.enter)="submitQuickAddSkill()"
+                  />
+                </div>
+
+                <div class="mb-3">
+                  <label class="form-label extra-small fw-bold text-uppercase text-muted d-block mb-1">Skill Classification</label>
+                  <div class="form-check form-switch">
+                    <input
+                      class="form-check-input"
+                      type="checkbox"
+                      id="quickSkillUserDefined"
+                      [(ngModel)]="quickSkillIsUserDefined"
+                    />
+                    <label class="form-check-label small text-dark" for="quickSkillUserDefined">
+                      {{ quickSkillIsUserDefined ? 'User Defined Skill' : 'System Standard Skill' }}
+                    </label>
+                  </div>
+                </div>
+              </div>
+
+              <button
+                type="button"
+                class="btn btn-primary text-white w-100 d-flex align-items-center justify-content-center gap-2 mt-3"
+                (click)="submitQuickAddSkill()"
+                [disabled]="isQuickAddingSkill || !quickSkillName.trim()"
+              >
+                <span *ngIf="isQuickAddingSkill" class="spinner-border spinner-border-sm"></span>
+                <span *ngIf="!isQuickAddingSkill" class="material-symbols-outlined fs-5">add</span>
+                <span>Add Skill</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Skills Table Card -->
+      <div class="card border-0 shadow-sm overflow-hidden mb-4">
+        <!-- Sub-Tabs & Filter Toolbar -->
+        <div class="card-header bg-white border-bottom p-3">
+          <div class="d-flex flex-column flex-lg-row justify-content-between align-items-stretch align-items-lg-center gap-3">
+
+            <!-- Pill Filter Sub-tabs (Separating System vs User-Defined) -->
+            <div class="btn-group p-1 bg-light rounded-3" role="group">
+              <button
+                type="button"
+                class="btn btn-sm"
+                [class.btn-white]="skillTypeFilter === 'all'"
+                [class.shadow-sm]="skillTypeFilter === 'all'"
+                [class.fw-bold]="skillTypeFilter === 'all'"
+                [class.text-dark]="skillTypeFilter === 'all'"
+                [class.text-muted]="skillTypeFilter !== 'all'"
+                (click)="onSkillTypeFilterChange('all')"
+              >
+                All Skills ({{ skillsSummary.totalCount }})
+              </button>
+              <button
+                type="button"
+                class="btn btn-sm d-flex align-items-center gap-1"
+                [class.btn-white]="skillTypeFilter === 'system'"
+                [class.shadow-sm]="skillTypeFilter === 'system'"
+                [class.fw-bold]="skillTypeFilter === 'system'"
+                [class.text-primary]="skillTypeFilter === 'system'"
+                [class.text-muted]="skillTypeFilter !== 'system'"
+                (click)="onSkillTypeFilterChange('system')"
+              >
+                <span class="material-symbols-outlined fs-6 text-primary">verified</span>
+                <span>System Defined ({{ skillsSummary.systemDefinedCount }})</span>
+              </button>
+              <button
+                type="button"
+                class="btn btn-sm d-flex align-items-center gap-1"
+                [class.btn-white]="skillTypeFilter === 'user-defined'"
+                [class.shadow-sm]="skillTypeFilter === 'user-defined'"
+                [class.fw-bold]="skillTypeFilter === 'user-defined'"
+                [class.text-warning]="skillTypeFilter === 'user-defined'"
+                [class.text-muted]="skillTypeFilter !== 'user-defined'"
+                (click)="onSkillTypeFilterChange('user-defined')"
+              >
+                <span class="material-symbols-outlined fs-6 text-warning">person</span>
+                <span>User Defined ({{ skillsSummary.userDefinedCount }})</span>
+              </button>
+            </div>
+
+            <!-- Search & Status Filters -->
+            <div class="d-flex flex-wrap align-items-center gap-2">
+              <!-- Search box -->
+              <div class="input-group input-group-sm" style="min-width: 220px; max-width: 300px;">
+                <span class="input-group-text bg-light border-end-0">
+                  <span class="material-symbols-outlined fs-6 text-muted">search</span>
+                </span>
+                <input
+                  type="text"
+                  class="form-control border-start-0"
+                  placeholder="Search skills..."
+                  [(ngModel)]="skillSearchTerm"
+                  (input)="onSkillSearchChange()"
+                />
+                <button
+                  *ngIf="skillSearchTerm"
+                  class="btn btn-outline-secondary border-start-0"
+                  type="button"
+                  (click)="skillSearchTerm = ''; onSkillSearchChange()"
+                >
+                  <span class="material-symbols-outlined fs-6">close</span>
+                </button>
+              </div>
+
+              <!-- Status Toggle Buttons -->
+              <div class="btn-group btn-group-sm" role="group">
+                <button
+                  type="button"
+                  class="btn"
+                  [class.btn-primary]="skillStatusFilter === 'all'"
+                  [class.btn-outline-secondary]="skillStatusFilter !== 'all'"
+                  (click)="onSkillStatusFilterChange('all')"
+                >
+                  All Status
+                </button>
+                <button
+                  type="button"
+                  class="btn"
+                  [class.btn-success]="skillStatusFilter === 'active'"
+                  [class.btn-outline-secondary]="skillStatusFilter !== 'active'"
+                  (click)="onSkillStatusFilterChange('active')"
+                >
+                  Active
+                </button>
+                <button
+                  type="button"
+                  class="btn"
+                  [class.btn-secondary]="skillStatusFilter === 'inactive'"
+                  [class.btn-outline-secondary]="skillStatusFilter !== 'inactive'"
+                  (click)="onSkillStatusFilterChange('inactive')"
+                >
+                  Inactive
+                </button>
+              </div>
+
+              <!-- Page Size -->
+              <select
+                class="form-select form-select-sm"
+                style="width: 100px;"
+                [(ngModel)]="skillPageSize"
+                (change)="onSkillPageSizeChange()"
+              >
+                <option *ngFor="let size of skillPageSizeOptions" [value]="size">{{ size }} / page</option>
+              </select>
+
+              <!-- Upload & Add shortcuts -->
+              <button
+                type="button"
+                class="btn btn-sm btn-outline-secondary d-flex align-items-center gap-1"
+                (click)="showBulkUploadPanel = !showBulkUploadPanel"
+                title="Toggle Bulk Textbox Upload"
+              >
+                <span class="material-symbols-outlined fs-6 text-purple">upload_file</span>
+                <span>{{ showBulkUploadPanel ? 'Close Upload' : 'Upload Skills' }}</span>
+              </button>
+
+              <button
+                type="button"
+                class="btn btn-sm btn-primary text-white d-flex align-items-center gap-1 shadow-sm"
+                (click)="openCreateSkillModal()"
+                title="Add New Skill"
+              >
+                <span class="material-symbols-outlined fs-6">add</span>
+                <span>Add Skill</span>
+              </button>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- Table -->
+        <div class="table-responsive">
+          <table class="table table-hover align-middle mb-0 custom-admin-table">
+            <thead class="table-light">
+              <tr>
+                <th scope="col" style="width: 80px;" class="text-center">ID</th>
+                <th scope="col">Skill Name</th>
+                <th scope="col" style="width: 180px;">Classification</th>
+                <th scope="col" style="width: 130px;" class="text-center">Status</th>
+                <th scope="col" style="width: 180px;">Last Updated</th>
+                <th scope="col" style="width: 220px;" class="text-end pe-3">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <!-- Loading row -->
+              <tr *ngIf="isLoadingSkills">
+                <td colspan="6" class="text-center py-5">
+                  <div class="spinner-border text-purple spinner-border-sm me-2"></div>
+                  <span class="text-muted">Loading skills catalog...</span>
+                </td>
+              </tr>
+
+              <!-- Empty row -->
+              <tr *ngIf="!isLoadingSkills && filteredSkillsList.length === 0">
+                <td colspan="6" class="text-center py-5">
+                  <span class="material-symbols-outlined fs-2 text-muted d-block mb-2">psychology_alt</span>
+                  <div class="fw-bold text-dark mb-1">No skills found</div>
+                  <div class="text-muted small">No skill matches the selected classification, status, or search query.</div>
+                </td>
+              </tr>
+
+              <!-- Data rows -->
+              <tr *ngFor="let skill of paginatedSkills" class="align-middle">
+                <!-- ID -->
+                <td class="text-center text-muted font-monospace small">#{{ skill.id }}</td>
+
+                <!-- Skill Name -->
+                <td>
+                  <span class="fw-semibold text-dark fs-6">{{ skill.name }}</span>
+                </td>
+
+                <!-- Classification (System vs User Defined) -->
+                <td>
+                  <span
+                    *ngIf="!skill.isUserDefined"
+                    class="badge bg-primary-subtle text-primary border border-primary-subtle d-inline-flex align-items-center gap-1 px-2 py-1"
+                  >
+                    <span class="material-symbols-outlined fs-6">verified</span>
+                    <span>System Standard</span>
+                  </span>
+                  <span
+                    *ngIf="skill.isUserDefined"
+                    class="badge bg-warning-subtle text-dark border border-warning-subtle d-inline-flex align-items-center gap-1 px-2 py-1"
+                  >
+                    <span class="material-symbols-outlined fs-6 text-warning">person</span>
+                    <span>User Defined</span>
+                  </span>
+                </td>
+
+                <!-- Status (Active Toggle) -->
+                <td class="text-center">
+                  <button
+                    type="button"
+                    class="btn btn-sm py-0 px-2 rounded-pill fw-semibold border"
+                    [class.bg-success-subtle]="skill.active"
+                    [class.text-success]="skill.active"
+                    [class.border-success-subtle]="skill.active"
+                    [class.bg-secondary-subtle]="!skill.active"
+                    [class.text-secondary]="!skill.active"
+                    [class.border-secondary-subtle]="!skill.active"
+                    (click)="toggleSkillActive(skill)"
+                    [title]="skill.active ? 'Click to deactivate' : 'Click to activate'"
+                  >
+                    <span class="material-symbols-outlined fs-6 align-middle me-1">
+                      {{ skill.active ? 'check_circle' : 'cancel' }}
+                    </span>
+                    <span>{{ skill.active ? 'Active' : 'Inactive' }}</span>
+                  </button>
+                </td>
+
+                <!-- Last Updated -->
+                <td class="text-muted small">
+                  {{ skill.updated ? (skill.updated | date:'MMM d, y, h:mm a') : '—' }}
+                </td>
+
+                <!-- Actions -->
+                <td class="text-end pe-3">
+                  <div class="d-inline-flex align-items-center gap-1">
+                    <!-- Promote to System (only if user-defined) -->
+                    <button
+                      *ngIf="skill.isUserDefined"
+                      type="button"
+                      class="btn btn-sm btn-outline-primary d-flex align-items-center gap-1 px-2 py-1"
+                      (click)="promoteSkillToSystem(skill)"
+                      title="Promote this skill to System / Standard Defined"
+                    >
+                      <span class="material-symbols-outlined fs-6">verified</span>
+                      <span class="extra-small fw-semibold">Promote</span>
+                    </button>
+
+                    <!-- Edit button -->
+                    <button
+                      type="button"
+                      class="btn btn-sm btn-outline-secondary d-flex align-items-center justify-content-center p-1"
+                      (click)="openEditSkillModal(skill)"
+                      title="Edit skill"
+                    >
+                      <span class="material-symbols-outlined fs-6">edit</span>
+                    </button>
+
+                    <!-- Delete button -->
+                    <button
+                      type="button"
+                      class="btn btn-sm btn-outline-danger d-flex align-items-center justify-content-center p-1"
+                      (click)="deleteSkill(skill)"
+                      title="Delete skill"
+                    >
+                      <span class="material-symbols-outlined fs-6">delete</span>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Pagination Footer -->
+        <div class="card-footer bg-white border-top p-3 d-flex flex-column flex-sm-row justify-content-between align-items-center gap-2">
+          <div class="small text-muted">
+            Showing {{ filteredSkillsList.length ? ((skillCurrentPage - 1) * skillPageSize) + 1 : 0 }} to
+            {{ Math.min(skillCurrentPage * skillPageSize, filteredSkillsList.length) }} of
+            {{ filteredSkillsList.length }} skills
+            <span *ngIf="filteredSkillsList.length !== skillsSummary.totalCount" class="text-muted">
+              (filtered from {{ skillsSummary.totalCount }} total)
+            </span>
+          </div>
+
+          <div class="d-flex align-items-center gap-1">
+            <button
+              type="button"
+              class="btn btn-sm btn-outline-secondary"
+              [disabled]="skillCurrentPage <= 1"
+              (click)="setSkillPage(skillCurrentPage - 1)"
+            >
+              <span class="material-symbols-outlined fs-6">chevron_left</span>
+            </button>
+
+            <span class="small fw-semibold px-2">Page {{ skillCurrentPage }} of {{ totalSkillPages }}</span>
+
+            <button
+              type="button"
+              class="btn btn-sm btn-outline-secondary"
+              [disabled]="skillCurrentPage >= totalSkillPages"
+              (click)="setSkillPage(skillCurrentPage + 1)"
+            >
+              <span class="material-symbols-outlined fs-6">chevron_right</span>
+            </button>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
   </div>
 </div>
 
@@ -4611,6 +5337,91 @@
 
   </div>
 </div>
+
+<!-- ==================================================== -->
+<!-- EDIT SKILL MODAL -->
+<!-- ==================================================== -->
+<div *ngIf="isEditSkillModalOpen" class="custom-modal-backdrop d-flex align-items-center justify-content-center">
+  <div class="modal-dialog-box card border-0 shadow-lg rounded-4 overflow-hidden" style="max-width: 520px; width: 95%;">
+
+    <!-- Header -->
+    <div class="p-3 px-4 bg-purple text-white d-flex justify-content-between align-items-center">
+      <div class="d-flex align-items-center gap-2">
+        <span class="material-symbols-outlined fs-4">psychology</span>
+        <h5 class="mb-0 fw-bold">{{ editSkillForm.id === 0 ? 'Add New Skill' : 'Edit Skill #' + editSkillForm.id }}</h5>
+      </div>
+      <button type="button" class="btn-close btn-close-white" (click)="closeEditSkillModal()"></button>
+    </div>
+
+    <!-- Body -->
+    <div class="p-4 bg-white">
+      <div class="mb-3">
+        <label class="form-label fw-semibold small text-dark">Skill Name <span class="text-danger">*</span></label>
+        <input
+          type="text"
+          class="form-control"
+          [(ngModel)]="editSkillForm.name"
+          placeholder="Enter skill name"
+          required
+        />
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label extra-small fw-bold text-uppercase text-muted d-block mb-1">Classification</label>
+        <div class="form-check form-switch">
+          <input
+            class="form-check-input"
+            type="checkbox"
+            id="editSkillIsUserDefined"
+            [(ngModel)]="editSkillForm.isUserDefined"
+          />
+          <label class="form-check-label small text-dark" for="editSkillIsUserDefined">
+            {{ editSkillForm.isUserDefined ? 'User Defined Skill' : 'System Standard Skill' }}
+          </label>
+        </div>
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label extra-small fw-bold text-uppercase text-muted d-block mb-1">Status</label>
+        <div class="form-check form-switch">
+          <input
+            class="form-check-input"
+            type="checkbox"
+            id="editSkillActive"
+            [(ngModel)]="editSkillForm.active"
+          />
+          <label class="form-check-label small text-dark" for="editSkillActive">
+            {{ editSkillForm.active ? 'Active' : 'Inactive' }}
+          </label>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="p-3 bg-light border-top d-flex justify-content-end gap-2">
+      <button
+        type="button"
+        class="btn btn-outline-secondary px-3"
+        (click)="closeEditSkillModal()"
+        [disabled]="isSavingSkill"
+      >
+        Cancel
+      </button>
+      <button
+        type="button"
+        class="btn btn-purple text-white px-4 d-flex align-items-center gap-2"
+        (click)="saveEditSkill()"
+        [disabled]="isSavingSkill || !editSkillForm.name.trim()"
+      >
+        <span *ngIf="isSavingSkill" class="spinner-border spinner-border-sm"></span>
+        <span *ngIf="!isSavingSkill" class="material-symbols-outlined fs-5">save</span>
+        <span>{{ isSavingSkill ? 'Saving...' : (editSkillForm.id === 0 ? 'Create Skill' : 'Save Changes') }}</span>
+      </button>
+    </div>
+
+  </div>
+</div>
+
 
 
 

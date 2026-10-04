@@ -12,6 +12,12 @@ import {
   SimulateInboundEmailDto,
   ApproveEmailJobPostingDto
 } from 'src/app/core/services/email-job-posting.service';
+import {
+  SkillAdminService,
+  AdminSkillItemDto,
+  SkillsAdminSummaryDto,
+  BulkAddSkillsResultDto
+} from 'src/app/core/services/skill-admin.service';
 
 export interface CsvCompanyRow {
   name: string;
@@ -21,6 +27,7 @@ export interface CsvCompanyRow {
   active: boolean;
   updated: string;
   website: string;
+  website2?: string;
   linkedin: string;
   logo: string;
   isValid?: boolean;
@@ -36,7 +43,51 @@ export class AdminSetupComponent implements OnInit {
   @ViewChild('fileInput') fileInput!: ElementRef;
   @ViewChild('logoInput') logoInput!: ElementRef;
 
-  activeTab: 'dau-dashboard' | 'bulk-upload' | 'view-edit' | 'review-companies' | 'user-quotas' | 'admin-users' | 'company-url-scraper' | 'linkedin-scraper' | 'promo-codes' | 'jobposting-by-email' = 'dau-dashboard';
+  activeTab: 'dau-dashboard' | 'bulk-upload' | 'view-edit' | 'review-companies' | 'user-quotas' | 'admin-users' | 'company-url-scraper' | 'linkedin-scraper' | 'promo-codes' | 'jobposting-by-email' | 'skills-maintenance' = 'dau-dashboard';
+
+  // --- Tab: Skills Maintenance State ---
+  isLoadingSkills = false;
+  skillsSummary: SkillsAdminSummaryDto = {
+    totalCount: 0,
+    systemDefinedCount: 0,
+    userDefinedCount: 0,
+    activeCount: 0,
+    inactiveCount: 0,
+    skills: []
+  };
+  skillsList: AdminSkillItemDto[] = [];
+  filteredSkillsList: AdminSkillItemDto[] = [];
+  skillTypeFilter: 'all' | 'system' | 'user-defined' = 'all';
+  skillStatusFilter: 'all' | 'active' | 'inactive' = 'all';
+  skillSearchTerm = '';
+  skillCurrentPage = 1;
+  skillPageSize = 25;
+  skillPageSizeOptions = [25, 50, 100, 200];
+
+  // Textbox Upload State
+  showBulkUploadPanel = false;
+  bulkSkillsText = '';
+  bulkSkillsIsUserDefined = false; // default false (System / Standard skill)
+  bulkSkillsActive = true;
+  parsedBulkSkillsCount = 0;
+  isBulkUploadingSkills = false;
+  lastBulkResult: BulkAddSkillsResultDto | null = null;
+
+  // Quick Add Single Skill State
+  quickSkillName = '';
+  quickSkillIsUserDefined = false;
+  isQuickAddingSkill = false;
+
+  // Edit Skill Modal State
+  isEditSkillModalOpen = false;
+  isSavingSkill = false;
+  editingSkill: AdminSkillItemDto | null = null;
+  editSkillForm = {
+    id: 0,
+    name: '',
+    active: true,
+    isUserDefined: false
+  };
 
   // --- Tab: Admin Users State ---
   adminUsers: any[] = [];
@@ -141,18 +192,22 @@ export class AdminSetupComponent implements OnInit {
   isEditModalOpen = false;
   isSavingCompany = false;
   isUploadingLogo = false;
+  checkingLogoCompanyId: number | null = null;
+  isCheckingLogoInModal = false;
   editingCompany: any = null;
   selectedLogoFile: File | null = null;
   logoPreviewUrl: string | null = null;
 
   defaultLogo = defaultProfilePic;
   picBaseUrl = picUrl;
+  cacheBusterVersion: number = Date.now();
   Math = Math;
 
   constructor(
     private consultancyService: ConsultancyService,
     private promocodeService: PromocodeService,
     private emailJobPostingService: EmailJobPostingService,
+    private skillAdminService: SkillAdminService,
     private http: HttpClient,
     private toastr: ToastrService
   ) {}
@@ -160,9 +215,10 @@ export class AdminSetupComponent implements OnInit {
   ngOnInit(): void {
     this.loadDauStats();
     this.loadAdminUsers();
+    this.loadSkills();
   }
 
-  setTab(tab: 'dau-dashboard' | 'bulk-upload' | 'view-edit' | 'review-companies' | 'user-quotas' | 'admin-users' | 'company-url-scraper' | 'linkedin-scraper' | 'promo-codes' | 'jobposting-by-email') {
+  setTab(tab: 'dau-dashboard' | 'bulk-upload' | 'view-edit' | 'review-companies' | 'user-quotas' | 'admin-users' | 'company-url-scraper' | 'linkedin-scraper' | 'promo-codes' | 'jobposting-by-email' | 'skills-maintenance') {
     this.activeTab = tab;
     if (tab === 'dau-dashboard' && !this.dauSummary.totalRegisteredUsers) {
       this.loadDauStats();
@@ -177,6 +233,8 @@ export class AdminSetupComponent implements OnInit {
     } else if (tab === 'jobposting-by-email') {
       this.loadEmailJobPostings();
       this.loadEmailJobStats();
+    } else if (tab === 'skills-maintenance') {
+      this.loadSkills();
     }
   }
 
@@ -267,6 +325,7 @@ export class AdminSetupComponent implements OnInit {
     const activeIdx = headers.findIndex(h => h === 'active' || h === 'isactive' || h === 'status');
     const updatedIdx = headers.findIndex(h => h === 'updated' || h === 'updated date');
     const websiteIdx = headers.findIndex(h => h === 'website' || h === 'websiteurl' || h === 'url');
+    const website2Idx = headers.findIndex(h => h === 'website2' || h === 'website 2' || h === 'altwebsite' || h === 'alternativewebsite' || h === 'secondarywebsite');
     const linkedinIdx = headers.findIndex(h => h === 'linkedin' || h === 'linkedinurl');
     const logoIdx = headers.findIndex(h => h === 'logo' || h === 'logourl');
 
@@ -290,6 +349,7 @@ export class AdminSetupComponent implements OnInit {
       const activeRaw = activeIdx >= 0 && cols[activeIdx] ? cols[activeIdx].trim().toLowerCase() : 'true';
       const updated = updatedIdx >= 0 && cols[updatedIdx] ? cols[updatedIdx].trim() : '';
       const website = websiteIdx >= 0 && cols[websiteIdx] ? cols[websiteIdx].trim() : '';
+      const website2 = website2Idx >= 0 && cols[website2Idx] ? cols[website2Idx].trim() : '';
       const linkedin = linkedinIdx >= 0 && cols[linkedinIdx] ? cols[linkedinIdx].trim() : '';
       const logo = logoIdx >= 0 && cols[logoIdx] ? cols[logoIdx].trim() : '';
 
@@ -308,6 +368,7 @@ export class AdminSetupComponent implements OnInit {
         active,
         updated,
         website,
+        website2,
         linkedin,
         logo,
         isValid: errors.length === 0,
@@ -408,11 +469,11 @@ export class AdminSetupComponent implements OnInit {
   }
 
   downloadSampleCsv() {
-    const headers = 'Name,Email,Address,Phone,Active,Updated,website,Linkedin,Logo\n';
+    const headers = 'Name,Email,Address,Phone,Active,Updated,website,website2,Linkedin,Logo\n';
     const sampleRows = [
-      'Acme Technologies,contact@acmetech.com,"123 Innovation Way, Tech Park, San Jose, CA",408-555-0199,true,2026-09-16,https://acmetech.com,https://linkedin.com/company/acme-tech,\n',
-      'Global Staffing Solutions,info@globalstaffing.com,"456 Corporate Blvd, Suite 200, Dallas, TX",214-555-0144,true,2026-09-16,https://globalstaffing.com,https://linkedin.com/company/global-staffing,\n',
-      'Apex IT Solutions,hr@apexit.com,"789 Enterprise Dr, Chicago, IL",312-555-0188,true,2026-09-16,https://apexit.com,https://linkedin.com/company/apex-it,\n'
+      'Acme Technologies,contact@acmetech.com,"123 Innovation Way, Tech Park, San Jose, CA",408-555-0199,true,2026-09-16,https://acmetech.com,https://acmetech.io,https://linkedin.com/company/acme-tech,\n',
+      'Global Staffing Solutions,info@globalstaffing.com,"456 Corporate Blvd, Suite 200, Dallas, TX",214-555-0144,true,2026-09-16,https://globalstaffing.com,,https://linkedin.com/company/global-staffing,\n',
+      'Apex IT Solutions,hr@apexit.com,"789 Enterprise Dr, Chicago, IL",312-555-0188,true,2026-09-16,https://apexit.com,https://apexit-corp.com,https://linkedin.com/company/apex-it,\n'
     ].join('');
 
     const blob = new Blob([headers + sampleRows], { type: 'text/csv;charset=utf-8;' });
@@ -443,6 +504,7 @@ export class AdminSetupComponent implements OnInit {
       active: row.active,
       updated: row.updated || null,
       website: row.website || null,
+      website2: row.website2 || null,
       linkedin: row.linkedin || null,
       logo: row.logo || null,
       statusId: row.active ? 1 : 2
@@ -474,13 +536,16 @@ export class AdminSetupComponent implements OnInit {
     this.consultancyService.apiConsultancyAllConsultancyGet().subscribe({
       next: (res: any) => {
         this.isLoadingCompanies = false;
+        let list: any[] = [];
         if (res && res.value) {
-          this.allCompanies = Array.isArray(res.value) ? res.value : [res.value];
+          list = Array.isArray(res.value) ? res.value : [res.value];
         } else if (Array.isArray(res)) {
-          this.allCompanies = res;
-        } else {
-          this.allCompanies = [];
+          list = res;
         }
+        this.allCompanies = list.map((c: any) => ({
+          ...c,
+          logoVersion: c.updated ? new Date(c.updated).getTime() : this.cacheBusterVersion
+        }));
         this.applyFilters();
       },
       error: (err: any) => {
@@ -556,6 +621,7 @@ export class AdminSetupComponent implements OnInit {
       list = list.filter(c =>
         (c.name && c.name.toLowerCase().includes(term)) ||
         (c.website && c.website.toLowerCase().includes(term)) ||
+        (c.website2 && c.website2.toLowerCase().includes(term)) ||
         (c.email && c.email.toLowerCase().includes(term)) ||
         (c.phone && c.phone.toLowerCase().includes(term)) ||
         (c.address && c.address.toLowerCase().includes(term))
@@ -595,7 +661,7 @@ export class AdminSetupComponent implements OnInit {
       return;
     }
 
-    const headers = ['ID', 'Name', 'Website', 'Linkedin', 'Email', 'Phone', 'Address', 'Active', 'Updated', 'Logo', 'Domain'];
+    const headers = ['ID', 'Name', 'Website', 'Website2', 'Linkedin', 'Email', 'Phone', 'Address', 'Active', 'Updated', 'Logo', 'Domain'];
 
     const escapeCsv = (val: any) => {
       if (val === null || val === undefined) return '';
@@ -613,6 +679,7 @@ export class AdminSetupComponent implements OnInit {
         escapeCsv(comp.id),
         escapeCsv(comp.name),
         escapeCsv(comp.website),
+        escapeCsv(comp.website2 || ''),
         escapeCsv(comp.linkedin),
         escapeCsv(comp.email),
         escapeCsv(comp.phone),
@@ -756,6 +823,7 @@ export class AdminSetupComponent implements OnInit {
       list = list.filter(c =>
         (c.name && c.name.toLowerCase().includes(term)) ||
         (c.website && c.website.toLowerCase().includes(term)) ||
+        (c.website2 && c.website2.toLowerCase().includes(term)) ||
         (c.email && c.email.toLowerCase().includes(term)) ||
         (c.phone && c.phone.toLowerCase().includes(term)) ||
         (c.address && c.address.toLowerCase().includes(term))
@@ -855,6 +923,7 @@ export class AdminSetupComponent implements OnInit {
   }
 
   openEditModal(company: any) {
+    const version = company.logoVersion || (company.updated ? new Date(company.updated).getTime() : this.cacheBusterVersion);
     this.editingCompany = {
       id: company.id,
       name: company.name || '',
@@ -863,15 +932,17 @@ export class AdminSetupComponent implements OnInit {
       phone: company.phone || '',
       active: company.active === true || company.active === 1,
       website: company.website || '',
+      website2: company.website2 || '',
       linkedin: company.linkedin || '',
       logo: company.logo || '',
       cityId: company.cityId || null,
       domainname: company.domainname || null,
       statusId: company.statusId || (company.active ? 1 : 2),
-      isDirectCompany: company.isDirectCompany || false
+      isDirectCompany: company.isDirectCompany || false,
+      logoVersion: version
     };
     this.selectedLogoFile = null;
-    this.logoPreviewUrl = this.getCompanyLogoUrl(company.logo);
+    this.logoPreviewUrl = this.getCompanyLogoUrl(company.logo, version);
     this.isEditModalOpen = true;
   }
 
@@ -942,12 +1013,24 @@ export class AdminSetupComponent implements OnInit {
     this.consultancyService.apiConsultancyUpdatePut(dto).subscribe({
       next: (res: any) => {
         this.isSavingCompany = false;
+        const ts = Date.now();
+        this.cacheBusterVersion = ts;
+        if (this.editingCompany) {
+          this.editingCompany.logoVersion = ts;
+        }
+
         this.toastr.success(`Company "${this.editingCompany.name}" updated successfully!`, 'Company Updated');
 
         // Update in list
         const index = this.allCompanies.findIndex(c => c.id === this.editingCompany.id);
         if (index !== -1) {
-          this.allCompanies[index] = { ...this.allCompanies[index], ...dto };
+          this.allCompanies[index] = { 
+            ...this.allCompanies[index], 
+            ...dto,
+            logo: this.editingCompany.logo,
+            logoVersion: ts 
+          };
+          this.allCompanies = [...this.allCompanies];
           this.applyFilters();
         }
 
@@ -961,14 +1044,135 @@ export class AdminSetupComponent implements OnInit {
     });
   }
 
-  getCompanyLogoUrl(logo: string | null | undefined): string {
-    if (!logo) {
+  isLogoMissing(logo: string | null | undefined): boolean {
+    if (!logo || !logo.trim()) {
+      return true;
+    }
+    const l = logo.trim().toLowerCase();
+    if (l.startsWith('uploaded to') || l === 'null' || l === 'undefined' || l === 'none') {
+      return true;
+    }
+    // If it's a full URL
+    if (l.startsWith('http://') || l.startsWith('https://')) {
+      const isImageFile = /\.(png|jpg|jpeg|webp|svg|gif|ico|bmp)(\?.*)?$/i.test(l);
+      const isImageCdn = l.includes('licdn.com') || l.includes('blob.core.windows.net') || l.includes('googleusercontent.com') || l.includes('clearbit.com') || l.includes('/logo');
+      return !(isImageFile || isImageCdn);
+    }
+    // If it's a data url
+    if (l.startsWith('data:image')) {
+      return false;
+    }
+    // If it's an image filename in blob storage
+    const isImageBlob = /\.(png|jpg|jpeg|webp|svg|gif|ico|bmp)$/i.test(l);
+    return !isImageBlob;
+  }
+
+  getCompanyLogoUrl(logo: string | null | undefined, version?: any): string {
+    if (this.isLogoMissing(logo)) {
       return this.defaultLogo;
     }
-    if (logo.startsWith('http://') || logo.startsWith('https://') || logo.startsWith('data:image')) {
-      return logo;
+    const trimmed = logo!.trim();
+    let fullUrl = '';
+    if (trimmed.startsWith('http://') || trimmed.startsWith('https://') || trimmed.startsWith('data:image')) {
+      fullUrl = trimmed;
+    } else {
+      fullUrl = `${this.picBaseUrl}${trimmed}`;
     }
-    return `${this.picBaseUrl}${logo}`;
+
+    const v = version || this.cacheBusterVersion;
+    if (v) {
+      const sep = fullUrl.includes('?') ? '&' : '?';
+      return `${fullUrl}${sep}v=${v}`;
+    }
+    return fullUrl;
+  }
+
+  checkAndUpdateCompanyLogo(company: any, event?: Event) {
+    if (event) {
+      event.stopPropagation();
+    }
+    if (!company || !company.id) {
+      this.toastr.warning('Invalid company selected.', 'Warning');
+      return;
+    }
+
+    this.checkingLogoCompanyId = company.id;
+    this.consultancyService.checkAndUpdateLogo(company.id, company.linkedin).subscribe({
+      next: (res: any) => {
+        this.checkingLogoCompanyId = null;
+        const updatedCompany = res?.value || res?.data || res;
+        const newLogo = updatedCompany?.logo || updatedCompany?.Logo;
+        if (newLogo && !this.isLogoMissing(newLogo)) {
+          const ts = Date.now();
+          this.cacheBusterVersion = ts;
+          company.logo = newLogo;
+          company.logoVersion = ts;
+          if (updatedCompany.website) company.website = updatedCompany.website;
+          if (updatedCompany.linkedin) company.linkedin = updatedCompany.linkedin;
+          if (updatedCompany.domainname) company.domainname = updatedCompany.domainname;
+
+          // Update in allCompanies
+          const index = this.allCompanies.findIndex(c => c.id === company.id);
+          if (index !== -1) {
+            this.allCompanies[index] = { ...this.allCompanies[index], ...company, logo: newLogo, logoVersion: ts };
+            this.allCompanies = [...this.allCompanies];
+          }
+
+          this.applyFilters();
+          this.toastr.success(`Logo updated successfully for "${company.name}"!`, 'Logo Updated');
+        } else {
+          this.toastr.warning(`Could not find a valid logo for "${company.name}".`, 'No Logo Found');
+        }
+      },
+      error: (err: any) => {
+        this.checkingLogoCompanyId = null;
+        const msg = err?.error?.message || err?.message || 'Failed to check and update logo.';
+        this.toastr.error(msg, 'Logo Check Failed');
+      }
+    });
+  }
+
+  checkAndUpdateModalLogo() {
+    if (!this.editingCompany || !this.editingCompany.id) {
+      this.toastr.warning('No company selected.', 'Warning');
+      return;
+    }
+
+    this.isCheckingLogoInModal = true;
+    this.consultancyService.checkAndUpdateLogo(this.editingCompany.id, this.editingCompany.linkedin).subscribe({
+      next: (res: any) => {
+        this.isCheckingLogoInModal = false;
+        const updatedCompany = res?.value || res?.data || res;
+        const newLogo = updatedCompany?.logo || updatedCompany?.Logo;
+        if (newLogo && !this.isLogoMissing(newLogo)) {
+          const ts = Date.now();
+          this.cacheBusterVersion = ts;
+          this.editingCompany.logo = newLogo;
+          this.editingCompany.logoVersion = ts;
+          if (updatedCompany.website) this.editingCompany.website = updatedCompany.website;
+          if (updatedCompany.linkedin) this.editingCompany.linkedin = updatedCompany.linkedin;
+          if (updatedCompany.domainname) this.editingCompany.domainname = updatedCompany.domainname;
+
+          this.logoPreviewUrl = this.getCompanyLogoUrl(newLogo, ts);
+
+          const index = this.allCompanies.findIndex(c => c.id === this.editingCompany.id);
+          if (index !== -1) {
+            this.allCompanies[index] = { ...this.allCompanies[index], ...this.editingCompany, logo: newLogo, logoVersion: ts };
+            this.allCompanies = [...this.allCompanies];
+          }
+
+          this.applyFilters();
+          this.toastr.success(`Logo fetched & updated successfully from LinkedIn/Website!`, 'Logo Updated');
+        } else {
+          this.toastr.warning(`Could not find a logo for "${this.editingCompany.name}".`, 'No Logo Found');
+        }
+      },
+      error: (err: any) => {
+        this.isCheckingLogoInModal = false;
+        const msg = err?.error?.message || err?.message || 'Failed to check and update logo.';
+        this.toastr.error(msg, 'Logo Check Failed');
+      }
+    });
   }
 
   onImageError(event: any) {
@@ -2411,6 +2615,321 @@ export class AdminSetupComponent implements OnInit {
       case 'rejected': return 'bg-dark text-white';
       default: return 'bg-light text-dark';
     }
+  }
+
+  // ==========================================
+  // TAB: SKILLS MAINTENANCE
+  // ==========================================
+
+  loadSkills() {
+    this.isLoadingSkills = true;
+    this.skillAdminService.getSkillsAdminSummary().subscribe({
+      next: (res: any) => {
+        const data = res?.value ?? res;
+        this.skillsSummary = {
+          totalCount: data?.totalCount ?? 0,
+          systemDefinedCount: data?.systemDefinedCount ?? 0,
+          userDefinedCount: data?.userDefinedCount ?? 0,
+          activeCount: data?.activeCount ?? 0,
+          inactiveCount: data?.inactiveCount ?? 0,
+          skills: data?.skills || []
+        };
+        this.skillsList = data?.skills || [];
+        this.applySkillFilters();
+        this.isLoadingSkills = false;
+      },
+      error: (err: any) => {
+        const msg = err?.error?.message || err?.message || 'Failed to load skills.';
+        this.toastr.error(msg, 'Skills Error');
+        this.isLoadingSkills = false;
+      }
+    });
+  }
+
+  applySkillFilters() {
+    let filtered = [...this.skillsList];
+
+    // Filter by type: all | system | user-defined
+    if (this.skillTypeFilter === 'system') {
+      filtered = filtered.filter(s => !s.isUserDefined);
+    } else if (this.skillTypeFilter === 'user-defined') {
+      filtered = filtered.filter(s => s.isUserDefined);
+    }
+
+    // Filter by active status: all | active | inactive
+    if (this.skillStatusFilter === 'active') {
+      filtered = filtered.filter(s => s.active);
+    } else if (this.skillStatusFilter === 'inactive') {
+      filtered = filtered.filter(s => !s.active);
+    }
+
+    // Filter by search term
+    if (this.skillSearchTerm.trim()) {
+      const term = this.skillSearchTerm.trim().toLowerCase();
+      filtered = filtered.filter(s => s.name && s.name.toLowerCase().includes(term));
+    }
+
+    this.filteredSkillsList = filtered;
+
+    if (this.skillCurrentPage > this.totalSkillPages) {
+      this.skillCurrentPage = 1;
+    }
+  }
+
+  onSkillTypeFilterChange(type: 'all' | 'system' | 'user-defined') {
+    this.skillTypeFilter = type;
+    this.skillCurrentPage = 1;
+    this.applySkillFilters();
+  }
+
+  onSkillStatusFilterChange(status: 'all' | 'active' | 'inactive') {
+    this.skillStatusFilter = status;
+    this.skillCurrentPage = 1;
+    this.applySkillFilters();
+  }
+
+  onSkillSearchChange() {
+    this.skillCurrentPage = 1;
+    this.applySkillFilters();
+  }
+
+  get paginatedSkills(): AdminSkillItemDto[] {
+    const startIndex = (this.skillCurrentPage - 1) * this.skillPageSize;
+    return this.filteredSkillsList.slice(startIndex, startIndex + this.skillPageSize);
+  }
+
+  get totalSkillPages(): number {
+    return Math.max(1, Math.ceil(this.filteredSkillsList.length / this.skillPageSize));
+  }
+
+  setSkillPage(page: number) {
+    if (page >= 1 && page <= this.totalSkillPages) {
+      this.skillCurrentPage = page;
+    }
+  }
+
+  onSkillPageSizeChange() {
+    this.skillCurrentPage = 1;
+    this.applySkillFilters();
+  }
+
+  // --- Bulk Upload Textbox Methods ---
+  onBulkSkillsInputChange() {
+    if (!this.bulkSkillsText || !this.bulkSkillsText.trim()) {
+      this.parsedBulkSkillsCount = 0;
+      return;
+    }
+    const tokens = this.bulkSkillsText
+      .split(/[\r\n,;]+/)
+      .map(s => s.trim())
+      .filter(s => s.length > 0);
+    // Deduplicate in real-time preview
+    const uniqueTokens = Array.from(new Set(tokens.map(s => s.toLowerCase())));
+    this.parsedBulkSkillsCount = uniqueTokens.length;
+  }
+
+  clearBulkSkillsInput() {
+    this.bulkSkillsText = '';
+    this.parsedBulkSkillsCount = 0;
+    this.lastBulkResult = null;
+  }
+
+  submitBulkSkills() {
+    if (!this.bulkSkillsText.trim()) {
+      this.toastr.info('Please enter skill names into the textbox to upload.', 'Empty Input');
+      return;
+    }
+
+    this.isBulkUploadingSkills = true;
+    this.skillAdminService.bulkAddSkills({
+      skillsText: this.bulkSkillsText,
+      isUserDefined: this.bulkSkillsIsUserDefined,
+      active: this.bulkSkillsActive
+    }).subscribe({
+      next: (res) => {
+        this.lastBulkResult = res;
+        const skipped = res.skippedDuplicateCount ?? res.skippedCount ?? 0;
+        this.toastr.success(
+          `Processed ${res.totalProcessed} skill(s). Added: ${res.addedCount}, Skipped: ${skipped}.`,
+          'Bulk Upload Succeeded'
+        );
+        this.clearBulkSkillsInput();
+        this.loadSkills();
+        this.isBulkUploadingSkills = false;
+      },
+      error: (err: any) => {
+        const msg = err?.error?.message || err?.message || 'Failed to bulk add skills.';
+        this.toastr.error(msg, 'Upload Error');
+        this.isBulkUploadingSkills = false;
+      }
+    });
+  }
+
+  // --- Quick Single Add ---
+  submitQuickAddSkill() {
+    if (!this.quickSkillName.trim()) {
+      this.toastr.info('Please enter a skill name.', 'Input Required');
+      return;
+    }
+
+    this.isQuickAddingSkill = true;
+    this.skillAdminService.addSkill({
+      name: this.quickSkillName.trim(),
+      active: true,
+      isUserDefined: this.quickSkillIsUserDefined
+    }).subscribe({
+      next: (newSkill) => {
+        this.toastr.success(`Skill "${newSkill.name}" added successfully!`, 'Skill Added');
+        this.quickSkillName = '';
+        this.loadSkills();
+        this.isQuickAddingSkill = false;
+      },
+      error: (err: any) => {
+        const msg = err?.error?.message || err?.message || 'Failed to add skill.';
+        this.toastr.error(msg, 'Add Error');
+        this.isQuickAddingSkill = false;
+      }
+    });
+  }
+
+  // --- Toggle Active Status ---
+  toggleSkillActive(skill: AdminSkillItemDto) {
+    const newActive = !skill.active;
+    this.skillAdminService.toggleSkillStatus(skill.id, newActive).subscribe({
+      next: (updated) => {
+        skill.active = updated.active;
+        skill.updated = updated.updated;
+        // Refresh summary counters
+        if (newActive) {
+          this.skillsSummary.activeCount++;
+          this.skillsSummary.inactiveCount = Math.max(0, this.skillsSummary.inactiveCount - 1);
+        } else {
+          this.skillsSummary.activeCount = Math.max(0, this.skillsSummary.activeCount - 1);
+          this.skillsSummary.inactiveCount++;
+        }
+        this.applySkillFilters();
+        this.toastr.success(`"${skill.name}" is now ${newActive ? 'Active' : 'Inactive'}.`, 'Status Updated');
+      },
+      error: (err: any) => {
+        const msg = err?.error?.message || err?.message || 'Failed to update skill status.';
+        this.toastr.error(msg, 'Update Error');
+      }
+    });
+  }
+
+  // --- Promote to System Defined ---
+  promoteSkillToSystem(skill: AdminSkillItemDto) {
+    if (!confirm(`Promote "${skill.name}" to Standard / System Defined Skill?`)) {
+      return;
+    }
+
+    this.skillAdminService.convertSkillUserDefined(skill.id, false).subscribe({
+      next: (updated) => {
+        this.toastr.success(`Skill "${skill.name}" promoted to System Defined!`, 'Converted');
+        this.loadSkills();
+      },
+      error: (err: any) => {
+        const msg = err?.error?.message || err?.message || 'Failed to promote skill.';
+        this.toastr.error(msg, 'Convert Error');
+      }
+    });
+  }
+
+  // --- Edit Skill Modal ---
+  openEditSkillModal(skill: AdminSkillItemDto) {
+    this.editingSkill = skill;
+    this.editSkillForm = {
+      id: skill.id,
+      name: skill.name,
+      active: skill.active,
+      isUserDefined: skill.isUserDefined
+    };
+    this.isEditSkillModalOpen = true;
+  }
+
+  closeEditSkillModal() {
+    this.isEditSkillModalOpen = false;
+    this.editingSkill = null;
+  }
+
+  openCreateSkillModal() {
+    this.editingSkill = null;
+    this.editSkillForm = {
+      id: 0,
+      name: '',
+      active: true,
+      isUserDefined: false
+    };
+    this.isEditSkillModalOpen = true;
+  }
+
+  saveEditSkill() {
+    if (!this.editSkillForm.name.trim()) {
+      this.toastr.info('Skill name cannot be empty.', 'Input Required');
+      return;
+    }
+
+    this.isSavingSkill = true;
+    if (this.editSkillForm.id === 0) {
+      this.skillAdminService.addSkill({
+        name: this.editSkillForm.name.trim(),
+        active: this.editSkillForm.active,
+        isUserDefined: this.editSkillForm.isUserDefined
+      }).subscribe({
+        next: (created) => {
+          this.toastr.success(`Skill "${created?.name || this.editSkillForm.name}" created successfully!`, 'Created');
+          this.closeEditSkillModal();
+          this.loadSkills();
+          this.isSavingSkill = false;
+        },
+        error: (err: any) => {
+          const msg = err?.error?.message || err?.message || 'Failed to create skill.';
+          this.toastr.error(msg, 'Create Error');
+          this.isSavingSkill = false;
+        }
+      });
+    } else {
+      this.skillAdminService.updateSkill({
+        id: this.editSkillForm.id,
+        name: this.editSkillForm.name.trim(),
+        active: this.editSkillForm.active,
+        isUserDefined: this.editSkillForm.isUserDefined
+      }).subscribe({
+        next: (updated) => {
+          this.toastr.success('Skill updated successfully!', 'Saved');
+          this.closeEditSkillModal();
+          this.loadSkills();
+          this.isSavingSkill = false;
+        },
+        error: (err: any) => {
+          const msg = err?.error?.message || err?.message || 'Failed to update skill.';
+          this.toastr.error(msg, 'Save Error');
+          this.isSavingSkill = false;
+        }
+      });
+    }
+  }
+
+  // --- Delete Skill ---
+  deleteSkill(skill: AdminSkillItemDto) {
+    if (!confirm(`Are you sure you want to delete skill "${skill.name}"?`)) {
+      return;
+    }
+
+    this.skillAdminService.deleteSkill(skill.id).subscribe({
+      next: (res) => {
+        if (res.deactivatedOnly) {
+          this.toastr.warning(res.message, 'Skill Deactivated');
+        } else {
+          this.toastr.success(res.message, 'Skill Deleted');
+        }
+        this.loadSkills();
+      },
+      error: (err: any) => {
+        const msg = err?.error?.message || err?.message || 'Failed to delete skill.';
+        this.toastr.error(msg, 'Delete Error');
+      }
+    });
   }
 }
 

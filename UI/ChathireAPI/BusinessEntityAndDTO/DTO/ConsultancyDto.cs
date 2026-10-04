@@ -1,4 +1,4 @@
-﻿using BusinessEntityAndDTO.Models;
+using BusinessEntityAndDTO.Models;
 using System;
 using System.Collections.Generic;
 
@@ -21,6 +21,8 @@ public partial class ConsultancyDto
     public DateTime? Updated { get; set; }
 
     public string? Website { get; set; }
+
+    public string? Website2 { get; set; }
 
     public string? Linkedin { get; set; }
 
@@ -58,6 +60,8 @@ public partial class ConsultancyForInsertDto
     public DateTime? Updated { get; set; }
 
     public string? Website { get; set; }
+
+    public string? Website2 { get; set; }
 
     public string? Linkedin { get; set; }
 

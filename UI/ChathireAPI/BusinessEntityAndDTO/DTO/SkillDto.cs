@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -16,5 +16,8 @@ namespace BusinessEntityAndDTO.DTO
 
         public bool? IsUserDefined { get; set; }
 
+        public DateTime? Updated { get; set; }
+
+        public long? UpdatedBy { get; set; }
     }
 }
