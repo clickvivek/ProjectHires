@@ -1,0 +1,26 @@
+:host-context(body.chat) {
+  height: 100vh;
+  max-height: 100vh;
+  overflow: hidden;
+
+  .main-container {
+    height: 100vh;
+    max-height: 100vh;
+    overflow: hidden;
+    margin: 0 !important;
+  }
+
+  .content-wrapper {
+    padding: 66px 0 0 0 !important;
+    height: 100vh;
+    max-height: 100vh;
+    overflow: hidden;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .footer-wrapper {
+    display: none !important;
+  }
+}

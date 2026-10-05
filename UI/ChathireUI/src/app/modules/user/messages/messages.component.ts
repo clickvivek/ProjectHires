@@ -1,8 +1,9 @@
 import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { SessionService } from 'src/app/core/session/session.service';
 import { SharedService } from '../../shared/services/shared.service';
 import { UserService } from 'src/app/api';
+import { environment } from 'src/environments/environment';
 import _ from 'underscore';
 
 @Component({
@@ -15,6 +16,9 @@ export class MessagesComponent implements OnInit {
   user: any;
   chatUser: any;
   uneadCount = 0;
+  isProduction: boolean = environment.production;
+  showTestBanner: boolean = true;
+  isReferralPanelOpen: boolean = typeof window !== 'undefined' ? window.innerWidth >= 1200 : false;
 
   @ViewChild('inboxContainer') inboxContainer: ElementRef;
 
@@ -22,12 +26,27 @@ export class MessagesComponent implements OnInit {
     private userService: UserService,
     private sharedService: SharedService,
     private sessionService: SessionService,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private router: Router
   ) {}
 
+  toggleReferralPanel(): void {
+    this.isReferralPanelOpen = !this.isReferralPanelOpen;
+  }
+
+  dismissTestBanner(): void {
+    this.showTestBanner = false;
+  }
+
+  onNewMessageClick(): void {
+    this.router.navigate(['/search-hotlist']);
+  }
+
   handleUnread(event: any) {
-    if (!_.isEmpty(event)) {
-      this.uneadCount = event[0]?.unreadMessageCount || 0;
+    if (Array.isArray(event)) {
+      this.uneadCount = event.length;
+    } else if (typeof event === 'number') {
+      this.uneadCount = event;
     } else {
       this.uneadCount = 0;
     }
@@ -59,8 +78,10 @@ export class MessagesComponent implements OnInit {
     });
 
     this.sharedService.inboxunreadcountcast.subscribe((res: any) => {
-      if (!_.isEmpty(res)) {
-        this.uneadCount = res[0]?.unreadMessageCount || 0;
+      if (Array.isArray(res)) {
+        this.uneadCount = res.length;
+      } else if (typeof res === 'number') {
+        this.uneadCount = res;
       } else {
         this.uneadCount = 0;
       }

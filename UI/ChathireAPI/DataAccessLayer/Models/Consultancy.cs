@@ -23,6 +23,8 @@ public partial class Consultancy
  
     public string? Website2 { get; set; }
 
+    public string? Aboutcompany { get; set; }
+
     public string? Linkedin { get; set; }
 
     public string? Logo { get; set; }

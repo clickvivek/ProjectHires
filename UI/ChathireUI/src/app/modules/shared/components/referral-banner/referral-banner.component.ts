@@ -19,6 +19,15 @@ export class ReferralBannerComponent implements OnInit {
   referralCode: string = '';
   isCopied: boolean = false;
   isLoading: boolean = false;
+  isDetailsExpanded: boolean = false;
+
+  toggleDetails(event?: Event): void {
+    if (event) {
+      event.preventDefault();
+      event.stopPropagation();
+    }
+    this.isDetailsExpanded = !this.isDetailsExpanded;
+  }
 
   constructor(
     private referralService: ReferralService,

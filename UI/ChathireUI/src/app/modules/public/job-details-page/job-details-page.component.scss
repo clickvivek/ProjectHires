@@ -328,6 +328,119 @@
             color: #374151;
           }
         }
+
+        .job-posting-id-section {
+          margin-top: 24px;
+          padding-top: 14px;
+          border-top: 1px solid #E5E7EB;
+          display: flex;
+          align-items: center;
+          gap: 6px;
+          font-size: 13.5px;
+
+          .posting-id-label {
+            font-weight: 500;
+            color: #6B7280;
+          }
+
+          .posting-id-value {
+            font-weight: 600;
+            color: #1F2937;
+          }
+        }
+      }
+
+      .company-info-card {
+        margin-top: 24px;
+        border: 1px solid #E2E8F0;
+        border-radius: 12px;
+        overflow: hidden;
+        background: #FFFFFF;
+
+        .company-info-header {
+          padding: 16px 20px 14px 20px;
+          border-bottom: 1px solid #E2E8F0;
+
+          .company-info-title {
+            font-size: 15px;
+            font-weight: 700;
+            color: #1A202C;
+            letter-spacing: 0.01em;
+          }
+        }
+
+        .company-info-body {
+          padding: 18px 20px 20px 20px;
+
+          .company-about-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 14px;
+
+            .company-about-label {
+              font-size: 14px;
+              font-weight: 600;
+              color: #2D3748;
+            }
+
+            .company-social-icons {
+              display: flex;
+              align-items: center;
+              gap: 8px;
+
+              .social-icon {
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                width: 32px;
+                height: 32px;
+                border-radius: 6px;
+                border: 1px solid #E2E8F0;
+                color: #4A5568;
+                text-decoration: none;
+                transition: all 0.2s ease;
+                background: #F7FAFC;
+
+                svg {
+                  width: 16px;
+                  height: 16px;
+                }
+
+                &:hover {
+                  background: #7C287D;
+                  border-color: #7C287D;
+                  color: #FFFFFF;
+                }
+              }
+            }
+          }
+
+          .company-about-text {
+            font-size: 13.5px;
+            line-height: 1.7;
+            color: #4A5568;
+            margin-bottom: 16px;
+            white-space: pre-line;
+          }
+
+          .company-website-link {
+            a {
+              display: inline-flex;
+              align-items: center;
+              gap: 6px;
+              font-size: 13.5px;
+              font-weight: 500;
+              color: #7C287D;
+              text-decoration: none;
+
+              &:hover {
+                text-decoration: underline;
+                color: #5a1c5b;
+              }
+            }
+          }
+        }
       }
     }
   }

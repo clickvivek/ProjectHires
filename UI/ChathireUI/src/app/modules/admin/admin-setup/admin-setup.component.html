@@ -850,9 +850,9 @@
                     <span class="material-symbols-outlined fs-6 text-primary fw-bold" *ngIf="companySortColumn === 'name' && companySortDirection === 'desc'">arrow_downward</span>
                   </div>
                 </th>
+                <th scope="col" class="text-center" style="width: 120px;">Status</th>
+                <th scope="col" class="text-center" style="width: 100px;">Action</th>
                 <th scope="col" style="min-width: 220px;">Contact Info</th>
-                <th scope="col" class="text-center" style="width: 110px;">Status</th>
-                <th scope="col" class="text-end" style="width: 80px;">Action</th>
               </tr>
             </thead>
             <tbody>
@@ -933,21 +933,6 @@
                   </div>
                 </td>
 
-                <!-- Contact Info -->
-                <td>
-                  <div class="d-flex align-items-center gap-3">
-                    <div class="small text-dark d-flex align-items-center gap-1" *ngIf="comp.email" [title]="comp.email">
-                      <span class="material-symbols-outlined fs-6 text-muted">mail</span>
-                      <span class="user-email text-truncate" style="max-width: 150px;">{{ comp.email }}</span>
-                    </div>
-                    <div class="small text-muted d-flex align-items-center gap-1" *ngIf="comp.phone" [title]="comp.phone">
-                      <span class="material-symbols-outlined fs-6 text-muted">call</span>
-                      <span class="user-email">{{ comp.phone }}</span>
-                    </div>
-                    <span *ngIf="!comp.email && !comp.phone" class="text-muted small">—</span>
-                  </div>
-                </td>
-
                 <!-- Active Status Toggle -->
                 <td class="text-center">
                   <div class="d-inline-flex align-items-center gap-2">
@@ -967,27 +952,42 @@
                   </div>
                 </td>
 
-                <!-- Actions -->
-                <td class="text-end">
-                  <div class="d-inline-flex align-items-center gap-1">
+                <!-- Actions (moved after Status, icon-only) -->
+                <td class="text-center">
+                  <div class="d-inline-flex align-items-center justify-content-center gap-1">
                     <button
-                      class="btn btn-sm btn-outline-primary py-0 px-2 btn-edit-quota d-inline-flex align-items-center gap-1"
+                      class="btn btn-sm btn-outline-primary py-0 px-2 btn-edit-quota d-inline-flex align-items-center justify-content-center"
                       (click)="openEditModal(comp)"
                       title="Edit Company Details & Logo"
+                      style="height: 26px; min-width: 28px;"
                     >
                       <span class="material-symbols-outlined fs-6">edit</span>
-                      <span>Edit</span>
                     </button>
                     <button
-                      class="btn btn-sm btn-outline-info py-0 px-2 btn-check-logo d-inline-flex align-items-center gap-1"
+                      class="btn btn-sm btn-outline-info py-0 px-2 btn-check-logo d-inline-flex align-items-center justify-content-center"
                       (click)="checkAndUpdateCompanyLogo(comp, $event)"
                       [disabled]="checkingLogoCompanyId === comp.id"
                       title="Check & Fetch Logo from LinkedIn / Website"
+                      style="height: 26px; min-width: 28px;"
                     >
                       <span *ngIf="checkingLogoCompanyId === comp.id" class="spinner-border spinner-border-sm" style="width: 0.75rem; height: 0.75rem;"></span>
                       <span *ngIf="checkingLogoCompanyId !== comp.id" class="material-symbols-outlined fs-6">image_search</span>
-                      <span>Check</span>
                     </button>
+                  </div>
+                </td>
+
+                <!-- Contact Info -->
+                <td>
+                  <div class="d-flex align-items-center gap-3">
+                    <div class="small text-dark d-flex align-items-center gap-1" *ngIf="comp.email" [title]="comp.email">
+                      <span class="material-symbols-outlined fs-6 text-muted">mail</span>
+                      <span class="user-email text-truncate" style="max-width: 150px;">{{ comp.email }}</span>
+                    </div>
+                    <div class="small text-muted d-flex align-items-center gap-1" *ngIf="comp.phone" [title]="comp.phone">
+                      <span class="material-symbols-outlined fs-6 text-muted">call</span>
+                      <span class="user-email">{{ comp.phone }}</span>
+                    </div>
+                    <span *ngIf="!comp.email && !comp.phone" class="text-muted small">—</span>
                   </div>
                 </td>
               </tr>
@@ -1174,10 +1174,10 @@
                     <span class="material-symbols-outlined fs-6 text-primary fw-bold" *ngIf="reviewSortColumn === 'name' && reviewSortDirection === 'desc'">arrow_downward</span>
                   </div>
                 </th>
-                <th scope="col" style="min-width: 200px;">Contact Info</th>
-                <th scope="col" style="min-width: 140px;">Created Date</th>
                 <th scope="col" class="text-center" style="width: 130px;">Active Status</th>
-                <th scope="col" class="text-end" style="width: 170px;">Review Actions</th>
+                <th scope="col" class="text-center" style="width: 110px;">Action</th>
+                <th scope="col" style="min-width: 140px;">Created Date</th>
+                <th scope="col" style="min-width: 200px;">Contact Info</th>
               </tr>
             </thead>
             <tbody>
@@ -1263,27 +1263,6 @@
                   </div>
                 </td>
 
-                <!-- Contact Info -->
-                <td>
-                  <div class="d-flex align-items-center gap-3">
-                    <div class="small text-dark d-flex align-items-center gap-1" *ngIf="comp.email" [title]="comp.email">
-                      <span class="material-symbols-outlined fs-6 text-muted">mail</span>
-                      <span class="user-email text-truncate" style="max-width: 140px;">{{ comp.email }}</span>
-                    </div>
-                    <div class="small text-muted d-flex align-items-center gap-1" *ngIf="comp.phone" [title]="comp.phone">
-                      <span class="material-symbols-outlined fs-6 text-muted">call</span>
-                      <span class="user-email">{{ comp.phone }}</span>
-                    </div>
-                    <span *ngIf="!comp.email && !comp.phone" class="text-muted small">—</span>
-                  </div>
-                </td>
-
-                <!-- Created Date -->
-                <td>
-                  <div class="small text-dark fw-medium">{{ formatDateOnly(comp.updated) }}</div>
-                  <div class="text-muted" style="font-size: 0.7rem;">{{ getRelativeTime(comp.updated) }}</div>
-                </td>
-
                 <!-- Active Status Toggle -->
                 <td class="text-center">
                   <div class="d-inline-flex align-items-center gap-2">
@@ -1303,46 +1282,64 @@
                   </div>
                 </td>
 
-                <!-- Actions -->
-                <td class="text-end">
-                  <div class="d-inline-flex align-items-center gap-1">
+                <!-- Actions (moved after Status, icon-only) -->
+                <td class="text-center">
+                  <div class="d-inline-flex align-items-center justify-content-center gap-1">
                     <!-- Quick Deactivate/Activate button -->
                     <button
-                      class="btn btn-sm py-0 px-2 d-inline-flex align-items-center gap-1"
+                      class="btn btn-sm py-0 px-2 d-inline-flex align-items-center justify-content-center"
                       [ngClass]="comp.active ? 'btn-outline-danger' : 'btn-outline-success'"
                       (click)="toggleActive(comp, $event)"
                       [title]="comp.active ? 'Deactivate this company' : 'Activate this company'"
-                      style="font-size: 0.72rem; height: 26px;"
+                      style="height: 26px; min-width: 28px;"
                     >
-                      <span class="material-symbols-outlined" style="font-size: 0.85rem;">
+                      <span class="material-symbols-outlined fs-6">
                         {{ comp.active ? 'block' : 'check_circle' }}
                       </span>
-                      <span>{{ comp.active ? 'Deactivate' : 'Activate' }}</span>
                     </button>
 
                     <!-- Edit / Review Details button -->
                     <button
-                      class="btn btn-sm btn-outline-primary py-0 px-2 btn-edit-quota d-inline-flex align-items-center gap-1"
+                      class="btn btn-sm btn-outline-primary py-0 px-2 btn-edit-quota d-inline-flex align-items-center justify-content-center"
                       (click)="openEditModal(comp)"
                       title="Review & Edit Company Details"
-                      style="font-size: 0.72rem; height: 26px;"
+                      style="height: 26px; min-width: 28px;"
                     >
-                      <span class="material-symbols-outlined" style="font-size: 0.85rem;">edit</span>
-                      <span>Edit</span>
+                      <span class="material-symbols-outlined fs-6">edit</span>
                     </button>
 
                     <!-- Check Logo button -->
                     <button
-                      class="btn btn-sm btn-outline-info py-0 px-2 btn-check-logo d-inline-flex align-items-center gap-1"
+                      class="btn btn-sm btn-outline-info py-0 px-2 btn-check-logo d-inline-flex align-items-center justify-content-center"
                       (click)="checkAndUpdateCompanyLogo(comp, $event)"
                       [disabled]="checkingLogoCompanyId === comp.id"
                       title="Check & Fetch Logo from LinkedIn / Website"
-                      style="font-size: 0.72rem; height: 26px;"
+                      style="height: 26px; min-width: 28px;"
                     >
                       <span *ngIf="checkingLogoCompanyId === comp.id" class="spinner-border spinner-border-sm" style="width: 0.75rem; height: 0.75rem;"></span>
-                      <span *ngIf="checkingLogoCompanyId !== comp.id" class="material-symbols-outlined" style="font-size: 0.85rem;">image_search</span>
-                      <span>Check</span>
+                      <span *ngIf="checkingLogoCompanyId !== comp.id" class="material-symbols-outlined fs-6">image_search</span>
                     </button>
+                  </div>
+                </td>
+
+                <!-- Created Date -->
+                <td>
+                  <div class="small text-dark fw-medium">{{ formatDateOnly(comp.updated) }}</div>
+                  <div class="text-muted" style="font-size: 0.7rem;">{{ getRelativeTime(comp.updated) }}</div>
+                </td>
+
+                <!-- Contact Info -->
+                <td>
+                  <div class="d-flex align-items-center gap-3">
+                    <div class="small text-dark d-flex align-items-center gap-1" *ngIf="comp.email" [title]="comp.email">
+                      <span class="material-symbols-outlined fs-6 text-muted">mail</span>
+                      <span class="user-email text-truncate" style="max-width: 140px;">{{ comp.email }}</span>
+                    </div>
+                    <div class="small text-muted d-flex align-items-center gap-1" *ngIf="comp.phone" [title]="comp.phone">
+                      <span class="material-symbols-outlined fs-6 text-muted">call</span>
+                      <span class="user-email">{{ comp.phone }}</span>
+                    </div>
+                    <span *ngIf="!comp.email && !comp.phone" class="text-muted small">—</span>
                   </div>
                 </td>
               </tr>

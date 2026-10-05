@@ -1,29 +1,230 @@
 @import "src/@hires/scss/utilities/all";
 @import "src/@hires/scss/helpers/all";
 
-.messages-wrapper {
-    padding: 24px 0 48px;
+:host {
+  display: block;
+  height: 100%;
+  max-height: 100%;
+  overflow: hidden;
+  flex: 1 1 0px;
+}
 
-    .messages-box {
-        background: #ffffff;
-        border-radius: 12px;
-        padding: 20px;
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
-        border: 1px solid #e2e8f0;
+.messages-page-wrapper {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  width: 100%;
+  background-color: #F8FAFC;
+  overflow: hidden;
+  position: relative;
 
-        .message-area {
-            min-height: 620px;
-            height: 620px;
-            width: 100%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
+  .test-mode-banner {
+    background-color: #FEF3C7;
+    border-bottom: 1px solid #FDE68A;
+    color: #92400E;
+    flex-shrink: 0;
+    min-height: 28px;
+    box-sizing: border-box;
+
+    .badge-test-mode {
+      background-color: #D97706;
+      color: #FFFFFF;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      padding: 2px 6px;
+      border-radius: 9999px;
     }
 
-    .placeholder-box {
-        @include hires-breakpoint("lt-lg") {
-            margin: 30px 0 0 0;
-        }
+    .test-banner-text {
+      font-size: 12px;
+      font-weight: 500;
+      color: #78350F;
     }
+
+    .btn-dismiss-test {
+      background: transparent;
+      border: none;
+      color: #92400E;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0;
+      border-radius: 4px;
+      opacity: 0.75;
+      transition: opacity 0.15s ease;
+
+      &:hover {
+        opacity: 1;
+      }
+    }
+  }
+
+  .messages-top-bar {
+    flex-shrink: 0;
+    height: 50px;
+    background-color: #FFFFFF;
+    border-bottom: 1px solid #E2E8F0;
+    box-sizing: border-box;
+
+    .messages-heading {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: #1F2937;
+      letter-spacing: -0.2px;
+    }
+
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 12px;
+      font-weight: 500;
+      padding: 2px 8px;
+      border-radius: 9999px;
+
+      &.all-caught-up {
+        background-color: #ECFDF5;
+        color: #065F46;
+        border: 1px solid #A7F3D0;
+
+        .status-dot {
+          width: 6px;
+          height: 6px;
+          border-radius: 50%;
+          background-color: #10B981;
+        }
+      }
+
+      &.has-unread {
+        background-color: #F3E8F5;
+        color: #7C287D;
+        border: 1px solid rgba(124, 40, 125, 0.2);
+        font-weight: 600;
+      }
+    }
+
+    .btn-new-message {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 5px 12px;
+      border-radius: 8px;
+      background-color: #7C287D;
+      color: #FFFFFF;
+      border: none;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      min-height: 36px;
+      transition: all 0.15s ease;
+      box-shadow: 0 1px 2px rgba(124, 40, 125, 0.2);
+
+      &:hover {
+        background-color: #661F67;
+        box-shadow: 0 3px 8px rgba(124, 40, 125, 0.3);
+      }
+    }
+
+    .btn-toggle-referral {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 5px 10px;
+      border-radius: 8px;
+      border: 1px solid #E2E8F0;
+      background-color: #FFFFFF;
+      color: #475569;
+      cursor: pointer;
+      min-height: 36px;
+      transition: all 0.15s ease;
+
+      &:hover,
+      &.active {
+        background-color: #F8FAFC;
+        border-color: #CBD5E1;
+        color: #1E293B;
+      }
+    }
+  }
+
+  .messages-content-row {
+    flex: 1 1 0px;
+    display: flex;
+    overflow: hidden;
+    min-height: 0;
+    height: 0;
+
+    .messages-main-pane {
+      flex: 1 1 0px;
+      min-width: 0;
+      height: 100%;
+      background-color: #FFFFFF;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+
+      .message-area {
+        height: 100%;
+        width: 100%;
+        display: flex;
+        flex: 1 1 0px;
+        min-height: 0;
+        overflow: hidden;
+
+        /* Ensure TalkJS iframe fills 100% of the message-area */
+        ::ng-deep iframe {
+          width: 100% !important;
+          height: 100% !important;
+          min-height: 100% !important;
+          border: none !important;
+          display: block !important;
+        }
+      }
+    }
+
+    .referral-panel-pane {
+      width: 300px;
+      max-width: 320px;
+      flex-shrink: 0;
+      border-left: 1px solid #E2E8F0;
+      background-color: #F8FAFC;
+      overflow-y: auto;
+      height: 100%;
+
+      @include hires-breakpoint("lt-xl") {
+        position: fixed;
+        right: 0;
+        top: 66px;
+        bottom: 0;
+        z-index: 1050;
+        box-shadow: -4px 0 24px rgba(0, 0, 0, 0.15);
+        width: 310px;
+        max-width: 90vw;
+        background-color: #FFFFFF;
+      }
+
+      .btn-close-drawer {
+        width: 28px;
+        height: 28px;
+        min-width: 28px;
+        padding: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        border: 1px solid #CBD5E1;
+        background: transparent;
+        color: #64748B;
+        cursor: pointer;
+        transition: all 0.15s ease;
+
+        &:hover {
+          background-color: #F1F5F9;
+          color: #0F172A;
+        }
+      }
+    }
+  }
 }

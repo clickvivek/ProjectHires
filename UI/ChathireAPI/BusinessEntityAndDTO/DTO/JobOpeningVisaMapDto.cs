@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -18,7 +18,14 @@ namespace BusinessEntityAndDTO.DTO
 
     public partial class JobOpeningVisaMapForInsertDto
     {
-        public short VisaId { get; set; }
+        private short _visaId;
+        public short VisaId
+        {
+            get => _visaId != 0 ? _visaId : Id;
+            set => _visaId = value;
+        }
+
+        public short Id { get; set; }
     }
 
     public partial class JobOpeningVisaMapForUpdateDto

@@ -1,21 +1,69 @@
-
-<div class="messages-wrapper">
-    <div class="container-fluid px-md-4 px-xl-5">
-        <div class="row g-4">
-            <div class="col-12 col-lg-8 col-xl-9">
-                <div class="messages-box" id="inboxContainer" [user]="user" [chatUser]="chatUser" #inboxContainer>
-                    <h6 class="title mb-3">You have {{uneadCount}} unread conversations </h6>
-                    <div class="message-area">
-                        <loader></loader>
-                    </div>
-                </div>
-            </div>
-            <div class="col-12 col-lg-4 col-xl-3">
-                <div class="sticky-top" style="top: 85px; z-index: 2;">
-                    <app-referral-banner [layout]="'sidebar'"></app-referral-banner>
-                </div>
-            </div>
-        </div>
+<div class="messages-page-wrapper">
+  <!-- 10. Test-Mode Notice (Compact banner in staging, hidden in production) -->
+  <div class="test-mode-banner px-3 px-md-4 py-1" *ngIf="!isProduction && showTestBanner">
+    <div class="d-flex align-items-center justify-content-between">
+      <div class="d-flex align-items-center gap-2 text-truncate">
+        <span class="badge badge-test-mode flex-shrink-0">TEST MODE</span>
+        <span class="test-banner-text text-truncate">Sandbox environment active. Real-time messaging and notifications are running in test mode.</span>
+      </div>
+      <button type="button" class="btn-dismiss-test flex-shrink-0 ms-2" (click)="dismissTestBanner()" title="Dismiss test mode notice" aria-label="Dismiss test notice">
+        <span class="material-symbols-outlined fs-6">close</span>
+      </button>
     </div>
-</div>
+  </div>
 
+  <!-- 2. Messages Top Header Bar -->
+  <div class="messages-top-bar px-3 px-md-4 py-2 bg-white border-bottom d-flex align-items-center justify-content-between">
+    <div class="d-flex align-items-center gap-3">
+      <div class="d-flex align-items-center gap-2">
+        <h1 class="messages-heading mb-0">Messages</h1>
+        <span *ngIf="uneadCount === 0" class="status-badge all-caught-up">
+          <span class="status-dot"></span> All caught up
+        </span>
+        <span *ngIf="uneadCount > 0" class="status-badge has-unread">
+          {{ uneadCount }} unread
+        </span>
+      </div>
+    </div>
+
+    <div class="d-flex align-items-center gap-2">
+      <button 
+        type="button" 
+        class="btn-toggle-referral" 
+        [class.active]="isReferralPanelOpen"
+        (click)="toggleReferralPanel()"
+        title="Toggle Referral Rewards"
+      >
+        <span class="material-symbols-outlined fs-6 text-warning">hotel_class</span>
+        <span class="d-none d-md-inline text-xs fw-semibold">Referral Rewards</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- 1. Full-Height Main Messaging Area Below Navigation -->
+  <div class="messages-content-row">
+    <!-- TalkJS Inbox Main Container -->
+    <div class="messages-main-pane" id="inboxContainer" [user]="user" [chatUser]="chatUser" #inboxContainer>
+      <div class="message-area">
+        <loader></loader>
+      </div>
+    </div>
+
+    <!-- 6. Compact Referral Panel (Desktop sidebar / Mobile drawer) -->
+    <div 
+      class="referral-panel-pane" 
+      [class.drawer-open]="isReferralPanelOpen"
+      *ngIf="isReferralPanelOpen"
+    >
+      <div class="referral-pane-inner p-3">
+        <div class="d-flex d-xl-none justify-content-between align-items-center mb-2 pb-2 border-bottom">
+          <span class="fw-bold text-xs text-uppercase letter-spacing-1 text-slate-700">Referral Program</span>
+          <button type="button" class="btn-close-drawer" (click)="toggleReferralPanel()" title="Close panel">
+            <span class="material-symbols-outlined fs-6">close</span>
+          </button>
+        </div>
+        <app-referral-banner [layout]="'sidebar'"></app-referral-banner>
+      </div>
+    </div>
+  </div>
+</div>

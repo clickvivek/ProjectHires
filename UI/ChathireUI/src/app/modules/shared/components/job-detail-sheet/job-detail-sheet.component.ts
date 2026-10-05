@@ -213,7 +213,14 @@ export class JobDetailSheetComponent implements OnInit {
     return defaultProfilePic;
   }
 
-  generateJobId(userSpecificNumber) {
+  private cachedJobShareIds: { [key: string]: string } = {};
+
+  generateJobId(userSpecificNumber: any): string {
+    if (!userSpecificNumber) return '';
+    const key = String(userSpecificNumber);
+    if (this.cachedJobShareIds[key]) {
+      return this.cachedJobShareIds[key];
+    }
     
     const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
     const numLetters = 6; 
@@ -240,6 +247,7 @@ export class JobDetailSheetComponent implements OnInit {
         if (i !== 3) result += '-';
     }
 
+    this.cachedJobShareIds[key] = result;
     return result;
 
   }
@@ -343,6 +351,11 @@ export class JobDetailSheetComponent implements OnInit {
       return ['Any Visa'];
     }
     return cleanVisas;
+  }
+
+  getCleanWebsite(url: string): string {
+    if (!url) return '';
+    return url.replace(/^https?:\/\/(www\.)?/, '').replace(/\/$/, '');
   }
 
 }

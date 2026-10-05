@@ -4,7 +4,7 @@ import { MatDialog } from '@angular/material/dialog';
 import Talk from 'talkjs';
 import { environment } from 'src/environments/environment';
 
-import { picUrl, defaultProfilePic, publicProfileUrlPrefix } from 'src/app/data/various';
+import { picUrl, defaultProfilePic, publicProfileUrlPrefix, getFullPublicProfileUrl } from 'src/app/data/various';
 import _ from 'underscore';
 
 import { AuthService } from 'src/app/core/auth/auth.service';
@@ -71,8 +71,10 @@ export class ChatButtonDirective implements OnInit {
     if (cachedDetails?.consultancyUsers && cachedDetails.consultancyUsers.length > 0) {
       userCompanyName = cachedDetails.consultancyUsers[0]?.consultancy?.name || '';
       if (cachedDetails.consultancyUsers[0]?.publicProfileUserName) {
-        userProfileUrl = `${publicProfileUrlPrefix}${cachedDetails.consultancyUsers[0].publicProfileUserName}`;
+        userProfileUrl = getFullPublicProfileUrl(cachedDetails.consultancyUsers[0].publicProfileUserName);
       }
+    } else if (cachedDetails?.directCandidateDetail?.publicProfileSlug) {
+      userProfileUrl = getFullPublicProfileUrl(cachedDetails.directCandidateDetail.publicProfileSlug);
     }
 
     return new Talk.User({
@@ -95,8 +97,11 @@ export class ChatButtonDirective implements OnInit {
     const photo = chatUser?.profilePic;
     const photoUrl = photo ? (photo.startsWith('http') ? photo : `${picUrl}${photo}`) : defaultProfilePic;
     const companyName = chatUser?.companyName || '';
-    const profileUserName = chatUser?.profileUserName || '';
-    const profileUrl = profileUserName ? `${publicProfileUrlPrefix}${profileUserName}` : '';
+    let profileUserName = chatUser?.profileUserName || '';
+    if (!profileUserName && chatUser?.consultancyUsers && chatUser.consultancyUsers.length > 0) {
+      profileUserName = chatUser.consultancyUsers[0]?.publicProfileUserName || '';
+    }
+    const profileUrl = getFullPublicProfileUrl(profileUserName);
 
     return new Talk.User({
       id: String(uid),
@@ -194,15 +199,28 @@ export class ChatButtonDirective implements OnInit {
     this.handleChatClick();
   }
 
-  initChat(chatUser: any): void {
+  async initChat(chatUser: any): Promise<void> {
     const me = this.buildMeUser();
     const other = this.buildOtherUser(chatUser);
     this.userId = chatUser?.userId || chatUser?.id;
 
-    this.session = new Talk.Session({
-      appId: this.APP_ID,
-      me: me
-    });
+    this.session = await this.talkService.getOrCreateSession(this.user);
+    if (!this.session) {
+      const auth = await this.talkService.getAuthToken(me.id);
+      const sessionOptions: any = {
+        appId: this.APP_ID,
+        me: me
+      };
+      if (auth?.signature) sessionOptions.signature = auth.signature;
+      if (auth?.token) {
+        sessionOptions.token = auth.token;
+        sessionOptions.tokenFetcher = async () => {
+          const fresh = await this.talkService.getAuthToken(me.id, true);
+          return fresh?.token || auth.token;
+        };
+      }
+      this.session = new Talk.Session(sessionOptions);
+    }
 
     this.conversation = this.session.getOrCreateConversation(
       Talk.oneOnOneId(me, other)
@@ -271,10 +289,10 @@ export class InboxDirective implements OnInit, OnChanges, OnDestroy {
     if (cachedDetails?.consultancyUsers && cachedDetails.consultancyUsers.length > 0) {
       userCompanyName = cachedDetails.consultancyUsers[0]?.consultancy?.name || '';
       if (cachedDetails.consultancyUsers[0]?.publicProfileUserName) {
-        userProfileUrl = `${publicProfileUrlPrefix}${cachedDetails.consultancyUsers[0].publicProfileUserName}`;
+        userProfileUrl = getFullPublicProfileUrl(cachedDetails.consultancyUsers[0].publicProfileUserName);
       }
     } else if (cachedDetails?.directCandidateDetail?.publicProfileSlug) {
-      userProfileUrl = `${publicProfileUrlPrefix}${cachedDetails.directCandidateDetail.publicProfileSlug}`;
+      userProfileUrl = getFullPublicProfileUrl(cachedDetails.directCandidateDetail.publicProfileSlug);
     }
 
     return new Talk.User({
@@ -304,10 +322,10 @@ export class InboxDirective implements OnInit, OnChanges, OnDestroy {
     if (chatUser?.consultancyUsers && chatUser.consultancyUsers.length > 0) {
       companyName = companyName || chatUser.consultancyUsers[0]?.consultancy?.name || '';
       if (chatUser.consultancyUsers[0]?.publicProfileUserName) {
-        profileUrl = `${publicProfileUrlPrefix}${chatUser.consultancyUsers[0].publicProfileUserName}`;
+        profileUrl = getFullPublicProfileUrl(chatUser.consultancyUsers[0].publicProfileUserName);
       }
     } else if (chatUser?.profileUserName) {
-      profileUrl = `${publicProfileUrlPrefix}${chatUser.profileUserName}`;
+      profileUrl = getFullPublicProfileUrl(chatUser.profileUserName);
     }
 
     return new Talk.User({
@@ -329,12 +347,32 @@ export class InboxDirective implements OnInit, OnChanges, OnDestroy {
       await Talk.ready;
       const me = this.buildMeUser();
 
-      this.session = new Talk.Session({
-        appId: this.APP_ID,
-        me: me
-      });
+      this.session = await this.talkService.getOrCreateSession(this.user);
+      if (!this.session) {
+        const auth = await this.talkService.getAuthToken(me.id);
+        const sessionOptions: any = {
+          appId: this.APP_ID,
+          me: me
+        };
+        if (auth?.signature) sessionOptions.signature = auth.signature;
+        if (auth?.token) {
+          sessionOptions.token = auth.token;
+          sessionOptions.tokenFetcher = async () => {
+            const fresh = await this.talkService.getAuthToken(me.id, true);
+            return fresh?.token || auth.token;
+          };
+        }
+        this.session = new Talk.Session(sessionOptions);
+      }
 
-      this.inbox = this.session.createInbox();
+      this.inbox = this.session.createInbox({
+        showFeedHeader: false,
+        showMobileBackButton: true,
+        messageField: {
+          placeholder: 'Type a message...',
+          enterSendsMessage: true
+        }
+      });
 
       if (this.chatUser) {
         const targetUserId = this.chatUser?.userId || this.chatUser?.id;
@@ -410,8 +448,7 @@ export class InboxDirective implements OnInit, OnChanges, OnDestroy {
     if (this.inbox) {
       this.inbox.destroy();
     }
-    if (this.session) {
-      this.session.destroy();
-    }
+    // Note: Do not destroy this.session here so global unread tracking continues across all pages.
+    // The session is cleaned up globally on user logout via TalkService.destroySession().
   }
 }

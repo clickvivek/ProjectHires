@@ -4,6 +4,7 @@ import { picUrl, defaultProfilePic } from 'src/app/data/various';
 import { AuthService } from 'src/app/core/auth/auth.service';
 import { SessionService } from 'src/app/core/session/session.service';
 import { SharedService } from '../../shared/services/shared.service';
+import { TalkService } from '../../talk/talk.service';
 
 import _ from 'underscore';
 
@@ -35,7 +36,8 @@ export class HeaderComponent implements OnInit {
     public _router: Router,
     private authService: AuthService,
     private sessionService: SessionService,
-    private sharedService: SharedService
+    private sharedService: SharedService,
+    private talkService: TalkService
     ) {
 
       _router.events.subscribe( (event: Event) => {
@@ -110,6 +112,7 @@ export class HeaderComponent implements OnInit {
   }
 
   logout() {
+    this.talkService.destroySession();
     this.authService.logout().subscribe({
       next: (res:any) => {
         this._router.navigate(['/login']);
@@ -164,11 +167,17 @@ export class HeaderComponent implements OnInit {
       this.profileId = this.user?.consultancyUsers && this.user?.consultancyUsers[0] 
         ? this.user?.consultancyUsers[0].publicProfileUserName 
         : (this.user?.directCandidateDetail?.publicProfileSlug || '');
+
+      if (this.user && (this.user.id || this.sessionService.userId)) {
+        this.talkService.getOrCreateSession(this.user);
+      }
     });
 
     this.sharedService.inboxunreadcountcast.subscribe((res: any) => {
-      if (!_.isEmpty(res)) {
-        this.uneadCount = res[0]?.unreadMessageCount;
+      if (Array.isArray(res)) {
+        this.uneadCount = res.reduce((sum: number, c: any) => sum + (c?.unreadMessageCount || 0), 0);
+      } else if (typeof res === 'number') {
+        this.uneadCount = res;
       } else {
         this.uneadCount = 0;
       }
@@ -176,6 +185,10 @@ export class HeaderComponent implements OnInit {
 
     if (this.isLoggedIn()) {
       this.sessionService.refreshUser();
+      const existingUser = this.sessionService.getUserDetails();
+      if (existingUser || this.sessionService.userId) {
+        this.talkService.getOrCreateSession(existingUser);
+      }
     }
 
   }

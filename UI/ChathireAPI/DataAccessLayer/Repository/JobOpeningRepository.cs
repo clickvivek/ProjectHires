@@ -263,6 +263,9 @@ namespace DataAccessLayer.Repository
                     result.ProfilePic = reader["ProfilePic"].ToString();
                     result.CompanyLogo = HasColumn(reader, "CompanyLogo") && reader["CompanyLogo"] != DBNull.Value ? reader["CompanyLogo"].ToString() : null;
                     result.ProjectDurationmonths = HasColumn(reader, "ProjectDurationmonths") && reader["ProjectDurationmonths"] != DBNull.Value ? reader["ProjectDurationmonths"].ToString() : null;
+                    result.AboutCompany = HasColumn(reader, "AboutCompany") && reader["AboutCompany"] != DBNull.Value ? reader["AboutCompany"].ToString() : null;
+                    result.CompanyWebsite = HasColumn(reader, "CompanyWebsite") && reader["CompanyWebsite"] != DBNull.Value ? reader["CompanyWebsite"].ToString() : null;
+                    result.CompanyLinkedin = HasColumn(reader, "CompanyLinkedin") && reader["CompanyLinkedin"] != DBNull.Value ? reader["CompanyLinkedin"].ToString() : null;
                     result.Skills = reader["Skills"].ToString().Split('|').ToList();
                     result.Locations = reader["Locations"].ToString().Split('|').ToList();
                     result.Visas = reader["Visas"].ToString().Split('|').ToList();

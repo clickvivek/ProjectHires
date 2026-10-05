@@ -34,5 +34,8 @@ export interface JobOpeningForSearchResultsDto {
     radiusByMiles?: string | null;
     companyLogo?: string | null;
     projectDurationmonths?: string | null;
+    aboutCompany?: string | null;
+    companyWebsite?: string | null;
+    companyLinkedin?: string | null;
 }
 

@@ -24,6 +24,8 @@ public partial class ConsultancyDto
 
     public string? Website2 { get; set; }
 
+    public string? Aboutcompany { get; set; }
+
     public string? Linkedin { get; set; }
 
     public string? Logo { get; set; }
@@ -62,6 +64,8 @@ public partial class ConsultancyForInsertDto
     public string? Website { get; set; }
 
     public string? Website2 { get; set; }
+
+    public string? Aboutcompany { get; set; }
 
     public string? Linkedin { get; set; }
 

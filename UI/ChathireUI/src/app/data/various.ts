@@ -1,7 +1,21 @@
 export const picUrl = 'https://hiresblob.blob.core.windows.net/profilepic/'; 
 export const defaultProfilePic = 'assets/images/profile-placehoder-img.png'; 
 
-export const publicProfileUrlPrefix = 'www.chathire.com/profile/'
+export const publicProfileUrlPrefix = 'www.chathire.com/profile/';
+
+export function getFullPublicProfileUrl(slugOrUsername?: string): string {
+  if (!slugOrUsername) return '';
+  const cleanSlug = String(slugOrUsername).trim()
+    .replace(/^https?:\/\/[^\/]+\/(#\/)?(profile\/)?/i, '')
+    .replace(/^www\.chathire\.com\/(#\/)?(profile\/)?/i, '')
+    .replace(/^public-profile\//i, '')
+    .replace(/^profile\//i, '');
+  if (!cleanSlug) return '';
+  const origin = (typeof window !== 'undefined' && window.location?.origin)
+    ? window.location.origin
+    : 'https://www.chathire.com';
+  return `${origin}/#/profile/${cleanSlug}`;
+}
 
 export const profileInitialCountSummary = [
     { candidateProfileMappingStatusId: 1, candidateProfileMappingStatusName: "New", count: 0 },
@@ -16,12 +30,14 @@ export const profileInitialCountSummary = [
 export const defaultPostJobVisas = [
     {
         "id": 4,
+        "visaId": 4,
         "name": "GC",
         "description": "GreenCard Holder",
         "updatedBy": null
     },
     {
         "id": 5,
+        "visaId": 5,
         "name": "USC",
         "description": "US Citizen",
         "updatedBy": null

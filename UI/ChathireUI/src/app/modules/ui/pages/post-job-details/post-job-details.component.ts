@@ -532,15 +532,18 @@ export class PostJobDetailsComponent {
   }
 
   onBillingListChange(event:any){
-    let data = event.range
-    let finalData = data.split('-')
-    if(finalData.length != 1) {
-      this.formData.fromAmt = finalData[0]
-      this.formData.toAmt = finalData[1]
-    }
-    else {
-      this.formData.fromAmt = 0
-      this.formData.toAmt = 50
+    let data = event?.range || '';
+    if (data.includes('-')) {
+      let finalData = data.split('-');
+      this.formData.fromAmt = parseInt(finalData[0].trim(), 10) || 0;
+      this.formData.toAmt = parseInt(finalData[1].trim(), 10) || 0;
+    } else if (data.includes('+')) {
+      const min = parseInt(data.replace('+', '').trim(), 10) || 100;
+      this.formData.fromAmt = min;
+      this.formData.toAmt = min + 50;
+    } else {
+      this.formData.fromAmt = 0;
+      this.formData.toAmt = 50;
     }
   }
 
@@ -640,6 +643,34 @@ export class PostJobDetailsComponent {
         ? (this.formData.country || 'USA')
         : (this.formData.jobOpeningLocations?.[0]?.countryName || this.formData.country || 'USA');
 
+      const formattedVisaMaps = (this.formData.jobOpeningVisaMaps || []).map((v: any) => ({
+        id: v.id || v.visaId,
+        visaId: v.visaId || v.id,
+        name: v.name,
+        active: true
+      }));
+
+      const formattedJobTypes = (this.formData.jobOpeningJobTypes || []).map((jt: any) => ({
+        id: jt.id || jt.jobTypeId,
+        jobTypeId: jt.jobTypeId || jt.id,
+        description: jt.description || jt.name,
+        active: true
+      }));
+
+      const formattedEmploymentTypes = (this.formData.jobOpeningEmploymentTypes || []).map((et: any) => ({
+        id: et.id || et.employmentTypeId,
+        employmentTypeId: et.employmentTypeId || et.id,
+        name: et.name,
+        active: true
+      }));
+
+      const formattedSkills = (this.formData.jobOpeningSkills || []).map((s: any) => ({
+        skillId: s.skillId || s.id || 0,
+        name: s.name || '',
+        isMandate: s.isMandate ?? true,
+        active: true
+      }));
+
       if(!this.isEdit) {
 
         this.job = {
@@ -667,13 +698,12 @@ export class PostJobDetailsComponent {
           notifyWithResume: this.formData.notifyWithResume,
           localCandidatePref: this.formData.localCandidatePref,
           localCandidateOnly: true,
-          isExpired: true,
-          jobOpeningSkills: this.formData.jobOpeningSkills,
-          jobOpeningVisaMaps: this.formData.jobOpeningVisaMaps,
+          isExpired: false,
+          jobOpeningSkills: formattedSkills,
+          jobOpeningVisaMaps: formattedVisaMaps,
           jobOpeningLocations: this.formData.jobOpeningLocations,
-          jobOpeningEmploymentTypes: this.formData.jobOpeningEmploymentTypes,
-          jobOpeningJobTypes: this.formData.jobOpeningJobTypes,
-          
+          jobOpeningEmploymentTypes: formattedEmploymentTypes,
+          jobOpeningJobTypes: formattedJobTypes,
         }
 
       }
@@ -705,13 +735,12 @@ export class PostJobDetailsComponent {
           notifyWithResume: this.formData.notifyWithResume,
           localCandidatePref: this.formData.localCandidatePref,
           localCandidateOnly: this.formData.localCandidateOnly,
-          isExpired: this.formData.isExpired,
-          jobOpeningSkills: this.formData.jobOpeningSkills,
-          jobOpeningVisaMaps: this.formData.jobOpeningVisaMaps,
+          isExpired: this.formData.isExpired ?? false,
+          jobOpeningSkills: formattedSkills,
+          jobOpeningVisaMaps: formattedVisaMaps,
           jobOpeningLocations: this.formData.jobOpeningLocations,
-          jobOpeningEmploymentTypes: this.formData.jobOpeningEmploymentTypes,
-          jobOpeningJobTypes: this.formData.jobOpeningJobTypes,
-          
+          jobOpeningEmploymentTypes: formattedEmploymentTypes,
+          jobOpeningJobTypes: formattedJobTypes,
         }
 
       }
@@ -887,9 +916,14 @@ export class PostJobDetailsComponent {
           const defaultSelected = activeVisas.filter((v: any) => {
             const name = v.name?.trim().toUpperCase();
             return name === 'GC' || name === 'USC';
-          });
+          }).map((v: any) => ({
+            ...v,
+            id: v.id || v.visaId,
+            visaId: v.visaId || v.id,
+            active: true
+          }));
           this.formData.jobOpeningVisaMaps = defaultSelected.length > 0 ? defaultSelected : [...defaultPostJobVisas];
-          this.formData.visaId = this.formData.jobOpeningVisaMaps[0]?.id || 4;
+          this.formData.visaId = this.formData.jobOpeningVisaMaps[0]?.visaId || this.formData.jobOpeningVisaMaps[0]?.id || 4;
         }
       },
       error: (error:any) => {

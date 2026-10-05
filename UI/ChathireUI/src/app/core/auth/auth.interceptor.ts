@@ -59,8 +59,7 @@ export class AuthInterceptor implements HttpInterceptor
                 this.request = req.clone({
                     url: requestUrl,
                     setHeaders: {
-                      Authorization: 'Bearer ' + accessToken,
-                      "Set-Cookie": "jsessionid=oIZEL75SLnw;HttpOnly;Secure;SameSite=Strict"
+                      Authorization: 'Bearer ' + accessToken
                     }
                 });
 

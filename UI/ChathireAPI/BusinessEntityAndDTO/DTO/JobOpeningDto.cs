@@ -247,6 +247,7 @@ namespace BusinessEntityAndDTO.DTO
     public partial class JobOpeningForSearchResultsDto
     {
         public string JobOpeningId { get; set; }
+        public string Id => JobOpeningId;
         public string PostedDate { get; set; }
         public string LastDate { get; set; }
         public string JobOpeningName { get; set; }
@@ -267,6 +268,9 @@ namespace BusinessEntityAndDTO.DTO
         public List<string> Visas { get; set; }
         public List<string> EmploymentTypes { get; set; }
         public List<string> JobTypes { get; set; }
+        public string? AboutCompany { get; set; }
+        public string? CompanyWebsite { get; set; }
+        public string? CompanyLinkedin { get; set; }
 
     }
 

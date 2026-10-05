@@ -6,20 +6,36 @@
     <!-- Dashboard Card Header -->
     <div class="card-header border-0 bg-transparent p-3 p-md-4">
       <div class="d-flex align-items-center gap-3">
-        <!-- Company Logo Badge in Welcome Section -->
-        <div class="welcome-company-logo-wrap flex-shrink-0" *ngIf="getCompanyName() || getCompanyLogoUrl(company?.logo)">
-          <img
-            *ngIf="getCompanyLogoUrl(company?.logo) && !companyLogoFailed"
-            [src]="getCompanyLogoUrl(company?.logo)"
-            [alt]="getCompanyName() || 'Company Logo'"
-            class="welcome-company-logo-img"
-            (error)="onCompanyLogoError($event)"
-          />
-          <div
-            *ngIf="!getCompanyLogoUrl(company?.logo) || companyLogoFailed"
-            class="welcome-company-logo-fallback"
-          >
-            <span>{{ getCompanyInitial() }}</span>
+        <!-- Company Logo Badge in Welcome Section with Hover Zoom -->
+        <div class="welcome-company-logo-container flex-shrink-0" *ngIf="getCompanyName() || getCompanyLogoUrl(company?.logo)">
+          <div class="welcome-company-logo-wrap">
+            <img
+              *ngIf="getCompanyLogoUrl(company?.logo) && !companyLogoFailed"
+              [src]="getCompanyLogoUrl(company?.logo)"
+              [alt]="getCompanyName() || 'Company Logo'"
+              class="welcome-company-logo-img"
+              (error)="onCompanyLogoError($event)"
+            />
+            <div
+              *ngIf="!getCompanyLogoUrl(company?.logo) || companyLogoFailed"
+              class="welcome-company-logo-fallback"
+            >
+              <span>{{ getCompanyInitial() }}</span>
+            </div>
+          </div>
+
+          <!-- Enlarged Hover Preview Popover -->
+          <div class="welcome-company-logo-zoom-popup shadow-lg" *ngIf="getCompanyLogoUrl(company?.logo) && !companyLogoFailed">
+            <div class="zoom-logo-box">
+              <img
+                [src]="getCompanyLogoUrl(company?.logo)"
+                [alt]="getCompanyName() || 'Company Logo'"
+                class="zoom-logo-img"
+              />
+            </div>
+            <div class="zoom-company-info" *ngIf="getCompanyName()">
+              <span class="zoom-company-name text-truncate">{{ getCompanyName() }}</span>
+            </div>
           </div>
         </div>
 

@@ -135,7 +135,7 @@
                 >
                   <span class="material-symbols-outlined fs-5">forum</span>
                   <span *ngIf="uneadCount" class="position-absolute top-0 start-100 translate-middle badge rounded-circle bg-purple-badge">
-                    {{ uneadCount }}
+                    {{ uneadCount > 99 ? '99+' : uneadCount }}
                   </span>
                 </a>
               </li>
@@ -352,7 +352,7 @@
                 >
                   <span class="material-symbols-outlined fs-5">forum</span>
                   <span *ngIf="uneadCount" class="position-absolute top-0 start-100 translate-middle badge rounded-circle bg-purple-badge">
-                    {{ uneadCount }}
+                    {{ uneadCount > 99 ? '99+' : uneadCount }}
                   </span>
                 </a>
               </li>
