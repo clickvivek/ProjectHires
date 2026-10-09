@@ -29,6 +29,7 @@ namespace DataAccessLayer.Repository
         Task<int> GetActiveCountHotListByUser(long userId, long? consultancyUserId, UserContext userContext);
         Task<int> GetCountResumesSubmittedLast30Days(long userId, long? consultancyUserId, UserContext userContext);
         Task<List<BenchSalesCandidateSummaryDto>> GetRecentBenchSalesCandidates(long userId, long? consultancyUserId, int count, UserContext userContext);
+        Task<List<CandidateProfileAppliedJobDto>> GetCandidateAppliedJobs(long candidateProfileId, UserContext userContext);
     }
 
     public class CandidateProfileRepository : BaseRepository<CandidateProfile, long>, ICandidateProfileRepository
@@ -182,6 +183,50 @@ namespace DataAccessLayer.Repository
                                ?? c.Title ?? string.Empty,
                 AppliedJobs = appliedJobCounts.ContainsKey(c.Id) ? appliedJobCounts[c.Id] : 0,
                 NewMatchingJobs = 0
+            }).ToList();
+        }
+
+        public async Task<List<CandidateProfileAppliedJobDto>> GetCandidateAppliedJobs(long candidateProfileId, UserContext userContext)
+        {
+            var apps = await _context.JobOpeningCandidateProfileMaps
+                .Include(m => m.JobOpening)
+                    .ThenInclude(j => j.ConsultancyUser)
+                        .ThenInclude(cu => cu.Consultancy)
+                .Include(m => m.JobOpening)
+                    .ThenInclude(j => j.JobOpeningLocations)
+                        .ThenInclude(jl => jl.City)
+                            .ThenInclude(c => c.IdStateNavigation)
+                .Include(m => m.CandidateProfileMappingStatus)
+                .Where(m => m.CandidateProfileId == candidateProfileId && m.Active != false)
+                .OrderByDescending(m => m.AppliedDate)
+                .ToListAsync();
+
+            return apps.Select(a =>
+            {
+                var loc = a.JobOpening?.JobLocation;
+                if (string.IsNullOrEmpty(loc) && a.JobOpening?.JobOpeningLocations != null && a.JobOpening.JobOpeningLocations.Any())
+                {
+                    var firstLoc = a.JobOpening.JobOpeningLocations.First();
+                    loc = $"{firstLoc.City?.City1}, {firstLoc.City?.IdStateNavigation?.StateCode}".Trim(',', ' ');
+                }
+
+                return new CandidateProfileAppliedJobDto
+                {
+                    Id = a.Id,
+                    JobOpeningId = a.JobOpeningId,
+                    JobTitle = a.JobOpening?.Name ?? "Job Opening",
+                    CompanyName = a.JobOpening?.ConsultancyUser?.Consultancy?.Name ?? string.Empty,
+                    CompanyLogo = a.JobOpening?.ConsultancyUser?.Consultancy?.Logo,
+                    JobLocation = loc,
+                    FromAmt = a.JobOpening?.FromAmt,
+                    ToAmt = a.JobOpening?.ToAmt,
+                    StatusId = a.CandidateProfileMappingStatusId,
+                    StatusName = a.CandidateProfileMappingStatus?.Name ?? "New",
+                    ResumeDoc = a.Doc,
+                    Comment = a.Comment,
+                    AppliedDate = a.AppliedDate,
+                    IsRead = a.IsRead
+                };
             }).ToList();
         }
 

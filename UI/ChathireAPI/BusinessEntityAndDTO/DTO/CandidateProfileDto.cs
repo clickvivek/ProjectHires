@@ -340,4 +340,22 @@ namespace BusinessEntityAndDTO.DTO
         public int AppliedJobs { get; set; }
         public int NewMatchingJobs { get; set; }
     }
+
+    public class CandidateProfileAppliedJobDto
+    {
+        public long Id { get; set; }
+        public long JobOpeningId { get; set; }
+        public string? JobTitle { get; set; }
+        public string? CompanyName { get; set; }
+        public string? CompanyLogo { get; set; }
+        public string? JobLocation { get; set; }
+        public decimal? FromAmt { get; set; }
+        public decimal? ToAmt { get; set; }
+        public short StatusId { get; set; }
+        public string? StatusName { get; set; }
+        public string? ResumeDoc { get; set; }
+        public string? Comment { get; set; }
+        public DateTime? AppliedDate { get; set; }
+        public bool IsRead { get; set; }
+    }
 }

@@ -61,6 +61,13 @@
             </label>
             <div class="d-flex d-md-none options mt-2 gap-2">
               <div
+                class="pointer p-1 text-teal"
+                (click)="openAppliedJobs(item, $event)"
+                title="View Applied Jobs"
+              >
+                <span class="material-symbols-outlined fs-5">assignment_turned_in</span>
+              </div>
+              <div
                 class="pointer p-1 text-primary-500"
                 (click)="editCandidate(item.id)"
                 title="Edit Candidate"
@@ -92,36 +99,47 @@
           </div>
 
           <div class="col-4 col-md-3 d-none d-md-flex justify-content-end">
-            <div class="dropdown">
-              <button
-                type="button"
-                data-bs-toggle="dropdown"
-                aria-expanded="false"
-                class="btn btn-update-action d-inline-flex align-items-center gap-1"
-              >
-                <span class="material-symbols-outlined action-lead-icon">tune</span>
-                <span>Update</span>
-                <span class="material-symbols-outlined chevron-icon ms-1">expand_more</span>
-              </button>
-              <div class="dropdown-menu dropdown-menu-end custom-action-dropdown">
+            <div class="d-flex flex-column align-items-center">
+              <div class="dropdown">
                 <button
                   type="button"
-                  class="dropdown-item d-flex align-items-center gap-2"
-                  (click)="editCandidate(item.id)"
+                  data-bs-toggle="dropdown"
+                  aria-expanded="false"
+                  class="btn btn-update-action d-inline-flex align-items-center gap-1"
                 >
-                  <span class="material-symbols-outlined text-base item-icon text-purple">edit</span>
-                  <span class="item-label">Edit Candidate</span>
+                  <span class="material-symbols-outlined action-lead-icon">tune</span>
+                  <span>Update</span>
+                  <span class="material-symbols-outlined chevron-icon ms-1">expand_more</span>
                 </button>
-                <div class="dropdown-divider"></div>
-                <button
-                  type="button"
-                  class="dropdown-item d-flex align-items-center gap-2 text-danger-item"
-                  (click)="deleteCandidate(item)"
-                >
-                  <span class="material-symbols-outlined text-base item-icon text-danger">delete</span>
-                  <span class="item-label text-danger">Delete Candidate</span>
-                </button>
+                <div class="dropdown-menu dropdown-menu-end custom-action-dropdown">
+                  <button
+                    type="button"
+                    class="dropdown-item d-flex align-items-center gap-2"
+                    (click)="editCandidate(item.id)"
+                  >
+                    <span class="material-symbols-outlined text-base item-icon text-purple">edit</span>
+                    <span class="item-label">Edit Candidate</span>
+                  </button>
+                  <div class="dropdown-divider"></div>
+                  <button
+                    type="button"
+                    class="dropdown-item d-flex align-items-center gap-2 text-danger-item"
+                    (click)="deleteCandidate(item)"
+                  >
+                    <span class="material-symbols-outlined text-base item-icon text-danger">delete</span>
+                    <span class="item-label text-danger">Delete Candidate</span>
+                  </button>
+                </div>
               </div>
+
+              <a
+                href="javascript:void(0)"
+                class="jobs-applied-link mt-1"
+                (click)="openAppliedJobs(item, $event)"
+                title="View Applied / Submitted Jobs"
+              >
+                Jobs Applied
+              </a>
             </div>
           </div>
         </div>

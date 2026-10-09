@@ -1,6 +1,9 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
+import { MatDialog } from '@angular/material/dialog';
 import _ from 'underscore';
+import { CandidateAppliedJobsModalComponent } from '../../../shared/components/candidate-applied-jobs-modal/candidate-applied-jobs-modal.component';
+import { formatRelocation } from 'src/app/data/various';
 
 @Component({
   selector: 'myhotlist-tableview',
@@ -18,9 +21,28 @@ export class MyhotlistTableviewComponent {
 
   constructor(
     private router: Router,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private dialog: MatDialog
   ) {
 
+  }
+
+  openAppliedJobs(item: any, event?: Event): void {
+    if (event) {
+      event.preventDefault();
+      event.stopPropagation();
+    }
+    if (!item || !item.id) return;
+    this.dialog.open(CandidateAppliedJobsModalComponent, {
+      width: '720px',
+      maxWidth: '95vw',
+      panelClass: 'candidate-applied-jobs-modal-panel',
+      data: {
+        candidateProfileId: item.id,
+        candidateName: item.candidateName,
+        candidateRole: item.title
+      }
+    });
   }
 
   getVisa(id){
@@ -45,33 +67,7 @@ export class MyhotlistTableviewComponent {
   }
 
   getRelocation(data) {
-    let item = data?.candidatePrefLocations
-
-    let newData: any = []
-    if (!_.isEmpty(item)) {
-      item.forEach(listItem => {
-        let rawCity = listItem.cityName || ''
-        let parts = rawCity.split('-')
-        let city = parts[0] ? parts[0].trim() : ''
-        let state = (listItem.stateCode || (parts[1] ? parts[1].trim() : '') || listItem.stateName || '').trim()
-        let formatted = (city && state) ? `${city}, ${state}` : (city || state)
-        if (formatted) {
-          newData.push(formatted)
-        }
-      });
-      return newData.length > 0 ? newData.join('; ') : (data.anyLocation ? "Any Location" : data.remoteOnly ? "Remote" : "NA")
-    }
-    else {
-      if (data?.anyLocation) {
-        return "Any Location"
-      }
-      else if (data?.remoteOnly) {
-        return "Remote"
-      }
-      else {
-        return "NA"
-      }
-    }
+    return formatRelocation(data);
   }
 
   isSkills(item) {

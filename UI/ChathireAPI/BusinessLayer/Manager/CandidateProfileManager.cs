@@ -42,11 +42,21 @@ namespace BusinessLayer.Manager
         Task<int> GetCountUnreadResumesByConsultancyUserID(long ConsultancyUserId, UserContext userContext);
         Task<int> GetActiveCountHotListByConsultancyUserID(long ConsultancyUserId, UserContext userContext);
         Task<BenchSalesStatsDto> GetBenchSalesStats(long userId, long? consultancyUserId, UserContext userContext);
+        Task<List<CandidateProfileAppliedJobDto>> GetCandidateAppliedJobs(long candidateProfileId, UserContext userContext);
     }
     public class CandidateProfileManager : BaseManager<CandidateProfileManager>, ICandidateProfileManager
     {
         public CandidateProfileManager(IServiceProvider provider, ILogger<CandidateProfileManager> logger, IMapper mapper) : base(provider, logger, mapper)
         {
+        }
+
+        public async Task<List<CandidateProfileAppliedJobDto>> GetCandidateAppliedJobs(long candidateProfileId, UserContext userContext)
+        {
+            return await ExecuteAsync<List<CandidateProfileAppliedJobDto>>(async () =>
+            {
+                var repo = repositoryFactory.Get<ICandidateProfileRepository>();
+                return await repo.GetCandidateAppliedJobs(candidateProfileId, userContext);
+            }, "GetCandidateAppliedJobs", userContext);
         }
 
         public async Task<List<CandidateProfileDto>> GetCandidateProfileByUser(long? userId, long? Id, UserContext userContext)
@@ -306,7 +316,19 @@ namespace BusinessLayer.Manager
             await ExecuteAsync(async () =>
             {
                 var skillRepo = repositoryFactory.Get<ICandidateDocumentRepository>();
-                await skillRepo.RemoveDocument(id, 1, userContext);
+                string fileName = await skillRepo.RemoveDocument(id, 1, userContext);
+                if (!string.IsNullOrEmpty(fileName))
+                {
+                    try
+                    {
+                        var fileManager = managerFactory.Get<IFileManager>();
+                        await fileManager.Delete(fileName, "resumes");
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.LogError(ex, "Error deleting resume blob {FileName} for candidate {Id}", fileName, id);
+                    }
+                }
             }, "DeleteCandidateDocumentByProfileId", userContext);
         }
 

@@ -102,6 +102,7 @@ namespace MiddleWare.Controllers
             });
         }
 
+
         /// <summary>
         /// Test endpoint to trigger a sample unread reminder email directly.
         /// </summary>
@@ -181,9 +182,9 @@ namespace MiddleWare.Controllers
             var userHashBytes = hmac.ComputeHash(Encoding.UTF8.GetBytes(targetUserId));
             var classicSignature = BitConverter.ToString(userHashBytes).Replace("-", "").ToLowerInvariant();
 
-            // Check if client requested plain text (e.g., from fetch text())
+            // Check if client requested exclusively plain text (e.g., from fetch text())
             var accept = Request.Headers["Accept"].ToString();
-            if (accept.Contains("text/plain"))
+            if (accept.Contains("text/plain") && !accept.Contains("application/json"))
             {
                 return Content(jwtToken, "text/plain");
             }

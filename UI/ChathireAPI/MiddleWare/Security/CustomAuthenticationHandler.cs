@@ -55,6 +55,7 @@ namespace Middleware.Security
             var path = Request.Path.Value ?? string.Empty;
             if ((path.Equals("/api/Token", StringComparison.OrdinalIgnoreCase) && Request.Method.Equals("POST", StringComparison.OrdinalIgnoreCase)) ||
                 path.StartsWith("/api/Common", StringComparison.OrdinalIgnoreCase) ||
+                path.StartsWith("/api/talkjs", StringComparison.OrdinalIgnoreCase) ||
                 path.StartsWith("/api/JobOpening/ProcessExpirations", StringComparison.OrdinalIgnoreCase))
             {
                 var claims = new List<Claim>();

@@ -47,6 +47,12 @@ public partial class JobOpening
 
     public short? ToAmt { get; set; }
 
+    public decimal? SalaryFrom { get; set; }
+
+    public decimal? SalaryTo { get; set; }
+
+    public string? SalaryCurrency { get; set; }
+
     public bool? NotifyOnCandidateProfileMap { get; set; }
 
     public bool? NotifyWithResume { get; set; }

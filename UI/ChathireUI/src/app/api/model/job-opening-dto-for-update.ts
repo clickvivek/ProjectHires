@@ -37,6 +37,9 @@ export interface JobOpeningDtoForUpdate {
     isReviewed?: boolean | null;
     fromAmt?: number | null;
     toAmt?: number | null;
+    salaryFrom?: number | null;
+    salaryTo?: number | null;
+    salaryCurrency?: string | null;
     notifyOnCandidateProfileMap?: boolean | null;
     notifyWithResume?: boolean | null;
     localCandidatePref?: boolean | null;

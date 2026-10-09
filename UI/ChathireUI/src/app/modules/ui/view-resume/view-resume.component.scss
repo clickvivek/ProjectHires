@@ -1,0 +1,113 @@
+.resume-box {
+  display: inline-flex;
+  cursor: pointer;
+  align-items: center;
+  padding: 4px 10px;
+  background-color: #F8F9FA;
+  border: 1px solid #E5E7EB;
+  color: #374151;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  transition: all 0.15s ease-in-out;
+
+  .icon {
+    font-size: 16px;
+    margin-right: 4px;
+    color: #6B7280;
+  }
+
+  &:hover {
+    background-color: #F3F4F6;
+    border-color: #D1D5DB;
+    color: #111827;
+  }
+}
+
+.resume-drawer-container {
+  height: 100vh;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.drawer-header-icon-box {
+  width: 36px;
+  height: 36px;
+  background-color: #F5EDF5;
+}
+
+.text-purple {
+  color: #70246D !important;
+}
+
+.file-badge {
+  background-color: #F3F4F6;
+  color: #4B5563;
+  font-weight: 600;
+  font-size: 10.5px;
+  padding: 3px 6px;
+  border: 1px solid #E5E7EB;
+}
+
+.resume-drawer-title {
+  font-size: 1.05rem;
+  letter-spacing: -0.01em;
+}
+
+.max-w-sm {
+  max-width: 320px;
+}
+
+.resume-header-action-btn {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 5px !important;
+  background-color: #F5EDF5 !important;
+  color: #70246D !important;
+  font-size: 13px !important;
+  font-weight: 600 !important;
+  border-radius: 6px !important;
+  padding: 5px 12px !important;
+  border: 1px solid rgba(112, 36, 109, 0.25) !important;
+  transition: all 0.15s ease-in-out !important;
+  text-decoration: none !important;
+  cursor: pointer !important;
+  line-height: 1.4 !important;
+
+  span, .material-symbols-outlined {
+    color: #70246D !important;
+  }
+
+  .material-symbols-outlined {
+    font-size: 17px !important;
+    line-height: 1 !important;
+  }
+
+  &:hover {
+    background-color: #70246D !important;
+    color: #FFFFFF !important;
+    border-color: #70246D !important;
+
+    span, .material-symbols-outlined {
+      color: #FFFFFF !important;
+    }
+  }
+}
+
+.btn-close-drawer {
+  cursor: pointer;
+  transition: all 0.15s ease-in-out;
+  width: 32px;
+  height: 32px;
+
+  &:hover {
+    background-color: #F3F4F6 !important;
+    color: #111827 !important;
+  }
+}
+
+.resume-drawer-body {
+  height: calc(100vh - 65px);
+  background-color: #F9FAFB;
+}

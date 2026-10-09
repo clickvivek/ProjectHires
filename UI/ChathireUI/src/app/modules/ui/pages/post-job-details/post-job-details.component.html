@@ -375,149 +375,238 @@
           </div>
         </div>
 
-        <div class="col-sm-6 col-md-4">
-          <div class="input-box select-box">
-            <app-select-field
-              fieldName="billingRangeId"
-              fieldText="Billing Rate"
-              fieldType="range"
-              fieldPlaceholder="Market"
-              [fieldRequired]="false"
-              [fieldList]="selectBillingList"
-              [isEdit]="isEdit"
-              [editValue]="formData.billingRangeId"
-              (inputChange)="onBillingListChange($event)"
-            >
-            </app-select-field>
-          </div>
-        </div>
-
-        <div class="col-sm-6 col-md-4">
-          <div class="input-box">
-            <div class="form-group">
-              <label for="totalExp">Total years of Exp</label>
-              <input
-                type="number"
-                #postJobExperience
-                class="form-control"
-                placeholder="Enter"
-                [(ngModel)]="formData.totalExp"
-                name="totalExp"
-                autocomplete="off"
-                min="0"
-                max="50"
-                (keypress)="onExpKeyPress($event)"
-                (input)="onExpInput($event)"
-              />
-              
-              <div
-                class="mt-2"
-                *ngIf="
-                  postJobsForm.submitted &&
-                  postJobsForm.controls['totalExp']?.invalid
-                "
+        <!-- If NOT W2 Full-Time only: Show Billing Rate, Total Exp, Project Duration, Direct Client -->
+        <ng-container *ngIf="!isW2FullTimeOnlySelected()">
+          <div class="col-sm-6 col-md-4">
+            <div class="input-box select-box">
+              <app-select-field
+                fieldName="billingRangeId"
+                fieldText="Billing Rate"
+                fieldType="range"
+                fieldPlaceholder="Market"
+                [fieldRequired]="false"
+                [fieldList]="selectBillingList"
+                [isEdit]="isEdit"
+                [editValue]="formData.billingRangeId"
+                (inputChange)="onBillingListChange($event)"
               >
-                <div
-                  class="input-field-message"
-                  *ngIf="postJobsForm.controls['totalExp']?.errors?.['max']"
-                >
-                  Experience cannot exceed 50 years
-                </div>
-              </div>
-
+              </app-select-field>
             </div>
           </div>
-        </div>
 
-        <div class="col-sm-6 col-md-4">
-          <div class="input-box">
-            <div class="form-group">
-              <label for="projectDurationmonths">Project Duration in Months</label>
-              <input
-                type="number"
-                #postJobDuration
-                class="form-control"
-                placeholder="Enter (e.g. 12)"
-                [(ngModel)]="formData.projectDurationmonths"
-                name="projectDurationmonths"
-                autocomplete="off"
-                min="1"
-                max="99"
-                maxlength="2"
-                (keypress)="onDurationKeyPress($event)"
-                (input)="onDurationInput($event)"
-              />
-              
-              <div
-                class="mt-2"
-                *ngIf="
-                  postJobsForm.submitted &&
-                  postJobsForm.controls['projectDurationmonths']?.invalid
-                "
-              >
+          <div class="col-sm-6 col-md-4">
+            <div class="input-box">
+              <div class="form-group">
+                <label for="totalExp">Total years of exp required</label>
+                <input
+                  type="number"
+                  #postJobExperience
+                  class="form-control"
+                  placeholder="Enter"
+                  [(ngModel)]="formData.totalExp"
+                  name="totalExp"
+                  autocomplete="off"
+                  min="0"
+                  max="50"
+                  (keypress)="onExpKeyPress($event)"
+                  (input)="onExpInput($event)"
+                />
+                
                 <div
-                  class="input-field-message"
-                  *ngIf="postJobsForm.controls['projectDurationmonths']?.errors?.['max']"
+                  class="mt-2"
+                  *ngIf="
+                    postJobsForm.submitted &&
+                    postJobsForm.controls['totalExp']?.invalid
+                  "
                 >
-                  Duration cannot exceed 99 months
-                </div>
-              </div>
-
-            </div>
-          </div>
-        </div>
-
-        <div class="col-md-6">
-          <div class="input-box">
-            <div class="form-group mb-4">
-              <label
-                >Direct Client (Y/N)
-                <span class="req">*</span></label
-              >
-
-              <div class="d-flex mt-1">
-                <ng-container
-                  *ngFor="let option of directClientList"
-                >
-                  <div class="form-check">
-                    <input
-                      class="form-check-input"
-                      type="radio"
-                      name="directClientId"
-                      [id]="option.id"
-                      [value]="option.value"
-                      [(ngModel)]="selectDirectClient"
-                      (change)="
-                        onDirectClientChange(option.value)
-                      "
-                    />
-                    <label
-                      class="form-check-label"
-                      [for]="option.id"
-                    >
-                      {{ option.label }}
-                    </label>
+                  <div
+                    class="input-field-message"
+                    *ngIf="postJobsForm.controls['totalExp']?.errors?.['max']"
+                  >
+                    Experience cannot exceed 50 years
                   </div>
-                </ng-container>
-              </div>
-
-              <!-- <div
-                class="mt-1"
-                *ngIf="
-                  postJobsForm.submitted &&
-                  postJobsForm.controls['directClientId'].invalid
-                "
-              >
-                <div
-                  class="input-field-message"
-                  *ngIf="postJobsForm.controls['directClientId'].errors?.['required']"
-                >
-                  Direct client required
                 </div>
-              </div> -->
+
+              </div>
             </div>
           </div>
-        </div>
+
+          <div class="col-sm-6 col-md-4">
+            <div class="input-box">
+              <div class="form-group">
+                <label for="projectDurationmonths">Project Duration in Months</label>
+                <input
+                  type="number"
+                  #postJobDuration
+                  class="form-control"
+                  placeholder="Enter (e.g. 12)"
+                  [(ngModel)]="formData.projectDurationmonths"
+                  name="projectDurationmonths"
+                  autocomplete="off"
+                  min="1"
+                  max="99"
+                  maxlength="2"
+                  (keypress)="onDurationKeyPress($event)"
+                  (input)="onDurationInput($event)"
+                />
+                
+                <div
+                  class="mt-2"
+                  *ngIf="
+                    postJobsForm.submitted &&
+                    postJobsForm.controls['projectDurationmonths']?.invalid
+                  "
+                >
+                  <div
+                    class="input-field-message"
+                    *ngIf="postJobsForm.controls['projectDurationmonths']?.errors?.['max']"
+                  >
+                    Duration cannot exceed 99 months
+                  </div>
+                </div>
+
+              </div>
+            </div>
+          </div>
+
+          <div class="col-md-6">
+            <div class="input-box">
+              <div class="form-group mb-4">
+                <label
+                  >Direct Client (Y/N)
+                  <span class="req">*</span></label
+                >
+
+                <div class="d-flex mt-1">
+                  <ng-container
+                    *ngFor="let option of directClientList"
+                  >
+                    <div class="form-check">
+                      <input
+                        class="form-check-input"
+                        type="radio"
+                        name="directClientId"
+                        [id]="option.id"
+                        [value]="option.value"
+                        [(ngModel)]="selectDirectClient"
+                        (change)="
+                          onDirectClientChange(option.value)
+                        "
+                      />
+                      <label
+                        class="form-check-label"
+                        [for]="option.id"
+                      >
+                        {{ option.label }}
+                      </label>
+                    </div>
+                  </ng-container>
+                </div>
+              </div>
+            </div>
+          </div>
+        </ng-container>
+
+        <!-- If W2 Full-Time ONLY: Hide Billing Rate, Project Duration, Direct Client; Show Salary Range + Total Exp -->
+        <ng-container *ngIf="isW2FullTimeOnlySelected()">
+          <div class="col-12">
+            <div class="salary-range-box p-3 mb-4" style="background: #fdf8fc; border: 1.5px dashed #c084fc; border-radius: 10px;">
+              <div class="d-flex align-items-center mb-2">
+                <i class="feather-dollar-sign text-purple mr-1" style="font-size: 16px; color: #673260;"></i>
+                <label class="mb-0 font-weight-bold" style="color: #673260; font-size: 14px;">
+                  Annual Salary Range <span class="text-muted font-weight-normal" style="font-size: 12px;">(Optional)</span>
+                </label>
+              </div>
+              <div class="row align-items-end">
+                <div class="col-sm-4 col-12 mb-2 mb-sm-0">
+                  <label style="font-size: 12px; color: #475569; margin-bottom: 4px;">Currency</label>
+                  <select
+                    class="form-control"
+                    [(ngModel)]="formData.salaryCurrency"
+                    name="salaryCurrency"
+                    style="height: 38px; border-radius: 6px; font-size: 13px; font-weight: 500;"
+                  >
+                    <option value="USD">USD ($)</option>
+                    <option value="CAD">CAD ($)</option>
+                  </select>
+                </div>
+                <div class="col-sm-4 col-12 mb-2 mb-sm-0">
+                  <label style="font-size: 12px; color: #475569; margin-bottom: 4px;">From Salary Range</label>
+                  <div class="input-group">
+                    <div class="input-group-prepend">
+                      <span class="input-group-text" style="background: #fff; font-size: 13px; color: #64748b; font-weight: 600;">$</span>
+                    </div>
+                    <input
+                      type="number"
+                      class="form-control"
+                      placeholder="e.g. 90000"
+                      [(ngModel)]="formData.salaryFrom"
+                      name="salaryFrom"
+                      min="0"
+                      style="height: 38px; border-radius: 0 6px 6px 0; font-size: 13px;"
+                    />
+                  </div>
+                </div>
+                <div class="col-sm-4 col-12">
+                  <label style="font-size: 12px; color: #475569; margin-bottom: 4px;">To Salary Range</label>
+                  <div class="input-group">
+                    <div class="input-group-prepend">
+                      <span class="input-group-text" style="background: #fff; font-size: 13px; color: #64748b; font-weight: 600;">$</span>
+                    </div>
+                    <input
+                      type="number"
+                      class="form-control"
+                      placeholder="e.g. 130000"
+                      [(ngModel)]="formData.salaryTo"
+                      name="salaryTo"
+                      min="0"
+                      style="height: 38px; border-radius: 0 6px 6px 0; font-size: 13px;"
+                    />
+                  </div>
+                </div>
+              </div>
+              <div *ngIf="formData.salaryFrom && formData.salaryTo && (+formData.salaryTo < +formData.salaryFrom)" class="text-danger mt-1" style="font-size: 11.5px;">
+                "To Salary" should be greater than or equal to "From Salary".
+              </div>
+            </div>
+          </div>
+
+          <div class="col-12 col-sm-6 col-md-4">
+            <div class="input-box">
+              <div class="form-group mb-4">
+                <label for="totalExp">Total years of exp required</label>
+                <input
+                  type="number"
+                  #postJobExperienceW2
+                  class="form-control"
+                  placeholder="Enter"
+                  [(ngModel)]="formData.totalExp"
+                  name="totalExp"
+                  autocomplete="off"
+                  min="0"
+                  max="50"
+                  (keypress)="onExpKeyPress($event)"
+                  (input)="onExpInput($event)"
+                />
+                
+                <div
+                  class="mt-2"
+                  *ngIf="
+                    postJobsForm.submitted &&
+                    postJobsForm.controls['totalExp']?.invalid
+                  "
+                >
+                  <div
+                    class="input-field-message"
+                    *ngIf="postJobsForm.controls['totalExp']?.errors?.['max']"
+                  >
+                    Experience cannot exceed 50 years
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </ng-container>
       </div>
 
       <div class="row">

@@ -81,6 +81,9 @@ export class PostJobDetailsComponent {
     billingRangeId: '',
     fromAmt: 0,
     toAmt: 0,
+    salaryFrom: null,
+    salaryTo: null,
+    salaryCurrency: 'USD',
     projectDurationmonths: null
   }
 
@@ -185,6 +188,7 @@ export class PostJobDetailsComponent {
         let newData = res.value
 
         this.formData = newData;
+        this.formData.salaryCurrency = newData.salaryCurrency || 'USD';
 
         if (newData.country) {
           const names = newData.country.split(',').map((s: string) => s.trim().toLowerCase());
@@ -317,6 +321,27 @@ export class PostJobDetailsComponent {
     } else {
       this.formData.jobTypeId = null;
     }
+
+    if (!this.isW2FullTimeOnlySelected()) {
+      this.formData.salaryFrom = null;
+      this.formData.salaryTo = null;
+    }
+  }
+
+  isW2FullTimeSelected(): boolean {
+    return (this.formData.jobOpeningJobTypes || []).some((j: any) => {
+      const desc = (j.description || j.name || '').toLowerCase();
+      return desc.includes('w2 full') || (j.jobTypeId || j.id) === 11;
+    });
+  }
+
+  isW2FullTimeOnlySelected(): boolean {
+    const selected = this.formData.jobOpeningJobTypes || [];
+    if (selected.length !== 1) {
+      return false;
+    }
+    const desc = (selected[0].description || selected[0].name || '').toLowerCase();
+    return desc.includes('w2 full') || (selected[0].jobTypeId || selected[0].id) === 11;
   }
 
   isPositionTypeSelected(item: any): boolean {
@@ -679,7 +704,7 @@ export class PostJobDetailsComponent {
           joiningdays: 0,
           description: this.formData.description,
           totalExp: parsedTotalExp,
-          projectDurationmonths: parsedDuration,
+          projectDurationmonths: this.isW2FullTimeOnlySelected() ? null : parsedDuration,
           postedDate: new Date().toISOString(),
           lastDate: new Date().toISOString(),
           numberOfOpening: 0,
@@ -690,10 +715,13 @@ export class PostJobDetailsComponent {
           jobLocation: "string",
           postalcode: "string",
           projectStartId: 8, //USA
-          directClient: this.selectDirectClient == 'null' ? null : this.selectDirectClient,
+          directClient: this.isW2FullTimeOnlySelected() ? null : (this.selectDirectClient == 'null' ? null : this.selectDirectClient),
           isReviewed: true,
-          fromAmt: this.formData.fromAmt,
-          toAmt: this.formData.toAmt,
+          fromAmt: this.isW2FullTimeOnlySelected() ? 0 : this.formData.fromAmt,
+          toAmt: this.isW2FullTimeOnlySelected() ? 0 : this.formData.toAmt,
+          salaryFrom: this.isW2FullTimeOnlySelected() && this.formData.salaryFrom != null && this.formData.salaryFrom !== '' ? Number(this.formData.salaryFrom) : null,
+          salaryTo: this.isW2FullTimeOnlySelected() && this.formData.salaryTo != null && this.formData.salaryTo !== '' ? Number(this.formData.salaryTo) : null,
+          salaryCurrency: this.isW2FullTimeOnlySelected() ? (this.formData.salaryCurrency || 'USD') : null,
           notifyOnCandidateProfileMap: this.formData.notifyOnCandidateProfileMap,
           notifyWithResume: this.formData.notifyWithResume,
           localCandidatePref: this.formData.localCandidatePref,
@@ -716,7 +744,7 @@ export class PostJobDetailsComponent {
           joiningdays: this.formData.joiningdays,
           description: this.formData.description,
           totalExp: parsedTotalExp,
-          projectDurationmonths: parsedDuration,
+          projectDurationmonths: this.isW2FullTimeOnlySelected() ? null : parsedDuration,
           postedDate: new Date().toISOString(),
           lastDate: new Date().toISOString(),
           numberOfOpening: this.formData.numberOfOpening,
@@ -727,10 +755,13 @@ export class PostJobDetailsComponent {
           jobLocation: this.formData.jobLocation,
           postalcode: this.formData.postalcode,
           projectStartId: this.formData.projectStartId,
-          directClient: this.formData.directClient,
+          directClient: this.isW2FullTimeOnlySelected() ? null : this.formData.directClient,
           isReviewed: this.formData.isReviewed,
-          fromAmt: this.formData.fromAmt,
-          toAmt: this.formData.toAmt,
+          fromAmt: this.isW2FullTimeOnlySelected() ? 0 : this.formData.fromAmt,
+          toAmt: this.isW2FullTimeOnlySelected() ? 0 : this.formData.toAmt,
+          salaryFrom: this.isW2FullTimeOnlySelected() && this.formData.salaryFrom != null && this.formData.salaryFrom !== '' ? Number(this.formData.salaryFrom) : null,
+          salaryTo: this.isW2FullTimeOnlySelected() && this.formData.salaryTo != null && this.formData.salaryTo !== '' ? Number(this.formData.salaryTo) : null,
+          salaryCurrency: this.isW2FullTimeOnlySelected() ? (this.formData.salaryCurrency || 'USD') : null,
           notifyOnCandidateProfileMap: this.formData.notifyOnCandidateProfileMap,
           notifyWithResume: this.formData.notifyWithResume,
           localCandidatePref: this.formData.localCandidatePref,

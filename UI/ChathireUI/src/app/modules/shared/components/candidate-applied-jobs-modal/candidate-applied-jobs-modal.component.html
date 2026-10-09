@@ -1,0 +1,123 @@
+<div class="candidate-applied-modal position-relative d-flex flex-column">
+  
+  <!-- Modal Header -->
+  <div class="modal-header-section d-flex align-items-center justify-content-between p-3 px-4 border-bottom bg-white">
+    <div class="d-flex align-items-center gap-3">
+      <div class="candidate-avatar-circle rounded-circle d-flex align-items-center justify-content-center text-white fw-bold">
+        {{ data.candidateName ? data.candidateName.charAt(0).toUpperCase() : 'C' }}
+      </div>
+      <div>
+        <div class="d-flex align-items-center gap-2 flex-wrap">
+          <h4 class="modal-title mb-0 fw-bold text-dark">{{ data.candidateName }}</h4>
+          <span class="badge count-badge rounded-pill" *ngIf="!isLoading">
+            {{ appliedJobs.length }} {{ appliedJobs.length === 1 ? 'Applied Job' : 'Applied Jobs' }}
+          </span>
+        </div>
+        <p class="modal-subtitle text-muted mb-0 small" *ngIf="data.candidateRole">
+          {{ data.candidateRole }}
+        </p>
+      </div>
+    </div>
+    <button type="button" class="btn-close-custom border-0 bg-transparent text-muted" (click)="close()" aria-label="Close">
+      <span class="material-symbols-outlined fs-5">close</span>
+    </button>
+  </div>
+
+  <!-- Modal Body -->
+  <div class="modal-body-section p-3 p-md-4 flex-grow-1 overflow-auto bg-light">
+    
+    <!-- Loading State -->
+    <div *ngIf="isLoading" class="text-center py-5">
+      <div class="spinner-border text-purple mb-3" role="status" style="width: 2.2rem; height: 2.2rem; border-width: 3px;">
+        <span class="visually-hidden">Loading applications...</span>
+      </div>
+      <p class="text-muted small mb-0">Loading application history...</p>
+    </div>
+
+    <!-- Error State -->
+    <div *ngIf="!isLoading && errorMessage" class="alert alert-danger d-flex align-items-center gap-2 my-3 rounded-3" role="alert">
+      <span class="material-symbols-outlined fs-5">error</span>
+      <div class="flex-grow-1">{{ errorMessage }}</div>
+      <button type="button" class="btn btn-sm btn-outline-danger" (click)="loadAppliedJobs()">Retry</button>
+    </div>
+
+    <!-- Empty State -->
+    <div *ngIf="!isLoading && !errorMessage && appliedJobs.length === 0" class="empty-state text-center py-5 bg-white rounded-3 border">
+      <div class="empty-icon-box mx-auto mb-3 d-flex align-items-center justify-content-center rounded-circle bg-light text-muted">
+        <span class="material-symbols-outlined fs-2">work_off</span>
+      </div>
+      <h5 class="fw-bold text-dark mb-1">No Applications Found</h5>
+      <p class="text-muted small mb-0 max-w-sm mx-auto">
+        This candidate has not been submitted to any job openings yet.
+      </p>
+    </div>
+
+    <!-- Applied Jobs List -->
+    <div *ngIf="!isLoading && !errorMessage && appliedJobs.length > 0" class="applied-jobs-list d-flex flex-column gap-3">
+      <div *ngFor="let job of appliedJobs" class="applied-job-card bg-white border rounded-3 p-3 shadow-xs">
+        
+        <!-- Top Row: Job Title + Status Pill -->
+        <div class="d-flex align-items-start justify-content-between gap-2 mb-2 flex-wrap">
+          <div class="flex-grow-1 min-w-0">
+            <h5 class="job-title fw-bold text-dark mb-1">
+              {{ job.jobTitle }}
+            </h5>
+            <div class="d-flex align-items-center gap-3 text-muted small flex-wrap">
+              <span class="company-name fw-medium text-dark-700" *ngIf="job.companyName">
+                <span class="material-symbols-outlined fs-6 align-middle me-1 text-muted">corporate_fare</span>
+                {{ job.companyName }}
+              </span>
+              <span class="location-text" *ngIf="job.jobLocation">
+                <span class="material-symbols-outlined fs-6 align-middle me-1 text-muted">location_on</span>
+                {{ job.jobLocation }}
+              </span>
+              <span class="comp-badge fw-semibold text-teal" *ngIf="job.fromAmt || job.toAmt">
+                <span class="material-symbols-outlined fs-6 align-middle me-1">payments</span>
+                {{ formatCompensation(job.fromAmt, job.toAmt) }}
+              </span>
+            </div>
+          </div>
+
+          <!-- Status Badge -->
+          <div class="flex-shrink-0">
+            <span class="status-pill text-uppercase fw-bold text-xs" [ngClass]="getStatusBadgeClass(job.statusId, job.statusName)">
+              {{ job.statusName || 'Submitted' }}
+            </span>
+          </div>
+        </div>
+
+        <!-- Applied Date and Resume Action Row -->
+        <div class="d-flex align-items-center justify-content-between pt-2 border-top mt-2 flex-wrap gap-2">
+          <div class="d-flex align-items-center gap-2 text-muted text-xs">
+            <span class="material-symbols-outlined fs-6">calendar_today</span>
+            <span>Applied on <strong>{{ formatDate(job.appliedDate) }}</strong></span>
+            <span class="text-muted-400" *ngIf="getRelativeTime(job.appliedDate)">({{ getRelativeTime(job.appliedDate) }})</span>
+          </div>
+
+          <div class="d-flex align-items-center gap-2" *ngIf="job.resumeDoc">
+            <button type="button" class="btn btn-sm btn-subtle-purple d-inline-flex align-items-center gap-1" (click)="openResume(job.resumeDoc, $event)" title="View submitted resume">
+              <span class="material-symbols-outlined fs-6">description</span>
+              <span>View Resume</span>
+              <span class="material-symbols-outlined fs-6">open_in_new</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Comments / Notes if any -->
+        <div class="job-comment-callout mt-2 p-2 px-3 rounded-2 bg-light border-start border-3 border-purple text-xs text-muted" *ngIf="job.comment">
+          <span class="fw-semibold text-dark me-1">Note:</span>{{ job.comment }}
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Modal Footer -->
+  <div class="modal-footer-section p-3 px-4 border-top bg-white d-flex align-items-center justify-content-end">
+    <button type="button" class="btn btn-secondary btn-sm px-4 fw-medium" (click)="close()">
+      Close
+    </button>
+  </div>
+
+</div>

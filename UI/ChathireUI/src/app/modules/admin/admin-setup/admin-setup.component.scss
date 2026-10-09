@@ -749,15 +749,32 @@
       font-weight: 600;
     }
 
-    .btn-edit-quota {
+    .btn-edit-quota, .btn-referral-quota {
       font-size: 0.75rem;
       font-weight: 600;
       border-radius: 6px;
-      padding: 3px 8px;
+      width: 28px;
+      height: 28px;
+      padding: 0;
 
+      span.material-symbols-outlined {
+        font-size: 16px;
+        line-height: 1;
+      }
+    }
+
+    .btn-edit-quota {
       &:hover {
         background-color: #39756F;
         border-color: #39756F;
+        color: #ffffff;
+      }
+    }
+
+    .btn-referral-quota {
+      &:hover {
+        background-color: #198754;
+        border-color: #198754;
         color: #ffffff;
       }
     }

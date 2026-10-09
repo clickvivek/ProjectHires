@@ -418,12 +418,28 @@
                     <span class="candidate-role text-muted">{{ candidate.primarySkill || candidate.title }}</span>
                   </td>
                   <td class="text-center">
-                    <span class="numeric-val fw-semibold text-dark-700">{{ candidate.appliedJobs }}</span>
+                    <button
+                      type="button"
+                      (click)="openAppliedJobsModal(candidate, $event)"
+                      class="badge applied-jobs-badge border-0 cursor-pointer"
+                      [class.has-applied]="candidate.appliedJobs > 0"
+                      [title]="'Click to view ' + (candidate.appliedJobs || 0) + ' applied jobs for ' + candidate.name"
+                    >
+                      <span class="material-symbols-outlined fs-6 align-middle me-0.5" *ngIf="candidate.appliedJobs > 0">check_circle</span>
+                      {{ candidate.appliedJobs || 0 }}
+                    </button>
                   </td>
                   <td class="text-center">
-                    <span class="badge matching-badge">
-                      {{ candidate.newMatchingJobs }}
+                    <span *ngIf="candidate.isLoadingMatches" class="spinner-border spinner-border-sm text-teal" role="status" title="Searching matching jobs..." style="width: 1rem; height: 1rem; border-width: 2px;">
+                      <span class="visually-hidden">Loading...</span>
                     </span>
+                    <button *ngIf="!candidate.isLoadingMatches" 
+                            type="button" 
+                            (click)="navigateToMatchingJobs(candidate)"
+                            class="badge matching-badge matching-badge-clickable border-0" 
+                            [title]="'Click to view matching jobs for ' + (candidate.primarySkill || candidate.title)">
+                      {{ candidate.newMatchingJobs || 0 }}
+                    </button>
                   </td>
                   <td class="text-end pe-4">
                     <a routerLink="/myhotlist" class="btn btn-sm btn-action-view">

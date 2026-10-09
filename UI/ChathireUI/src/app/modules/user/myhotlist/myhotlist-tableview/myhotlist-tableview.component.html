@@ -62,9 +62,18 @@
             </span>
           </td>
 
-          <!-- Action Buttons (Edit, Delete) -->
+          <!-- Action Buttons (Applied Jobs, Edit, Delete) -->
           <td class="td-actions text-end pe-4">
             <div class="d-inline-flex align-items-center gap-2">
+              <button
+                type="button"
+                class="btn-table-action btn-table-applied"
+                (click)="openAppliedJobs(item, $event)"
+                title="View Applied / Submitted Jobs"
+              >
+                <span class="material-symbols-outlined fs-6">assignment_turned_in</span>
+              </button>
+
               <button
                 type="button"
                 class="btn-table-action btn-table-edit"

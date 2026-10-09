@@ -1,33 +1,46 @@
 <div class="resume-box me-3 align-items-center" (click)="handleResume()">
-    <span class="material-symbols-outlined icon text-base me-1">
-      visibility
-    </span>
-    <span class="text-sm">view resume</span>
-  </div>
-  
-  <mat-sidenav-container>
-    <mat-sidenav [(opened)]="isViewer" position="end">
-      <div class="resume-viewer-wrapper">
-        <div class="right mt-3 me-3 d-flex justify-content-end">
-          <div
-            class="material-symbols-outlined text-h4 d-inline-block pointer"
-            (click)="closeViewer()"
-          >
-            close
-          </div>
+  <span class="material-symbols-outlined icon text-base me-1">visibility</span>
+  <span class="text-sm">view resume</span>
+</div>
+
+<ng-template #resumeViewerTemplate>
+  <div class="resume-drawer-container d-flex flex-column h-100 bg-white">
+    <!-- Drawer Header -->
+    <div class="resume-drawer-header d-flex align-items-center justify-content-between p-3 px-4 border-bottom bg-white flex-shrink-0">
+      <div class="d-flex align-items-center gap-2">
+        <div class="drawer-header-icon-box rounded-circle d-flex align-items-center justify-content-center text-purple">
+          <span class="material-symbols-outlined fs-5">description</span>
         </div>
-        <div class="viewer-content" *ngIf="isViewer">
-          <ngx-doc-viewer *ngIf="isDoc()"
-            [url]="fileUrl"
-            [viewer]="fileType != 'pdf' ? 'office' : 'google'"
-            style="width: 100%; height: 80vh"
-          ></ngx-doc-viewer>
-          <ng-container *ngIf="!isDoc()">
-            <div class="img-box">
-              <img class="view-resume-img" [src]="fileUrl" />
-            </div>
-          </ng-container>
+        <div>
+          <div class="d-flex align-items-center gap-2">
+            <h5 class="mb-0 fw-bold text-dark resume-drawer-title">Candidate Resume</h5>
+            <span class="badge file-badge text-uppercase text-xs" *ngIf="fileType">{{ fileType }}</span>
+          </div>
+          <span class="text-muted text-xs d-block text-truncate max-w-sm" *ngIf="doc">{{ doc }}</span>
         </div>
       </div>
-    </mat-sidenav>
-  </mat-sidenav-container>
+
+      <div class="d-flex align-items-center gap-2">
+        <button type="button" class="resume-header-action-btn" (click)="downloadResume()" title="Download resume">
+          <span class="material-symbols-outlined fs-6">download</span>
+          <span>Download</span>
+        </button>
+        <button type="button" class="btn-close-drawer border-0 bg-transparent text-muted p-1 rounded-circle d-flex align-items-center justify-content-center" (click)="closeViewer()" aria-label="Close" title="Close Drawer">
+          <span class="material-symbols-outlined fs-5">close</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Drawer Body -->
+    <div class="resume-drawer-body flex-grow-1 overflow-hidden bg-light position-relative">
+      <ngx-doc-viewer *ngIf="isDoc() && loadDoc"
+        [url]="fileUrl"
+        [viewer]="fileType != 'pdf' ? 'office' : 'google'"
+        style="width: 100%; height: 100%; min-height: calc(100vh - 65px); display: block;"
+      ></ngx-doc-viewer>
+      <div class="img-viewer-box p-3 text-center overflow-auto h-100" *ngIf="!isDoc() && loadDoc">
+        <img class="img-fluid rounded shadow-sm" [src]="fileUrl" alt="Resume Document" />
+      </div>
+    </div>
+  </div>
+</ng-template>

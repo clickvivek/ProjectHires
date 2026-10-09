@@ -51,7 +51,10 @@ namespace DataAccessLayer.Repository
                 };
             }
 
-            var referrer = await _context.Users.FirstOrDefaultAsync(u => u.Id == userContext.UserId);
+            bool isOnBehalf = dto.OnBehalfOfUserId.HasValue && dto.OnBehalfOfUserId.Value > 0;
+            long effectiveReferrerId = isOnBehalf ? dto.OnBehalfOfUserId!.Value : userContext.UserId;
+
+            var referrer = await _context.Users.FirstOrDefaultAsync(u => u.Id == effectiveReferrerId);
             if (referrer == null)
             {
                 return new SubmitReferralResponseDto
@@ -75,7 +78,7 @@ namespace DataAccessLayer.Repository
                 return new SubmitReferralResponseDto
                 {
                     Success = false,
-                    Message = "Please provide 10 company email addresses."
+                    Message = isOnBehalf ? "Please provide at least one email address." : "Please provide 10 company email addresses."
                 };
             }
 
@@ -85,12 +88,20 @@ namespace DataAccessLayer.Repository
                 .Where(e => !string.IsNullOrWhiteSpace(e))
                 .ToList();
 
-            if (rawEmails.Count < 10)
+            if (!isOnBehalf && rawEmails.Count < 10)
             {
                 return new SubmitReferralResponseDto
                 {
                     Success = false,
                     Message = $"Minimum 10 company email addresses are required to claim the +10 chat sessions award. You provided {rawEmails.Count} email(s)."
+                };
+            }
+            else if (isOnBehalf && rawEmails.Count == 0)
+            {
+                return new SubmitReferralResponseDto
+                {
+                    Success = false,
+                    Message = "Please provide at least one email address."
                 };
             }
 
@@ -153,12 +164,24 @@ namespace DataAccessLayer.Repository
                 validEmailsToProcess.Add(email);
             }
 
-            if (validEmailsToProcess.Count < 10)
+            if (!isOnBehalf && validEmailsToProcess.Count < 10)
             {
                 return new SubmitReferralResponseDto
                 {
                     Success = false,
                     Message = $"At least 10 valid company email addresses are required. {validEmailsToProcess.Count} valid company email(s) found.",
+                    TotalSubmitted = rawEmails.Count,
+                    InvalidEmails = invalidCount,
+                    NonCompanyEmails = nonCompanyCount,
+                    SkippedDetails = skippedDetails
+                };
+            }
+            else if (isOnBehalf && validEmailsToProcess.Count == 0)
+            {
+                return new SubmitReferralResponseDto
+                {
+                    Success = false,
+                    Message = $"No valid company email addresses found.",
                     TotalSubmitted = rawEmails.Count,
                     InvalidEmails = invalidCount,
                     NonCompanyEmails = nonCompanyCount,
@@ -177,7 +200,7 @@ namespace DataAccessLayer.Repository
 
             var previousReferrals = await _context.UserReferrals
                 .AsNoTracking()
-                .Where(r => r.ReferrerUserId == userContext.UserId && validEmailsToProcess.Contains(r.ReferredEmail.ToLower()))
+                .Where(r => r.ReferrerUserId == effectiveReferrerId && validEmailsToProcess.Contains(r.ReferredEmail.ToLower()))
                 .Select(r => r.ReferredEmail.ToLower())
                 .ToListAsync();
 
@@ -213,7 +236,7 @@ namespace DataAccessLayer.Repository
                 // Valid new referral to invite
                 var referral = new UserReferral
                 {
-                    ReferrerUserId = userContext.UserId,
+                    ReferrerUserId = effectiveReferrerId,
                     ReferredEmail = email,
                     ReferralCode = referralCode,
                     Status = "Invited",
@@ -226,63 +249,74 @@ namespace DataAccessLayer.Repository
                 newlyInvitedEmails.Add(email);
             }
 
-            // Immediately grant +10 daily chat sessions for the next 10 days
+            // If not on behalf, immediately grant +10 daily chat sessions for the next 10 days
             var referrerPlan = await _context.UserSubscriptionPlans
-                .FirstOrDefaultAsync(usp => usp.UserId == userContext.UserId && usp.Active == true);
+                .FirstOrDefaultAsync(usp => usp.UserId == effectiveReferrerId && usp.Active == true);
 
             int newDailyChatLimit = 30;
-            if (referrerPlan != null)
+            if (!isOnBehalf)
             {
-                referrerPlan.DailyChatLimit = (referrerPlan.DailyChatLimit.HasValue && referrerPlan.DailyChatLimit.Value > 0)
-                    ? referrerPlan.DailyChatLimit.Value + 10
-                    : 30;
+                if (referrerPlan != null)
+                {
+                    referrerPlan.DailyChatLimit = (referrerPlan.DailyChatLimit.HasValue && referrerPlan.DailyChatLimit.Value > 0)
+                        ? referrerPlan.DailyChatLimit.Value + 10
+                        : 30;
 
-                if (referrerPlan.EndDate == null || referrerPlan.EndDate < now.AddDays(10))
-                {
-                    referrerPlan.EndDate = now.AddDays(10);
+                    if (referrerPlan.EndDate == null || referrerPlan.EndDate < now.AddDays(10))
+                    {
+                        referrerPlan.EndDate = now.AddDays(10);
+                    }
+                    referrerPlan.Updated = now;
+                    referrerPlan.UpdatedBy = userContext.UserId;
+                    newDailyChatLimit = referrerPlan.DailyChatLimit.Value;
                 }
-                referrerPlan.Updated = now;
-                referrerPlan.UpdatedBy = userContext.UserId;
-                newDailyChatLimit = referrerPlan.DailyChatLimit.Value;
-            }
-            else
-            {
-                referrerPlan = new UserSubscriptionPlan
+                else
                 {
-                    UserId = userContext.UserId,
-                    SubscriptionPlanId = 1,
-                    ActualJobPosting = 15,
-                    ActualDownloads = 10,
-                    DailyChatLimit = 30, // 20 standard + 10 bonus
-                    NoOfUsers = 1,
-                    StartDate = now,
-                    EndDate = now.AddDays(10),
-                    IsFree = true,
-                    Active = true,
-                    NoOfUsedJobPosting = 0,
-                    NoOfUsedDownloads = 0,
-                    Updated = now,
-                    UpdatedBy = userContext.UserId
-                };
-                _context.UserSubscriptionPlans.Add(referrerPlan);
-                newDailyChatLimit = 30;
+                    referrerPlan = new UserSubscriptionPlan
+                    {
+                        UserId = effectiveReferrerId,
+                        SubscriptionPlanId = 1,
+                        ActualJobPosting = 15,
+                        ActualDownloads = 10,
+                        DailyChatLimit = 30, // 20 standard + 10 bonus
+                        NoOfUsers = 1,
+                        StartDate = now,
+                        EndDate = now.AddDays(10),
+                        IsFree = true,
+                        Active = true,
+                        NoOfUsedJobPosting = 0,
+                        NoOfUsedDownloads = 0,
+                        Updated = now,
+                        UpdatedBy = userContext.UserId
+                    };
+                    _context.UserSubscriptionPlans.Add(referrerPlan);
+                    newDailyChatLimit = 30;
+                }
+            }
+            else if (referrerPlan != null && referrerPlan.DailyChatLimit.HasValue)
+            {
+                newDailyChatLimit = referrerPlan.DailyChatLimit.Value;
             }
 
             await _context.SaveChangesAsync();
 
+            string successMessage = isOnBehalf
+                ? $"Invitations sent successfully to {newlyInvitedEmails.Count} colleague(s) on behalf of {referrerName}."
+                : $"🎉 Instant Award Activated! You have been granted +10 Daily Chat Sessions for the next 10 days (Your daily limit is now {newDailyChatLimit} chats). Invitations sent to {newlyInvitedEmails.Count} colleague(s). When they sign up, you will also receive bonus free job postings!";
+
             return new SubmitReferralResponseDto
             {
-                Success = true,
-                Message = $"🎉 Instant Award Activated! You have been granted +10 Daily Chat Sessions for the next 10 days (Your daily limit is now {newDailyChatLimit} chats). Invitations sent to {newlyInvitedEmails.Count} colleague(s). When they sign up, you will also receive bonus free job postings!",
+                Success = newlyInvitedEmails.Count > 0,
+                Message = successMessage,
                 TotalSubmitted = rawEmails.Count,
                 SuccessfullyInvited = newlyInvitedEmails.Count,
                 AlreadyRegistered = alreadyRegisteredCount,
                 AlreadyInvited = alreadyInvitedCount,
                 InvalidEmails = invalidCount,
                 NonCompanyEmails = nonCompanyCount,
-                BonusChatsGranted = 10,
+                BonusChatsGranted = isOnBehalf ? 0 : 10,
                 NewDailyChatLimit = newDailyChatLimit,
-                BonusDurationDays = 10,
+                BonusDurationDays = isOnBehalf ? 0 : 10,
                 InvitedEmails = newlyInvitedEmails,
                 SkippedDetails = skippedDetails
             };

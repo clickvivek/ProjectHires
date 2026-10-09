@@ -328,6 +328,7 @@ export class JobDetailsPageComponent implements OnInit {
     if (this.authService.isLoggedIn()) {
       this.dialog.open(ConfirmApplyJobComponent, {
         panelClass: ['material', 'confirm-apply-modal-panel'],
+        position: { top: '30px' },
         maxHeight: '90vh',
         disableClose: true,
         data: this.selectedJob
@@ -343,6 +344,7 @@ export class JobDetailsPageComponent implements OnInit {
         if (res && res.success) {
           this.dialog.open(ConfirmApplyJobComponent, {
             panelClass: ['material', 'confirm-apply-modal-panel'],
+            position: { top: '30px' },
             maxHeight: '90vh',
             disableClose: true,
             data: this.selectedJob

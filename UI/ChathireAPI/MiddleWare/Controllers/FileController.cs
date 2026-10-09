@@ -1,4 +1,4 @@
-﻿using AutoMapper;
+using AutoMapper;
 using Azure.Storage.Blobs;
 using BusinessEntityAndDTO.DTO;
 using BusinessEntityAndDTO.Models;
@@ -34,25 +34,40 @@ namespace MiddleWare.Controllers
 
         [Route("get")]
         [HttpGet]
-        public async Task<IActionResult> Get(string fileName, string fileType, string containerName)
+        public async Task<IActionResult> Get(string fileName, string? fileType, string containerName = "resumes")
         {
+            if (string.IsNullOrEmpty(fileName)) return BadRequest("File name is required.");
+            if (string.IsNullOrEmpty(containerName)) containerName = "resumes";
+
             var fileManager = managerFactory.Get<IFileManager>();
-
             var imgStream = await fileManager.Get(fileName, containerName);
+            if (imgStream == null)
+            {
+                return NotFound("File not found in storage.");
+            }
 
-            return File(imgStream, $"image/{fileType}");
+            string contentType = fileManager.GetContentType(fileName);
+            return File(imgStream, contentType);
         }
 
 
         [Route("download")]
         [HttpGet]
-        public async Task<IActionResult> GetDownload(string fileName, string fileType, string containerName)
+        [HttpPost]
+        public async Task<IActionResult> GetDownload(string fileName, string? fileType, string containerName = "resumes")
         {
-            var fileManager = managerFactory.Get<IFileManager>();
+            if (string.IsNullOrEmpty(fileName)) return BadRequest("File name is required.");
+            if (string.IsNullOrEmpty(containerName)) containerName = "resumes";
 
+            var fileManager = managerFactory.Get<IFileManager>();
             var imgStream = await fileManager.Get(fileName, containerName);
-           
-            return File(imgStream, $"image/{fileType}", $"blobfile.{fileType}");
+            if (imgStream == null)
+            {
+                return NotFound("File not found in storage.");
+            }
+
+            string contentType = fileManager.GetContentType(fileName);
+            return File(imgStream, contentType, fileName);
         }
 
         [Route("delete")]

@@ -16,6 +16,7 @@ namespace BusinessLayer.Manager
         Task<Stream> Get(string imageName, string containerName);
         Task Delete(string imageName, string containerName);
         BlobClient GetBlobClient(string imageName, string containerName);
+        string GetContentType(string fileName);
     }
     public class FileManager : BaseManager<FileManager>, IFileManager  
     {
@@ -29,11 +30,20 @@ namespace BusinessLayer.Manager
         public async Task<string> Upload(FileModel fileModel, string containerName)
         {
             var blobContainer = _blobServiceClient.GetBlobContainerClient(containerName);
-            //fileModel.ImageFile.FileName = NewFileName(fileModel.ImageFile.FileName);
-            //System.IO.File.Move(fileModel.ImageFile.FileName, );
-            var blobClient = blobContainer.GetBlobClient(NewFileName(fileModel.ImageFile.FileName));
+            string newFileName = NewFileName(fileModel.ImageFile.FileName);
+            var blobClient = blobContainer.GetBlobClient(newFileName);
 
-            await blobClient.UploadAsync(fileModel.ImageFile.OpenReadStream());
+            string contentType = GetContentType(newFileName);
+            var options = new Azure.Storage.Blobs.Models.BlobUploadOptions
+            {
+                HttpHeaders = new Azure.Storage.Blobs.Models.BlobHttpHeaders
+                {
+                    ContentType = contentType,
+                    ContentDisposition = $"inline; filename=\"{newFileName}\""
+                }
+            };
+
+            await blobClient.UploadAsync(fileModel.ImageFile.OpenReadStream(), options);
 
             return blobClient.Name;
         }
@@ -82,6 +92,10 @@ namespace BusinessLayer.Manager
             var blobContainer = _blobServiceClient.GetBlobContainerClient(containerName);
 
             var blobClient = blobContainer.GetBlobClient(imageName);
+            if (!await blobClient.ExistsAsync())
+            {
+                return null!;
+            }
             var downloadContent = await blobClient.DownloadAsync();
             return downloadContent.Value.Content;
         }
@@ -104,11 +118,55 @@ namespace BusinessLayer.Manager
             
         }
 
-        static string NewFileName(string orgFilename)
+        public string GetContentType(string fileName)
         {
-            
-            string FileName = DateTime.Now.ToString("yyyyMMddHHmmss") + "_" + Guid.NewGuid().ToString() + Path.GetExtension(orgFilename);
-            return FileName;
+            if (string.IsNullOrEmpty(fileName)) return "application/octet-stream";
+            string ext = Path.GetExtension(fileName).ToLowerInvariant();
+            return ext switch
+            {
+                ".pdf" => "application/pdf",
+                ".doc" => "application/msword",
+                ".docx" => "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+                ".rtf" => "application/rtf",
+                ".txt" => "text/plain",
+                ".png" => "image/png",
+                ".jpg" or ".jpeg" => "image/jpeg",
+                ".gif" => "image/gif",
+                ".webp" => "image/webp",
+                ".svg" => "image/svg+xml",
+                _ => "application/octet-stream"
+            };
+        }
+
+        public static string NewFileName(string orgFilename)
+        {
+            if (string.IsNullOrWhiteSpace(orgFilename))
+            {
+                return $"file_{DateTime.Now:yyyyMMddHHmmss}";
+            }
+
+            string ext = Path.GetExtension(orgFilename);
+            string baseName = Path.GetFileNameWithoutExtension(orgFilename);
+
+            if (string.IsNullOrWhiteSpace(baseName))
+            {
+                baseName = "file";
+            }
+
+            // Remove invalid file name characters
+            foreach (char c in Path.GetInvalidFileNameChars())
+            {
+                baseName = baseName.Replace(c, '_');
+            }
+
+            baseName = baseName.Trim().TrimEnd('.');
+            if (string.IsNullOrWhiteSpace(baseName))
+            {
+                baseName = "file";
+            }
+
+            string timestamp = DateTime.Now.ToString("yyyyMMddHHmmss");
+            return $"{baseName}_{timestamp}{ext}";
         }
     }
 }

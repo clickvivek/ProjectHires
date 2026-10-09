@@ -52,6 +52,7 @@ import { LoginModalComponent } from './components/login-modal/login-modal.compon
 import { ReferralBannerComponent } from './components/referral-banner/referral-banner.component';
 import { ChatLimitModalComponent } from './components/chat-limit-modal/chat-limit-modal.component';
 import { ReferralModalComponent } from './components/referral-modal/referral-modal.component';
+import { CandidateAppliedJobsModalComponent } from './components/candidate-applied-jobs-modal/candidate-applied-jobs-modal.component';
 
 @NgModule({
   declarations: [
@@ -92,7 +93,8 @@ import { ReferralModalComponent } from './components/referral-modal/referral-mod
     LoginModalComponent,
     ReferralBannerComponent,
     ChatLimitModalComponent,
-    ReferralModalComponent
+    ReferralModalComponent,
+    CandidateAppliedJobsModalComponent
 ],
   imports: [
     CommonModule,
@@ -134,6 +136,7 @@ import { ReferralModalComponent } from './components/referral-modal/referral-mod
     ReferralBannerComponent,
     ChatLimitModalComponent,
     ReferralModalComponent,
+    CandidateAppliedJobsModalComponent,
     SimpleSearchPipe,
     EscapeHtmlPipe,
     subStringPipe,

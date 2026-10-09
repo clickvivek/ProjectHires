@@ -18,6 +18,7 @@ import { getMeaningfulErrorMessage } from 'src/app/modules/shared/utils/error-ha
 import _ from 'underscore';
 import { HotlistDeleteConfirmationModalComponent } from './hotlist-delete-confirmation-modal/hotlist-delete-confirmation-modal.component';
 import { HotlistShareModalComponent } from './hotlist-share-modal/hotlist-share-modal.component';
+import { formatRelocation } from 'src/app/data/various';
 
 export interface BannerTheme {
   id: string;
@@ -391,20 +392,7 @@ handleViewType(type) {
   }
 
   getRelocation(data: any) {
-    let item = data?.candidatePrefLocations;
-    let newData: any = [];
-    if (!_.isEmpty(item)) {
-      item.forEach((listItem: any) => {
-        let rawCity = listItem.cityName || '';
-        let parts = rawCity.split('-');
-        let city = parts[0] ? parts[0].trim() : '';
-        let state = (listItem.stateCode || (parts[1] ? parts[1].trim() : '') || listItem.stateName || '').trim();
-        let formatted = (city && state) ? `${city}, ${state}` : (city || state);
-        if (formatted) newData.push(formatted);
-      });
-      return newData.length > 0 ? newData.join('; ') : (data.anyLocation ? 'Any Location' : data.remoteOnly ? 'Remote' : 'Open');
-    }
-    return data?.anyLocation ? 'Any Location' : data?.remoteOnly ? 'Remote' : 'Open';
+    return formatRelocation(data);
   }
 
   async renderBanner(): Promise<{ imageUrl: string, blob: Blob | null }> {

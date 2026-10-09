@@ -6,10 +6,12 @@ namespace BusinessEntityAndDTO.DTO
 {
     public class SubmitReferralRequestDto
     {
-        [Required(ErrorMessage = "At least 10 email addresses are required.")]
+        [Required]
         public List<string> Emails { get; set; } = new List<string>();
 
         public string? CustomMessage { get; set; }
+
+        public long? OnBehalfOfUserId { get; set; }
     }
 
     public class ReferralSkipDetailDto

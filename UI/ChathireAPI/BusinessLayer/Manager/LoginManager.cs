@@ -43,7 +43,12 @@ namespace BusinessLayer.Manager
 
             return await ExecuteAsync(async () =>
             {
-                string hashToken = Token.Substring(Token.LastIndexOf("."));
+                int lastDotIndex = Token.LastIndexOf(".");
+                if (lastDotIndex < 0)
+                {
+                    throw new UnauthorizedAccessException(string.Format("Invalid Token Format : {0}", Token));
+                }
+                string hashToken = Token.Substring(lastDotIndex);
                 string actualToken = Token.Substring(0, (Token.Length - hashToken.Length));
                 var bytes = Convert.FromBase64String(actualToken);
                 actualToken = Encoding.UTF8.GetString(bytes);

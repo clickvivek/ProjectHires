@@ -29,14 +29,33 @@ export class DownloadResumeComponent {
     return this.authService.isLoggedIn();
   }
 
-  private triggerDownloadFile(anchor: any) {
-    this.fileDownloadService.downloadFile(this.doc, '1', 'resumes').subscribe((res: any) => {
-      const blob = res.body;
-      const objectURL = URL.createObjectURL(blob); 
-      const finalUrl = `https://hiresblob.blob.core.windows.net/resumes/${this.doc}`;
-      this.fileUrl = this.sanitizer.bypassSecurityTrustUrl(finalUrl);
-      this.changeDetection.detectChanges();
-      anchor.click();
+  private triggerDownloadFile(anchor?: any) {
+    if (!this.doc) return;
+
+    this.fileDownloadService.downloadFile(this.doc, '1', 'resumes').subscribe({
+      next: (res: any) => {
+        const blob = res.body;
+        if (blob) {
+          const objectURL = window.URL.createObjectURL(blob);
+          const link = document.createElement('a');
+          link.href = objectURL;
+          link.download = this.doc;
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+          setTimeout(() => window.URL.revokeObjectURL(objectURL), 1000);
+        }
+      },
+      error: () => {
+        const finalUrl = `https://hiresblob.blob.core.windows.net/resumes/${this.doc}`;
+        const link = document.createElement('a');
+        link.href = finalUrl;
+        link.download = this.doc;
+        link.target = '_blank';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      }
     });
   }
 

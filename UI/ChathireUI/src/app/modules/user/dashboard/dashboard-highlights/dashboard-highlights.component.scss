@@ -564,12 +564,29 @@
       .matching-badge {
         background-color: #EEF7F6;
         color: #397774;
-        border: 1px solid #CFE8E5;
+        border: 1px solid #CFE8E5 !important;
         border-radius: 12px;
         font-size: 13px;
         font-weight: 600;
         padding: 4px 12px;
         display: inline-block;
+        transition: all 0.15s ease-in-out;
+
+        &.matching-badge-clickable {
+          cursor: pointer;
+
+          &:hover {
+            background-color: #397774;
+            color: #ffffff;
+            border-color: #397774 !important;
+            transform: translateY(-1px);
+            box-shadow: 0 2px 4px rgba(57, 119, 116, 0.2);
+          }
+        }
+      }
+
+      .text-teal {
+        color: #397774 !important;
       }
 
       .btn-action-view {
@@ -736,5 +753,39 @@
   &:hover {
     background-color: #E7D5E6;
     color: #5C1C59;
+  }
+}
+
+.applied-jobs-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  padding: 4px 10px;
+  font-size: 13px;
+  font-weight: 600;
+  border-radius: 20px;
+  background-color: #F3F4F6;
+  color: #4B5563;
+  transition: all 0.15s ease-in-out;
+  cursor: pointer;
+
+  &.has-applied {
+    background-color: #EEF7F6;
+    color: #115E59;
+    border: 1px solid #CCFBF1;
+
+    &:hover {
+      background-color: #0D9488;
+      color: #FFFFFF;
+      border-color: #0D9488;
+      transform: translateY(-1px);
+      box-shadow: 0 2px 6px rgba(13, 148, 136, 0.25);
+    }
+  }
+
+  &:hover:not(.has-applied) {
+    background-color: #E5E7EB;
+    color: #1F2937;
   }
 }

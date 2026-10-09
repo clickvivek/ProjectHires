@@ -609,6 +609,11 @@ public partial class HiresContext : DbContext
                 .IsUnicode(false);
             entity.Property(e => e.PostedDate).HasColumnType("date");
             entity.Property(e => e.PriorityId).HasColumnName("PriorityID");
+            entity.Property(e => e.SalaryFrom).HasColumnType("decimal(12, 2)");
+            entity.Property(e => e.SalaryTo).HasColumnType("decimal(12, 2)");
+            entity.Property(e => e.SalaryCurrency)
+                .HasMaxLength(10)
+                .IsUnicode(false);
             entity.Property(e => e.Updated).HasColumnType("datetime");
 
             entity.HasOne(d => d.Category).WithMany(p => p.JobOpenings)

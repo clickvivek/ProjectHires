@@ -18,6 +18,7 @@ import {
   SkillsAdminSummaryDto,
   BulkAddSkillsResultDto
 } from 'src/app/core/services/skill-admin.service';
+import { ReferralService } from 'src/app/core/services/referral.service';
 
 export interface CsvCompanyRow {
   name: string;
@@ -143,6 +144,13 @@ export class AdminSetupComponent implements OnInit {
     isFree: true
   };
 
+  // Referral Modal State (Send on behalf of user)
+  isUserReferralModalOpen = false;
+  isSendingReferrals = false;
+  referringUser: any = null;
+  referralEmailsInput = '';
+  referralCustomMessage = '';
+
   // --- Tab 0: DAU Dashboard State ---
   dauTimeframe: 'day' | 'week' | 'month' = 'day';
   isLoadingDau = false;
@@ -208,6 +216,7 @@ export class AdminSetupComponent implements OnInit {
     private promocodeService: PromocodeService,
     private emailJobPostingService: EmailJobPostingService,
     private skillAdminService: SkillAdminService,
+    private referralService: ReferralService,
     private http: HttpClient,
     private toastr: ToastrService
   ) {}
@@ -1484,6 +1493,74 @@ export class AdminSetupComponent implements OnInit {
         this.isSavingQuota = false;
         const msg = err?.error?.message || err?.message || 'Failed to update user quota.';
         this.toastr.error(msg, 'Update Error');
+      }
+    });
+  }
+
+  openUserReferralModal(user: any) {
+    this.referringUser = user;
+    this.referralEmailsInput = '';
+    this.referralCustomMessage = '';
+    this.isUserReferralModalOpen = true;
+  }
+
+  closeUserReferralModal() {
+    this.isUserReferralModalOpen = false;
+    this.referringUser = null;
+    this.referralEmailsInput = '';
+    this.referralCustomMessage = '';
+    this.isSendingReferrals = false;
+  }
+
+  submitUserReferrals() {
+    if (!this.referringUser || !this.referringUser.userId) {
+      this.toastr.warning('Please select a valid user.', 'Validation Warning');
+      return;
+    }
+
+    if (!this.referralEmailsInput || !this.referralEmailsInput.trim()) {
+      this.toastr.warning('Please enter at least one email address.', 'Email Required');
+      return;
+    }
+
+    // Split emails by comma, semicolon, newline, tab or space
+    const emails = this.referralEmailsInput
+      .split(/[\s,;]+/)
+      .map(e => e.trim())
+      .filter(e => e.length > 0 && e.includes('@'));
+
+    if (emails.length === 0) {
+      this.toastr.warning('No valid email addresses found. Please enter valid email IDs.', 'Invalid Emails');
+      return;
+    }
+
+    this.isSendingReferrals = true;
+
+    const dto = {
+      emails: emails,
+      customMessage: this.referralCustomMessage?.trim() || undefined,
+      onBehalfOfUserId: Number(this.referringUser.userId)
+    };
+
+    this.referralService.submitReferrals(dto).subscribe({
+      next: (res: any) => {
+        this.isSendingReferrals = false;
+        const data = res?.result || res?.data || res;
+        const isSuccess = data?.success || data?.Success || res?.success;
+        const msg = data?.message || data?.Message || res?.message || 'Referral invitations sent successfully!';
+
+        if (isSuccess !== false) {
+          this.toastr.success(msg, 'Referrals Sent');
+          this.closeUserReferralModal();
+          this.loadUserQuotas();
+        } else {
+          this.toastr.error(msg, 'Submission Failed');
+        }
+      },
+      error: (err: any) => {
+        this.isSendingReferrals = false;
+        const msg = err?.error?.message || err?.message || 'Failed to send referrals on behalf of user.';
+        this.toastr.error(msg, 'Error Sending Referrals');
       }
     });
   }

@@ -2,3 +2,6 @@
 **/appsettings.Development.json
 **/appsettings.Local.json
 **/appsettings.*.local.json
+**/scratch/
+scratch/
+

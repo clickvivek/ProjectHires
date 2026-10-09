@@ -353,90 +353,141 @@
       .company-info-card {
         margin-top: 24px;
         border: 1px solid #E2E8F0;
-        border-radius: 12px;
+        border-top: 3px solid #7C287D;
+        border-radius: 14px;
         overflow: hidden;
         background: #FFFFFF;
+        box-shadow: 0 4px 16px -2px rgba(15, 23, 42, 0.05);
+        transition: all 0.2s ease;
 
         .company-info-header {
-          padding: 16px 20px 14px 20px;
+          padding: 14px 20px;
+          background: #F8FAFC;
           border-bottom: 1px solid #E2E8F0;
 
+          .company-header-icon {
+            font-size: 20px;
+            color: #7C287D !important;
+          }
+
           .company-info-title {
-            font-size: 15px;
+            font-size: 14.5px;
             font-weight: 700;
-            color: #1A202C;
+            color: #1E293B;
             letter-spacing: 0.01em;
+          }
+
+          .company-badge-chip {
+            background: #FFFFFF;
+            color: #475569;
+            border: 1px solid #CBD5E1;
+            font-size: 11px;
+            font-weight: 600;
+            padding: 4px 8px;
+            border-radius: 20px;
           }
         }
 
         .company-info-body {
           padding: 18px 20px 20px 20px;
 
-          .company-about-row {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 14px;
+          .company-hero-banner {
+            .company-avatar-box {
+              width: 46px;
+              height: 46px;
+              border-radius: 12px;
+              background: linear-gradient(135deg, #7C287D 0%, #581c59 100%);
+              box-shadow: 0 3px 10px rgba(124, 40, 125, 0.25);
+              overflow: hidden;
 
-            .company-about-label {
-              font-size: 14px;
-              font-weight: 600;
-              color: #2D3748;
+              .company-logo-img {
+                width: 100%;
+                height: 100%;
+                object-fit: contain;
+                background: #FFFFFF;
+              }
+
+              .company-avatar-letter {
+                color: #FFFFFF;
+                font-size: 20px;
+                font-weight: 700;
+                line-height: 1;
+              }
             }
 
-            .company-social-icons {
-              display: flex;
-              align-items: center;
-              gap: 8px;
+            .company-name-heading {
+              font-size: 16px;
+              line-height: 1.3;
+              color: #0F172A;
+            }
 
-              .social-icon {
-                display: inline-flex;
-                align-items: center;
-                justify-content: center;
-                width: 32px;
-                height: 32px;
-                border-radius: 6px;
-                border: 1px solid #E2E8F0;
-                color: #4A5568;
+            .company-portal-subtitle {
+              font-size: 12px;
+              color: #64748B;
+            }
+
+            .company-action-pills {
+              .company-pill {
+                padding: 6px 12px;
+                border-radius: 20px;
+                font-size: 12px;
+                font-weight: 600;
                 text-decoration: none;
                 transition: all 0.2s ease;
-                background: #F7FAFC;
 
-                svg {
-                  width: 16px;
-                  height: 16px;
+                &.website-pill {
+                  background: #EFF6FF;
+                  color: #1668BD;
+                  border: 1px solid #BFDBFE;
+
+                  &:hover {
+                    background: #1668BD;
+                    color: #FFFFFF;
+                    border-color: #1668BD;
+                  }
                 }
 
-                &:hover {
-                  background: #7C287D;
-                  border-color: #7C287D;
-                  color: #FFFFFF;
+                &.linkedin-pill {
+                  background: #F0F9FF;
+                  color: #0A66C2;
+                  border: 1px solid #BAE6FD;
+
+                  &:hover {
+                    background: #0A66C2;
+                    color: #FFFFFF;
+                    border-color: #0A66C2;
+                  }
                 }
               }
             }
           }
 
-          .company-about-text {
-            font-size: 13.5px;
-            line-height: 1.7;
-            color: #4A5568;
-            margin-bottom: 16px;
-            white-space: pre-line;
+          .company-about-well {
+            background: #F8FAFC;
+            border: 1px solid #EDF2F7;
+            border-radius: 10px;
+
+            .about-well-title {
+              letter-spacing: 0.05em;
+              color: #64748B;
+            }
+
+            .company-about-text {
+              font-size: 13.5px;
+              line-height: 1.7;
+              color: #334155;
+              white-space: pre-line;
+            }
           }
 
-          .company-website-link {
-            a {
-              display: inline-flex;
-              align-items: center;
-              gap: 6px;
-              font-size: 13.5px;
-              font-weight: 500;
+          .company-footer-cta {
+            .company-website-cta-link {
               color: #7C287D;
               text-decoration: none;
 
               &:hover {
                 text-decoration: underline;
-                color: #5a1c5b;
+                color: #581c59;
               }
             }
           }

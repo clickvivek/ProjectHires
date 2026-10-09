@@ -1643,16 +1643,24 @@
                   </span>
                 </td>
 
-                <!-- Action: Edit Quota -->
-                <td class="text-end">
-                  <button
-                    class="btn btn-sm btn-outline-primary py-0 px-2 btn-edit-quota d-inline-flex align-items-center gap-1"
-                    (click)="openEditQuotaModal(item)"
-                    title="Edit User Quota & Expiry"
-                  >
-                    <span class="material-symbols-outlined fs-6">edit</span>
-                    <span>Edit</span>
-                  </button>
+                <!-- Action: Edit Quota & Send Referrals -->
+                <td class="text-end text-nowrap">
+                  <div class="d-inline-flex align-items-center gap-1">
+                    <button
+                      class="btn btn-sm btn-outline-primary p-1 btn-edit-quota d-inline-flex align-items-center justify-content-center"
+                      (click)="openEditQuotaModal(item)"
+                      title="Edit User Quota & Expiry"
+                    >
+                      <span class="material-symbols-outlined fs-6">edit</span>
+                    </button>
+                    <button
+                      class="btn btn-sm btn-outline-success p-1 btn-referral-quota d-inline-flex align-items-center justify-content-center"
+                      (click)="openUserReferralModal(item)"
+                      title="Send Referrals on behalf of {{ item.fullName || item.email }}"
+                    >
+                      <span class="material-symbols-outlined fs-6">person_add</span>
+                    </button>
+                  </div>
                 </td>
               </tr>
             </tbody>
@@ -3186,6 +3194,113 @@
         <span *ngIf="isSavingQuota" class="spinner-border spinner-border-sm"></span>
         <span *ngIf="!isSavingQuota" class="material-symbols-outlined fs-5">save</span>
         <span>{{ isSavingQuota ? 'Saving Quota...' : 'Save Quota' }}</span>
+      </button>
+    </div>
+
+  </div>
+</div>
+
+<!-- ==================================================== -->
+<!-- SEND REFERRAL ON BEHALF OF USER MODAL -->
+<!-- ==================================================== -->
+<div *ngIf="isUserReferralModalOpen" class="modal-backdrop-custom d-flex align-items-center justify-content-center">
+  <div class="modal-dialog-custom card border-0 shadow-lg p-0" style="max-width: 600px; width: 92%;">
+
+    <!-- Modal Header -->
+    <div class="modal-header-custom p-4 border-bottom d-flex justify-content-between align-items-center">
+      <div class="d-flex align-items-center gap-3">
+        <div class="icon-circle bg-success-light text-success" style="width: 42px; height: 42px;">
+          <span class="material-symbols-outlined fs-5">person_add</span>
+        </div>
+        <div>
+          <h5 class="modal-title mb-0 fw-bold">Send Referral Invitations</h5>
+          <span class="text-muted small">
+            On behalf of: <strong class="text-dark">{{ referringUser?.fullName || referringUser?.email }}</strong>
+          </span>
+        </div>
+      </div>
+      <button type="button" class="btn-close-custom" (click)="closeUserReferralModal()" [disabled]="isSendingReferrals">
+        <span class="material-symbols-outlined">close</span>
+      </button>
+    </div>
+
+    <!-- Modal Body -->
+    <div class="modal-body-custom p-4" *ngIf="referringUser">
+
+      <!-- Target User Info Card -->
+      <div class="p-3 bg-light rounded-3 border mb-4 d-flex justify-content-between align-items-center">
+        <div>
+          <div class="fw-semibold text-dark">{{ referringUser?.fullName || 'User' }}</div>
+          <div class="text-muted small">{{ referringUser?.email }} • User ID #{{ referringUser?.userId }}</div>
+        </div>
+        <div class="text-end">
+          <span class="badge bg-success-subtle text-success border border-success-subtle px-2 py-1">
+            Referral Code: REF{{ referringUser?.userId }}
+          </span>
+        </div>
+      </div>
+
+      <!-- Instruction / Notice -->
+      <div class="alert alert-info py-2 px-3 small d-flex align-items-center gap-2 mb-3">
+        <span class="material-symbols-outlined fs-6 text-primary">info</span>
+        <span>Invitations will be emailed to these contacts with an invitation link credited to <strong>{{ referringUser?.fullName || referringUser?.email }}</strong>.</span>
+      </div>
+
+      <!-- Email IDs Textarea -->
+      <div class="mb-3">
+        <label class="form-label fw-semibold small d-flex align-items-center justify-content-between mb-1">
+          <span>Email Addresses <span class="text-danger">*</span></span>
+          <span class="text-muted fw-normal" style="font-size: 0.72rem;">Separated by commas or newlines</span>
+        </label>
+        <textarea
+          class="form-control"
+          rows="5"
+          placeholder="colleague1@company.com&#10;colleague2@company.com&#10;colleague3@company.com"
+          [(ngModel)]="referralEmailsInput"
+          [disabled]="isSendingReferrals"
+          style="font-family: monospace; font-size: 0.85rem;"
+        ></textarea>
+        <div class="form-text text-muted" style="font-size: 0.75rem;">
+          You can paste a comma-separated list or one email address per line.
+        </div>
+      </div>
+
+      <!-- Optional Custom Message -->
+      <div class="mb-2">
+        <label class="form-label fw-semibold small mb-1">
+          Custom Note / Message <span class="text-muted fw-normal">(Optional)</span>
+        </label>
+        <textarea
+          class="form-control"
+          rows="2"
+          placeholder="e.g. Hi team, please join ChatHire for direct talent and consultant hiring!"
+          [(ngModel)]="referralCustomMessage"
+          [disabled]="isSendingReferrals"
+          style="font-size: 0.85rem;"
+        ></textarea>
+      </div>
+
+    </div>
+
+    <!-- Modal Footer -->
+    <div class="modal-footer-custom p-3 px-4 border-top d-flex justify-content-end gap-2 bg-light rounded-bottom">
+      <button
+        type="button"
+        class="btn btn-outline-secondary px-3"
+        (click)="closeUserReferralModal()"
+        [disabled]="isSendingReferrals"
+      >
+        Cancel
+      </button>
+      <button
+        type="button"
+        class="btn btn-success px-4 d-flex align-items-center gap-2"
+        (click)="submitUserReferrals()"
+        [disabled]="isSendingReferrals || !referralEmailsInput.trim()"
+      >
+        <span *ngIf="isSendingReferrals" class="spinner-border spinner-border-sm"></span>
+        <span *ngIf="!isSendingReferrals" class="material-symbols-outlined fs-5">send</span>
+        <span>{{ isSendingReferrals ? 'Sending Invitations...' : 'Send Invitations' }}</span>
       </button>
     </div>
 

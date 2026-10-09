@@ -1,5 +1,6 @@
 import { Component, Input } from '@angular/core';
 import _ from 'underscore';
+import { formatRelocation } from 'src/app/data/various';
 
 @Component({
   selector: 'profile-available-resources-item',
@@ -39,33 +40,7 @@ export class ProfileAvailableResourcesItemComponent {
   }
 
   getRelocation(data) {
-    let item = data?.candidatePrefLocations
-
-    let newData: any = []
-    if (!_.isEmpty(item)) {
-      item.forEach(listItem => {
-        let rawCity = listItem.cityName || ''
-        let parts = rawCity.split('-')
-        let city = parts[0] ? parts[0].trim() : ''
-        let state = (listItem.stateCode || (parts[1] ? parts[1].trim() : '') || listItem.stateName || '').trim()
-        let formatted = (city && state) ? `${city}, ${state}` : (city || state)
-        if (formatted) {
-          newData.push(formatted)
-        }
-      });
-      return newData.length > 0 ? newData.join('; ') : (data.anyLocation ? "Any Location" : data.remoteOnly ? "Remote" : "NA")
-    }
-    else {
-      if (data?.anyLocation) {
-        return "Any Location"
-      }
-      else if (data?.remoteOnly) {
-        return "Remote"
-      }
-      else {
-        return "NA"
-      }
-    }
+    return formatRelocation(data);
   }
 
   isSkills(item) {

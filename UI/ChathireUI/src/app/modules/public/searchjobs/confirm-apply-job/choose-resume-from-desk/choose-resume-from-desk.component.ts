@@ -1,4 +1,4 @@
-import { Component, ViewChild, Inject, ElementRef, Output, EventEmitter } from '@angular/core';
+import { Component, ViewChild, Inject, Optional, Input, ElementRef, Output, EventEmitter } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { ToastrService } from 'ngx-toastr';
@@ -38,9 +38,11 @@ export class ChooseResumeFromDeskComponent {
 
   isSubmitting: boolean = false;
 
+  @Input() job: any;
+
   constructor(
-    @Inject(MAT_DIALOG_DATA) public job: any,
-    private dialogRef: MatDialogRef<ChooseResumeFromDeskComponent>,
+    @Optional() @Inject(MAT_DIALOG_DATA) public dialogData: any,
+    @Optional() private dialogRef: MatDialogRef<ChooseResumeFromDeskComponent>,
     private sessionService: SessionService,
     private commonService: CommonService,
     private jobOpeningService: JobOpeningService,
@@ -115,15 +117,21 @@ export class ChooseResumeFromDeskComponent {
 
     if (this.applyJobsForm.valid && this.selectedResume && !this.isSubmitting) {
       this.isSubmitting = true;
+      const targetJob = this.job || this.dialogData;
+      const jobOpeningId = Number(targetJob?.jobOpeningId || targetJob?.id);
+      const consultancyUserId = Number(this.sessionService.consultancyUserId) > 0
+        ? Number(this.sessionService.consultancyUserId)
+        : undefined;
+
       this.jobOpeningService.apiJobOpeningApplyWithResumePost(
         this.selectedResume,
-        parseInt(this.job.jobOpeningId),
+        jobOpeningId,
         undefined,
         new Date().toISOString(),
         true,
         1,
         "",
-        this.sessionService.consultancyUserId,
+        consultancyUserId,
         undefined,
         undefined,
         this.formData.name,
@@ -135,8 +143,8 @@ export class ChooseResumeFromDeskComponent {
           this.isSubmitting = false;
           this.appliedSuccess.emit({
             candidateName: this.formData.name,
-            jobTitle: this.job?.jobOpeningName,
-            companyName: this.job?.companyName
+            jobTitle: targetJob?.jobOpeningName || targetJob?.name,
+            companyName: targetJob?.companyName
           });
         },
         error:(error:any) => {

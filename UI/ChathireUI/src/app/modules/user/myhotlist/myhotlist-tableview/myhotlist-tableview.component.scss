@@ -154,6 +154,19 @@ $text-muted: #667085;
         }
       }
 
+      &.btn-table-applied {
+        background-color: #EEF7F6;
+        color: #0D9488;
+        border-color: #CCFBF1;
+
+        &:hover {
+          background-color: #0D9488;
+          color: #FFFFFF;
+          border-color: #0D9488;
+          transform: translateY(-1px);
+        }
+      }
+
       &.btn-table-delete {
         background-color: #FEF3F2;
         color: #D92D20;

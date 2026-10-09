@@ -111,6 +111,17 @@ namespace MiddleWare.Controllers
             });
         }
 
+        [HttpGet]
+        [Route("GetCandidateAppliedJobs")]
+        public Task<Result<List<CandidateProfileAppliedJobDto>>> GetCandidateAppliedJobs(long candidateProfileId)
+        {
+            return ExecuteAsync<List<CandidateProfileAppliedJobDto>>(async () =>
+            {
+                var mgr = managerFactory.Get<ICandidateProfileManager>();
+                return await mgr.GetCandidateAppliedJobs(candidateProfileId, GetDummyUserContext());
+            });
+        }
+
         [HttpPost]
         [Route("Add")]
         //[ApiAuthorize("AddCandidateProfile")]
@@ -329,6 +340,18 @@ namespace MiddleWare.Controllers
                 }
                 rtn = await candidateProfileManager.UploadImage(fileName, CandidateProfileId, DocumentId, GetDummyUserContext());
                 return fileName;
+            });
+        }
+
+        [HttpDelete]
+        [Route("DeleteDocument")]
+        public Task<Result<bool>> DeleteDocument(long CandidateProfileId, short DocumentId = 1)
+        {
+            return ExecuteAsync(async () =>
+            {
+                var candidateProfileManager = managerFactory.Get<ICandidateProfileManager>();
+                await candidateProfileManager.DeleteCandidateDocumentByProfileId(CandidateProfileId, GetDummyUserContext());
+                return true;
             });
         }
 

@@ -7,6 +7,7 @@ import { CandidateProfileService } from 'src/app/api/api/candidate-profile.servi
 import { JobOpeningService, ConsultancyService } from 'src/app/api';
 import { SharedService } from '../../../shared/services/shared.service';
 import { ReferralModalComponent } from '../../../shared/components/referral-modal/referral-modal.component';
+import { CandidateAppliedJobsModalComponent } from '../../../shared/components/candidate-applied-jobs-modal/candidate-applied-jobs-modal.component';
 import { picUrl } from 'src/app/data/various';
 
 @Component({
@@ -127,8 +128,12 @@ export class DashboardHighlightsComponent implements OnInit {
           if (res && res.value) {
             this.totalHotlistCandidates = res.value.totalHotlistCandidates ?? 0;
             this.resumesSubmittedLast30Days = res.value.resumesSubmittedLast30Days ?? 0;
-            this.candidateList = res.value.candidates || [];
+            this.candidateList = (res.value.candidates || []).map((c: any) => ({
+              ...c,
+              isLoadingMatches: false
+            }));
             this.filteredCandidateList = [...this.candidateList];
+            this.loadMatchingJobCounts();
           }
         },
         error: (error: any) => {
@@ -138,6 +143,55 @@ export class DashboardHighlightsComponent implements OnInit {
       });
     } else {
       this.isLoadingStats = false;
+    }
+  }
+
+  loadMatchingJobCounts() {
+    if (!this.candidateList || this.candidateList.length === 0) return;
+
+    // Cache results for skills so we don't duplicate identical skill queries
+    const skillCountCache = new Map<string, Promise<number>>();
+
+    this.candidateList.forEach(candidate => {
+      const searchSkill = (candidate.primarySkill || candidate.title || '').trim();
+      if (!searchSkill) {
+        candidate.newMatchingJobs = 0;
+        candidate.isLoadingMatches = false;
+        return;
+      }
+
+      candidate.isLoadingMatches = true;
+
+      const cacheKey = searchSkill.toLowerCase();
+      if (!skillCountCache.has(cacheKey)) {
+        const queryPromise = new Promise<number>((resolve) => {
+          this.jobOpeningService.apiJobOpeningSearchJobOpeningsGet([searchSkill]).subscribe({
+            next: (jobs: any) => {
+              const count = Array.isArray(jobs) ? jobs.length : (jobs?.value && Array.isArray(jobs.value) ? jobs.value.length : 0);
+              resolve(count);
+            },
+            error: (err: any) => {
+              console.error(`Error fetching matching jobs for skill ${searchSkill}:`, err);
+              resolve(0);
+            }
+          });
+        });
+        skillCountCache.set(cacheKey, queryPromise);
+      }
+
+      skillCountCache.get(cacheKey)!.then(count => {
+        candidate.newMatchingJobs = count;
+        candidate.isLoadingMatches = false;
+      });
+    });
+  }
+
+  navigateToMatchingJobs(candidate: any) {
+    const skill = (candidate?.primarySkill || candidate?.title || '').trim();
+    if (skill) {
+      this.router.navigate(['/search-jobs'], { queryParams: { skill } });
+    } else {
+      this.router.navigate(['/search-jobs']);
     }
   }
 
@@ -304,6 +358,24 @@ export class DashboardHighlightsComponent implements OnInit {
       width: '680px',
       maxWidth: '95vw',
       panelClass: 'referral-modal-panel'
+    });
+  }
+
+  openAppliedJobsModal(candidate: any, event?: Event): void {
+    if (event) {
+      event.preventDefault();
+      event.stopPropagation();
+    }
+    if (!candidate || !candidate.id) return;
+    this.dialog.open(CandidateAppliedJobsModalComponent, {
+      width: '720px',
+      maxWidth: '95vw',
+      panelClass: 'candidate-applied-jobs-modal-panel',
+      data: {
+        candidateProfileId: candidate.id,
+        candidateName: candidate.name,
+        candidateRole: candidate.primarySkill || candidate.title
+      }
     });
   }
 

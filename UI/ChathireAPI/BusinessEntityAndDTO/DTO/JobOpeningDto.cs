@@ -42,6 +42,12 @@ namespace BusinessEntityAndDTO.DTO
 
         public short? ToAmt { get; set; }
 
+        public decimal? SalaryFrom { get; set; }
+
+        public decimal? SalaryTo { get; set; }
+
+        public string? SalaryCurrency { get; set; }
+
         public bool? NotifyOnCandidateProfileMap { get; set; }
 
         public bool? NotifyWithResume { get; set; }
@@ -202,6 +208,12 @@ namespace BusinessEntityAndDTO.DTO
 
         public short? ToAmt { get; set; }
 
+        public decimal? SalaryFrom { get; set; }
+
+        public decimal? SalaryTo { get; set; }
+
+        public string? SalaryCurrency { get; set; }
+
         public bool? NotifyOnCandidateProfileMap { get; set; }
 
         public bool? NotifyWithResume { get; set; }
@@ -271,6 +283,9 @@ namespace BusinessEntityAndDTO.DTO
         public string? AboutCompany { get; set; }
         public string? CompanyWebsite { get; set; }
         public string? CompanyLinkedin { get; set; }
+        public decimal? SalaryFrom { get; set; }
+        public decimal? SalaryTo { get; set; }
+        public string? SalaryCurrency { get; set; }
 
     }
 
@@ -315,6 +330,12 @@ namespace BusinessEntityAndDTO.DTO
         public short? FromAmt { get; set; }
 
         public short? ToAmt { get; set; }
+
+        public decimal? SalaryFrom { get; set; }
+
+        public decimal? SalaryTo { get; set; }
+
+        public string? SalaryCurrency { get; set; }
 
         public bool? NotifyOnCandidateProfileMap { get; set; }
 

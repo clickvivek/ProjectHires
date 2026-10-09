@@ -11,6 +11,7 @@ export interface ReferralSkipDetailDto {
 export interface SubmitReferralRequestDto {
   emails: string[];
   customMessage?: string;
+  onBehalfOfUserId?: number;
 }
 
 export interface SubmitReferralResponseDto {

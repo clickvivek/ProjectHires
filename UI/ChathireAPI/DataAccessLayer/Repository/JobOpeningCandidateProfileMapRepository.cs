@@ -16,8 +16,7 @@ namespace DataAccessLayer.Repository
     {
         Task<List<JobOpeningCandidateProfileMap>> GetAllResumeReceivedByJobId(long JobOpeningId);
         Task<JobOpeningCandidateProfileMap> GetJobOpeningCandidateProfileMapById(long Id, UserContext userContext);
-
-
+        Task<bool> Exists(long jobOpeningId, long? candidateProfileId, long? candidateUserId);
     }
     public class JobOpeningCandidateProfileMapRepository : BaseRepository<JobOpeningCandidateProfileMap, long>, IJobOpeningCandidateProfileMapRepository
     {
@@ -93,7 +92,22 @@ namespace DataAccessLayer.Repository
 
             return await jobOpeningResumeList.FirstOrDefaultAsync();
         }
+
+        public async Task<bool> Exists(long jobOpeningId, long? candidateProfileId, long? candidateUserId)
+        {
+            var query = _context.JobOpeningCandidateProfileMaps
+                .Where(m => m.JobOpeningId == jobOpeningId && (m.Active == null || m.Active == true));
+
+            if (candidateProfileId.HasValue && candidateProfileId.Value > 0)
+            {
+                return await query.AnyAsync(m => m.CandidateProfileId == candidateProfileId.Value);
+            }
+            else if (candidateUserId.HasValue && candidateUserId.Value > 0)
+            {
+                return await query.AnyAsync(m => m.CandidateUserId == candidateUserId.Value);
+            }
+
+            return false;
+        }
     }
-
-
 }

@@ -37,14 +37,18 @@ namespace BusinessLayer.Manager
                     var emailService = serviceProvider.GetService<IResendEmailService>();
                     if (emailService != null)
                     {
+                        long effectiveReferrerId = (dto.OnBehalfOfUserId.HasValue && dto.OnBehalfOfUserId.Value > 0)
+                            ? dto.OnBehalfOfUserId.Value
+                            : userContext.UserId;
+
                         var userRepo = repositoryFactory.Get<IUserRepository>();
-                        var user = await userRepo.Get(userContext.UserId);
+                        var user = await userRepo.Get(effectiveReferrerId);
                         string referrerName = user != null ? $"{user.Fname} {user.Lname}".Trim() : "A colleague";
                         if (string.IsNullOrWhiteSpace(referrerName) && user != null)
                         {
                             referrerName = user.UserName ?? "A colleague";
                         }
-                        string referralCode = $"REF{userContext.UserId}";
+                        string referralCode = $"REF{effectiveReferrerId}";
                         string baseUrl = "https://chathire.com";
 
                         foreach (var email in response.InvitedEmails)

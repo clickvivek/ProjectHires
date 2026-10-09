@@ -10,8 +10,7 @@ export class FileDownloadService {
 
   constructor(private httpClient: HttpClient) { }
 
-  downloadFile(fileName, fileType, containerName) {
-
+  downloadFile(fileName: string, fileType: string = '', containerName: string = 'resumes') {
     const queryParamBase = {
       fileName: fileName,
       fileType: fileType,
@@ -20,18 +19,18 @@ export class FileDownloadService {
 
     let queryParams = new HttpParams();
     Object.entries(queryParamBase).forEach(([key, value]: [string, any]) => {
-      if (value !== undefined) {
+      if (value !== undefined && value !== null) {
         if (typeof value === 'string') queryParams = queryParams.set(key, value);
         else if (Array.isArray(value)) value.forEach(v => queryParams = queryParams.append(key, v));
         else queryParams = queryParams.set(key, JSON.stringify(value));
       }
     });
 
-    return this.httpClient.post<any>(environment.rootUrl + '/api/File/download' , {}, {
+    return this.httpClient.get<any>(environment.rootUrl + '/api/File/download', {
       params: queryParams,
-      observe: 'response', responseType: 'blob' as 'json'
-    })
-
+      observe: 'response',
+      responseType: 'blob' as 'json'
+    });
   }
 
 }

@@ -61,16 +61,21 @@
   }
 
   &.confirm-apply-modal-panel {
-    border-radius: 8px !important;
+    border-radius: 12px !important;
     overflow: hidden !important;
+    align-self: flex-start !important;
+    margin-top: 30px !important;
+    margin-bottom: 30px !important;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.18) !important;
     .mat-dialog-container {
-      max-height: 90vh !important;
+      max-height: calc(100vh - 60px) !important;
       overflow: hidden !important;
       display: flex !important;
       flex-direction: column !important;
-      border-radius: 8px !important;
+      border-radius: 12px !important;
+      background: #ffffff !important;
       @include hires-breakpoint("gt-sm") {
-        width: 620px;
+        width: 640px;
       }
     }
   }
@@ -125,5 +130,136 @@
     box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2), 0 10px 10px -5px rgba(0, 0, 0, 0.08) !important;
     max-width: 440px !important;
     width: 100% !important;
+  }
+}
+
+.delete-confirm-modal-panel {
+  .mat-dialog-container {
+    padding: 0 !important;
+    border-radius: 16px !important;
+    overflow: hidden !important;
+    background: #ffffff !important;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2), 0 10px 10px -5px rgba(0, 0, 0, 0.08) !important;
+    max-width: 460px !important;
+    width: 100% !important;
+  }
+
+  .delete-modal-content {
+    background-color: #ffffff;
+    border-radius: 16px;
+  }
+
+  .delete-modal-icon-box {
+    width: 56px;
+    height: 56px;
+    background-color: #FEE2E2;
+    border: 4px solid #FEF2F2;
+
+    .material-symbols-outlined {
+      color: #DC2626 !important;
+      font-size: 28px !important;
+    }
+  }
+
+  .delete-file-preview {
+    background-color: #F8FAFC;
+    border: 1px solid #E2E8F0;
+    max-width: 90%;
+    margin: 0 auto;
+    display: inline-flex;
+  }
+
+  .btn-danger {
+    background-color: #DC2626 !important;
+    border-color: #DC2626 !important;
+    color: #ffffff !important;
+    min-width: 140px;
+
+    &:hover:not(:disabled) {
+      background-color: #B91C1C !important;
+      border-color: #B91C1C !important;
+    }
+  }
+
+  .btn-outline-secondary {
+    border-color: #D1D5DB !important;
+    color: #374151 !important;
+    min-width: 100px;
+
+    &:hover:not(:disabled) {
+      background-color: #F3F4F6 !important;
+      color: #111827 !important;
+    }
+  }
+}
+
+.resume-slide-drawer-panel {
+  position: fixed !important;
+  top: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  width: 850px !important;
+  max-width: 95vw !important;
+  height: 100vh !important;
+  max-height: 100vh !important;
+  border-radius: 0 !important;
+  animation: resumeSlideInRight 0.22s cubic-bezier(0.16, 1, 0.3, 1) !important;
+
+  .mat-dialog-container {
+    padding: 0 !important;
+    border-radius: 0 !important;
+    height: 100vh !important;
+    max-height: 100vh !important;
+    width: 100% !important;
+    overflow: hidden !important;
+    background: #ffffff !important;
+    box-shadow: -8px 0 30px rgba(0, 0, 0, 0.22) !important;
+  }
+
+  .resume-header-action-btn {
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 5px !important;
+    background-color: #F5EDF5 !important;
+    color: #70246D !important;
+    font-size: 13px !important;
+    font-weight: 600 !important;
+    border-radius: 6px !important;
+    padding: 5px 12px !important;
+    border: 1px solid rgba(112, 36, 109, 0.25) !important;
+    transition: all 0.15s ease-in-out !important;
+    text-decoration: none !important;
+    cursor: pointer !important;
+    line-height: 1.4 !important;
+
+    span, .material-symbols-outlined {
+      color: #70246D !important;
+    }
+
+    .material-symbols-outlined {
+      font-size: 17px !important;
+      line-height: 1 !important;
+    }
+
+    &:hover {
+      background-color: #70246D !important;
+      color: #FFFFFF !important;
+      border-color: #70246D !important;
+
+      span, .material-symbols-outlined {
+        color: #FFFFFF !important;
+      }
+    }
+  }
+}
+
+@keyframes resumeSlideInRight {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(0);
   }
 }

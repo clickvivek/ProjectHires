@@ -86,6 +86,41 @@
   }
 }
 
+/* Modern Salary Range Card for W2 Full-Time */
+.salary-range-card {
+  background-color: #FAF5F9;
+  border: 1px solid #EAD8E7;
+  border-radius: 10px;
+  box-shadow: 0 1px 3px rgba(83, 35, 77, 0.04);
+  transition: all 0.2s ease-in-out;
+
+  .salary-icon {
+    color: #673260;
+    font-size: 20px;
+  }
+
+  .salary-title {
+    color: #53234D;
+    font-size: 0.925rem;
+  }
+
+  .currency-prefix {
+    background-color: #F1E5EF;
+    color: #53234D;
+    font-weight: 600;
+    border-color: #D4B3CE;
+  }
+
+  .form-control, .form-select {
+    border-color: #D4B3CE;
+
+    &:focus {
+      border-color: #673260;
+      box-shadow: 0 0 0 3px rgba(103, 50, 96, 0.12);
+    }
+  }
+}
+
 /* Crisp Blue theme for Visa Applicable */
 .visa-chips-wrapper {
   .chips-container {

@@ -1,6 +1,7 @@
-import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, ElementRef, TemplateRef } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { Router, NavigationEnd, ActivatedRoute } from '@angular/router';
+import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 
 import { CandidateProfileService } from 'src/app/api/api/candidate-profile.service';
 import { CandidateProfileForInsertDto } from '../../../api/model/candidate-profile-for-insert-dto';
@@ -80,8 +81,12 @@ export class AddCandidateComponent implements OnInit, OnDestroy {
   isFormSubmitted:boolean = false;
 
   isCandidatePosted:boolean = false;
+  isDeletingResume: boolean = false;
 
   @ViewChild('addCandidateForm', {static: false}) addCandidateForm: NgForm;
+  @ViewChild('resumeFileInput', {static: false}) resumeFileInput: ElementRef;
+  @ViewChild('deleteConfirmModal', {static: false}) deleteConfirmModal: TemplateRef<any>;
+  private deleteDialogRef: MatDialogRef<any> | null = null;
 
   constructor(
     public router: Router,
@@ -89,7 +94,8 @@ export class AddCandidateComponent implements OnInit, OnDestroy {
     private sessionService: SessionService,
     private candidateProfileService: CandidateProfileService,
     private commonService: CommonService,
-    private toastr: ToastrService
+    private toastr: ToastrService,
+    public dialog: MatDialog
   ) {
 
     router.events.subscribe((event: any) => {
@@ -322,6 +328,59 @@ export class AddCandidateComponent implements OnInit, OnDestroy {
 
   deleteFile() {
     this.selectedFile = null;
+    if (this.resumeFileInput && this.resumeFileInput.nativeElement) {
+      this.resumeFileInput.nativeElement.value = '';
+    }
+  }
+
+  openDeleteResumeModal() {
+    if (!this.candidateId) {
+      this.candidateDocuments = [];
+      return;
+    }
+
+    this.deleteDialogRef = this.dialog.open(this.deleteConfirmModal, {
+      width: '450px',
+      panelClass: 'delete-confirm-modal-panel',
+      autoFocus: false,
+      disableClose: this.isDeletingResume
+    });
+  }
+
+  closeDeleteModal() {
+    if (this.deleteDialogRef) {
+      this.deleteDialogRef.close();
+      this.deleteDialogRef = null;
+    }
+  }
+
+  confirmDeleteResume() {
+    if (!this.candidateId) return;
+
+    this.isDeletingResume = true;
+    this.candidateProfileService.apiCandidateProfileDeleteDocumentDelete(Number(this.candidateId), 1).subscribe({
+      next: (res: any) => {
+        this.isDeletingResume = false;
+        this.candidateDocuments = [];
+        this.selectedFile = null;
+        if (this.resumeFileInput && this.resumeFileInput.nativeElement) {
+          this.resumeFileInput.nativeElement.value = '';
+        }
+        this.closeDeleteModal();
+        this.toastr.success('Resume attachment deleted successfully', '', {
+          timeOut: 3000,
+          positionClass: 'toast-top-center'
+        });
+      },
+      error: (error: any) => {
+        this.isDeletingResume = false;
+        const msg = getMeaningfulErrorMessage(error, 'Failed to delete resume attachment. Please try again.');
+        this.toastr.error(msg, '', {
+          timeOut: 4000,
+          positionClass: 'toast-top-center'
+        });
+      }
+    });
   }
 
   uploadResume(id) {

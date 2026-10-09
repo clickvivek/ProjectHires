@@ -1450,6 +1450,28 @@ export class CandidateProfileService {
         );
     }
 
+    public apiCandidateProfileDeleteDocumentDelete(candidateProfileId?: number, documentId: number = 1, observe: any = 'body', reportProgress: boolean = false): Observable<any> {
+        let localVarQueryParameters = new HttpParams({encoder: this.encoder});
+        if (candidateProfileId !== undefined && candidateProfileId !== null) {
+            localVarQueryParameters = this.addToHttpParams(localVarQueryParameters, <any>candidateProfileId, 'CandidateProfileId');
+        }
+        if (documentId !== undefined && documentId !== null) {
+            localVarQueryParameters = this.addToHttpParams(localVarQueryParameters, <any>documentId, 'DocumentId');
+        }
+
+        let localVarHeaders = this.defaultHeaders;
+        let localVarPath = `/api/CandidateProfile/DeleteDocument`;
+        return this.httpClient.request<any>('delete', `${this.configuration.basePath}${localVarPath}`,
+            {
+                params: localVarQueryParameters,
+                withCredentials: this.configuration.withCredentials,
+                headers: localVarHeaders,
+                observe: observe,
+                reportProgress: reportProgress
+            }
+        );
+    }
+
     /**
      * @param candidateProfileDtoForUpdate 
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
@@ -1579,6 +1601,68 @@ export class CandidateProfileService {
         }
 
         let localVarPath = `/api/CandidateProfile/GetBenchSalesStats`;
+        return this.httpClient.request<any>('get', `${this.configuration.basePath}${localVarPath}`,
+            {
+                context: localVarHttpContext,
+                params: localVarQueryParameters,
+                responseType: <any>responseType_,
+                withCredentials: this.configuration.withCredentials,
+                headers: localVarHeaders,
+                observe: observe,
+                reportProgress: reportProgress
+            }
+        );
+    }
+
+    public apiCandidateProfileGetCandidateAppliedJobsGet(candidateProfileId: number, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext}): Observable<any>;
+    public apiCandidateProfileGetCandidateAppliedJobsGet(candidateProfileId: number, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext}): Observable<HttpResponse<any>>;
+    public apiCandidateProfileGetCandidateAppliedJobsGet(candidateProfileId: number, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext}): Observable<HttpEvent<any>>;
+    public apiCandidateProfileGetCandidateAppliedJobsGet(candidateProfileId: number, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext}): Observable<any> {
+        if (candidateProfileId === null || candidateProfileId === undefined) {
+            throw new Error('Required parameter candidateProfileId was null or undefined when calling apiCandidateProfileGetCandidateAppliedJobsGet.');
+        }
+
+        let localVarQueryParameters = new HttpParams({encoder: this.encoder});
+        localVarQueryParameters = this.addToHttpParams(localVarQueryParameters, <any>candidateProfileId, 'candidateProfileId');
+
+        let localVarHeaders = this.defaultHeaders;
+
+        let localVarCredential: string | undefined;
+        localVarCredential = this.configuration.lookupCredential('Bearer');
+        if (localVarCredential) {
+            localVarHeaders = localVarHeaders.set('Authorization', localVarCredential);
+        }
+
+        let localVarHttpHeaderAcceptSelected: string | undefined = options && options.httpHeaderAccept;
+        if (localVarHttpHeaderAcceptSelected === undefined) {
+            const httpHeaderAccepts: string[] = [
+                'text/plain',
+                'application/json',
+                'text/json'
+            ];
+            localVarHttpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
+        }
+        if (localVarHttpHeaderAcceptSelected !== undefined) {
+            localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
+        }
+
+        let localVarHttpContext: HttpContext | undefined = options && options.context;
+        if (localVarHttpContext === undefined) {
+            localVarHttpContext = new HttpContext();
+        }
+
+        let responseType_: 'text' | 'json' | 'blob' = 'json';
+        if (localVarHttpHeaderAcceptSelected) {
+            if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
+                responseType_ = 'text';
+            } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
+                responseType_ = 'json';
+            } else {
+                responseType_ = 'blob';
+            }
+        }
+
+        let localVarPath = `/api/CandidateProfile/GetCandidateAppliedJobs`;
         return this.httpClient.request<any>('get', `${this.configuration.basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,

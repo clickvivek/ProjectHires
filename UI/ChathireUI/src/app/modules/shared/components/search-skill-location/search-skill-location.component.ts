@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, ViewChild, HostListener, Renderer2, OnChanges } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter, ViewChild, ElementRef, HostListener, Renderer2, OnChanges, SimpleChanges } from '@angular/core';
 import { Router, NavigationEnd, ActivatedRoute, Params } from '@angular/router';
 import { NgForm } from '@angular/forms';
 
@@ -9,7 +9,7 @@ import { CommonService } from 'src/app/api/api/common.service'
   templateUrl: './search-skill-location.component.html',
   styleUrls: ['./search-skill-location.component.scss']
 })
-export class SearchSkillLocationComponent  {
+export class SearchSkillLocationComponent implements OnInit, OnChanges {
 
   @Input() skill: any = ""
   @Input() location: any = "";
@@ -18,6 +18,9 @@ export class SearchSkillLocationComponent  {
   @Input() type: any;
   @Input() page: string = "";
 
+  @Input() isRemoteOnly: boolean = false;
+  @Output() isRemoteOnlyChange = new EventEmitter<boolean>();
+
   formData = {
     selectedSkill: this.skill,
     selectedLocation: this.location,
@@ -25,18 +28,30 @@ export class SearchSkillLocationComponent  {
   
   skillList:any[] = [];
   locationList:any[] = [];
-  
-  skillElement:any;
-  skillSearchDropdown:any;
-
-  locationElement:any;
-  locationSearchDropdown:any;
 
   charLength: number = 2
   
-  @ViewChild ('searchSkill', {static: true}) skillInputElement:any;
-  @ViewChild('searchLocation', { static: true }) locationInputElement: any;
+  @ViewChild ('searchSkill', {static: true}) skillInputElement: ElementRef;
+  @ViewChild('searchLocation', { static: true }) locationInputElement: ElementRef;
+  @ViewChild('skillDropdown', { static: false }) skillDropdownRef: ElementRef;
+  @ViewChild('locationDropdown', { static: false }) locationDropdownRef: ElementRef;
   @ViewChild('searchSkillLocationForm', {static: false}) searchSkillLocationForm: NgForm;
+
+  get skillElement(): any {
+    return this.skillInputElement?.nativeElement;
+  }
+
+  get locationElement(): any {
+    return this.locationInputElement?.nativeElement;
+  }
+
+  get skillSearchDropdown(): any {
+    return this.skillDropdownRef?.nativeElement;
+  }
+
+  get locationSearchDropdown(): any {
+    return this.locationDropdownRef?.nativeElement;
+  }
 
   constructor(
     private commonService: CommonService,
@@ -49,6 +64,19 @@ export class SearchSkillLocationComponent  {
 
   isSearching: boolean = false;
 
+  onRemoteChange() {
+    this.isRemoteOnlyChange.emit(this.isRemoteOnly);
+    if (this.isRemoteOnly) {
+      this.location = '';
+      this.cityId = null;
+      this.stateId = null;
+      this.locationList = [];
+      if (this.locationSearchDropdown) {
+        this.renderer.removeClass(this.locationSearchDropdown, 'show');
+      }
+    }
+  }
+
   submitSkillLocationForm() {
     if (this.searchSkillLocationForm.valid) {
       this.isSearching = true;
@@ -57,8 +85,9 @@ export class SearchSkillLocationComponent  {
 
       const queryParams: any = {
         skill: this.skill || '',
-        location: this.location || '',
-        cid: this.cityId || null,
+        location: this.isRemoteOnly ? '' : (this.location || ''),
+        cid: this.isRemoteOnly ? null : (this.cityId || null),
+        remote: this.isRemoteOnly ? 'true' : null,
         _t: timestamp
       };
 
@@ -77,21 +106,18 @@ export class SearchSkillLocationComponent  {
   }
 
   @HostListener('document:click', ['$event'])
-    onDocumentClick(event:any) {
-    
-      const selectSkillClass = this.skillSearchDropdown.classList.contains('show');
-      if (!this.skillElement.contains(event.target)) {
-        if(selectSkillClass) {
-          this.renderer.removeClass(this.skillSearchDropdown,'show');
-        }
+  onDocumentClick(event: any) {
+    if (this.skillSearchDropdown && this.skillSearchDropdown.classList?.contains('show')) {
+      if (this.skillElement && !this.skillElement.contains(event.target)) {
+        this.renderer.removeClass(this.skillSearchDropdown, 'show');
       }
+    }
 
-      const selectLocationClass = this.locationSearchDropdown.classList.contains('show');
-      if (!this.locationElement.contains(event.target)) {
-        if(selectLocationClass) {
-          this.renderer.removeClass(this.locationSearchDropdown,'show');
-        }
+    if (this.locationSearchDropdown && this.locationSearchDropdown.classList?.contains('show')) {
+      if (this.locationElement && !this.locationElement.contains(event.target)) {
+        this.renderer.removeClass(this.locationSearchDropdown, 'show');
       }
+    }
   }
 
 
@@ -176,20 +202,24 @@ export class SearchSkillLocationComponent  {
   }
 
   ngOnInit() {
-
-    
-
-    this.skillElement = this.skillInputElement.nativeElement;
-    this.skillSearchDropdown = this.skillElement.nextSibling.nextSibling;
-
-    this.locationElement = this.locationInputElement.nativeElement;
-    this.locationSearchDropdown = this.locationElement.nextSibling.nextSibling;
-
+    // Check if remote is in active queryParams
+    const currentParams = this.route.snapshot.queryParams;
+    if (currentParams && (currentParams['remote'] === 'true' || currentParams['remote'] === true)) {
+      this.isRemoteOnly = true;
+      this.location = '';
+      this.cityId = null;
+    }
   }
 
-  ngOnChanges() {
-    if(this.skill == "")
-    this.searchSkillLocationForm?.resetForm()
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes && changes['skill'] && changes['skill'].currentValue === '' && !changes['skill'].firstChange) {
+      this.searchSkillLocationForm?.resetForm();
+    }
+
+    if (this.isRemoteOnly) {
+      this.location = '';
+      this.cityId = null;
+    }
   }
 
 }

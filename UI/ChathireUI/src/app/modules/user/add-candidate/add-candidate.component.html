@@ -355,6 +355,7 @@
                         <span>{{ selectedFile ? 'Resume Attached' : 'Attach Resume' }}</span>
                       </button>
                       <input
+                        #resumeFileInput
                         type="file"
                         (change)="attachResume($event)"
                         accept=".doc, .docx, .pdf, .xls, .xlsx"
@@ -382,8 +383,18 @@
                 </div>
 
                 <!-- Existing Resume Document -->
-                <div class="d-flex mt-2" *ngIf="candidateDocuments.length > 0 && !selectedFile">
-                  <view-resume *ngIf="candidateDocuments.length > 0" [doc]="candidateDocuments[0]['doc']"></view-resume>
+                <div class="d-flex align-items-center gap-2 mt-2 flex-wrap" *ngIf="candidateDocuments && candidateDocuments.length > 0 && !selectedFile">
+                  <view-resume [doc]="candidateDocuments[0]['doc']"></view-resume>
+                  <button
+                    type="button"
+                    class="btn-delete-resume d-inline-flex align-items-center"
+                    (click)="openDeleteResumeModal()"
+                    [disabled]="isDeletingResume"
+                    title="Delete resume attachment"
+                  >
+                    <span class="material-symbols-outlined icon text-base me-1">delete</span>
+                    <span class="text-sm">delete resume</span>
+                  </button>
                 </div>
 
                 <!-- Submit Button -->
@@ -428,3 +439,60 @@
     </div>
   </div>
 </div>
+
+<!-- Modern Delete Resume Confirmation Modal -->
+<ng-template #deleteConfirmModal>
+  <div class="delete-modal-content position-relative p-4">
+    <!-- Close Button -->
+    <button 
+      type="button" 
+      class="btn-close position-absolute top-0 end-0 m-3" 
+      (click)="closeDeleteModal()" 
+      [disabled]="isDeletingResume"
+      aria-label="Close"
+    ></button>
+
+    <div class="text-center pt-2">
+      <!-- Icon Box -->
+      <div class="delete-modal-icon-box d-inline-flex align-items-center justify-content-center rounded-circle mb-3">
+        <span class="material-symbols-outlined fs-2 text-danger">delete_forever</span>
+      </div>
+
+      <!-- Title & Message -->
+      <h5 class="fw-bold text-dark mb-2">Delete Resume Attachment?</h5>
+      <p class="text-muted text-sm mb-3">
+        Are you sure you want to remove this resume from the candidate's profile? This file will be permanently deleted from storage.
+      </p>
+
+      <!-- File Name Highlight -->
+      <div class="delete-file-preview d-inline-flex align-items-center gap-2 px-3 py-2 rounded-2 mb-4 text-truncate" *ngIf="candidateDocuments && candidateDocuments.length > 0">
+        <span class="material-symbols-outlined fs-6 text-muted">description</span>
+        <span class="text-xs fw-semibold text-dark text-truncate" [title]="candidateDocuments[0]['doc']">
+          {{ candidateDocuments[0]['doc'] }}
+        </span>
+      </div>
+
+      <!-- Actions -->
+      <div class="d-flex align-items-center justify-content-center gap-2 pt-2">
+        <button 
+          type="button" 
+          class="btn btn-outline-secondary px-4 py-2 text-sm fw-semibold rounded-3" 
+          (click)="closeDeleteModal()"
+          [disabled]="isDeletingResume"
+        >
+          Cancel
+        </button>
+        <button 
+          type="button" 
+          class="btn btn-danger px-4 py-2 text-sm fw-semibold rounded-3 d-inline-flex align-items-center gap-2" 
+          (click)="confirmDeleteResume()"
+          [disabled]="isDeletingResume"
+        >
+          <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true" *ngIf="isDeletingResume"></span>
+          <span class="material-symbols-outlined fs-6" *ngIf="!isDeletingResume">delete</span>
+          <span>{{ isDeletingResume ? 'Deleting...' : 'Delete Resume' }}</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</ng-template>

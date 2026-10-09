@@ -2,6 +2,7 @@ export * from './auth-request-model';
 export * from './boolean-result';
 export * from './candidate-availability-dto';
 export * from './candidate-availability-dto-list-result';
+export * from './candidate-profile-applied-job-dto';
 export * from './candidate-document-dto';
 export * from './candidate-document-dto-for-update';
 export * from './candidate-pref-job-type-dto';

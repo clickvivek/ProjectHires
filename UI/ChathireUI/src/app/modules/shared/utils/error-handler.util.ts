@@ -34,13 +34,44 @@ export function getMeaningfulErrorMessage(
           messages.push(...val);
         } else if (typeof val === 'string') {
           messages.push(val);
+        } else if (val && typeof val === 'object') {
+          const m = val.message || val.Message || val.description || val.Description;
+          if (m) messages.push(m);
         }
       }
       if (messages.length > 0) {
         return messages.join('. ');
       }
     }
-    return 'Invalid request parameters. Please verify your search criteria and try again.';
+    return fallbackMessage || 'Invalid request parameters. Please verify your data and try again.';
+  }
+
+  // 422 Unprocessable Entity
+  if (error.status === 422) {
+    if (typeof error.error === 'string' && error.error.trim().length > 0 && !error.error.includes('<!DOCTYPE')) {
+      return error.error.trim();
+    }
+    if (error.error?.message) {
+      return error.error.message;
+    }
+    if (error.error?.errors && typeof error.error.errors === 'object') {
+      const messages: string[] = [];
+      for (const key of Object.keys(error.error.errors)) {
+        const val = error.error.errors[key];
+        if (Array.isArray(val)) {
+          messages.push(...val);
+        } else if (typeof val === 'string') {
+          messages.push(val);
+        } else if (val && typeof val === 'object') {
+          const m = val.message || val.Message || val.description || val.Description;
+          if (m) messages.push(m);
+        }
+      }
+      if (messages.length > 0) {
+        return messages.join('. ');
+      }
+    }
+    return 'Unable to process this request. Please verify the details and try again.';
   }
 
   // 401 Unauthorized

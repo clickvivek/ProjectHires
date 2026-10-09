@@ -24,7 +24,7 @@
             <span class="material-symbols-outlined icon"> search </span>
           
 
-            <div class="dropdown-wrapper">
+            <div class="dropdown-wrapper" #skillDropdown>
                 <ng-scrollbar
               #scrollable
               track="all"
@@ -55,20 +55,21 @@
           </div>
         </div>
   
-        <div class="item location">
+        <div class="item location" [class.location-disabled]="isRemoteOnly">
           <div class="form-group rel">
             <input
               #searchLocation
               type="text"
               class="form-control location-search"
               name="searchJobLocation"
-              placeholder="Location or Remote"
+              [placeholder]="isRemoteOnly ? 'Remote only (Location disabled)' : 'Location or Remote'"
               [(ngModel)]="location"
               (ngModelChange)="handleSearchLocation()"
+              [disabled]="isRemoteOnly"
               autocomplete="off"
             />
-            <span class="material-symbols-outlined icon"> location_on </span>
-            <div class="dropdown-wrapper">
+            <span class="material-symbols-outlined icon" [class.text-muted]="isRemoteOnly"> location_on </span>
+            <div class="dropdown-wrapper" #locationDropdown [class.d-none]="isRemoteOnly">
               
               <ng-scrollbar
               #scrollable
@@ -105,6 +106,23 @@
           <span class="d-none d-md-block">{{ isSearching ? 'SEARCHING...' : ('SEARCH ' + (type == 'jobs' ? 'JOBS' : 'TALENT')) }}</span>
         </button>
 
+      </div>
+
+      <!-- Remote only checkbox (applicable for jobs search) -->
+      <div class="remote-checkbox-bar mt-2 d-flex align-items-center justify-content-center" *ngIf="type === 'jobs'">
+        <div class="form-check d-inline-flex align-items-center gap-2 m-0 cursor-pointer">
+          <input
+            class="form-check-input cursor-pointer"
+            type="checkbox"
+            id="searchRemoteOnlyCheck"
+            name="isRemoteOnly"
+            [(ngModel)]="isRemoteOnly"
+            (change)="onRemoteChange()"
+          />
+          <label class="form-check-label fw-semibold text-dark-700 cursor-pointer select-none" for="searchRemoteOnlyCheck" style="font-size: 13.5px;">
+            Search only Remote jobs
+          </label>
+        </div>
       </div>
 
       <div class="search-btn-box" *ngIf="page != 'home'">

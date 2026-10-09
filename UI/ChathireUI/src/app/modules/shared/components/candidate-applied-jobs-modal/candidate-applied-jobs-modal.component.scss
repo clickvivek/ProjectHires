@@ -1,0 +1,136 @@
+.candidate-applied-modal {
+  min-height: 320px;
+  max-height: 85vh;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.candidate-avatar-circle {
+  width: 44px;
+  height: 44px;
+  background: linear-gradient(135deg, #70246D 0%, #4D124B 100%);
+  font-size: 1.15rem;
+  box-shadow: 0 2px 6px rgba(112, 36, 109, 0.25);
+  flex-shrink: 0;
+}
+
+.modal-title {
+  font-size: 1.15rem;
+  letter-spacing: -0.01em;
+}
+
+.count-badge {
+  background-color: #F5EDF5;
+  color: #70246D;
+  font-weight: 600;
+  font-size: 0.75rem;
+  padding: 4px 10px;
+}
+
+.btn-close-custom {
+  cursor: pointer;
+  padding: 6px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background-color: #F3F4F6;
+    color: #111827;
+  }
+}
+
+.modal-body-section {
+  max-height: calc(85vh - 130px);
+}
+
+.applied-job-card {
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+
+  &:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  }
+}
+
+.job-title {
+  font-size: 0.98rem;
+  line-height: 1.35;
+}
+
+.text-teal {
+  color: #0D9488 !important;
+}
+
+.text-purple {
+  color: #70246D !important;
+}
+
+.border-purple {
+  border-color: #70246D !important;
+}
+
+.btn-subtle-purple {
+  background-color: #F5EDF5;
+  color: #70246D;
+  font-weight: 600;
+  border: 1px solid rgba(112, 36, 109, 0.2);
+  transition: all 0.2s ease;
+
+  &:hover {
+    background-color: #70246D;
+    color: #FFFFFF;
+  }
+}
+
+.status-pill {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 9999px;
+  font-size: 0.7rem;
+  letter-spacing: 0.03em;
+}
+
+.status-badge-success {
+  background-color: #ECFDF5;
+  color: #059669;
+  border: 1px solid #A7F3D0;
+}
+
+.status-badge-interview {
+  background-color: #EFF6FF;
+  color: #2563EB;
+  border: 1px solid #BFDBFE;
+}
+
+.status-badge-review {
+  background-color: #FFFBEB;
+  color: #D97706;
+  border: 1px solid #FDE68A;
+}
+
+.status-badge-rejected {
+  background-color: #FEF2F2;
+  color: #DC2626;
+  border: 1px solid #FECACA;
+}
+
+.status-badge-default {
+  background-color: #F3F4F6;
+  color: #4B5563;
+  border: 1px solid #E5E7EB;
+}
+
+.empty-icon-box {
+  width: 64px;
+  height: 64px;
+}
+
+.job-comment-callout {
+  line-height: 1.4;
+}
+
+.shadow-xs {
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}

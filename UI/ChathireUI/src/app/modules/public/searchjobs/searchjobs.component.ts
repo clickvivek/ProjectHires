@@ -78,15 +78,23 @@ export class SearchjobsComponent implements OnInit {
     });
   }
 
+  isRemoteOnly: boolean = false;
+
   executeSearchFromParams(params: Params) {
     if (!_.isEmpty(params)) {
       this.skill = params['skill'] || '';
-      this.location = params['location'] || '';
+      this.isRemoteOnly = params['remote'] === 'true' || params['remote'] === true;
 
-      if (!_.isUndefined(params['cid']) && params['cid']) {
-        this.cityId = params['cid'];
-      } else {
+      if (this.isRemoteOnly) {
+        this.location = '';
         this.cityId = null;
+      } else {
+        this.location = params['location'] || '';
+        if (!_.isUndefined(params['cid']) && params['cid']) {
+          this.cityId = params['cid'];
+        } else {
+          this.cityId = null;
+        }
       }
 
       if (!_.isUndefined(params['visas']) && params['visas']) {
@@ -113,7 +121,7 @@ export class SearchjobsComponent implements OnInit {
         this.dateString = '';
       }
 
-      if (this.skill || this.location || this.cityId || this.visasId.length || this.wmIds.length || this.expIds.length || this.dateString) {
+      if (this.skill || this.location || this.cityId || this.isRemoteOnly || this.visasId.length || this.wmIds.length || this.expIds.length || this.dateString) {
         this.handleJobOpenings(this.skill, this.cityId, this.visasId, this.wmIds, this.expIds, this.dateString);
       } else {
         this.isDataAvailable = false;
@@ -122,6 +130,7 @@ export class SearchjobsComponent implements OnInit {
       this.isDataAvailable = false;
       this.skill = '';
       this.location = '';
+      this.isRemoteOnly = false;
     }
   }
 
@@ -204,8 +213,8 @@ export class SearchjobsComponent implements OnInit {
 
   handleJobOpenings(skill, cityIdArr, visasArr, employmentTypesArr, expArr, dateString) {
 
-    const searchStrings = [skill]
-    const cityIds = [cityIdArr]
+    const searchStrings = skill && skill.trim().length > 0 ? [skill.trim()] : (this.isRemoteOnly ? ['Remote'] : undefined);
+    const cityIds = cityIdArr ? [cityIdArr] : undefined;
 
     let startYearsOfExpInput:any = undefined;
     let endYearsOfExpInput: any = undefined;
@@ -276,9 +285,12 @@ export class SearchjobsComponent implements OnInit {
         // Check if we have valid job data
         if(jobData && Array.isArray(jobData) && jobData.length > 0) {
 
-          this.jobData = jobData
-          this.isDataAvailable = true
+          if (this.isRemoteOnly) {
+            jobData = jobData.filter(job => this.isJobRemote(job));
+          }
 
+          this.jobData = jobData;
+          this.isDataAvailable = this.jobData.length > 0;
           this.totalItems = this.jobData.length;
 
           if(this.sharedService.getPageToRetain()) {

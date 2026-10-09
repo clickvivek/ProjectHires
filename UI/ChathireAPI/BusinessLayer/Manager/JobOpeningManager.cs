@@ -305,10 +305,19 @@ namespace BusinessLayer.Manager
         {
             var result = await ExecuteAsync<JobOpeningCandidateProfileMap>(async () =>
             {
+                var repo = repositoryFactory.Get<IJobOpeningCandidateProfileMapRepository>();
+                if (jobOpeningCandidateProfile != null && jobOpeningCandidateProfile.JobOpeningId > 0)
+                {
+                    var alreadyApplied = await repo.Exists(jobOpeningCandidateProfile.JobOpeningId, jobOpeningCandidateProfile.CandidateProfileId, jobOpeningCandidateProfile.CandidateUserId);
+                    if (alreadyApplied)
+                    {
+                        throw new ArgumentException("This candidate has already been submitted to this job opening.");
+                    }
+                }
+
                 var date = DateTime.UtcNow;
                 var _jobOpeningCandidateProfile = mapper.Map<JobOpeningCandidateProfileMap>(jobOpeningCandidateProfile);
 
-                var repo = repositoryFactory.Get<IJobOpeningCandidateProfileMapRepository>();
                 _jobOpeningCandidateProfile.Updated = date;
                 _jobOpeningCandidateProfile.UpdatedBy = userContext.UserId;
                 return await repo.Post(_jobOpeningCandidateProfile, true);

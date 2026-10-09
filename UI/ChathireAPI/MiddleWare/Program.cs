@@ -107,6 +107,23 @@ IF NOT EXISTS (
 )
 BEGIN
     ALTER TABLE [dbo].[Consultancy] ADD [website2] VARCHAR(255) NULL;
+END
+
+IF EXISTS (SELECT 1 FROM sys.tables WHERE name = 'CandidateProfileMappingStatus')
+BEGIN
+    IF (SELECT COUNT(*) FROM [dbo].[CandidateProfileMappingStatus]) = 0
+    BEGIN
+        SET IDENTITY_INSERT [dbo].[CandidateProfileMappingStatus] ON;
+        INSERT INTO [dbo].[CandidateProfileMappingStatus] (Id, Name, Description, Updated, UpdatedBy) VALUES 
+            (1, 'New', 'New Application', GETUTCDATE(), 1),
+            (2, 'On Hold', 'On Hold', GETUTCDATE(), 1),
+            (3, 'Shortlisted', 'Shortlisted', GETUTCDATE(), 1),
+            (4, 'No Response', 'No Response', GETUTCDATE(), 1),
+            (5, 'Interview', 'Interview', GETUTCDATE(), 1),
+            (6, 'Rejected', 'Rejected', GETUTCDATE(), 1),
+            (7, 'Submitted', 'Submitted', GETUTCDATE(), 1);
+        SET IDENTITY_INSERT [dbo].[CandidateProfileMappingStatus] OFF;
+    END
 END");
     }
     catch (Exception ex)

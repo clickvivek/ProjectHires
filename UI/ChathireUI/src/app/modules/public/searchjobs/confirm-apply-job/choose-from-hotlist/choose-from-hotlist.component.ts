@@ -1,4 +1,4 @@
-import { Component, Inject, Output, EventEmitter } from '@angular/core';
+import { Component, Inject, Optional, Input, OnInit, Output, EventEmitter } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { CandidateProfileService } from 'src/app/api/api/candidate-profile.service';
 import { SessionService } from 'src/app/core/session/session.service';
@@ -8,13 +8,16 @@ import { JobOpeningService } from 'src/app/api';
 import { JobOpeningCandidateProfileMapDtoForInsert } from 'src/app/api/model/job-opening-candidate-profile-map-dto-for-insert';
 import { getMeaningfulErrorMessage } from 'src/app/modules/shared/utils/error-handler.util';
 import _ from 'underscore';
+import { formatRelocation } from 'src/app/data/various';
 
 @Component({
   selector: 'choose-from-hotlist',
   templateUrl: './choose-from-hotlist.component.html',
   styleUrls: ['./choose-from-hotlist.component.scss']
 })
-export class ChooseFromHotlistComponent {
+export class ChooseFromHotlistComponent implements OnInit {
+
+  @Input() job: any;
 
   isLoaded:boolean = false;
   searchData: string = ""
@@ -39,8 +42,8 @@ export class ChooseFromHotlistComponent {
   isSubmitting: boolean = false;
 
   constructor(
-    @Inject(MAT_DIALOG_DATA) public job: any,
-    private dialogRef: MatDialogRef<ChooseFromHotlistComponent>,
+    @Optional() @Inject(MAT_DIALOG_DATA) public dialogData: any,
+    @Optional() private dialogRef: MatDialogRef<ChooseFromHotlistComponent>,
     private candidateProfileService: CandidateProfileService,
     private jobOpeningService: JobOpeningService,
     private sessionService: SessionService,
@@ -55,25 +58,7 @@ export class ChooseFromHotlistComponent {
   }
 
   getRelocation(data) {
-    let item = data?.candidatePrefLocations
-
-    let newData: any = []
-    if (!_.isEmpty(item)) {
-      item.forEach(listItem => {
-        let rawCity = listItem.cityName || ''
-        let parts = rawCity.split('-')
-        let city = parts[0] ? parts[0].trim() : ''
-        let state = (listItem.stateCode || (parts[1] ? parts[1].trim() : '') || listItem.stateName || '').trim()
-        let formatted = (city && state) ? `${city}, ${state}` : (city || state)
-        if (formatted) {
-          newData.push(formatted)
-        }
-      });
-      return newData.join('; ')
-    }
-    else {
-      return ''
-    }
+    return formatRelocation(data);
   }
 
   onSearchData() {
@@ -102,29 +87,73 @@ export class ChooseFromHotlistComponent {
   }
 
   handleCandidate(item) {
-    this.selectedCandidate = item
+    if (this.isNotResume(item.candidateDocuments)) return;
+    this.selectedCandidate = item;
+    this.selectedHotlistType = String(item.id);
   }
 
   clearData() {
     this.selectedHotlistType = '';
-    this.outParams.emit(false)
+    this.selectedCandidate = null;
+    this.outParams.emit(false);
+  }
+
+  clearSearch() {
+    this.searchData = '';
+    this.filteredHotList = [...this.hotList];
+    this.totalItems = this.filteredHotList.length;
+    this.ItemStartIndex = 0;
+    this.ItemEndIndex = Math.min(this.itemLimit, this.totalItems);
+  }
+
+  getInitials(name: string): string {
+    if (!name) return 'C';
+    const parts = name.trim().split(/\s+/);
+    if (parts.length >= 2) {
+      return (parts[0][0] + parts[1][0]).toUpperCase();
+    }
+    return parts[0].substring(0, 2).toUpperCase();
+  }
+
+  getLocationDisplay(candidate: any): string {
+    if (!candidate) return '';
+    if (candidate.remoteOnly) return 'Remote only';
+    const reloc = formatRelocation(candidate);
+    if (reloc && reloc.trim().length > 0 && reloc.toLowerCase() !== 'any location') return reloc;
+    if (candidate.candidatePrefLocations && candidate.candidatePrefLocations.length > 0) {
+      const cities = candidate.candidatePrefLocations.map((l: any) => l.cityName).filter(Boolean);
+      if (cities.length > 0) return cities.join(', ');
+    }
+    return 'Any location';
+  }
+
+  hasDocument(candidate: any): boolean {
+    return Array.isArray(candidate?.candidateDocuments) && candidate.candidateDocuments.length > 0 && !!candidate.candidateDocuments[0]?.doc;
   }
 
   applyJob() {
     if (this.isSubmitting || !this.selectedHotlistType) return;
     this.isSubmitting = true;
 
+    const targetJob = this.job || this.dialogData;
+    const jobOpeningId = Number(targetJob?.jobOpeningId || targetJob?.id);
+    const candidateProfileId = Number(this.selectedHotlistType || this.selectedCandidate?.id);
+    const consultancyUserId = Number(this.sessionService.consultancyUserId) > 0
+      ? Number(this.sessionService.consultancyUserId)
+      : (Number(this.selectedCandidate?.consultancyUserId) > 0 ? Number(this.selectedCandidate.consultancyUserId) : null);
+
     this.applyJobModel = {
-      jobOpeningId: parseInt(this.job.jobOpeningId),
-      candidateProfileId: parseInt(this.selectedHotlistType),
+      jobOpeningId: jobOpeningId,
+      candidateProfileId: candidateProfileId,
       appliedDate: new Date().toISOString(),
       active: true,
       candidateProfileMappingStatusId: 1,
       comment: "",
-      consultancyUserId: this.sessionService.consultancyUserId,
+      consultancyUserId: consultancyUserId,
       candidateUserId: null,
-      doc: this.selectedCandidate?.candidateDocuments?.length ? this.selectedCandidate.candidateDocuments[0].doc : ""
-    }
+      doc: this.selectedCandidate?.candidateDocuments?.length ? this.selectedCandidate.candidateDocuments[0].doc : "",
+      candidateName: this.selectedCandidate?.candidateName || ''
+    };
 
     this.jobOpeningService.apiJobOpeningApplyPost(this.applyJobModel).subscribe({
       next: (res: any) => {
@@ -133,57 +162,51 @@ export class ChooseFromHotlistComponent {
         this.selectedHotlistType = "";
         this.appliedSuccess.emit({
           candidateName: candidateName,
-          jobTitle: this.job?.jobOpeningName,
-          companyName: this.job?.companyName
+          jobTitle: targetJob?.jobOpeningName || targetJob?.name,
+          companyName: targetJob?.companyName
         });
       },
-      error: (error:any) => {
+      error: (error: any) => {
         this.isSubmitting = false;
         const msg = getMeaningfulErrorMessage(error, 'Failed to submit candidate from hotlist. Please try again.');
         setTimeout(() => {
           this.toastr.error(msg, '', {
-            timeOut: 4000,
+            timeOut: 4500,
             positionClass: 'toast-top-center'
           });
         }, 100);
       }
-    })
+    });
 
   }
 
   fetchData() {
-
     this.isLoaded = false;
 
     this.candidateProfileService.apiCandidateProfileGetByConsultancyUserSimplelistGet(this.sessionService.consultancyUserId, true, 2).subscribe({
       next: (res: any) => {
-
-        this.isLoaded = true
-        
-        this.hotList = res.value;
-        this.filteredHotList = this.hotList
-
+        this.isLoaded = true;
+        this.hotList = res.value || [];
+        this.filteredHotList = this.hotList;
         this.totalItems = this.hotList.length;
 
         if (this.totalItems > this.itemLimit) {
           this.ItemEndIndex = this.itemLimit;
-        }
-        else {
+        } else {
           this.ItemEndIndex = this.totalItems;
         }
-
       },
-      error: (error:any) => {
-        this.isLoaded = true
+      error: (error: any) => {
+        this.isLoaded = true;
       }
-    })
-
+    });
   }
 
   ngOnInit() {
-
-    this.fetchData()
-
+    if (!this.job && this.dialogData) {
+      this.job = this.dialogData;
+    }
+    this.fetchData();
   }
 
 }
