@@ -2,7 +2,7 @@
 @import "src/@hires/scss/helpers/typography";
 
 :host {
-  --bg-page: #F8F7F3;
+  --bg-page: #F8FAFC;
   --bg-card: #FFFFFF;
   --color-heading: #111827;
   --color-label: #29242B;
@@ -21,7 +21,7 @@
 
 ::ng-deep .postjobs-wrapper {
   background-color: var(--bg-page) !important;
-  padding: 8px 0 60px 0;
+  padding: 16px 0 60px 0;
   min-height: calc(100vh - 70px);
 
   /* Main Card styling */
@@ -281,6 +281,287 @@
       &:hover {
         background-color: var(--primary-plum) !important;
         color: #FFFFFF !important;
+      }
+    }
+  }
+
+  /* Unauthenticated Recruiter Landing Card */
+  .post-job-landing-card {
+    max-width: 800px;
+    margin-left: auto;
+    margin-right: auto;
+    border-radius: 16px !important;
+    border: 1px solid #E2E8F0 !important;
+    box-shadow: 0 4px 20px rgba(15, 23, 42, 0.06) !important;
+    background-color: #FFFFFF !important;
+
+    .post-job-hero-bg {
+      background: linear-gradient(135deg, #245E59 0%, #347871 100%) !important;
+      border-radius: 16px 16px 0 0;
+      padding: 36px 36px !important;
+
+      @include hires-breakpoint("lt-md") {
+        padding: 24px 20px !important;
+      }
+
+      .badge-free-plan {
+        background-color: #FFFFFF !important;
+        color: #245E59 !important;
+        font-weight: 700 !important;
+        font-size: 11px !important;
+        letter-spacing: 0.6px !important;
+        padding: 6px 14px !important;
+        border-radius: 20px !important;
+        display: inline-flex;
+        align-items: center;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+
+        .material-symbols-outlined {
+          color: #245E59 !important;
+          font-size: 15px !important;
+        }
+      }
+
+      .landing-hero-title {
+        color: #FFFFFF !important;
+        font-size: 32px !important;
+        font-weight: 700 !important;
+        line-height: 1.25 !important;
+        letter-spacing: -0.4px !important;
+        margin-bottom: 12px !important;
+
+        @include hires-breakpoint("lt-md") {
+          font-size: 26px !important;
+        }
+      }
+
+      .landing-hero-sub {
+        color: #E2F1EF !important;
+        font-size: 16px !important;
+        line-height: 1.6 !important;
+        font-weight: 400 !important;
+        opacity: 1 !important;
+        margin-bottom: 24px !important;
+      }
+
+      .hero-actions-wrapper {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 14px;
+
+        @include hires-breakpoint("lt-sm") {
+          flex-direction: column;
+          align-items: stretch;
+          gap: 12px;
+        }
+
+        .btn-create-free {
+          background-color: #FFFFFF !important;
+          color: #245E59 !important;
+          font-weight: 600 !important;
+          font-size: 15px !important;
+          border-radius: 8px !important;
+          min-height: 46px !important;
+          padding: 10px 24px !important;
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          border: 1px solid #FFFFFF !important;
+          transition: all 0.2s ease-in-out;
+          text-decoration: none;
+
+          .material-symbols-outlined {
+            color: #245E59 !important;
+            margin-right: 8px !important;
+          }
+
+          &:hover {
+            background-color: #F8FAFC !important;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12) !important;
+          }
+
+          &:focus-visible {
+            outline: 2px solid #FFFFFF !important;
+            outline-offset: 2px !important;
+          }
+
+          &:active {
+            transform: translateY(0);
+            background-color: #E2E8F0 !important;
+          }
+
+          @include hires-breakpoint("lt-sm") {
+            width: 100%;
+          }
+        }
+
+        .btn-outline-signin {
+          background-color: transparent !important;
+          color: #FFFFFF !important;
+          font-weight: 600 !important;
+          font-size: 15px !important;
+          border-radius: 8px !important;
+          min-height: 46px !important;
+          padding: 10px 24px !important;
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          border: 1.5px solid #FFFFFF !important;
+          transition: all 0.2s ease-in-out;
+          text-decoration: none;
+
+          .material-symbols-outlined {
+            color: #FFFFFF !important;
+            margin-right: 8px !important;
+          }
+
+          &:hover {
+            background-color: rgba(255, 255, 255, 0.15) !important;
+            border-color: #FFFFFF !important;
+            color: #FFFFFF !important;
+          }
+
+          &:focus-visible {
+            outline: 2px solid #FFFFFF !important;
+            outline-offset: 2px !important;
+          }
+
+          &:active {
+            background-color: rgba(255, 255, 255, 0.25) !important;
+          }
+
+          @include hires-breakpoint("lt-sm") {
+            width: 100%;
+          }
+        }
+      }
+
+      .fill-first-link-row {
+        margin-top: 14px;
+
+        .link-fill-first {
+          color: #FFFFFF !important;
+          font-size: 14px !important;
+          font-weight: 500 !important;
+          text-decoration: none !important;
+          transition: all 0.2s ease;
+          opacity: 1 !important;
+
+          &:hover {
+            text-decoration: underline !important;
+            color: #E2F1EF !important;
+          }
+
+          &:focus-visible {
+            outline: 2px solid #FFFFFF !important;
+            outline-offset: 2px !important;
+          }
+        }
+      }
+    }
+
+    /* Card Body */
+    .card-body {
+      padding: 36px !important;
+
+      @include hires-breakpoint("lt-md") {
+        padding: 24px 20px !important;
+      }
+    }
+
+    /* Feature Cards */
+    .feature-box {
+      background-color: #F8FAFC !important;
+      border: 1px solid #E2E8F0 !important;
+      border-radius: 12px !important;
+      padding: 22px 20px !important;
+      transition: all 0.2s ease-in-out;
+
+      &:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(15, 23, 42, 0.05);
+        border-color: #CBD5E1 !important;
+      }
+
+      .icon-circle {
+        width: 44px;
+        height: 44px;
+        min-width: 44px;
+        min-height: 44px;
+        border-radius: 10px;
+        background-color: #E8F3F1 !important;
+
+        .material-symbols-outlined {
+          color: #245E59 !important;
+          font-size: 22px !important;
+        }
+      }
+
+      .feature-title {
+        color: #334155 !important;
+        font-size: 16px !important;
+        font-weight: 600 !important;
+        line-height: 1.3 !important;
+      }
+
+      .feature-desc {
+        color: #475569 !important;
+        font-size: 14.5px !important;
+        line-height: 1.6 !important;
+      }
+    }
+
+    /* Bottom Trust & CTA section */
+    .landing-bottom-cta {
+      border-top: 1px solid #E2E8F0 !important;
+
+      .trust-statement {
+        color: #475569 !important;
+        font-size: 14px !important;
+        line-height: 1.5;
+
+        .text-teal {
+          color: #245E59 !important;
+        }
+      }
+
+      .btn-bottom-create {
+        background-color: #245E59 !important;
+        border: 1px solid #245E59 !important;
+        color: #FFFFFF !important;
+        font-weight: 600 !important;
+        font-size: 14.5px !important;
+        border-radius: 8px !important;
+        min-height: 44px !important;
+        padding: 9px 24px !important;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.2s ease-in-out;
+        text-decoration: none;
+
+        &:hover {
+          background-color: #1b4743 !important;
+          border-color: #1b4743 !important;
+          color: #FFFFFF !important;
+          box-shadow: 0 4px 12px rgba(36, 94, 89, 0.25);
+        }
+
+        &:focus-visible {
+          outline: 2px solid #245E59 !important;
+          outline-offset: 2px !important;
+        }
+
+        &:active {
+          transform: translateY(0);
+          background-color: #153835 !important;
+        }
+
+        @include hires-breakpoint("lt-sm") {
+          width: 100%;
+        }
       }
     }
   }

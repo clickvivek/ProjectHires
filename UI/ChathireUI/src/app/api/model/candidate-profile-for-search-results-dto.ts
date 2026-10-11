@@ -30,6 +30,7 @@ export interface CandidateProfileForSearchResultsDto {
     employmentTypeName?: string | null;
     jobTypeName?: string | null;
     resume?: string | null;
+    hideResume?: boolean | null;
     profilePic?: string | null;
     skills?: Array<string> | null;
     locations?: Array<string> | null;

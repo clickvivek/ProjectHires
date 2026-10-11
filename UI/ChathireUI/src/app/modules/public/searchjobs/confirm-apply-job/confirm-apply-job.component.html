@@ -1,16 +1,16 @@
 <div class="confirm-apply-wrapper">
   
   <!-- Modern Modal Header -->
-  <div class="modal-header-bar d-flex align-items-center justify-content-between px-4 py-3 border-bottom bg-white">
+  <div class="modal-header-bar d-flex align-items-center justify-content-between px-3 py-2 border-bottom bg-white">
     <div class="d-flex align-items-center gap-2">
       <div class="modal-header-icon-box d-flex align-items-center justify-content-center">
         <span class="material-symbols-outlined fs-5">send</span>
       </div>
       <div>
-        <h5 class="modal-title-text fw-bold text-dark mb-0">
+        <h6 class="modal-title-text fw-semibold mb-0">
           {{ isAppliedSuccess ? 'Application Status' : 'Apply to Job' }}
-        </h5>
-        <span class="modal-subtitle-text text-muted text-xs">
+        </h6>
+        <span class="modal-subtitle-text text-xs">
           {{ isAppliedSuccess ? 'Submission confirmed' : (isCandidateUser ? 'Direct candidate submission' : 'Submit candidate application') }}
         </span>
       </div>
@@ -18,40 +18,42 @@
 
     <button
       type="button"
-      class="btn-close modal-close-btn p-2"
+      class="modal-close-btn border-0 d-flex align-items-center justify-content-center"
       [mat-dialog-close]="isAppliedSuccess ? true : false"
       aria-label="Close"
-    ></button>
+    >
+      <span class="material-symbols-outlined">close</span>
+    </button>
   </div>
 
   <div class="content" *ngIf="!isAppliedSuccess">
-    <div class="desp-area p-4">
+    <div class="desp-area p-3">
       
       <!-- Top Job Snapshot Card -->
-      <div class="job-snapshot-card p-3 rounded-3 mb-4">
-        <div class="d-flex align-items-start justify-content-between gap-3">
-          <div class="d-flex align-items-center gap-3">
+      <div class="job-snapshot-card p-2 px-3 rounded-2 mb-2">
+        <div class="d-flex align-items-start justify-content-between gap-2">
+          <div class="d-flex align-items-center gap-2">
             <div class="company-badge-circle d-flex align-items-center justify-content-center flex-shrink-0">
-              <span class="material-symbols-outlined fs-5">business_center</span>
+              <span class="material-symbols-outlined fs-6">business_center</span>
             </div>
             <div>
-              <h6 class="job-title-highlight fw-bold text-dark mb-1">
+              <h6 class="job-title-highlight mb-0">
                 {{ job?.jobOpeningName || job?.name }}
               </h6>
-              <div class="job-meta-row d-flex align-items-center flex-wrap gap-2 text-xs text-muted">
-                <span *ngIf="job?.companyName" class="fw-semibold text-primary">
+              <div class="job-meta-row d-flex align-items-center flex-wrap gap-2 text-xs">
+                <span *ngIf="job?.companyName" class="company-name fw-semibold">
                   {{ job.companyName }}
                 </span>
-                <span *ngIf="job?.companyName && getLocationsText()">•</span>
-                <span *ngIf="getLocationsText()" class="d-inline-flex align-items-center">
-                  <span class="material-symbols-outlined fs-6 text-danger me-1">location_on</span>
+                <span *ngIf="job?.companyName && getLocationsText()" class="meta-dot">•</span>
+                <span *ngIf="getLocationsText()" class="location-item d-inline-flex align-items-center">
+                  <span class="material-symbols-outlined fs-6 meta-icon me-1">location_on</span>
                   {{ getLocationsText() }}
                 </span>
               </div>
             </div>
           </div>
 
-          <span class="badge bg-white text-muted border text-xs flex-shrink-0 px-2 py-1 shadow-2xs" *ngIf="job?.jobOpeningId || job?.id">
+          <span class="badge job-id-badge flex-shrink-0 px-2 py-1" *ngIf="job?.jobOpeningId || job?.id">
             Job #{{ job?.jobOpeningId || job?.id }}
           </span>
         </div>
@@ -112,8 +114,29 @@
       <!-- BENCH SALES / EMPLOYER FLOW -->
       <ng-container *ngIf="!isCandidateUser">
         
-        <!-- Options Selection Screen -->
-        <ng-container *ngIf="optionSelected == ''">
+        <!-- Direct Company Notice: Non-candidates cannot apply to direct company jobs -->
+        <div *ngIf="isDirectCompany" class="alert alert-warning py-3 px-3 my-3 border-warning-subtle shadow-sm rounded-3">
+          <div class="d-flex align-items-start gap-3">
+            <span class="material-symbols-outlined text-warning fs-3 mt-1">domain_disabled</span>
+            <div>
+              <h6 class="alert-heading fw-bold mb-1 text-dark">Direct Employer Position</h6>
+              <p class="small text-muted mb-2">
+                This job is posted by a <strong>Direct Employer</strong> (<span class="text-dark fw-semibold">{{ job?.companyName || 'Employer' }}</span>) that hires only full-time employees directly. Bench sales, recruiters, and third-party agencies are not permitted to submit candidates to Direct Employer jobs.
+              </p>
+              <div class="small fw-semibold text-primary">
+                Only direct job seekers (Candidates) can apply to this position.
+              </div>
+            </div>
+          </div>
+          <div class="text-end mt-3 pt-2 border-top border-warning-subtle">
+            <button type="button" class="btn btn-secondary btn-sm px-4" [mat-dialog-close]="false">
+              Close
+            </button>
+          </div>
+        </div>
+
+        <!-- Options Selection Screen (Only for Non-Direct Companies) -->
+        <ng-container *ngIf="!isDirectCompany && optionSelected == ''">
           <div class="options-selection-box mt-2">
             <p class="text-dark fw-semibold text-sm mb-3">
               How would you like to submit a candidate?
@@ -162,7 +185,7 @@
 
         <!-- Choose from Hotlist Child Component -->
         <choose-from-hotlist
-          *ngIf="optionSelected == 'hotlist'"
+          *ngIf="!isDirectCompany && optionSelected == 'hotlist'"
           [job]="job"
           (outParams)="onOptionTypeChange($event)"
           (appliedSuccess)="onAppliedSuccess($event)"
@@ -171,7 +194,7 @@
 
         <!-- Choose Resume from Desk Child Component -->
         <choose-resume-from-desk
-          *ngIf="optionSelected == 'upload'"
+          *ngIf="!isDirectCompany && optionSelected == 'upload'"
           [job]="job"
           (outParams)="onOptionTypeChange($event)"
           (appliedSuccess)="onAppliedSuccess($event)"

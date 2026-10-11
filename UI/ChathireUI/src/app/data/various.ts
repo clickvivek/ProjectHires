@@ -60,6 +60,44 @@ export const defaultPostJobPositionTypes = [
         "jobTypeId": 11,
         "description": "W2 - Full time"
     }
+];
+
+export const defaultCanadaPostJobVisas = [
+    {
+        "id": 14,
+        "visaId": 14,
+        "name": "Canadian Citizen",
+        "description": "Canadian Citizen",
+        "country": "Canada"
+    },
+    {
+        "id": 15,
+        "visaId": 15,
+        "name": "Permanent Resident (PR)",
+        "description": "Permanent Resident",
+        "country": "Canada"
+    }
+]
+
+export const defaultCanadaPostJobPositionTypes = [
+    {
+        "id": 16,
+        "jobTypeId": 16,
+        "description": "Incorporated Contractor",
+        "country": "CA"
+    },
+    {
+        "id": 17,
+        "jobTypeId": 17,
+        "description": "Independent Contractor",
+        "country": "CA"
+    },
+    {
+        "id": 18,
+        "jobTypeId": 18,
+        "description": "Agency Payroll (T4)",
+        "country": "CA"
+    }
 ]
 
 export const US_STATE_MAP: { [key: string]: string } = {

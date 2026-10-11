@@ -67,6 +67,8 @@ namespace BusinessEntityAndDTO.DTO
 
         public short? ConsultingRoleId { get; set; }
 
+        public bool? HideResume { get; set; }
+
         public List<CandidateDocumentDto> CandidateDocuments { get; } = new List<CandidateDocumentDto>();
 
         public List<CandidatePrefJobTypeDto>? CandidatePrefJobTypes { get; set; } = new List<CandidatePrefJobTypeDto>();
@@ -150,6 +152,8 @@ namespace BusinessEntityAndDTO.DTO
 
         public short? ConsultingRoleId { get; set; }
 
+        public bool? HideResume { get; set; }
+
         public List<CandidatePrefJobTypeForInsertDto>? CandidatePrefJobTypes { get; set; } = new List<CandidatePrefJobTypeForInsertDto>();
 
         public List<CandidatePrefLocationForInsertDto>? CandidatePrefLocations { get; set; } = new List<CandidatePrefLocationForInsertDto>();
@@ -222,6 +226,8 @@ namespace BusinessEntityAndDTO.DTO
 
         public short? ConsultingRoleId { get; set; }
 
+        public bool? HideResume { get; set; }
+
         public List<CandidateDocumentDtoForUpdate>? CandidateDocuments { get; set; } = new List<CandidateDocumentDtoForUpdate>();
 
         public List<CandidatePrefJobTypeDtoForUpdate>? CandidatePrefJobTypes { get; set; } = new List<CandidatePrefJobTypeDtoForUpdate>();
@@ -288,6 +294,7 @@ namespace BusinessEntityAndDTO.DTO
         public List<string> Skills { get; set; }
         public List<string> Locations { get; set; }
         public string? PublicProfileUserName { get; set; }
+        public bool? HideResume { get; set; }
 
     }
 
@@ -311,6 +318,7 @@ namespace BusinessEntityAndDTO.DTO
         public string? Email { get; set; }
 
         public string? Phone { get; set; }
+        public bool? HideResume { get; set; }
 
         public List<CandidateDocumentDto> CandidateDocuments { get; } = new List<CandidateDocumentDto>();
 

@@ -44,7 +44,7 @@ export class AdminSetupComponent implements OnInit {
   @ViewChild('fileInput') fileInput!: ElementRef;
   @ViewChild('logoInput') logoInput!: ElementRef;
 
-  activeTab: 'dau-dashboard' | 'bulk-upload' | 'view-edit' | 'review-companies' | 'user-quotas' | 'admin-users' | 'company-url-scraper' | 'linkedin-scraper' | 'promo-codes' | 'jobposting-by-email' | 'skills-maintenance' = 'dau-dashboard';
+  activeTab: 'dau-dashboard' | 'bulk-upload' | 'view-edit' | 'review-companies' | 'user-quotas' | 'admin-users' | 'company-url-scraper' | 'linkedin-scraper' | 'promo-codes' | 'jobposting-by-email' | 'skills-maintenance' | 'searched-analytics' = 'dau-dashboard';
 
   // --- Tab: Skills Maintenance State ---
   isLoadingSkills = false;
@@ -188,7 +188,7 @@ export class AdminSetupComponent implements OnInit {
   allCompanies: any[] = [];
   filteredCompanies: any[] = [];
   searchTerm = '';
-  statusFilter: 'all' | 'active' | 'inactive' = 'all';
+  statusFilter: 'all' | 'active' | 'inactive' | 'direct' | 'non-direct' = 'all';
   currentPage = 1;
   pageSize = 100;
   pageSizeOptions = [25, 50, 100, 200, 500];
@@ -227,7 +227,7 @@ export class AdminSetupComponent implements OnInit {
     this.loadSkills();
   }
 
-  setTab(tab: 'dau-dashboard' | 'bulk-upload' | 'view-edit' | 'review-companies' | 'user-quotas' | 'admin-users' | 'company-url-scraper' | 'linkedin-scraper' | 'promo-codes' | 'jobposting-by-email' | 'skills-maintenance') {
+  setTab(tab: 'dau-dashboard' | 'bulk-upload' | 'view-edit' | 'review-companies' | 'user-quotas' | 'admin-users' | 'company-url-scraper' | 'linkedin-scraper' | 'promo-codes' | 'jobposting-by-email' | 'skills-maintenance' | 'searched-analytics') {
     this.activeTab = tab;
     if (tab === 'dau-dashboard' && !this.dauSummary.totalRegisteredUsers) {
       this.loadDauStats();
@@ -244,6 +244,9 @@ export class AdminSetupComponent implements OnInit {
       this.loadEmailJobStats();
     } else if (tab === 'skills-maintenance') {
       this.loadSkills();
+    } else if (tab === 'searched-analytics') {
+      this.loadSearchedAnalytics();
+      this.loadSearchedRecords();
     }
   }
 
@@ -577,7 +580,15 @@ export class AdminSetupComponent implements OnInit {
     return this.allCompanies.filter(c => c.active === false || c.active === 0 || c.active === null).length;
   }
 
-  onStatusFilterChange(filter: 'all' | 'active' | 'inactive') {
+  get directCompaniesCount(): number {
+    return this.allCompanies.filter(c => c.isDirectCompany === true || c.isDirectCompany === 1).length;
+  }
+
+  get nonDirectCompaniesCount(): number {
+    return this.allCompanies.filter(c => !c.isDirectCompany).length;
+  }
+
+  onStatusFilterChange(filter: 'all' | 'active' | 'inactive' | 'direct' | 'non-direct') {
     this.statusFilter = filter;
     this.currentPage = 1;
     this.applyFilters();
@@ -622,6 +633,10 @@ export class AdminSetupComponent implements OnInit {
       list = list.filter(c => c.active === true || c.active === 1);
     } else if (this.statusFilter === 'inactive') {
       list = list.filter(c => c.active === false || c.active === 0 || c.active === null);
+    } else if (this.statusFilter === 'direct') {
+      list = list.filter(c => c.isDirectCompany === true || c.isDirectCompany === 1);
+    } else if (this.statusFilter === 'non-direct') {
+      list = list.filter(c => !c.isDirectCompany);
     }
 
     // Search term
@@ -927,6 +942,31 @@ export class AdminSetupComponent implements OnInit {
       },
       error: (err: any) => {
         this.toastr.error('Failed to update company status.', 'Update Error');
+      }
+    });
+  }
+
+  toggleDirectCompany(company: any, event: Event) {
+    event.stopPropagation();
+    const newDirectState = !company.isDirectCompany;
+    const updateDto = {
+      ...company,
+      isDirectCompany: newDirectState
+    };
+
+    this.consultancyService.apiConsultancyUpdatePut(updateDto).subscribe({
+      next: () => {
+        company.isDirectCompany = newDirectState;
+        const index = this.allCompanies.findIndex(c => c.id === company.id);
+        if (index !== -1) {
+          this.allCompanies[index] = { ...this.allCompanies[index], isDirectCompany: newDirectState };
+          this.allCompanies = [...this.allCompanies];
+          this.applyFilters();
+        }
+        this.toastr.success(`Company ${company.name} is now set as ${newDirectState ? 'Direct Company (YES)' : 'Non-Direct Company (NO)'}.`, 'Direct Company Updated');
+      },
+      error: (err: any) => {
+        this.toastr.error('Failed to update Direct Company flag.', 'Update Error');
       }
     });
   }
@@ -3007,6 +3047,141 @@ export class AdminSetupComponent implements OnInit {
         this.toastr.error(msg, 'Delete Error');
       }
     });
+  }
+
+  // --- Tab: Searched Analytics State & Methods ---
+  isLoadingSearched = false;
+  isLoadingSearchedAnalytics = false;
+  searchedTypeFilter: 'all' | 'JobSearch' | 'HotlistSearch' = 'all';
+  searchedSearchTerm = '';
+  searchedCurrentPage = 1;
+  searchedPageSize = 500;
+  searchedTotalCount = 0;
+  searchedList: any[] = [];
+  filteredSearchedList: any[] = [];
+  searchedAnalytics: {
+    totalSearches: number;
+    totalJobSearches: number;
+    totalHotlistSearches: number;
+    searchesToday: number;
+    zeroResultSearches: number;
+    topJobKeywords: Array<{ keyword: string; count: number }>;
+    topHotlistKeywords: Array<{ keyword: string; count: number }>;
+  } = {
+    totalSearches: 0,
+    totalJobSearches: 0,
+    totalHotlistSearches: 0,
+    searchesToday: 0,
+    zeroResultSearches: 0,
+    topJobKeywords: [],
+    topHotlistKeywords: []
+  };
+
+  loadSearchedAnalytics() {
+    this.isLoadingSearchedAnalytics = true;
+    const url = `${environment.rootUrl}/api/Searched/GetAnalyticsSummary`;
+    this.http.get<any>(url).subscribe({
+      next: (res) => {
+        if (res && res.value) {
+          this.searchedAnalytics = res.value;
+        }
+        this.isLoadingSearchedAnalytics = false;
+      },
+      error: () => {
+        this.isLoadingSearchedAnalytics = false;
+      }
+    });
+  }
+
+  loadSearchedRecords() {
+    this.isLoadingSearched = true;
+    const typeParam = this.searchedTypeFilter === 'all' ? '' : `&searchType=${this.searchedTypeFilter}`;
+    const url = `${environment.rootUrl}/api/Searched/GetRecentSearches?page=${this.searchedCurrentPage}&pageSize=${this.searchedPageSize}${typeParam}`;
+    this.http.get<any>(url).subscribe({
+      next: (res) => {
+        this.searchedList = (res && res.value) ? res.value : [];
+        this.applySearchedFilter();
+        this.isLoadingSearched = false;
+      },
+      error: (err) => {
+        this.toastr.error('Failed to load search logs.', 'Error');
+        this.isLoadingSearched = false;
+      }
+    });
+
+    const countUrl = `${environment.rootUrl}/api/Searched/GetSearchesCount?${this.searchedTypeFilter === 'all' ? '' : 'searchType=' + this.searchedTypeFilter}`;
+    this.http.get<any>(countUrl).subscribe({
+      next: (res) => {
+        this.searchedTotalCount = (res && res.value) ? res.value : this.searchedList.length;
+      }
+    });
+  }
+
+  onSearchedTypeChange(type: 'all' | 'JobSearch' | 'HotlistSearch') {
+    this.searchedTypeFilter = type;
+    this.searchedCurrentPage = 1;
+    this.loadSearchedRecords();
+  }
+
+  onSearchedSearchChange() {
+    this.applySearchedFilter();
+  }
+
+  applySearchedFilter() {
+    if (!this.searchedSearchTerm.trim()) {
+      this.filteredSearchedList = [...this.searchedList];
+      return;
+    }
+    const term = this.searchedSearchTerm.toLowerCase().trim();
+    this.filteredSearchedList = this.searchedList.filter(item => {
+      const kw = (item.keywords || '').toLowerCase();
+      const user = (item.userName || '').toLowerCase();
+      const email = (item.userEmail || '').toLowerCase();
+      const loc = (item.location || '').toLowerCase();
+      const ip = (item.ipAddress || '').toLowerCase();
+      const flt = (item.filters || '').toLowerCase();
+      return kw.includes(term) || user.includes(term) || email.includes(term) || loc.includes(term) || ip.includes(term) || flt.includes(term);
+    });
+  }
+
+  get searchedTotalPages(): number {
+    return Math.ceil(this.searchedTotalCount / this.searchedPageSize) || 1;
+  }
+
+  goToSearchedPage(page: number) {
+    if (page < 1 || page > this.searchedTotalPages) return;
+    this.searchedCurrentPage = page;
+    this.loadSearchedRecords();
+  }
+
+  exportSearchedCsv() {
+    if (!this.filteredSearchedList || this.filteredSearchedList.length === 0) {
+      this.toastr.info('No search records to export.');
+      return;
+    }
+    const headers = ['ID', 'Type', 'Keywords', 'Location', 'Results Count', 'User Name', 'User Email', 'IP Address', 'Filters', 'Date (UTC)'];
+    const rows = this.filteredSearchedList.map(item => [
+      item.id,
+      item.searchType,
+      `"${(item.keywords || '').replace(/"/g, '""')}"`,
+      `"${(item.location || '').replace(/"/g, '""')}"`,
+      item.totalResults,
+      `"${(item.userName || 'Anonymous').replace(/"/g, '""')}"`,
+      `"${(item.userEmail || '').replace(/"/g, '""')}"`,
+      `"${(item.ipAddress || '').replace(/"/g, '""')}"`,
+      `"${(item.filters || '').replace(/"/g, '""')}"`,
+      `"${item.createdDate}"`
+    ]);
+
+    const csvContent = 'data:text/csv;charset=utf-8,' + [headers.join(','), ...rows.map(e => e.join(','))].join('\n');
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement('a');
+    link.setAttribute('href', encodedUri);
+    link.setAttribute('download', `searches_export_${new Date().toISOString().slice(0, 10)}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    this.toastr.success(`Exported ${this.filteredSearchedList.length} search records to CSV.`);
   }
 }
 

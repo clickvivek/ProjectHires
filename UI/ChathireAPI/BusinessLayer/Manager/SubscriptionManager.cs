@@ -18,6 +18,7 @@ namespace BusinessLayer.Manager
         Task<UserQuotaListResponseDto> GetAllUsersQuotas(int page, int pageSize, string? search, string? filter, UserContext userContext);
         Task<bool> UpdateUserQuota(UpdateUserQuotaDto dto, UserContext userContext);
         Task<InitiateChatResultDto> InitiateChat(long userId, long chatUserId, UserContext userContext);
+        Task<CanDownloadResumeResultDto> CheckAndRecordDownloadAsync(long userId, string fileName, UserContext userContext);
     }
     public class SubscriptionManager : BaseManager<SubscriptionManager>, ISubscriptionManager
     {
@@ -150,6 +151,19 @@ namespace BusinessLayer.Manager
                 }
                 return await repo.InitiateChat(userId, chatUserId, userContext);
             }, "InitiateChat", userContext);
+        }
+
+        public async Task<CanDownloadResumeResultDto> CheckAndRecordDownloadAsync(long userId, string fileName, UserContext userContext)
+        {
+            return await ExecuteAsync<CanDownloadResumeResultDto>(async () =>
+            {
+                var repo = repositoryFactory.Get<IUserSubscriptionPlanRepository>();
+                if (userId <= 0 && userContext != null)
+                {
+                    userId = userContext.UserId;
+                }
+                return await repo.CheckAndRecordDownloadAsync(userId, fileName, userContext);
+            }, "CheckAndRecordDownloadAsync", userContext);
         }
     }
 }

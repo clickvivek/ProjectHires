@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -39,5 +39,17 @@ namespace BusinessEntityAndDTO.DTO
         public long? SubscriptionPlanId { get; set; }
 
         public bool? Active { get; set; }
+    }
+
+    public class CanDownloadResumeResultDto
+    {
+        public bool CanDownload { get; set; }
+        public int MaxDownloads { get; set; }
+        public int UsedDownloads { get; set; }
+        public int RemainingDownloads { get; set; }
+        public DateTime CycleEndDate { get; set; }
+        public int DaysRemainingInCycle { get; set; }
+        public bool AlreadyDownloaded { get; set; }
+        public string Message { get; set; } = string.Empty;
     }
 }

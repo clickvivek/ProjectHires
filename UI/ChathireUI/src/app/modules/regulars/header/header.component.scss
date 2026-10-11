@@ -355,8 +355,8 @@ header {
             transition: color 0.2s ease-in-out;
             display: inline-flex;
             align-items: center;
-            &:not(.referral-header-btn):hover,
-            &:not(.referral-header-btn).active {
+            &:not(.referral-header-btn):not(.btn):not(.btn-primary):hover,
+            &:not(.referral-header-btn):not(.btn):not(.btn-primary).active {
               color: #2E625D !important;
             }
 
@@ -413,8 +413,8 @@ header {
             @include hires-breakpoint("lt-lg") {
               font-size: 16px;
               padding: 0;
-              &:not(.referral-header-btn):hover,
-              &:not(.referral-header-btn).active {
+              &:not(.referral-header-btn):not(.btn):not(.btn-primary):hover,
+              &:not(.referral-header-btn):not(.btn):not(.btn-primary).active {
                 color: #2E625D !important;
               }
             }
@@ -430,6 +430,11 @@ header {
               padding: 0 16px;
               transition: background-color 0.2s ease-in-out;
               &:hover {
+                background-color: #2E625D !important;
+                border-color: #2E625D !important;
+                color: white !important;
+              }
+              &.active {
                 background-color: #2E625D !important;
                 border-color: #2E625D !important;
                 color: white !important;

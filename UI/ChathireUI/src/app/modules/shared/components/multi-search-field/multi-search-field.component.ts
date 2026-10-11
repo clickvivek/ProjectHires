@@ -63,6 +63,37 @@ export class MultiSearchFieldComponent implements OnInit, OnChanges, OnDestroy {
   getItemData(item: any): string {
     if (!item) return '';
     if (!this.fieldType) return '';
+
+    // If item represents a city location with state details, format cleanly: "City, StateCode StateName Zip, Country"
+    if (this.fieldType.includes('city1') && (item.city1 || item.stateCode || item.stateName)) {
+      const city = item.city1 ? String(item.city1).trim() : '';
+      const stateCode = item.stateCode ? String(item.stateCode).trim() : '';
+      const stateName = item.stateName ? String(item.stateName).trim() : '';
+      const zip = item.zip ? String(item.zip).trim() : '';
+      const country = item.countryName ? String(item.countryName).trim() : '';
+
+      // Combine stateCode and stateName with space, e.g. "NJ New Jersey"
+      let stateCombined = '';
+      if (stateCode && stateName) {
+        stateCombined = `${stateCode} ${stateName}`;
+      } else {
+        stateCombined = stateCode || stateName;
+      }
+
+      // If zip is present, append with space after state: "NJ New Jersey 08014"
+      let stateZipCombined = stateCombined;
+      if (zip) {
+        stateZipCombined = stateZipCombined ? `${stateZipCombined} ${zip}` : zip;
+      }
+
+      const locationParts: string[] = [];
+      if (city) locationParts.push(city);
+      if (stateZipCombined) locationParts.push(stateZipCombined);
+      if (country) locationParts.push(country);
+
+      return locationParts.join(', ');
+    }
+
     const fields = this.fieldType.split(',');
     const parts: string[] = [];
     fields.forEach((typeItem: string) => {
@@ -295,12 +326,19 @@ export class MultiSearchFieldComponent implements OnInit, OnChanges, OnDestroy {
 
   ngOnChanges(changes: SimpleChanges) {
 
-
-    if (!_.isEmpty(this.editValue) && this.isEdit && !this.fieldModel && _.isEmpty(this.selectedItem)) {
-      this.selectedItem = []
-      this.editValue.forEach(item => {
-        this.handleSelectedItem(item)
-      })
+    if (changes['editValue']) {
+      if (_.isEmpty(this.editValue)) {
+        this.selectedItem = [];
+        this.fieldModel = '';
+        setTimeout(() => {
+          this.handleInputHeight();
+        }, 50);
+      } else if (this.isEdit && !this.fieldModel && _.isEmpty(this.selectedItem)) {
+        this.selectedItem = [];
+        this.editValue.forEach(item => {
+          this.handleSelectedItem(item);
+        });
+      }
     }
 
   }

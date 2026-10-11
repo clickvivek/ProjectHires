@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -15,5 +15,6 @@ namespace BusinessEntityAndDTO.DTO
         public string? Description { get; set; }
 
         public long? UpdatedBy { get; set; }
+        public string? Country { get; set; }
     }
 }

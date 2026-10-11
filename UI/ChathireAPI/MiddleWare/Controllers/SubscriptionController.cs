@@ -148,5 +148,30 @@ namespace MiddleWare.Controllers
                 return await mgr.InitiateChat(userId, dto?.ChatUserId ?? 0, context ?? GetDummyUserContext());
             });
         }
+
+        [HttpGet]
+        [Route("CheckDownloadResume")]
+        public Task<Result<CanDownloadResumeResultDto>> CheckDownloadResume([FromQuery] string fileName, [FromQuery] long? userId = null)
+        {
+            return ExecuteAsync<CanDownloadResumeResultDto>(async () =>
+            {
+                var mgr = managerFactory.Get<ISubscriptionManager>();
+                UserContext context = null;
+                long targetUserId = 0;
+                try
+                {
+                    context = GetUserContext();
+                    if (context != null) targetUserId = context.UserId;
+                }
+                catch { }
+
+                if (targetUserId <= 0 && userId.HasValue && userId.Value > 0)
+                {
+                    targetUserId = userId.Value;
+                }
+
+                return await mgr.CheckAndRecordDownloadAsync(targetUserId, fileName, context ?? GetDummyUserContext());
+            });
+        }
     }
 }

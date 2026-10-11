@@ -23,6 +23,7 @@ export interface CandidateProfileSimplelistDto {
     canRelocate?: boolean | null;
     totalExp?: number | null;
     linkedIn?: string | null;
+    hideResume?: boolean | null;
     visaId?: number | null;
     cityId?: number | null;
     remoteOnly?: boolean | null;

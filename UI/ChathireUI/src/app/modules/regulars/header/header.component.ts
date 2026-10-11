@@ -64,7 +64,7 @@ export class HeaderComponent implements OnInit {
   }
 
   isAdmin() {
-    return Number(this.sessionService.userTypeId) === 7;
+    return Number(this.sessionService.userTypeId) === 7 || (this.user && Number(this.user.userTypeId) === 7);
   }
 
   isCandidate() {

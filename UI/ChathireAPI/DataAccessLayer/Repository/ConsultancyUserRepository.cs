@@ -1,5 +1,6 @@
-﻿using DataAccessLayer.Common;
+using DataAccessLayer.Common;
 using DataAccessLayer.Models;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,11 +21,10 @@ namespace DataAccessLayer.Repository
 
         public List<ConsultancyUser> CheckConsultancyUser(long? ConsultancyId, long? Userid)
         {
-            
-              
-            if(_context.ConsultancyUsers.Where(s => s.UserId == Userid).Count()>0)
+            var list = _context.ConsultancyUsers.AsNoTracking().Where(s => s.UserId == Userid).ToList();
+            if (list.Count > 0)
             {
-                return _context.ConsultancyUsers.Where(s => s.UserId == Userid).ToList();
+                return list;
             }
             return null;
         }

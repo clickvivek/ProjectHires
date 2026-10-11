@@ -1,4 +1,4 @@
-﻿using AutoMapper;
+using AutoMapper;
 using BusinessEntityAndDTO.Models;
 using BusinessLayer.Manager;
 using Microsoft.AspNetCore.Authorization;
@@ -28,7 +28,8 @@ namespace MiddleWare.Controllers
                 var loginMgr = managerFactory.Get<ILoginManager>();
 
                 var clientIp = GetClientIpAddress();
-                var result = await loginMgr.GenerateToken(model.EMail, model.Pwd, clientIp);
+                var clientLocation = GetClientLocationHeader();
+                var result = await loginMgr.GenerateToken(model.EMail, model.Pwd, clientIp, clientLocation);
 
                 var userFunctions = await loginMgr.UserFunction(result.Item3);
 
@@ -89,7 +90,8 @@ namespace MiddleWare.Controllers
                 var loginMgr = managerFactory.Get<ILoginManager>();
 
                 var clientIp = GetClientIpAddress();
-                var result = await loginMgr.GenerateGoogleToken(model.IdToken, clientIp);
+                var clientLocation = GetClientLocationHeader();
+                var result = await loginMgr.GenerateGoogleToken(model.IdToken, clientIp, clientLocation);
 
                 var userFunctions = await loginMgr.UserFunction(result.Item3);
 
@@ -185,26 +187,6 @@ namespace MiddleWare.Controllers
                 var loginMgr = managerFactory.Get<ILoginManager>();
                 return await loginMgr.UserFunction(GetUserContext());
             });
-        }
-
-        private string GetClientIpAddress()
-        {
-            try
-            {
-                if (HttpContext.Request.Headers.ContainsKey("X-Forwarded-For"))
-                {
-                    var forwardedHeader = HttpContext.Request.Headers["X-Forwarded-For"].ToString();
-                    if (!string.IsNullOrWhiteSpace(forwardedHeader))
-                    {
-                        return forwardedHeader.Split(',')[0].Trim();
-                    }
-                }
-                return HttpContext.Connection.RemoteIpAddress?.ToString();
-            }
-            catch
-            {
-                return null;
-            }
         }
     }
 }

@@ -271,6 +271,36 @@
     }
   }
 
+  .hide-resume-check-group {
+    background-color: #F8FAFC !important;
+    border: 1px solid #E2E8F0 !important;
+    border-radius: 8px !important;
+
+    .form-check-input {
+      width: 1.15rem;
+      height: 1.15rem;
+      margin-top: 0.15rem;
+      border: 1.5px solid #94A3B8;
+      border-radius: 4px;
+      cursor: pointer;
+
+      &:checked {
+        background-color: var(--primary-purple);
+        border-color: var(--primary-purple);
+      }
+
+      &:focus {
+        border-color: var(--primary-purple);
+        box-shadow: 0 0 0 3px rgba(112, 36, 109, 0.15);
+      }
+    }
+
+    .form-check-label {
+      cursor: pointer;
+      user-select: none;
+    }
+  }
+
   /* Success Screen Styling */
   .success-message {
     .bg-purple-brand {

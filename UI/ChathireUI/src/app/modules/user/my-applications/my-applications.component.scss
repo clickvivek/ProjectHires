@@ -3,6 +3,30 @@
   min-height: calc(100vh - 80px);
 }
 
+.filter-btn-group {
+  .btn {
+    font-weight: 500;
+    transition: all 0.2s ease;
+
+    &.btn-primary {
+      background-color: #39756F !important;
+      border-color: #39756F !important;
+      color: #FFFFFF !important;
+    }
+
+    &.btn-outline-secondary {
+      background-color: #FFFFFF;
+      border-color: #CBD5E1;
+      color: #475569 !important;
+
+      &:hover {
+        background-color: #F1F5F9;
+        color: #1E293B !important;
+      }
+    }
+  }
+}
+
 .company-logo-badge {
   width: 56px;
   height: 56px;

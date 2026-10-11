@@ -65,6 +65,33 @@ $chat-btn-color: #FFFFFF;
    &.disabled {
     opacity: 0.35;
    }
+   &.is-loading {
+     opacity: 0.85 !important;
+     pointer-events: none !important;
+     cursor: wait !important;
+
+     .chat-loading-spinner {
+       display: inline-block;
+       width: 14px;
+       height: 14px;
+       border: 2px solid rgba(255, 255, 255, 0.35);
+       border-radius: 50%;
+       border-top-color: #ffffff;
+       animation: chat-btn-spin 0.75s cubic-bezier(0.68, -0.55, 0.27, 1.55) infinite;
+       margin-right: 6px;
+       vertical-align: middle;
+       flex-shrink: 0;
+     }
+
+     .chat-icon, svg {
+       display: none !important;
+     }
+   }
+}
+
+@keyframes chat-btn-spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 }
 
 /* search jobs and hotlist */

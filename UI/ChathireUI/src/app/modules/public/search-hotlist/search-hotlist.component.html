@@ -107,9 +107,15 @@
                       </div>
 
                       <!-- Resume Actions -->
-                      <div class="bottom-box mt-3 d-flex align-items-center gap-2" *ngIf="item?.resume">
+                      <div class="bottom-box mt-3 d-flex align-items-center gap-2" *ngIf="item?.resume && !item?.hideResume">
                         <view-resume [doc]="item.resume"></view-resume>
                         <download-resume [doc]="item.resume"></download-resume>
+                      </div>
+                      <div class="bottom-box mt-3 d-flex align-items-center gap-2" *ngIf="item?.hideResume">
+                        <span class="badge bg-light text-muted border text-xs d-inline-flex align-items-center px-2 py-1">
+                          <span class="material-symbols-outlined fs-6 me-1 text-muted">visibility_off</span>
+                          Resume hidden by employer
+                        </span>
                       </div>
                     </div>
 

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 
 namespace DataAccessLayer.Models;
@@ -14,6 +14,7 @@ public partial class Visa
     public long? UpdatedBy { get; set; }
 
     public DateTime? Updated { get; set; }
+    public string? Country { get; set; }
 
     public virtual ICollection<CandidateProfile> CandidateProfiles { get; } = new List<CandidateProfile>();
 

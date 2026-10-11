@@ -210,8 +210,18 @@
                                   <div class="d-flex align-items-center gap-3">
                                     <!-- Logo or Stylized Monogram Avatar -->
                                     <div class="company-avatar-box d-flex align-items-center justify-content-center flex-shrink-0">
-                                      <img *ngIf="selectedJob?.companyLogo" [src]="selectedJob.companyLogo" [alt]="selectedJob.companyName" class="company-logo-img" />
-                                      <span *ngIf="!selectedJob?.companyLogo" class="company-avatar-letter">
+                                      <img
+                                        *ngIf="selectedJob?.companyLogo"
+                                        [src]="getCompanyLogoUrl(selectedJob.companyLogo)"
+                                        [alt]="selectedJob.companyName"
+                                        class="company-logo-img"
+                                        (error)="$any($event.target).style.display='none'; pageCardLogoFallback.style.display='flex'"
+                                      />
+                                      <span
+                                        #pageCardLogoFallback
+                                        class="company-avatar-letter"
+                                        [style.display]="selectedJob?.companyLogo ? 'none' : 'flex'"
+                                      >
                                         {{ getCompanyInitial(selectedJob.companyName) }}
                                       </span>
                                     </div>
@@ -268,14 +278,7 @@
                                   </div>
                                 </div>
 
-                                <!-- Website Direct Link CTA -->
-                                <div class="company-footer-cta mt-3 pt-3 border-top d-flex align-items-center justify-content-between flex-wrap gap-2" *ngIf="selectedJob?.companyWebsite">
-                                  <span class="text-xs text-muted">Direct Portal:</span>
-                                  <a [href]="selectedJob.companyWebsite" target="_blank" rel="noopener noreferrer" class="company-website-cta-link text-xs fw-semibold d-inline-flex align-items-center gap-1">
-                                    <span>Visit {{ getCleanWebsite(selectedJob.companyWebsite) }}</span>
-                                    <span class="material-symbols-outlined fs-6">open_in_new</span>
-                                  </a>
-                                </div>
+
 
                               </div>
                             </div>

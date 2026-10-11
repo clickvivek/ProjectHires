@@ -23,6 +23,9 @@
               <span class="candidate-name fw-semibold">
                 {{ item.candidateName }}
               </span>
+              <span *ngIf="item.hideResume" class="badge bg-warning bg-opacity-10 text-warning border border-warning text-xs px-1 py-0 ms-1" title="Resume Hidden from Recruiters">
+                <span class="material-symbols-outlined fs-6 align-middle">visibility_off</span>
+              </span>
             </div>
           </td>
 

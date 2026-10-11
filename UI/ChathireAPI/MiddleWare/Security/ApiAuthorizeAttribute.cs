@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using System.Security.Claims;
@@ -12,6 +12,41 @@ namespace Middleware.Security
         public ApiAuthorizeAttribute(params string[] claim) : base(typeof(ApiAuthorizeFilter))
         {
             Arguments = new object[] { claim };
+        }
+    }
+    public class AdminAuthorizeAttribute : TypeFilterAttribute
+    {
+        public AdminAuthorizeAttribute() : base(typeof(AdminAuthorizeFilter))
+        {
+            Arguments = Array.Empty<object>();
+        }
+    }
+    public class AdminAuthorizeFilter : IAuthorizationFilter
+    {
+        public void OnAuthorization(AuthorizationFilterContext context)
+        {
+            var user = context.HttpContext.User;
+            var isAuthenticated = user.Identity?.IsAuthenticated;
+
+            if (isAuthenticated != true)
+            {
+                context.Result = new UnauthorizedResult();
+                return;
+            }
+
+            // Check UserTypeId claim (7 = Admin / SuperAdmin, 1 = Consultant / Recruiter Admin if granted, etc.)
+            var userTypeClaim = user.FindFirst("UserTypeId")?.Value;
+            if (int.TryParse(userTypeClaim, out int userTypeId))
+            {
+                // UserTypeId 7 is the dedicated System / Super Admin
+                if (userTypeId == 7)
+                {
+                    return;
+                }
+            }
+
+            // If not an admin role, deny with 403 Forbidden
+            context.Result = new ForbidResult();
         }
     }
     public class ApiAllowAnonymousAttribute : AllowAnonymousAttribute

@@ -157,47 +157,65 @@
 }
 
 .btn-social-whatsapp {
-  background-color: #ffffff;
-  border: 1.5px solid #25D366;
-  color: #128C7E;
+  background-color: #ffffff !important;
+  border: 1.5px solid #25D366 !important;
+  color: #128C7E !important;
+  min-width: auto !important;
   transition: all 0.2s ease-in-out;
 
+  span {
+    color: #128C7E !important;
+  }
+
   svg {
-    fill: #25D366;
+    fill: #25D366 !important;
     transition: fill 0.2s ease-in-out;
   }
 
   &:hover {
-    background-color: #25D366;
-    border-color: #25D366;
-    color: #ffffff;
+    background-color: #25D366 !important;
+    border-color: #25D366 !important;
+    color: #ffffff !important;
     box-shadow: 0 4px 10px rgba(37, 211, 102, 0.3);
 
+    span {
+      color: #ffffff !important;
+    }
+
     svg {
-      fill: #ffffff;
+      fill: #ffffff !important;
     }
   }
 }
 
 .btn-social-linkedin {
-  background-color: #ffffff;
-  border: 1.5px solid #0A66C2;
-  color: #0A66C2;
+  background-color: #ffffff !important;
+  border: 1.5px solid #0A66C2 !important;
+  color: #0A66C2 !important;
+  min-width: auto !important;
   transition: all 0.2s ease-in-out;
 
+  span {
+    color: #0A66C2 !important;
+  }
+
   svg {
-    fill: #0A66C2;
+    fill: #0A66C2 !important;
     transition: fill 0.2s ease-in-out;
   }
 
   &:hover {
-    background-color: #0A66C2;
-    border-color: #0A66C2;
-    color: #ffffff;
+    background-color: #0A66C2 !important;
+    border-color: #0A66C2 !important;
+    color: #ffffff !important;
     box-shadow: 0 4px 10px rgba(10, 102, 194, 0.3);
 
+    span {
+      color: #ffffff !important;
+    }
+
     svg {
-      fill: #ffffff;
+      fill: #ffffff !important;
     }
   }
 }

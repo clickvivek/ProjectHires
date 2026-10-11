@@ -9,11 +9,15 @@
 .confirm-apply-wrapper {
   display: flex;
   flex-direction: column;
-  max-height: 88vh;
+  max-height: calc(100vh - 30px);
   width: 100%;
   background: #ffffff;
   border-radius: 12px;
   overflow: hidden;
+
+  .text-2xs {
+    font-size: 10.5px !important;
+  }
 
   .modal-header-bar {
     flex-shrink: 0;
@@ -21,28 +25,52 @@
     border-bottom: 1px solid #e2e8f0;
 
     .modal-header-icon-box {
-      width: 36px;
-      height: 36px;
+      width: 32px;
+      height: 32px;
       border-radius: 8px;
-      background: #eff6ff;
-      color: #1668bd;
+      background: #F3E8F5;
+      color: #7E2284;
     }
 
     .modal-title-text {
-      font-size: 16px;
-      color: #0f172a;
+      font-size: 15px;
+      font-weight: 600;
+      color: #1F2937;
     }
 
     .modal-subtitle-text {
-      font-size: 12px;
-      color: #64748b;
+      font-size: 11.5px;
+      color: #475569;
     }
 
     .modal-close-btn {
-      opacity: 0.6;
-      transition: opacity 0.15s ease;
+      width: 30px;
+      height: 30px;
+      border-radius: 6px;
+      background-color: transparent;
+      color: #475569;
+      cursor: pointer;
+      padding: 0;
+      transition: background-color 0.15s ease, color 0.15s ease;
+
+      .material-symbols-outlined {
+        font-size: 20px;
+        line-height: 1;
+        color: #475569;
+      }
+
       &:hover {
-        opacity: 1;
+        background-color: #F1F5F9;
+        color: #1F2937;
+
+        .material-symbols-outlined {
+          color: #1F2937;
+        }
+      }
+
+      &:focus-visible {
+        outline: 2px solid #7E2284;
+        outline-offset: 2px;
       }
     }
   }
@@ -50,7 +78,7 @@
   .content {
     flex: 1 1 auto;
     overflow-y: auto;
-    max-height: calc(88vh - 65px);
+    max-height: calc(100vh - 85px);
     padding: 0;
 
     // Custom scrollbar
@@ -74,24 +102,52 @@
 
     .desp-area {
       .job-snapshot-card {
-        background: #f8fafc;
-        border: 1px solid #e2e8f0;
+        background: #F8FAFC;
+        border: 1px solid #E2E8F0;
 
         .company-badge-circle {
-          width: 40px;
-          height: 40px;
-          border-radius: 10px;
-          background-color: #e2e8f0;
-          color: #1e293b;
+          width: 38px;
+          height: 38px;
+          border-radius: 8px;
+          background-color: #F1F5F9;
+          color: #64748B;
         }
 
         .job-title-highlight {
           font-size: 15px;
+          font-weight: 600;
+          color: #1F2937;
           line-height: 1.35;
         }
 
         .job-meta-row {
-          font-size: 12.5px;
+          font-size: 12px;
+          color: #475569;
+
+          .company-name {
+            color: #0F766E;
+            font-weight: 600;
+          }
+
+          .meta-dot {
+            color: #64748B;
+          }
+
+          .location-item {
+            color: #475569;
+          }
+
+          .meta-icon {
+            color: #64748B;
+          }
+        }
+
+        .job-id-badge {
+          background-color: #FFFFFF;
+          color: #475569;
+          border: 1px solid #E2E8F0;
+          font-size: 11px;
+          font-weight: 500;
         }
       }
 
@@ -99,9 +155,9 @@
         width: 44px;
         height: 44px;
         border-radius: 50%;
-        background-color: #72246c;
+        background-color: #7E2284;
         color: #ffffff;
-        font-weight: 700;
+        font-weight: 600;
         font-size: 1.1rem;
         flex-shrink: 0;
       }
@@ -130,14 +186,14 @@
           }
 
           &:hover {
-            border-color: #1668bd;
-            background-color: #f8fafc;
+            border-color: #7E2284;
+            background-color: #FAF5FF;
             transform: translateY(-1px);
-            box-shadow: 0 4px 12px rgba(22, 104, 189, 0.08);
+            box-shadow: 0 4px 12px rgba(126, 34, 132, 0.08);
 
             .arrow-icon {
               transform: translateX(3px);
-              color: #1668bd !important;
+              color: #7E2284 !important;
             }
           }
         }

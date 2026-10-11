@@ -666,7 +666,7 @@ namespace BusinessLayer.Services
                     Logo = dto.AzureLogoFileName,
                     Active = true,
                     StatusId = 1,
-                    IsDirectCompany = true,
+                    IsDirectCompany = false,
                     Updated = now,
                     UpdatedBy = adminUserId.HasValue && adminUserId.Value > 0 ? adminUserId.Value : 1
                 };

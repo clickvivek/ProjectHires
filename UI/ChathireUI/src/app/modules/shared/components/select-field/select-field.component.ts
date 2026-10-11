@@ -79,6 +79,15 @@ export class SelectFieldComponent implements OnInit, DoCheck {
   }
 
   ngDoCheck() {
+    if(this.isEdit && this.editValue && !this.fieldModel && !_.isEmpty(this.fieldList)) {
+      let newData = this.fieldList?.filter(item => {
+        return item.id == this.editValue
+      })
+      if (newData && newData.length > 0) {
+        this.fieldModel = newData[0][this.fieldType]
+        this.inputChange.emit(newData[0]);
+      }
+    }
     if(this.fieldModel == "null" || this.fieldModel == "undefined" || this.fieldModel == 0){
       this.fieldModel = null;
     }

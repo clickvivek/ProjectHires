@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 
 namespace DataAccessLayer.Models;
@@ -12,6 +12,8 @@ public partial class JobType
     public DateTime? Updated { get; set; }
 
     public long? UpdatedBy { get; set; }
+
+    public string? Country { get; set; }
 
     public virtual ICollection<CandidatePrefJobType> CandidatePrefJobTypes { get; } = new List<CandidatePrefJobType>();
 

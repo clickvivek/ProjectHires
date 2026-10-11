@@ -53,58 +53,42 @@
     </div>
 
     <!-- Applied Jobs List -->
-    <div *ngIf="!isLoading && !errorMessage && appliedJobs.length > 0" class="applied-jobs-list d-flex flex-column gap-3">
-      <div *ngFor="let job of appliedJobs" class="applied-job-card bg-white border rounded-3 p-3 shadow-xs">
+    <div *ngIf="!isLoading && !errorMessage && appliedJobs.length > 0" class="applied-jobs-list d-flex flex-column gap-2">
+      <div *ngFor="let job of appliedJobs" class="applied-job-card bg-white border rounded-3 p-2 px-3 shadow-xs">
         
-        <!-- Top Row: Job Title + Status Pill -->
-        <div class="d-flex align-items-start justify-content-between gap-2 mb-2 flex-wrap">
-          <div class="flex-grow-1 min-w-0">
-            <h5 class="job-title fw-bold text-dark mb-1">
-              {{ job.jobTitle }}
-            </h5>
-            <div class="d-flex align-items-center gap-3 text-muted small flex-wrap">
-              <span class="company-name fw-medium text-dark-700" *ngIf="job.companyName">
-                <span class="material-symbols-outlined fs-6 align-middle me-1 text-muted">corporate_fare</span>
-                {{ job.companyName }}
-              </span>
-              <span class="location-text" *ngIf="job.jobLocation">
-                <span class="material-symbols-outlined fs-6 align-middle me-1 text-muted">location_on</span>
-                {{ job.jobLocation }}
-              </span>
-              <span class="comp-badge fw-semibold text-teal" *ngIf="job.fromAmt || job.toAmt">
-                <span class="material-symbols-outlined fs-6 align-middle me-1">payments</span>
-                {{ formatCompensation(job.fromAmt, job.toAmt) }}
-              </span>
-            </div>
-          </div>
-
-          <!-- Status Badge -->
-          <div class="flex-shrink-0">
-            <span class="status-pill text-uppercase fw-bold text-xs" [ngClass]="getStatusBadgeClass(job.statusId, job.statusName)">
-              {{ job.statusName || 'Submitted' }}
-            </span>
-          </div>
+        <!-- Row 1: Job Title + Status Pill -->
+        <div class="d-flex align-items-center justify-content-between gap-2 mb-1">
+          <h6 class="job-title fw-bold text-dark mb-0 text-truncate">
+            {{ job.jobTitle }}
+          </h6>
+          <span class="status-pill text-uppercase fw-bold text-xs flex-shrink-0" [ngClass]="getStatusBadgeClass(job.statusId, job.statusName)">
+            {{ job.statusName || 'Submitted' }}
+          </span>
         </div>
 
-        <!-- Applied Date and Resume Action Row -->
-        <div class="d-flex align-items-center justify-content-between pt-2 border-top mt-2 flex-wrap gap-2">
-          <div class="d-flex align-items-center gap-2 text-muted text-xs">
-            <span class="material-symbols-outlined fs-6">calendar_today</span>
-            <span>Applied on <strong>{{ formatDate(job.appliedDate) }}</strong></span>
-            <span class="text-muted-400" *ngIf="getRelativeTime(job.appliedDate)">({{ getRelativeTime(job.appliedDate) }})</span>
-          </div>
-
-          <div class="d-flex align-items-center gap-2" *ngIf="job.resumeDoc">
-            <button type="button" class="btn btn-sm btn-subtle-purple d-inline-flex align-items-center gap-1" (click)="openResume(job.resumeDoc, $event)" title="View submitted resume">
-              <span class="material-symbols-outlined fs-6">description</span>
-              <span>View Resume</span>
-              <span class="material-symbols-outlined fs-6">open_in_new</span>
-            </button>
-          </div>
+        <!-- Row 2: Metadata (Company, Location, Compensation, Applied Date) -->
+        <div class="d-flex align-items-center gap-3 text-muted text-xs flex-wrap">
+          <span class="company-name fw-medium text-dark-700" *ngIf="job.companyName">
+            <span class="material-symbols-outlined fs-6 align-middle me-1 text-muted">corporate_fare</span>
+            {{ job.companyName }}
+          </span>
+          <span class="location-text" *ngIf="job.jobLocation">
+            <span class="material-symbols-outlined fs-6 align-middle me-1 text-muted">location_on</span>
+            {{ job.jobLocation }}
+          </span>
+          <span class="comp-badge fw-semibold text-teal" *ngIf="job.fromAmt || job.toAmt">
+            <span class="material-symbols-outlined fs-6 align-middle me-1">payments</span>
+            {{ formatCompensation(job.fromAmt, job.toAmt) }}
+          </span>
+          <span class="applied-date-text d-inline-flex align-items-center">
+            <span class="material-symbols-outlined fs-6 align-middle me-1 text-muted">calendar_today</span>
+            Applied on <strong>{{ formatDate(job.appliedDate) }}</strong>
+            <span class="text-muted-400 ms-1" *ngIf="getRelativeTime(job.appliedDate)">({{ getRelativeTime(job.appliedDate) }})</span>
+          </span>
         </div>
 
         <!-- Comments / Notes if any -->
-        <div class="job-comment-callout mt-2 p-2 px-3 rounded-2 bg-light border-start border-3 border-purple text-xs text-muted" *ngIf="job.comment">
+        <div class="job-comment-callout mt-1 p-1 px-2 rounded-2 bg-light border-start border-3 border-purple text-xs text-muted" *ngIf="job.comment">
           <span class="fw-semibold text-dark me-1">Note:</span>{{ job.comment }}
         </div>
 

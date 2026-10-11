@@ -65,6 +65,27 @@ namespace BusinessLayer.Services
                     return result;
                 }
 
+                // Check if user provided a LinkedIn company or school URL directly
+                bool isLinkedInInput = domain.Equals("linkedin.com", StringComparison.OrdinalIgnoreCase)
+                    || domain.EndsWith(".linkedin.com", StringComparison.OrdinalIgnoreCase);
+
+                if (isLinkedInInput)
+                {
+                    string slug = DataAccessLayer.Repository.ConsultancyRepository.ExtractLinkedInSlug(normalizedUrl);
+                    if (!string.IsNullOrEmpty(slug))
+                    {
+                        result.LinkedinUrl = NormalizeLinkedInUrl(normalizedUrl);
+                        // Convert slug to human-readable company name (e.g., "microsoft" -> "Microsoft")
+                        result.CompanyName = HumanizeDomain(slug);
+                    }
+                    // For a LinkedIn URL, linkedin.com is not the company's website or domain
+                    result.NormalizedWebsiteUrl = string.Empty;
+                    result.DomainName = string.Empty;
+                    result.Status = "Completed";
+                    result.StatusMessage = "Extracted company details from LinkedIn URL.";
+                    return result;
+                }
+
                 // Default fallback name from domain
                 string fallbackName = HumanizeDomain(domain);
                 result.CompanyName = fallbackName;
@@ -218,20 +239,27 @@ namespace BusinessLayer.Services
             string linkedinSlug = DataAccessLayer.Repository.ConsultancyRepository.ExtractLinkedInSlug(linkedin);
             string cleanName = name?.Trim().ToLowerInvariant() ?? string.Empty;
 
+            // Set of domains that should never be used to match companies by domain
+            var genericDomains = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+            {
+                "linkedin.com", "facebook.com", "twitter.com", "x.com", "instagram.com", "youtube.com", "google.com", "github.com"
+            };
+
             // Search for existing record by domain, linkedin, or exact name
             Consultancy? existing = null;
 
-            if (!string.IsNullOrEmpty(domain))
+            if (!string.IsNullOrEmpty(domain) && !genericDomains.Contains(domain))
             {
+                // Match exact domain or clean host (prevent substring false positives like judge.com matching utm_source=linkedin.com)
                 existing = await _context.Consultancies.FirstOrDefaultAsync(c => 
-                    (c.Domainname != null && (c.Domainname.ToLower() == domain || c.Domainname.ToLower().Contains(domain) || domain.Contains(c.Domainname.ToLower()))) || 
-                    (c.Website != null && c.Website.ToLower().Contains(domain)));
+                    (c.Domainname != null && c.Domainname.ToLower() == domain) ||
+                    (c.Website != null && (c.Website.ToLower() == domain || c.Website.ToLower() == "http://" + domain || c.Website.ToLower() == "https://" + domain || c.Website.ToLower() == "https://www." + domain || c.Website.ToLower() == "http://www." + domain)));
             }
 
             if (existing == null && !string.IsNullOrEmpty(linkedinSlug))
             {
                 existing = await _context.Consultancies.FirstOrDefaultAsync(c => 
-                    c.Linkedin != null && c.Linkedin.ToLower().Contains(linkedinSlug));
+                    c.Linkedin != null && (c.Linkedin.ToLower() == linkedin.ToLower() || c.Linkedin.ToLower().Contains("/company/" + linkedinSlug) || c.Linkedin.ToLower().Contains("/school/" + linkedinSlug)));
             }
 
             if (existing == null && !string.IsNullOrEmpty(cleanName))
@@ -294,7 +322,7 @@ namespace BusinessLayer.Services
                     Logo = string.IsNullOrEmpty(logo) ? null : logo,
                     Active = true,
                     StatusId = 1,
-                    IsDirectCompany = true,
+                    IsDirectCompany = false,
                     Updated = now,
                     UpdatedBy = adminUserId.HasValue && adminUserId.Value > 0 ? adminUserId.Value : 1
                 };

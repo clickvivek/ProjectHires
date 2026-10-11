@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -11,6 +11,7 @@ namespace BusinessEntityAndDTO.DTO
         public short Id { get; set; }
 
         public string Description { get; set; } = null!;
+        public string? Country { get; set; }
 
     }
 

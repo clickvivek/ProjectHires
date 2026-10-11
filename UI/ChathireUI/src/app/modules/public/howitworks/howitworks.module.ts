@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 
 import { HowitworksRoutingModule } from './howitworks-routing.module';
 import { HowitworksComponent } from './howitworks.component';
-
+import { SharedModule } from 'src/app/modules/shared/shared.module';
 
 @NgModule({
   declarations: [
@@ -11,7 +11,8 @@ import { HowitworksComponent } from './howitworks.component';
   ],
   imports: [
     CommonModule,
-    HowitworksRoutingModule
+    HowitworksRoutingModule,
+    SharedModule.forRoot()
   ]
 })
 export class HowitworksModule { }

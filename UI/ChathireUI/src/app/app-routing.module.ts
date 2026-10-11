@@ -6,6 +6,7 @@ import { AdminGuard } from './core/auth/guards/admin.guard';
 
 const routes: Routes = [
   { path: 'home', canActivate: [ AuthGuard ], loadChildren: () => import('./modules/public/home/home.module').then(m => m.HomeModule) },
+  { path: 'how-it-works', loadChildren: () => import('./modules/public/howitworks/howitworks.module').then(m => m.HowitworksModule) },
   { path: 'about', loadChildren: () => import('./modules/public/about/about.module').then(m => m.AboutModule) },
   { path: 'contact', loadChildren: () => import('./modules/public/contact/contact.module').then(m => m.ContactModule) },
   { path: 'faq', loadChildren: () => import('./modules/public/faq/faq.module').then(m => m.FaqModule) },

@@ -295,6 +295,7 @@ public partial class HiresContext : DbContext
                 .IsUnicode(false);
             entity.Property(e => e.Updated).HasColumnType("datetime");
             entity.Property(e => e.VisaExpiryDate).HasColumnType("date");
+            entity.Property(e => e.HideResume).HasDefaultValue(false);
 
             entity.HasOne(d => d.AvailabilityNavigation).WithMany(p => p.CandidateProfiles)
                 .HasForeignKey(d => d.Availability)

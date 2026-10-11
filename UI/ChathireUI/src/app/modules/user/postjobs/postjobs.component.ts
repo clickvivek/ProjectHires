@@ -1,5 +1,6 @@
-import { Component } from '@angular/core';
-
+import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
+import { AuthService } from 'src/app/core/auth/auth.service';
 import _ from 'underscore';
 
 @Component({
@@ -7,12 +8,26 @@ import _ from 'underscore';
   templateUrl: './postjobs.component.html',
   styleUrls: ['./postjobs.component.scss']
 })
-export class PostjobsComponent  {
+export class PostjobsComponent implements OnInit {
 
-  isJobPosted:boolean = false;
+  isJobPosted: boolean = false;
+  isLoggedIn: boolean = false;
+  showFormDirectly: boolean = false;
 
-  handleJobPost(event) {
-    this.isJobPosted = event
+  constructor(
+    private authService: AuthService,
+    public router: Router
+  ) {}
+
+  ngOnInit(): void {
+    this.isLoggedIn = this.authService.isLoggedIn();
   }
 
+  handleJobPost(event: any): void {
+    this.isJobPosted = event;
+  }
+
+  startDirectPosting(): void {
+    this.showFormDirectly = true;
+  }
 }

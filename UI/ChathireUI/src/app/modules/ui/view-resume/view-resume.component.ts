@@ -1,6 +1,8 @@
 import { Component, Input, ViewChild, SimpleChanges, TemplateRef, ViewEncapsulation } from '@angular/core';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
+import { ToastrService } from 'ngx-toastr';
 import { AuthService } from 'src/app/core/auth/auth.service';
+import { SessionService } from 'src/app/core/session/session.service';
 import { LoginModalComponent } from 'src/app/modules/shared/components/login-modal/login-modal.component';
 import { FileDownloadService } from 'src/app/modules/shared/services/file-download.service';
 
@@ -24,7 +26,9 @@ export class ViewResumeComponent {
 
   constructor(
     private authService: AuthService,
+    private sessionService: SessionService,
     private fileDownloadService: FileDownloadService,
+    private toastr: ToastrService,
     public dialog: MatDialog
   ) {}
 
@@ -84,6 +88,30 @@ export class ViewResumeComponent {
 
   downloadResume() {
     if (!this.doc) return;
+
+    const currentUserId = this.sessionService.userId;
+
+    this.fileDownloadService.checkDownloadResume(this.doc, currentUserId).subscribe({
+      next: (res: any) => {
+        const checkResult = res?.value;
+        if (checkResult && !checkResult.canDownload) {
+          this.toastr.warning(
+            checkResult.message || 'You have reached your resume download limit for the current cycle.',
+            'Download Limit Reached',
+            { timeOut: 7000 }
+          );
+          return;
+        }
+
+        this.executeFileDownload();
+      },
+      error: () => {
+        this.executeFileDownload();
+      }
+    });
+  }
+
+  private executeFileDownload() {
     this.fileDownloadService.downloadFile(this.doc, '1', 'resumes').subscribe({
       next: (res: any) => {
         const blob = res.body;
@@ -98,7 +126,15 @@ export class ViewResumeComponent {
           setTimeout(() => window.URL.revokeObjectURL(objectURL), 1000);
         }
       },
-      error: () => {
+      error: (err: any) => {
+        if (err?.status === 403) {
+          this.toastr.warning(
+            'Resume download quota exceeded for your subscription plan.',
+            'Download Limit Reached',
+            { timeOut: 7000 }
+          );
+          return;
+        }
         const finalUrl = `https://hiresblob.blob.core.windows.net/resumes/${this.doc}`;
         const link = document.createElement('a');
         link.href = finalUrl;

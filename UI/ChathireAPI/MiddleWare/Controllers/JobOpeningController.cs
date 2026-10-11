@@ -268,7 +268,8 @@ namespace MiddleWare.Controllers
                 }
                 catch { }
 
-                string ipAddress = HttpContext?.Connection?.RemoteIpAddress?.ToString() ?? string.Empty;
+                string ipAddress = GetClientIpAddress();
+                string? clientLocation = GetClientLocationHeader();
                 var searchedMgr = managerFactory.Get<ISearchedManager>();
                 string? extraFilters = null;
                 var filterParts = new List<string>();
@@ -282,7 +283,7 @@ namespace MiddleWare.Controllers
                 {
                     try
                     {
-                        await searchedMgr.LogSearchAsync("JobSearch", job.searchStrings, null, job.cityIds, results?.Count ?? 0, userId, ipAddress, extraFilters);
+                        await searchedMgr.LogSearchAsync("JobSearch", job.searchStrings, clientLocation, job.cityIds, results?.Count ?? 0, userId, ipAddress, extraFilters);
                     }
                     catch { }
                 });

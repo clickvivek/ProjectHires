@@ -245,6 +245,10 @@
         letter-spacing: -0.1px;
       }
 
+      .referral-supporting-text {
+        color: #E9D5FF !important;
+      }
+
       .referral-cta-btn {
         font-size: 12px;
         font-weight: 600;
@@ -429,12 +433,12 @@
       transition: all 0.2s ease-in-out;
 
       &::placeholder {
-        color: #98A2B3;
+        color: #64748B;
       }
 
       &:focus {
-        border-color: #70246D !important;
-        box-shadow: 0 0 0 3px rgba(112, 36, 109, 0.12) !important;
+        border-color: #7E2284 !important;
+        box-shadow: 0 0 0 3px rgba(126, 34, 132, 0.12) !important;
         outline: none;
       }
     }
@@ -456,10 +460,10 @@
     }
   }
 
-  .btn-subtle-purple {
+  .btn-subtle-purple, a.btn-subtle-purple {
     height: 38px;
-    background-color: #F5EDF5;
-    color: #70246D;
+    background-color: #F3E8F5 !important;
+    color: #7E2284 !important;
     font-size: 13.5px;
     font-weight: 600;
     border-radius: 8px;
@@ -470,9 +474,22 @@
     display: inline-flex;
     align-items: center;
 
+    span, .material-symbols-outlined {
+      color: #7E2284 !important;
+    }
+
     &:hover {
-      background-color: #E7D5E6;
-      color: #5C1C59;
+      background-color: #E7D5E6 !important;
+      color: #681C6D !important;
+
+      span, .material-symbols-outlined {
+        color: #681C6D !important;
+      }
+    }
+
+    &:focus-visible {
+      outline: 2px solid #7E2284 !important;
+      outline-offset: 2px !important;
     }
   }
 
@@ -740,19 +757,32 @@
   }
 }
 
-.btn-subtle-purple {
-  background-color: #F5EDF5;
-  color: #70246D;
-  font-size: 13px;
-  font-weight: 600;
-  border-radius: 8px;
-  padding: 6px 14px;
-  border: none;
-  transition: all 0.2s ease-in-out;
+.btn-subtle-purple, a.btn-subtle-purple {
+  background-color: #F3E8F5 !important;
+  color: #7E2284 !important;
+  font-size: 13px !important;
+  font-weight: 600 !important;
+  border-radius: 8px !important;
+  padding: 6px 14px !important;
+  border: none !important;
+  transition: all 0.2s ease-in-out !important;
+
+  span, .material-symbols-outlined {
+    color: #7E2284 !important;
+  }
 
   &:hover {
-    background-color: #E7D5E6;
-    color: #5C1C59;
+    background-color: #E7D5E6 !important;
+    color: #681C6D !important;
+
+    span, .material-symbols-outlined {
+      color: #681C6D !important;
+    }
+  }
+
+  &:focus-visible {
+    outline: 2px solid #7E2284 !important;
+    outline-offset: 2px !important;
   }
 }
 

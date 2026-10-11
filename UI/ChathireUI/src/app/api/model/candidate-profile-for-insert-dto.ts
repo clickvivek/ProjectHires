@@ -29,6 +29,7 @@ export interface CandidateProfileForInsertDto {
     statusId?: number;
     linkedIn?: string | null;
     resume?: string | null;
+    hideResume?: boolean | null;
     availability?: number | null;
     visaId?: number | null;
     visaExpiryDate?: string | null;

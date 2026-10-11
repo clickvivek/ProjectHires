@@ -127,6 +127,39 @@
       </div>
 
       <div class="row">
+        <div class="col-sm-6">
+          <div class="input-box select-box">
+            <div class="form-group">
+              <label for="country"
+                >Country <span class="req">*</span></label
+              >
+              <select
+                class="form-control form-select"
+                id="country"
+                name="country"
+                [(ngModel)]="formData.country"
+                (ngModelChange)="onCountrySelectionChange($event)"
+                required
+                style="height: 48px; border-radius: 6px; font-size: 14px; font-weight: 500; cursor: pointer;"
+              >
+                <option value="USA">USA</option>
+                <option value="Canada">Canada</option>
+              </select>
+              <div
+                class="mt-2"
+                *ngIf="
+                  postJobsForm.submitted &&
+                  postJobsForm.controls['country']?.invalid
+                "
+              >
+                <div class="input-field-message">
+                  Country required
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
         <div class="col-sm-12">
           <div class="input-box">
             <div class="form-group">
@@ -195,9 +228,9 @@
           <div class="input-box search-box">
             <app-multi-search-field
               fieldName="cityId"
-              fieldText="Job Location"
+              [fieldText]="'Job Location (' + (formData.country || 'USA') + ')'"
               fieldType="city1,stateName,stateCode,zip,countryName"
-              fieldPlaceholder="Enter Zipcode or City Name"
+              [fieldPlaceholder]="formData.country === 'Canada' ? 'Enter Canadian City or Postal Code' : 'Enter US City or Zip Code'"
               [fieldRequired]="!isRemoteJob()"
               [fieldList]="selectLocationList"
               fieldItemMaxLimit="5"
@@ -225,42 +258,31 @@
         </div>
 
         <div class="col-sm-6" *ngIf="isRemoteJob()">
-          <div class="input-box select-box">
-            <app-multi-select-field
-              fieldName="country"
-              fieldText="Candidate Country"
-              [fieldRequired]="true"
-              fieldPlaceholder="Select Country"
-              fieldType="name"
-              [fieldList]="selectCountryList"
-              fieldItemMinLimit="1"
-              [isEdit]="isEdit"
-              [editValue]="selectedCountryItems"
-              (inputChange)="onCountryChange($event)"
-            >
-            </app-multi-select-field>
-            <div
-              class="my-3"
-              *ngIf="
-                postJobsForm.submitted &&
-                postJobsForm.controls['country']?.invalid
-              "
-            >
-              <div
-                class="input-field-message"
-                *ngIf="postJobsForm.controls['country']?.errors?.['required']"
-              >
-                Candidate country required
-              </div>
+          <div class="input-box">
+            <div class="form-group">
+              <label>Job Location</label>
+              <input
+                type="text"
+                class="form-control"
+                [value]="'Remote (' + (formData.country || 'USA') + ')'"
+                disabled
+                readonly
+                style="height: 48px; border-radius: 6px; background-color: #f8fafc; font-weight: 500;"
+              />
             </div>
           </div>
         </div>
 
         <div class="col-sm-12">
           <div class="position-type-chips-wrapper">
-            <label class="form-label"
-              >Position Type <span class="req text-danger font-medium ms-1">*</span></label
-            >
+            <div class="d-flex align-items-center justify-content-between mb-1">
+              <label class="form-label mb-0"
+                >Position Type <span class="req text-danger font-medium ms-1">*</span></label
+              >
+              <span *ngIf="isDirectCompany" class="badge bg-primary-subtle text-primary border border-primary-subtle small fw-normal py-1 px-2">
+                <span class="material-symbols-outlined align-middle fs-6 me-1">verified</span>Direct Company (Full-time only)
+              </span>
+            </div>
             <div class="chips-container">
               <button
                 type="button"
@@ -532,9 +554,9 @@
                 </div>
                 <div class="col-sm-4 col-12 mb-2 mb-sm-0">
                   <label style="font-size: 12px; color: #475569; margin-bottom: 4px;">From Salary Range</label>
-                  <div class="input-group">
-                    <div class="input-group-prepend">
-                      <span class="input-group-text" style="background: #fff; font-size: 13px; color: #64748b; font-weight: 600;">$</span>
+                  <div class="input-group align-items-stretch" style="height: 38px;">
+                    <div class="input-group-prepend d-flex">
+                      <span class="input-group-text d-flex align-items-center justify-content-center" style="background: #fff; font-size: 13px; color: #64748b; font-weight: 600; height: 38px; border-radius: 6px 0 0 6px; border-right: none; padding: 0 12px; line-height: 1;">$</span>
                     </div>
                     <input
                       type="number"
@@ -543,15 +565,15 @@
                       [(ngModel)]="formData.salaryFrom"
                       name="salaryFrom"
                       min="0"
-                      style="height: 38px; border-radius: 0 6px 6px 0; font-size: 13px;"
+                      style="height: 38px; border-radius: 0 6px 6px 0; font-size: 13px; border-left: none;"
                     />
                   </div>
                 </div>
                 <div class="col-sm-4 col-12">
                   <label style="font-size: 12px; color: #475569; margin-bottom: 4px;">To Salary Range</label>
-                  <div class="input-group">
-                    <div class="input-group-prepend">
-                      <span class="input-group-text" style="background: #fff; font-size: 13px; color: #64748b; font-weight: 600;">$</span>
+                  <div class="input-group align-items-stretch" style="height: 38px;">
+                    <div class="input-group-prepend d-flex">
+                      <span class="input-group-text d-flex align-items-center justify-content-center" style="background: #fff; font-size: 13px; color: #64748b; font-weight: 600; height: 38px; border-radius: 6px 0 0 6px; border-right: none; padding: 0 12px; line-height: 1;">$</span>
                     </div>
                     <input
                       type="number"
@@ -560,7 +582,7 @@
                       [(ngModel)]="formData.salaryTo"
                       name="salaryTo"
                       min="0"
-                      style="height: 38px; border-radius: 0 6px 6px 0; font-size: 13px;"
+                      style="height: 38px; border-radius: 0 6px 6px 0; font-size: 13px; border-left: none;"
                     />
                   </div>
                 </div>

@@ -125,6 +125,18 @@
           <span>Skills</span>
           <span *ngIf="skillsSummary.totalCount > 0" class="badge rounded-pill bg-purple text-white ms-1">{{ skillsSummary.totalCount }}</span>
         </button>
+        <button
+          class="nav-link d-flex align-items-center gap-2"
+          [class.active]="activeTab === 'searched-analytics'"
+          (click)="setTab('searched-analytics')"
+          type="button"
+        >
+          <span class="material-symbols-outlined fs-5">saved_search</span>
+          <span>Searched</span>
+          <span *ngIf="searchedAnalytics.searchesToday > 0" class="badge rounded-pill bg-primary ms-1">
+            {{ searchedAnalytics.searchesToday }} today
+          </span>
+        </button>
       </div>
     </div>
 
@@ -772,6 +784,26 @@
                 <span>Inactive</span>
                 <span class="badge-count">{{ inactiveCompaniesCount }}</span>
               </button>
+              <button
+                type="button"
+                class="filter-pill"
+                [class.active]="statusFilter === 'direct'"
+                (click)="onStatusFilterChange('direct')"
+                title="Direct Companies (Hires only Full Time)"
+              >
+                <span>Direct Co.</span>
+                <span class="badge-count">{{ directCompaniesCount }}</span>
+              </button>
+              <button
+                type="button"
+                class="filter-pill"
+                [class.active]="statusFilter === 'non-direct'"
+                (click)="onStatusFilterChange('non-direct')"
+                title="Non-Direct Companies (Staffing / Consulting)"
+              >
+                <span>Non-Direct</span>
+                <span class="badge-count">{{ nonDirectCompaniesCount }}</span>
+              </button>
             </div>
 
             <!-- Sort Filter -->
@@ -851,6 +883,7 @@
                   </div>
                 </th>
                 <th scope="col" class="text-center" style="width: 120px;">Status</th>
+                <th scope="col" class="text-center" style="width: 130px;" title="Direct Companies hire only W2 Full-time employees">Direct Co.</th>
                 <th scope="col" class="text-center" style="width: 100px;">Action</th>
                 <th scope="col" style="min-width: 220px;">Contact Info</th>
               </tr>
@@ -948,6 +981,25 @@
                     </div>
                     <span class="badge mini-role-badge" [ngClass]="comp.active ? 'bg-success-subtle text-success border border-success-subtle' : 'bg-secondary-subtle text-secondary border border-secondary-subtle'">
                       {{ comp.active ? 'Active' : 'Inactive' }}
+                    </span>
+                  </div>
+                </td>
+
+                <!-- Direct Company Toggle -->
+                <td class="text-center">
+                  <div class="d-inline-flex align-items-center gap-2">
+                    <div class="form-check form-switch d-inline-block mb-0">
+                      <input
+                        class="form-check-input custom-switch cursor-pointer"
+                        type="checkbox"
+                        role="switch"
+                        [checked]="comp.isDirectCompany === true || comp.isDirectCompany === 1"
+                        (change)="toggleDirectCompany(comp, $event)"
+                        [title]="(comp.isDirectCompany ? 'Direct Company (YES)' : 'Non-Direct (NO)') + ' - Click to toggle'"
+                      />
+                    </div>
+                    <span class="badge mini-role-badge" [ngClass]="comp.isDirectCompany ? 'bg-primary-subtle text-primary border border-primary-subtle' : 'bg-light text-muted border'">
+                      {{ comp.isDirectCompany ? 'YES' : 'NO' }}
                     </span>
                   </div>
                 </td>
@@ -2971,7 +3023,7 @@
         </div>
 
         <!-- Active Status Toggle -->
-        <div class="col-md-12 mt-3">
+        <div class="col-md-6 mt-3">
           <div class="form-check form-switch d-flex align-items-center gap-2">
             <input
               class="form-check-input custom-switch cursor-pointer"
@@ -2982,6 +3034,22 @@
             />
             <label class="form-check-label fw-semibold small mb-0 cursor-pointer" for="editCompanyActiveToggle">
               Company is Active ({{ editingCompany.active ? 'Enabled' : 'Disabled' }})
+            </label>
+          </div>
+        </div>
+
+        <!-- Direct Company Toggle -->
+        <div class="col-md-6 mt-3">
+          <div class="form-check form-switch d-flex align-items-center gap-2">
+            <input
+              class="form-check-input custom-switch cursor-pointer"
+              type="checkbox"
+              role="switch"
+              id="editCompanyDirectToggle"
+              [(ngModel)]="editingCompany.isDirectCompany"
+            />
+            <label class="form-check-label fw-semibold small mb-0 cursor-pointer" for="editCompanyDirectToggle">
+              Direct Company: <span [ngClass]="editingCompany.isDirectCompany ? 'text-primary fw-bold' : 'text-muted'">{{ editingCompany.isDirectCompany ? 'YES (W2 Full Time Only)' : 'NO' }}</span>
             </label>
           </div>
         </div>
@@ -4742,6 +4810,332 @@
               class="btn btn-sm btn-outline-secondary"
               [disabled]="skillCurrentPage >= totalSkillPages"
               (click)="setSkillPage(skillCurrentPage + 1)"
+            >
+              <span class="material-symbols-outlined fs-6">chevron_right</span>
+            </button>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- ==================================================== -->
+    <!-- TAB: SEARCHED (USER SEARCH ACTIVITY & ANALYTICS) -->
+    <!-- ==================================================== -->
+    <div *ngIf="activeTab === 'searched-analytics'" class="tab-content-area searched-analytics-area">
+
+      <!-- Header Controls Card -->
+      <div class="card border-0 shadow-sm p-4 mb-4">
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center gap-3">
+          <div>
+            <h5 class="mb-1 fw-bold text-dark d-flex align-items-center gap-2">
+              <span class="material-symbols-outlined text-purple">saved_search</span>
+              <span>Search Activity & User Intent Analytics</span>
+              <span class="badge bg-purple text-white rounded-pill fs-6">
+                {{ searchedTotalCount }} Searches
+              </span>
+            </h5>
+            <p class="text-muted small mb-0">
+              Live audit trail of what recruiters and candidates are searching for — keywords, locations, results count, user names, and IP addresses.
+            </p>
+          </div>
+
+          <div class="d-flex align-items-center gap-2 flex-wrap">
+            <button
+              class="btn btn-outline-secondary btn-sm d-flex align-items-center gap-1"
+              (click)="loadSearchedAnalytics(); loadSearchedRecords()"
+              [disabled]="isLoadingSearched || isLoadingSearchedAnalytics"
+              title="Refresh search data"
+            >
+              <span class="material-symbols-outlined fs-6" [class.spin-animation]="isLoadingSearched">refresh</span>
+              <span>Refresh</span>
+            </button>
+
+            <button
+              class="btn btn-outline-primary btn-sm d-flex align-items-center gap-1"
+              (click)="exportSearchedCsv()"
+              [disabled]="filteredSearchedList.length === 0"
+              title="Export search logs to CSV"
+            >
+              <span class="material-symbols-outlined fs-6">download</span>
+              <span>Export CSV</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- KPI Metric Cards Grid -->
+        <div class="row g-3 mt-3">
+          <!-- Total Searches -->
+          <div class="col-sm-6 col-lg-3">
+            <div class="p-3 bg-light rounded-3 border h-100 d-flex align-items-center justify-content-between">
+              <div>
+                <span class="text-muted extra-small text-uppercase fw-bold">Total Searches</span>
+                <h3 class="mb-0 fw-bold text-dark">{{ searchedAnalytics.totalSearches }}</h3>
+                <span class="text-muted small">All-time queries logged</span>
+              </div>
+              <div class="rounded-circle bg-purple-subtle p-3 text-purple d-flex align-items-center justify-content-center">
+                <span class="material-symbols-outlined fs-4">search</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Searches Today -->
+          <div class="col-sm-6 col-lg-3">
+            <div class="p-3 bg-light rounded-3 border h-100 d-flex align-items-center justify-content-between">
+              <div>
+                <span class="text-primary extra-small text-uppercase fw-bold">Searches Today</span>
+                <h3 class="mb-0 fw-bold text-primary">{{ searchedAnalytics.searchesToday }}</h3>
+                <span class="badge bg-primary-subtle text-primary border border-primary-subtle">Past 24 Hours</span>
+              </div>
+              <div class="rounded-circle bg-primary-subtle p-3 text-primary d-flex align-items-center justify-content-center">
+                <span class="material-symbols-outlined fs-4">today</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Job Searches vs Hotlist Searches -->
+          <div class="col-sm-6 col-lg-3">
+            <div class="p-3 bg-light rounded-3 border h-100 d-flex align-items-center justify-content-between">
+              <div>
+                <span class="text-success extra-small text-uppercase fw-bold">Job / Hotlist Split</span>
+                <h4 class="mb-0 fw-bold text-dark">
+                  <span class="text-success">{{ searchedAnalytics.totalJobSearches }}</span>
+                  <span class="text-muted fw-normal fs-6"> / </span>
+                  <span class="text-purple">{{ searchedAnalytics.totalHotlistSearches }}</span>
+                </h4>
+                <span class="text-muted small">Job Searches / Hotlist</span>
+              </div>
+              <div class="rounded-circle bg-success-subtle p-3 text-success d-flex align-items-center justify-content-center">
+                <span class="material-symbols-outlined fs-4">pie_chart</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Zero Result Searches -->
+          <div class="col-sm-6 col-lg-3">
+            <div class="p-3 bg-light rounded-3 border h-100 d-flex align-items-center justify-content-between">
+              <div>
+                <span class="text-warning extra-small text-uppercase fw-bold">0 Results Queries</span>
+                <h3 class="mb-0 fw-bold text-warning">{{ searchedAnalytics.zeroResultSearches }}</h3>
+                <span class="text-muted small">Demand gaps & misses</span>
+              </div>
+              <div class="rounded-circle bg-warning-subtle p-3 text-warning d-flex align-items-center justify-content-center">
+                <span class="material-symbols-outlined fs-4">search_off</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Top Trending Keywords Badges -->
+        <div class="row g-3 mt-2" *ngIf="(searchedAnalytics.topJobKeywords && searchedAnalytics.topJobKeywords.length > 0) || (searchedAnalytics.topHotlistKeywords && searchedAnalytics.topHotlistKeywords.length > 0)">
+          <div class="col-12 col-md-6" *ngIf="searchedAnalytics.topJobKeywords && searchedAnalytics.topJobKeywords.length > 0">
+            <div class="p-2.5 px-3 bg-white border rounded-3">
+              <span class="extra-small fw-bold text-uppercase text-muted d-block mb-1.5">🔥 Top Job Search Keywords</span>
+              <div class="d-flex flex-wrap gap-1.5">
+                <span *ngFor="let kw of searchedAnalytics.topJobKeywords | slice:0:8" class="badge bg-light text-dark border">
+                  {{ kw.keyword }} <span class="text-primary fw-bold ms-1">({{ kw.count }})</span>
+                </span>
+              </div>
+            </div>
+          </div>
+          <div class="col-12 col-md-6" *ngIf="searchedAnalytics.topHotlistKeywords && searchedAnalytics.topHotlistKeywords.length > 0">
+            <div class="p-2.5 px-3 bg-white border rounded-3">
+              <span class="extra-small fw-bold text-uppercase text-muted d-block mb-1.5">🌟 Top Hotlist / Talent Keywords</span>
+              <div class="d-flex flex-wrap gap-1.5">
+                <span *ngFor="let kw of searchedAnalytics.topHotlistKeywords | slice:0:8" class="badge bg-purple-subtle text-purple border border-purple-subtle">
+                  {{ kw.keyword }} <span class="fw-bold ms-1">({{ kw.count }})</span>
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Search Activity Table Card -->
+      <div class="card border-0 shadow-sm p-4 mb-4">
+        
+        <!-- Table Toolbar -->
+        <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+          <!-- Type Filter Tabs -->
+          <div class="btn-group btn-group-sm border rounded p-0.5 bg-light" role="group" aria-label="Search Type Filter">
+            <button
+              type="button"
+              class="btn btn-sm text-nowrap px-3 py-1 fw-semibold border-0 rounded"
+              [style.background-color]="searchedTypeFilter === 'all' ? '#6d28d9' : 'transparent'"
+              [style.color]="searchedTypeFilter === 'all' ? '#ffffff' : '#475569'"
+              (click)="onSearchedTypeChange('all')"
+            >
+              All Searches
+            </button>
+            <button
+              type="button"
+              class="btn btn-sm text-nowrap px-3 py-1 fw-semibold border-0 rounded"
+              [style.background-color]="searchedTypeFilter === 'JobSearch' ? '#6d28d9' : 'transparent'"
+              [style.color]="searchedTypeFilter === 'JobSearch' ? '#ffffff' : '#475569'"
+              (click)="onSearchedTypeChange('JobSearch')"
+            >
+              Job Searches
+            </button>
+            <button
+              type="button"
+              class="btn btn-sm text-nowrap px-3 py-1 fw-semibold border-0 rounded"
+              [style.background-color]="searchedTypeFilter === 'HotlistSearch' ? '#6d28d9' : 'transparent'"
+              [style.color]="searchedTypeFilter === 'HotlistSearch' ? '#ffffff' : '#475569'"
+              (click)="onSearchedTypeChange('HotlistSearch')"
+            >
+              Hotlist Searches
+            </button>
+          </div>
+
+          <!-- Search Filter Box (Half size / compact) -->
+          <div class="d-flex align-items-center ms-auto" style="width: 250px; max-width: 100%;">
+            <div class="input-group input-group-sm w-100">
+              <span class="input-group-text bg-white border-end-0 text-muted py-1 px-2">
+                <span class="material-symbols-outlined fs-6">search</span>
+              </span>
+              <input
+                type="text"
+                class="form-control border-start-0 py-1"
+                placeholder="Filter results..."
+                [(ngModel)]="searchedSearchTerm"
+                (ngModelChange)="onSearchedSearchChange()"
+              />
+              <button
+                *ngIf="searchedSearchTerm"
+                class="btn btn-outline-secondary border-start-0 py-1 px-2"
+                type="button"
+                (click)="searchedSearchTerm = ''; onSearchedSearchChange()"
+              >
+                ✕
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Loading State -->
+        <div *ngIf="isLoadingSearched" class="text-center py-4">
+          <div class="spinner-border text-purple mb-2" role="status" style="width: 1.5rem; height: 1.5rem;"></div>
+          <p class="text-muted small mb-0">Loading user search activity...</p>
+        </div>
+
+        <!-- Table -->
+        <div *ngIf="!isLoadingSearched" class="table-responsive">
+          <table class="table table-sm table-hover align-middle mb-0" style="font-size: 0.775rem;">
+            <thead class="table-light">
+              <tr>
+                <th scope="col" class="py-1 px-2" style="width: 45px;">#</th>
+                <th scope="col" class="py-1 px-2" style="width: 125px;">Type</th>
+                <th scope="col" class="py-1 px-2">Keywords</th>
+                <th scope="col" class="py-1 px-2" style="width: 150px;">Searcher Location</th>
+                <th scope="col" class="py-1 px-2 text-center" style="width: 80px;">Results</th>
+                <th scope="col" class="py-1 px-2" style="width: 200px;">User Name</th>
+                <th scope="col" class="py-1 px-2" style="width: 120px;">IP Address</th>
+                <th scope="col" class="py-1 px-2" style="width: 150px;">Date & Time</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let item of filteredSearchedList; let i = index">
+                <td class="text-muted text-center fw-medium py-1 px-2">
+                  {{ (searchedCurrentPage - 1) * searchedPageSize + i + 1 }}
+                </td>
+                <td class="py-1 px-2">
+                  <span
+                    class="badge rounded-pill px-2 py-0.5"
+                    style="font-size: 0.72rem;"
+                    [ngClass]="item.searchType === 'JobSearch' ? 'bg-success-subtle text-success border border-success-subtle' : 'bg-purple-subtle text-purple border border-purple-subtle'"
+                  >
+                    <span class="material-symbols-outlined align-middle me-0.5" style="font-size: 13px;">
+                      {{ item.searchType === 'JobSearch' ? 'work' : 'person_search' }}
+                    </span>
+                    {{ item.searchType === 'JobSearch' ? 'Job' : 'Hotlist' }}
+                  </span>
+                </td>
+                <td class="py-1 px-2" [title]="item.filters ? 'Filter Criteria: ' + item.filters : ''">
+                  <div class="d-inline-flex align-items-center gap-1.5 flex-wrap">
+                    <span class="fw-semibold text-dark">{{ item.keywords || '—' }}</span>
+                    <!-- Hover indicator badge for filters if present -->
+                    <span
+                      *ngIf="item.filters"
+                      class="badge bg-light text-secondary border px-1 py-0"
+                      style="font-size: 0.68rem; cursor: help;"
+                      [title]="'Filter Criteria: ' + item.filters"
+                    >
+                      <span class="material-symbols-outlined align-middle" style="font-size: 11px;">tune</span>
+                      filter
+                    </span>
+                  </div>
+                </td>
+                <td class="py-1 px-2">
+                  <span *ngIf="item.location" class="d-inline-flex align-items-center gap-1 text-dark">
+                    <span class="material-symbols-outlined text-danger" style="font-size: 13px;">location_on</span>
+                    {{ item.location }}
+                  </span>
+                  <span *ngIf="!item.location" class="text-muted">—</span>
+                </td>
+                <td class="text-center py-1 px-2">
+                  <span
+                    class="badge rounded-pill px-2 py-0.5 fw-bold"
+                    style="font-size: 0.72rem;"
+                    [ngClass]="item.totalResults > 0 ? 'bg-primary-subtle text-primary border border-primary-subtle' : 'bg-warning-subtle text-warning border border-warning-subtle'"
+                  >
+                    {{ item.totalResults }}
+                  </span>
+                </td>
+                <td class="py-1 px-2">
+                  <div class="d-flex flex-column" style="line-height: 1.15;">
+                    <span class="fw-semibold text-dark">{{ item.userName || 'Anonymous / Guest' }}</span>
+                    <span class="text-muted extra-small" *ngIf="item.userEmail">{{ item.userEmail }}</span>
+                  </div>
+                </td>
+                <td class="py-1 px-2">
+                  <code class="text-dark bg-light px-1 py-0 rounded border" style="font-size: 0.70rem;">
+                    {{ item.ipAddress || '::1' }}
+                  </code>
+                </td>
+                <td class="py-1 px-2">
+                  <div class="d-flex flex-column" style="line-height: 1.1;">
+                    <span class="fw-medium text-dark">{{ item.createdDate | date:'MMM d, y' }}</span>
+                    <span class="text-muted extra-small">{{ item.createdDate | date:'h:mm:ss a' }}</span>
+                  </div>
+                </td>
+              </tr>
+              <tr *ngIf="filteredSearchedList.length === 0">
+                <td colspan="8" class="text-center py-4 text-muted">
+                  <span class="material-symbols-outlined fs-2 d-block mb-1 text-muted">search_off</span>
+                  No search logs match the selected filter.
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Pagination Controls -->
+        <div class="card-footer bg-white border-top p-3 d-flex flex-column flex-sm-row justify-content-between align-items-center gap-2" *ngIf="!isLoadingSearched && searchedTotalCount > 0">
+          <div class="small text-muted">
+            Showing {{ filteredSearchedList.length ? ((searchedCurrentPage - 1) * searchedPageSize) + 1 : 0 }} to
+            {{ Math.min(searchedCurrentPage * searchedPageSize, searchedTotalCount) }} of
+            {{ searchedTotalCount }} total searches
+          </div>
+
+          <div class="d-flex align-items-center gap-1">
+            <button
+              type="button"
+              class="btn btn-sm btn-outline-secondary"
+              [disabled]="searchedCurrentPage <= 1"
+              (click)="goToSearchedPage(searchedCurrentPage - 1)"
+            >
+              <span class="material-symbols-outlined fs-6">chevron_left</span>
+            </button>
+
+            <span class="small fw-semibold px-2">Page {{ searchedCurrentPage }} of {{ searchedTotalPages }}</span>
+
+            <button
+              type="button"
+              class="btn btn-sm btn-outline-secondary"
+              [disabled]="searchedCurrentPage >= searchedTotalPages"
+              (click)="goToSearchedPage(searchedCurrentPage + 1)"
             >
               <span class="material-symbols-outlined fs-6">chevron_right</span>
             </button>

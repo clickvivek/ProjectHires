@@ -464,9 +464,21 @@ namespace DataAccessLayer.Repository
                     result.EmploymentTypeName = (reader != null && reader["EmploymentTypeName"] != null) ? reader["EmploymentTypeName"].ToString() : String.Empty;
                     result.JobTypeName = (reader != null && reader["JobTypename"] != null) ? reader["JobTypename"].ToString() : String.Empty;
 
-                    result.ProfilePic = reader["ProfilePic"].ToString();
-                    result.Resume = reader["Resume"].ToString();
-                    result.PublicProfileUserName = reader["PublicProfileUserName"].ToString();
+                    result.ProfilePic = reader["ProfilePic"] != null ? reader["ProfilePic"].ToString() : string.Empty;
+                    result.Resume = reader["Resume"] != null ? reader["Resume"].ToString() : string.Empty;
+                    result.PublicProfileUserName = reader["PublicProfileUserName"] != null ? reader["PublicProfileUserName"].ToString() : string.Empty;
+                    try
+                    {
+                        result.HideResume = reader["HideResume"] != DBNull.Value && (Convert.ToBoolean(reader["HideResume"]) || reader["HideResume"].ToString() == "1");
+                    }
+                    catch
+                    {
+                        result.HideResume = false;
+                    }
+                    if (result.HideResume == true)
+                    {
+                        result.Resume = string.Empty;
+                    }
                     rtn.Add(result);
                 }
                 return rtn;

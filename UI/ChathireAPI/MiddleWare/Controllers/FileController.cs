@@ -1,5 +1,6 @@
 using AutoMapper;
 using Azure.Storage.Blobs;
+using BusinessEntityAndDTO.Common;
 using BusinessEntityAndDTO.DTO;
 using BusinessEntityAndDTO.Models;
 using BusinessLayer.Manager;
@@ -58,6 +59,31 @@ namespace MiddleWare.Controllers
         {
             if (string.IsNullOrEmpty(fileName)) return BadRequest("File name is required.");
             if (string.IsNullOrEmpty(containerName)) containerName = "resumes";
+
+            // If downloading a resume, enforce user subscription download quota
+            if (containerName.Equals("resumes", StringComparison.OrdinalIgnoreCase))
+            {
+                long currentUserId = 0;
+                UserContext userCtx = null;
+                try
+                {
+                    userCtx = GetUserContext();
+                    if (userCtx != null) currentUserId = userCtx.UserId;
+                }
+                catch { }
+
+                if (currentUserId <= 0)
+                {
+                    return Unauthorized("Please log in to download candidate resumes.");
+                }
+
+                var subManager = managerFactory.Get<ISubscriptionManager>();
+                var checkResult = await subManager.CheckAndRecordDownloadAsync(currentUserId, fileName, userCtx ?? GetDummyUserContext());
+                if (!checkResult.CanDownload)
+                {
+                    return StatusCode(403, checkResult.Message);
+                }
+            }
 
             var fileManager = managerFactory.Get<IFileManager>();
             var imgStream = await fileManager.Get(fileName, containerName);

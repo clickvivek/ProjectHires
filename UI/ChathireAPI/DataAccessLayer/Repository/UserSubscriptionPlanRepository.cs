@@ -20,6 +20,7 @@ namespace DataAccessLayer.Repository
         Task<UserQuotaListResponseDto> GetAllUsersQuotas(int page, int pageSize, string? search, string? filter, UserContext userContext);
         Task<bool> UpdateUserQuota(UpdateUserQuotaDto dto, UserContext userContext);
         Task<InitiateChatResultDto> InitiateChat(long userId, long chatUserId, UserContext userContext);
+        Task<CanDownloadResumeResultDto> CheckAndRecordDownloadAsync(long userId, string fileName, UserContext userContext);
     }
 
     public class UserSubscriptionPlanRepository : BaseRepository<UserSubscriptionPlan, long>, IUserSubscriptionPlanRepository
@@ -576,6 +577,157 @@ namespace DataAccessLayer.Repository
                 RemainingChatsToday = remainingChatsToday,
                 IsExistingConversationToday = false,
                 Message = "Chat initiated successfully."
+            };
+        }
+
+        public async Task<CanDownloadResumeResultDto> CheckAndRecordDownloadAsync(long userId, string fileName, UserContext userContext)
+        {
+            var now = DateTime.UtcNow;
+
+            if (userId <= 0)
+            {
+                return new CanDownloadResumeResultDto
+                {
+                    CanDownload = false,
+                    MaxDownloads = 10,
+                    UsedDownloads = 0,
+                    RemainingDownloads = 0,
+                    CycleEndDate = now.AddDays(30),
+                    DaysRemainingInCycle = 30,
+                    AlreadyDownloaded = false,
+                    Message = "Please log in to download candidate resumes."
+                };
+            }
+
+            // Check if user is Super Admin
+            var user = await _context.Users.AsNoTracking().FirstOrDefaultAsync(u => u.Id == userId);
+            if (user != null && user.UserTypeId == 7)
+            {
+                // Super Admin has unlimited downloads
+                return new CanDownloadResumeResultDto
+                {
+                    CanDownload = true,
+                    MaxDownloads = 9999,
+                    UsedDownloads = 0,
+                    RemainingDownloads = 9999,
+                    CycleEndDate = now.AddYears(1),
+                    DaysRemainingInCycle = 365,
+                    AlreadyDownloaded = false,
+                    Message = "Super Admin unlimited access."
+                };
+            }
+
+            // Get user quota status
+            var quota = await GetUserQuotaStatus(userId, userContext);
+            int maxDownloads = quota.MaxDownloads;
+            int usedDownloads = quota.UsedDownloads;
+            int remainingDownloads = quota.RemainingDownloads;
+            DateTime cycleEndDate = quota.CycleEndDate;
+            int daysRemaining = quota.DaysRemainingInCycle;
+
+            // Resolve CandidateProfileId from CandidateDocument if fileName matches
+            long? candidateProfileId = null;
+            if (!string.IsNullOrWhiteSpace(fileName))
+            {
+                var cleanName = System.IO.Path.GetFileName(fileName);
+                var candDoc = await _context.CandidateDocuments
+                    .AsNoTracking()
+                    .FirstOrDefaultAsync(cd => cd.Doc == cleanName || cd.Doc == fileName);
+                if (candDoc != null)
+                {
+                    candidateProfileId = candDoc.CandidateProfileId;
+                }
+            }
+
+            // Get user's primary ConsultancyUser ID
+            var consultancyUser = await _context.ConsultancyUsers
+                .FirstOrDefaultAsync(cu => cu.UserId == userId);
+            long? cuId = consultancyUser?.Id;
+
+            // If user previously downloaded/viewed this candidate profile in this cycle, don't charge another download
+            if (candidateProfileId.HasValue && cuId.HasValue)
+            {
+                bool alreadyDownloadedInCycle = await _context.CandidateProfileViewHistories
+                    .AnyAsync(v => v.CandidateProfileid == candidateProfileId.Value
+                                   && v.ConsultancyUserId == cuId.Value
+                                   && v.Updated >= quota.CycleStartDate && v.Updated < quota.CycleEndDate);
+
+                if (alreadyDownloadedInCycle)
+                {
+                    return new CanDownloadResumeResultDto
+                    {
+                        CanDownload = true,
+                        MaxDownloads = maxDownloads,
+                        UsedDownloads = usedDownloads,
+                        RemainingDownloads = remainingDownloads,
+                        CycleEndDate = cycleEndDate,
+                        DaysRemainingInCycle = daysRemaining,
+                        AlreadyDownloaded = true,
+                        Message = "Already downloaded in current billing cycle."
+                    };
+                }
+            }
+
+            // Check if limit is reached
+            if (remainingDownloads <= 0)
+            {
+                return new CanDownloadResumeResultDto
+                {
+                    CanDownload = false,
+                    MaxDownloads = maxDownloads,
+                    UsedDownloads = usedDownloads,
+                    RemainingDownloads = 0,
+                    CycleEndDate = cycleEndDate,
+                    DaysRemainingInCycle = daysRemaining,
+                    AlreadyDownloaded = false,
+                    Message = $"Resume Download Limit Reached: You have used all {maxDownloads} resume downloads for this 30-day period. Your quota resets on {cycleEndDate:MMM dd, yyyy} ({daysRemaining} days remaining). Please upgrade your plan or refer colleagues to get more downloads."
+                };
+            }
+
+            // Record download in CandidateProfileViewHistory
+            if (cuId.HasValue)
+            {
+                var viewRecord = new CandidateProfileViewHistory
+                {
+                    CandidateProfileid = candidateProfileId,
+                    ConsultancyUserId = cuId.Value,
+                    Active = true,
+                    Updated = now,
+                    UpdatedBy = userId
+                };
+                _context.CandidateProfileViewHistories.Add(viewRecord);
+                await _context.SaveChangesAsync();
+            }
+
+            // Also update NoOfUsedDownloads on active UserSubscriptionPlan
+            try
+            {
+                var activePlan = await _context.UserSubscriptionPlans
+                    .Where(p => p.UserId == userId && p.Active == true)
+                    .OrderByDescending(p => p.Id)
+                    .FirstOrDefaultAsync();
+                if (activePlan != null)
+                {
+                    activePlan.NoOfUsedDownloads = (activePlan.NoOfUsedDownloads ?? 0) + 1;
+                    activePlan.Updated = now;
+                    await _context.SaveChangesAsync();
+                }
+            }
+            catch { }
+
+            usedDownloads++;
+            remainingDownloads = Math.Max(0, maxDownloads - usedDownloads);
+
+            return new CanDownloadResumeResultDto
+            {
+                CanDownload = true,
+                MaxDownloads = maxDownloads,
+                UsedDownloads = usedDownloads,
+                RemainingDownloads = remainingDownloads,
+                CycleEndDate = cycleEndDate,
+                DaysRemainingInCycle = daysRemaining,
+                AlreadyDownloaded = false,
+                Message = "Download authorized."
             };
         }
     }

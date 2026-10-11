@@ -36,14 +36,48 @@ export class ChatButtonDirective implements OnInit {
   talkElementLanucher: any;
 
   userId: any;
+  private isLoadingChat: boolean = false;
+  private originalHtml: string | null = null;
 
   constructor(
     private router: Router,
     private authService: AuthService,
     private sessionService: SessionService,
     private talkService: TalkService,
-    public dialog: MatDialog
+    public dialog: MatDialog,
+    private elementRef: ElementRef
   ) {}
+
+  private setLoading(loading: boolean): void {
+    const el = this.elementRef?.nativeElement;
+    if (!el) return;
+
+    this.isLoadingChat = loading;
+
+    if (loading) {
+      el.classList.add('is-loading');
+      el.setAttribute('disabled', 'true');
+      el.style.pointerEvents = 'none';
+
+      if (this.originalHtml === null) {
+        this.originalHtml = el.innerHTML;
+      }
+
+      const txt = (el.innerText || '').toLowerCase();
+      const loadingText = txt.includes('message') ? 'Connecting...' : 'Opening...';
+
+      el.innerHTML = `<span class="chat-loading-spinner"></span><span>${loadingText}</span>`;
+    } else {
+      el.classList.remove('is-loading');
+      el.removeAttribute('disabled');
+      el.style.pointerEvents = '';
+
+      if (this.originalHtml !== null) {
+        el.innerHTML = this.originalHtml;
+        this.originalHtml = null;
+      }
+    }
+  }
 
   ngOnInit(): void {
     this.sessionService.userdetailscast.subscribe((res: any) => {
@@ -115,28 +149,44 @@ export class ChatButtonDirective implements OnInit {
     });
   }
 
-  private openChatPopup(): void {
-    if (!this.chatUser) return;
+  private async openChatPopup(): Promise<void> {
+    if (!this.chatUser) {
+      this.setLoading(false);
+      return;
+    }
 
-    this.initChat(this.chatUser);
+    try {
+      await this.initChat(this.chatUser);
 
-    if (this.session && this.conversation) {
-      this.popup = this.session.createPopup();
-      this.popup.select(this.conversation);
-      this.popup.mount();
+      if (this.session && this.conversation) {
+        this.popup = this.session.createPopup();
+        this.popup.select(this.conversation);
+        const mountPromise = this.popup.mount();
+        if (mountPromise && typeof mountPromise.then === 'function') {
+          await mountPromise;
+        }
 
+        setTimeout(() => {
+          this.talkElementLanucher = document.querySelector('#__talkjs_launcher');
+          this.talkElementLanucher?.addEventListener("click", () => {
+            const parent = this.talkElementLanucher?.parentNode;
+            parent?.remove();
+          });
+        }, 1000);
+      }
+    } catch (e) {
+      console.error('Error opening chat popup:', e);
+    } finally {
       setTimeout(() => {
-        this.talkElementLanucher = document.querySelector('#__talkjs_launcher');
-        this.talkElementLanucher?.addEventListener("click", () => {
-          const parent = this.talkElementLanucher?.parentNode;
-          parent?.remove();
-        });
-      }, 1000);
+        this.setLoading(false);
+      }, 500);
     }
   }
 
   private handleChatClick(): void {
-    if (!this.chatUser) return;
+    if (!this.chatUser || this.isLoadingChat) return;
+
+    this.setLoading(true);
     const targetUserId = this.chatUser?.userId || this.chatUser?.id;
 
     if (!targetUserId) {
@@ -148,6 +198,7 @@ export class ChatButtonDirective implements OnInit {
       next: (res: any) => {
         const result = res?.value;
         if (result && result.canChat === false) {
+          this.setLoading(false);
           this.dialog.open(ChatLimitModalComponent, {
             width: '460px',
             panelClass: 'chat-limit-modal-panel',

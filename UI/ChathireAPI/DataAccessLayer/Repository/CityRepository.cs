@@ -11,20 +11,37 @@ namespace DataAccessLayer.Repository
 {
     public interface ICityRepository : IRepository<City, int>
     {
-        Task<List<City>> GetLocation(string? city, int? state, bool IsState);
+        Task<List<City>> GetLocation(string? city, int? state, bool IsState, string? country = null);
     }
 
     public class CityRepository : BaseRepository<City, int>, ICityRepository
     {
         public CityRepository(EFContexts context) : base(context) { }
 
-        public async Task<List<City>> GetLocation(string? searchString, int? state, bool IsState)
+        public async Task<List<City>> GetLocation(string? searchString, int? state, bool IsState, string? country = null)
         {
             var query = _context.Cities
                     .AsNoTracking()
                     .Include(c => c.IdStateNavigation)
                     .ThenInclude(c => c.CountryCodeNavigation)
                     .AsQueryable();
+
+            if (!string.IsNullOrWhiteSpace(country))
+            {
+                var cNorm = country.Trim().ToUpper();
+                if (cNorm == "USA" || cNorm == "US")
+                {
+                    query = query.Where(s => s.IdStateNavigation != null && (s.IdStateNavigation.CountryCode == "US" || s.IdStateNavigation.CountryCode == "USA"));
+                }
+                else if (cNorm == "CANADA" || cNorm == "CA")
+                {
+                    query = query.Where(s => s.IdStateNavigation != null && (s.IdStateNavigation.CountryCode == "CA" || s.IdStateNavigation.CountryCode == "CAN" || s.IdStateNavigation.CountryCode == "Canada"));
+                }
+                else
+                {
+                    query = query.Where(s => s.IdStateNavigation != null && s.IdStateNavigation.CountryCode == cNorm);
+                }
+            }
 
             if (state != null)
             {

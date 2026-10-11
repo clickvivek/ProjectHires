@@ -35,6 +35,7 @@ export class AddCandidateComponent implements OnInit, OnDestroy {
     skillId: 'null',
     availability: null,
     stateId: null,
+    hideResume: false,
     candidateProfileSkills: [],
     candidatePrefLocations: [],
   }
@@ -154,6 +155,7 @@ export class AddCandidateComponent implements OnInit, OnDestroy {
           cityId: newData.cityId,
           skillId: null,
           availability: newData.availability,
+          hideResume: !!newData.hideResume,
           candidateProfileSkills: [],
           candidatePrefLocations: [],
         }
@@ -171,17 +173,17 @@ export class AddCandidateComponent implements OnInit, OnDestroy {
         }
 
         //location preference
-        if(newData.canRelocate) {
+        if(newData.canRelocate && !_.isEmpty(newData.candidatePrefLocations)) {
           this.selectRemoteLocation = '3'
           this.formData.stateId = null
+        }
+        else if(newData.canRelocate || newData.anyLocation) {
+          this.selectRemoteLocation = '2'
+          this.formData.stateId = 2
         }
         else if(newData.remoteOnly) {
           this.selectRemoteLocation = '1'
           this.formData.stateId = 1
-        }
-        else if(newData.anyLocation) {
-          this.selectRemoteLocation = '2'
-          this.formData.stateId = 2
         }
 
         //skills
@@ -240,11 +242,11 @@ export class AddCandidateComponent implements OnInit, OnDestroy {
   }
 
   onVisaChange(event:any){
-    this.formData.visaId = event.id
+    this.formData.visaId = event?.id || null;
   }
 
   onAvailabilityChange(event:any) {
-    this.formData.availability = event.id
+    this.formData.availability = event?.id || null;
   }
 
   onLocationQuery(event: any) {
@@ -252,7 +254,7 @@ export class AddCandidateComponent implements OnInit, OnDestroy {
   }
 
   onLocationChange(event:any){
-    this.formData.cityId = event.id
+    this.formData.cityId = event?.id || null;
   }
 
   onSkillQuery(event:any){
@@ -453,6 +455,7 @@ export class AddCandidateComponent implements OnInit, OnDestroy {
           fromAmt: this.formData.fromAmt,
           toAmt: this.formData.toAmt,
           consultingRoleId: 1,
+          hideResume: !!this.formData.hideResume,
           candidateProfileSkills: this.formData.candidateProfileSkills,
           candidatePrefLocations: this.formData.candidatePrefLocations
         }
@@ -473,7 +476,7 @@ export class AddCandidateComponent implements OnInit, OnDestroy {
           error: (error:any) => {
             this.errorToast(error)
             this.isFormSubmitted = false
-            this.isCandidatePosted = true;
+            this.isCandidatePosted = false;
           }
         })
 
@@ -511,6 +514,7 @@ export class AddCandidateComponent implements OnInit, OnDestroy {
           fromAmt: this.formData.fromAmt,
           toAmt: this.formData.toAmt,
           consultingRoleId: this.formData.consultingRoleId,
+          hideResume: !!this.formData.hideResume,
           candidateProfileSkills: this.formData.candidateProfileSkills,
           candidatePrefLocations: this.formData.candidatePrefLocations
         }
@@ -529,7 +533,7 @@ export class AddCandidateComponent implements OnInit, OnDestroy {
           },
           error: (error:any) => {
             this.isFormSubmitted = false
-            this.isCandidatePosted = true;
+            this.isCandidatePosted = false;
             this.errorToast(error)
           }
         })
@@ -541,6 +545,14 @@ export class AddCandidateComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+
+    this.route.params.subscribe((params) => {
+      if (params['id']) {
+        this.candidateId = params['id'];
+        this.isEdit = true;
+        this.editForm();
+      }
+    });
 
     this.commonService.apiCommonVisaGet().subscribe({
       next: (res : any) => {

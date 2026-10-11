@@ -20,10 +20,10 @@ namespace BusinessLayer.Manager
         Task<List<CategoryDto>> GetCategory(UserContext userContext);
         Task<List<DomainDto>> GetDomain(UserContext userContext);
         Task<List<EmploymentTypeDto>> GetEmploymentType(UserContext userContext);
-        Task<List<JobTypeDto>> GetJobType(UserContext userContext);
+        Task<List<JobTypeDto>> GetJobType(UserContext userContext, string? country = null);
         Task<List<StatusDto>> GetStatus(UserContext userContext);
         Task<List<CandidateProfileMappingStatusDto>> GetCandidateProfileMappingStatus(UserContext userContext);
-        Task<List<VisaDto>> GetVisa(UserContext userContext);
+        Task<List<VisaDto>> GetVisa(UserContext userContext, string? country = null);
         Task<List<SkillDto>> GetSkills(string? skill, UserContext userContext);
         Task<SkillsAdminSummaryDto> GetSkillsAdminSummary(bool? isUserDefined, bool? active, string? searchTerm, UserContext userContext);
         Task<BulkAddSkillsResultDto> BulkAddSkills(BulkAddSkillsRequestDto request, UserContext userContext);
@@ -32,7 +32,7 @@ namespace BusinessLayer.Manager
         Task<bool> ToggleSkillStatus(int id, bool active, UserContext userContext);
         Task<bool> ConvertSkillUserDefined(int id, bool isUserDefined, UserContext userContext);
         Task<DeleteSkillResultDto> DeleteSkill(int id, UserContext userContext);
-        Task<List<CityDto>> GetCity(string? searchString, int? state, bool isState, UserContext userContext);
+        Task<List<CityDto>> GetCity(string? searchString, int? state, bool isState, string? country, UserContext userContext);
 
         Task<List<StateDto>> GetState(string? searchString, UserContext userContext);
 
@@ -85,12 +85,23 @@ namespace BusinessLayer.Manager
             }, "GetEmploymentType", userContext);
         }
 
-        public async Task<List<JobTypeDto>> GetJobType(UserContext userContext)
+        public async Task<List<JobTypeDto>> GetJobType(UserContext userContext, string? country = null)
         {
             return await ExecuteAsync<List<JobTypeDto>>(async () =>
             {
                 var repo = repositoryFactory.Get<IJobTypeRepository>();
-                return mapper.Map<List<JobTypeDto>>(await repo.GetAll<JobType>());
+                var all = await repo.GetAll<JobType>();
+                if (!string.IsNullOrWhiteSpace(country))
+                {
+                    var cNorm = country.Trim().ToUpper();
+                    if (cNorm == "USA" || cNorm == "US")
+                        all = all.Where(j => string.IsNullOrEmpty(j.Country) || j.Country.Equals("USA", StringComparison.OrdinalIgnoreCase) || j.Country.Equals("US", StringComparison.OrdinalIgnoreCase)).ToList();
+                    else if (cNorm == "CANADA" || cNorm == "CA")
+                        all = all.Where(j => !string.IsNullOrEmpty(j.Country) && (j.Country.Equals("Canada", StringComparison.OrdinalIgnoreCase) || j.Country.Equals("CA", StringComparison.OrdinalIgnoreCase))).ToList();
+                    else
+                        all = all.Where(j => !string.IsNullOrEmpty(j.Country) && j.Country.Equals(cNorm, StringComparison.OrdinalIgnoreCase)).ToList();
+                }
+                return mapper.Map<List<JobTypeDto>>(all);
             }, "GetJobType", userContext);
         }
 
@@ -112,12 +123,23 @@ namespace BusinessLayer.Manager
             }, "GetStatus", userContext);
         }
 
-        public async Task<List<VisaDto>> GetVisa(UserContext userContext)
+        public async Task<List<VisaDto>> GetVisa(UserContext userContext, string? country = null)
         {
             return await ExecuteAsync<List<VisaDto>>(async () =>
             {
                 var repo = repositoryFactory.Get<IVisaRepository>();
-                return mapper.Map<List<VisaDto>>(await repo.GetAll<Visa>());
+                var all = await repo.GetAll<Visa>();
+                if (!string.IsNullOrWhiteSpace(country))
+                {
+                    var cNorm = country.Trim().ToUpper();
+                    if (cNorm == "USA" || cNorm == "US")
+                        all = all.Where(v => string.IsNullOrEmpty(v.Country) || v.Country.Equals("USA", StringComparison.OrdinalIgnoreCase) || v.Country.Equals("US", StringComparison.OrdinalIgnoreCase)).ToList();
+                    else if (cNorm == "CANADA" || cNorm == "CA")
+                        all = all.Where(v => !string.IsNullOrEmpty(v.Country) && (v.Country.Equals("Canada", StringComparison.OrdinalIgnoreCase) || v.Country.Equals("CA", StringComparison.OrdinalIgnoreCase))).ToList();
+                    else
+                        all = all.Where(v => !string.IsNullOrEmpty(v.Country) && v.Country.Equals(cNorm, StringComparison.OrdinalIgnoreCase)).ToList();
+                }
+                return mapper.Map<List<VisaDto>>(all);
             }, "GetVisa", userContext);
         }
 
@@ -195,12 +217,12 @@ namespace BusinessLayer.Manager
             }, "DeleteSkill", userContext);
         }
 
-        public async Task<List<CityDto>> GetCity(string? searchString, int? state, bool isState, UserContext userContext)
+        public async Task<List<CityDto>> GetCity(string? searchString, int? state, bool isState, string? country, UserContext userContext)
         {
             return await ExecuteAsync<List<CityDto>>(async () =>
             {
                 var repo = repositoryFactory.Get<ICityRepository>();
-                var result = await repo.GetLocation(searchString, state, isState);
+                var result = await repo.GetLocation(searchString, state, isState, country);
                 var uniqueResult = new List<City>();
                 foreach (var city in result)
                 {

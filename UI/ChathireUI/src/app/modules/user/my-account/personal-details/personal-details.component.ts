@@ -350,10 +350,15 @@ isFormSubmitted:boolean = false;
         this.formData.publicProfileUserName = this.initialProfileId
       }
 
-      const roleVal = parseInt(this.userTypeId);
-      this.formData.roleRecruiter = (roleVal === 1 || roleVal === 3);
-      this.formData.roleBenchSales = (roleVal === 2 || roleVal === 3);
-      this.formData.userTypeId = (roleVal === 5 ? 5 : 1);
+      const originalUserTypeId = Number(this.formData.userTypeId) || Number(this.sessionService.userTypeId);
+      if (originalUserTypeId === 7) {
+        this.formData.userTypeId = 7;
+      } else {
+        const roleVal = parseInt(this.userTypeId);
+        this.formData.roleRecruiter = (roleVal === 1 || roleVal === 3);
+        this.formData.roleBenchSales = (roleVal === 2 || roleVal === 3);
+        this.formData.userTypeId = (roleVal === 5 ? 5 : 1);
+      }
 
       this.formData.updated = new Date().toISOString()
       this.formData.phone = this.userPhone
@@ -399,7 +404,9 @@ isFormSubmitted:boolean = false;
         
         this.formData = res.value[0]
         this.userPhone = this.formData.phone ? this.formData.phone : '';
-        if (this.formData.roleRecruiter && this.formData.roleBenchSales) {
+        if (Number(this.formData.userTypeId) === 7 || Number(this.formData.userTypeId) === 5) {
+          this.userTypeId = this.formData.userTypeId?.toString();
+        } else if (this.formData.roleRecruiter && this.formData.roleBenchSales) {
           this.userTypeId = '3';
         } else if (this.formData.roleBenchSales) {
           this.userTypeId = '2';
@@ -452,7 +459,9 @@ isFormSubmitted:boolean = false;
         }
         
         this.userPhone = this.formData.phone ? this.formData.phone : '';
-        if (this.formData.roleRecruiter && this.formData.roleBenchSales) {
+        if (Number(this.formData.userTypeId) === 7 || Number(this.formData.userTypeId) === 5) {
+          this.userTypeId = this.formData.userTypeId?.toString();
+        } else if (this.formData.roleRecruiter && this.formData.roleBenchSales) {
           this.userTypeId = '3';
         } else if (this.formData.roleBenchSales) {
           this.userTypeId = '2';

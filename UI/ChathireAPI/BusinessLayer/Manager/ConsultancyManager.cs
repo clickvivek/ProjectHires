@@ -195,7 +195,7 @@ namespace BusinessLayer.Manager
                 _consultancy.UpdatedBy = userContext != null && userContext.UserId > 0 ? userContext.UserId : -1;
                 _consultancy.StatusId = 1;
                 _consultancy.Active = true;
-                _consultancy.IsDirectCompany = true;
+                _consultancy.IsDirectCompany = _consultancy.IsDirectCompany ?? false;
 
                 return await repo.Post(_consultancy, true);
             }, "AddConsultancy", userContext);
@@ -264,7 +264,7 @@ namespace BusinessLayer.Manager
                     entity.UpdatedBy = userContext.UserId;
                     if (!entity.Active.HasValue) entity.Active = true;
                     entity.StatusId = 1;
-                    entity.IsDirectCompany = true;
+                    entity.IsDirectCompany = entity.IsDirectCompany ?? false;
 
                     var created = await repo.Post(entity, true);
                     if (!string.IsNullOrEmpty(domain)) processedDomains.Add(domain);
@@ -300,6 +300,7 @@ namespace BusinessLayer.Manager
                     existing.Linkedin = consultancy.Linkedin;
                     existing.Logo = consultancy.Logo;
                     existing.StatusId = consultancy.StatusId;
+                    if (consultancy.IsDirectCompany.HasValue) existing.IsDirectCompany = consultancy.IsDirectCompany.Value;
                     if (consultancy.CityId.HasValue) existing.CityId = consultancy.CityId;
                     if (!string.IsNullOrWhiteSpace(consultancy.Domainname))
                     {

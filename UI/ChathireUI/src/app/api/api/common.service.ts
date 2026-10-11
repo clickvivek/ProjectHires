@@ -306,10 +306,10 @@ export class CommonService {
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public apiCommonCityGet(cityOrZip?: string, state?: number, isState?: boolean, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext}): Observable<CityDtoListResult>;
-    public apiCommonCityGet(cityOrZip?: string, state?: number, isState?: boolean, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext}): Observable<HttpResponse<CityDtoListResult>>;
-    public apiCommonCityGet(cityOrZip?: string, state?: number, isState?: boolean, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext}): Observable<HttpEvent<CityDtoListResult>>;
-    public apiCommonCityGet(cityOrZip?: string, state?: number, isState?: boolean, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext}): Observable<any> {
+    public apiCommonCityGet(cityOrZip?: string, state?: number, isState?: boolean, country?: string, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext}): Observable<CityDtoListResult>;
+    public apiCommonCityGet(cityOrZip?: string, state?: number, isState?: boolean, country?: string, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext}): Observable<HttpResponse<CityDtoListResult>>;
+    public apiCommonCityGet(cityOrZip?: string, state?: number, isState?: boolean, country?: string, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext}): Observable<HttpEvent<CityDtoListResult>>;
+    public apiCommonCityGet(cityOrZip?: string, state?: number, isState?: boolean, country?: string, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext}): Observable<any> {
 
         let localVarQueryParameters = new HttpParams({encoder: this.encoder});
         if (cityOrZip !== undefined && cityOrZip !== null) {
@@ -323,6 +323,10 @@ export class CommonService {
         if (isState !== undefined && isState !== null) {
           localVarQueryParameters = this.addToHttpParams(localVarQueryParameters,
             <any>isState, 'isState');
+        }
+        if (country !== undefined && country !== null) {
+          localVarQueryParameters = this.addToHttpParams(localVarQueryParameters,
+            <any>country, 'country');
         }
 
         let localVarHeaders = this.defaultHeaders;
@@ -587,10 +591,16 @@ export class CommonService {
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public apiCommonJobTypeGet(observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext}): Observable<JobTypeDtoListResult>;
-    public apiCommonJobTypeGet(observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext}): Observable<HttpResponse<JobTypeDtoListResult>>;
-    public apiCommonJobTypeGet(observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext}): Observable<HttpEvent<JobTypeDtoListResult>>;
-    public apiCommonJobTypeGet(observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext}): Observable<any> {
+    public apiCommonJobTypeGet(country?: string, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext}): Observable<JobTypeDtoListResult>;
+    public apiCommonJobTypeGet(country?: string, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext}): Observable<HttpResponse<JobTypeDtoListResult>>;
+    public apiCommonJobTypeGet(country?: string, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext}): Observable<HttpEvent<JobTypeDtoListResult>>;
+    public apiCommonJobTypeGet(country?: string, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext}): Observable<any> {
+
+        let localVarQueryParameters = new HttpParams({encoder: this.encoder});
+        if (country !== undefined && country !== null) {
+          localVarQueryParameters = this.addToHttpParams(localVarQueryParameters,
+            <any>country, 'country');
+        }
 
         let localVarHeaders = this.defaultHeaders;
 
@@ -636,6 +646,7 @@ export class CommonService {
         return this.httpClient.request<JobTypeDtoListResult>('get', `${this.configuration.basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
+                params: localVarQueryParameters,
                 responseType: <any>responseType_,
                 withCredentials: this.configuration.withCredentials,
                 headers: localVarHeaders,
@@ -913,10 +924,16 @@ export class CommonService {
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public apiCommonVisaGet(observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext}): Observable<VisaDtoListResult>;
-    public apiCommonVisaGet(observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext}): Observable<HttpResponse<VisaDtoListResult>>;
-    public apiCommonVisaGet(observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext}): Observable<HttpEvent<VisaDtoListResult>>;
-    public apiCommonVisaGet(observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext}): Observable<any> {
+    public apiCommonVisaGet(country?: string, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext}): Observable<VisaDtoListResult>;
+    public apiCommonVisaGet(country?: string, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext}): Observable<HttpResponse<VisaDtoListResult>>;
+    public apiCommonVisaGet(country?: string, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext}): Observable<HttpEvent<VisaDtoListResult>>;
+    public apiCommonVisaGet(country?: string, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext}): Observable<any> {
+
+        let localVarQueryParameters = new HttpParams({encoder: this.encoder});
+        if (country !== undefined && country !== null) {
+          localVarQueryParameters = this.addToHttpParams(localVarQueryParameters,
+            <any>country, 'country');
+        }
 
         let localVarHeaders = this.defaultHeaders;
 
@@ -962,6 +979,7 @@ export class CommonService {
         return this.httpClient.request<VisaDtoListResult>('get', `${this.configuration.basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
+                params: localVarQueryParameters,
                 responseType: <any>responseType_,
                 withCredentials: this.configuration.withCredentials,
                 headers: localVarHeaders,

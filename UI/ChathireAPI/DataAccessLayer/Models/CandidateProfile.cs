@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 
 namespace DataAccessLayer.Models;
@@ -64,6 +64,8 @@ public partial class CandidateProfile
     public string? Phone { get; set; }
 
     public short? ConsultingRoleId { get; set; }
+
+    public bool? HideResume { get; set; }
 
     public virtual CandidateAvailability? AvailabilityNavigation { get; set; }
 

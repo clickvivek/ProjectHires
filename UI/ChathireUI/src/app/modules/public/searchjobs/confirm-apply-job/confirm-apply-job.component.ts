@@ -2,6 +2,7 @@ import { Component, OnInit, Inject } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { SessionService } from 'src/app/core/session/session.service';
 import { CandidateDirectService, CandidateFullProfile, DirectCandidateResume } from 'src/app/core/services/candidate-direct.service';
+import { ConsultancyService } from 'src/app/api';
 
 @Component({
   selector: 'app-confirm-apply-job',
@@ -27,18 +28,48 @@ export class ConfirmApplyJobComponent implements OnInit {
   showUploadNewResume: boolean = false;
   newResumeFile: File | null = null;
   isUploadingNewResume: boolean = false;
+  isDirectCompany: boolean = false;
+  checkingDirectCompany: boolean = true;
 
   constructor(
     @Inject(MAT_DIALOG_DATA) public job: any,
     public dialogRef: MatDialogRef<ConfirmApplyJobComponent>,
     private sessionService: SessionService,
-    private candidateService: CandidateDirectService
+    private candidateService: CandidateDirectService,
+    private consultancyService: ConsultancyService
   ) {}
 
   ngOnInit(): void {
     this.isCandidateUser = Number(this.sessionService.userTypeId) === 5;
+    this.checkIfJobIsDirectCompany();
     if (this.isCandidateUser) {
       this.loadCandidateProfile();
+    }
+  }
+
+  checkIfJobIsDirectCompany(): void {
+    if (this.job?.isDirectCompany === true || this.job?.isDirectCompany === 1) {
+      this.isDirectCompany = true;
+      this.checkingDirectCompany = false;
+      return;
+    }
+
+    const cid = this.job?.consultancyId || this.job?.consultancy?.id;
+    if (cid && Number(cid) > 0) {
+      this.consultancyService.apiConsultancyConsultancyByIdGet(Number(cid)).subscribe({
+        next: (res: any) => {
+          this.checkingDirectCompany = false;
+          const comp = res?.value || res?.data || res;
+          if (comp && (comp.isDirectCompany === true || comp.isDirectCompany === 1)) {
+            this.isDirectCompany = true;
+          }
+        },
+        error: () => {
+          this.checkingDirectCompany = false;
+        }
+      });
+    } else {
+      this.checkingDirectCompany = false;
     }
   }
 
@@ -130,6 +161,7 @@ export class ConfirmApplyJobComponent implements OnInit {
   }
 
   handleOption(type: string): void {
+    if (this.isDirectCompany) return;
     this.optionSelected = type;
   }
 

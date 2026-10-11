@@ -2,7 +2,7 @@ import { Component, ViewChild, Input, Output, EventEmitter } from '@angular/core
 import { Router, NavigationEnd, ActivatedRoute } from '@angular/router';
 import { NgForm } from '@angular/forms';
 
-import { JobOpeningService } from 'src/app/api';
+import { JobOpeningService, ConsultancyService } from 'src/app/api';
 import { JobOpeningDto } from 'src/app/api/model/job-opening-dto';
 
 import { CommonService } from 'src/app/api';
@@ -10,7 +10,7 @@ import { SessionService } from 'src/app/core/session/session.service';
 import { SharedService } from 'src/app/modules/shared/services/shared.service';
 import { ToastrService } from 'ngx-toastr';
 
-import { defaultPostJobVisas, defaultPostJobPositionTypes } from 'src/app/data/various';
+import { defaultPostJobVisas, defaultPostJobPositionTypes, defaultCanadaPostJobVisas, defaultCanadaPostJobPositionTypes } from 'src/app/data/various';
 
 import _ from 'underscore';
 
@@ -60,10 +60,11 @@ export class PostJobDetailsComponent {
   quotaStatus: UserQuotaStatus | null = null;
   isLoadingQuota: boolean = false;
   isQuotaCollapsed: boolean = true;
+  isDirectCompany: boolean = false;
 
   formData: any = {
     name: "",
-    country: "",
+    country: "USA",
     joiningdays: "",
     description: "",
     totalExp: null,
@@ -157,7 +158,8 @@ export class PostJobDetailsComponent {
     private jobOpeningService: JobOpeningService,
     private authService: AuthService,
     private tokenService: TokenService,
-    private http: HttpClient
+    private http: HttpClient,
+    private consultancyService: ConsultancyService
   ) { 
 
     router.events.subscribe((event: any) => {
@@ -188,12 +190,27 @@ export class PostJobDetailsComponent {
         let newData = res.value
 
         this.formData = newData;
-        this.formData.salaryCurrency = newData.salaryCurrency || 'USD';
-
-        if (newData.country) {
-          const names = newData.country.split(',').map((s: string) => s.trim().toLowerCase());
-          this.selectedCountryItems = this.selectCountryList.filter(c => names.includes(c.name.toLowerCase()));
-          this.formData.country = newData.country;
+        const countryVal = (newData.country || '').trim();
+        const isCanada = countryVal.toLowerCase() === 'canada' || countryVal.toLowerCase() === 'ca';
+        this.formData.country = isCanada ? 'Canada' : 'USA';
+        this.formData.salaryCurrency = newData.salaryCurrency || (this.formData.country === 'Canada' ? 'CAD' : 'USD');
+        
+        const cid = newData.consultancyId || this.sessionService.consultancyId;
+        if (cid && Number(cid) > 0) {
+          this.consultancyService.apiConsultancyConsultancyByIdGet(Number(cid)).subscribe({
+            next: (cRes: any) => {
+              const comp = cRes?.value || cRes?.data || cRes;
+              if (comp && (comp.isDirectCompany === true || comp.isDirectCompany === 1)) {
+                this.isDirectCompany = true;
+              }
+              this.loadCountrySpecificOptions(this.formData.country, true);
+            },
+            error: () => {
+              this.loadCountrySpecificOptions(this.formData.country, true);
+            }
+          });
+        } else {
+          this.loadCountrySpecificOptions(this.formData.country, true);
         }
 
         //Position type
@@ -298,6 +315,11 @@ export class PostJobDetailsComponent {
   }
 
   togglePositionType(item: any) {
+    if (this.isDirectCompany) {
+      // If direct company, only W2 Full Time is allowed and it cannot be unchecked
+      return;
+    }
+
     const id = item.jobTypeId || item.id;
     const exists = (this.formData.jobOpeningJobTypes || []).some((j: any) => (j.jobTypeId || j.id) === id);
 
@@ -331,7 +353,7 @@ export class PostJobDetailsComponent {
   isW2FullTimeSelected(): boolean {
     return (this.formData.jobOpeningJobTypes || []).some((j: any) => {
       const desc = (j.description || j.name || '').toLowerCase();
-      return desc.includes('w2 full') || (j.jobTypeId || j.id) === 11;
+      return desc.includes('w2 full') || desc.includes('t4 - full') || (j.jobTypeId || j.id) === 11 || (j.jobTypeId || j.id) === 17;
     });
   }
 
@@ -341,7 +363,7 @@ export class PostJobDetailsComponent {
       return false;
     }
     const desc = (selected[0].description || selected[0].name || '').toLowerCase();
-    return desc.includes('w2 full') || (selected[0].jobTypeId || selected[0].id) === 11;
+    return desc.includes('w2 full') || desc.includes('t4 - full') || (selected[0].jobTypeId || selected[0].id) === 11 || (selected[0].jobTypeId || selected[0].id) === 17;
   }
 
   isPositionTypeSelected(item: any): boolean {
@@ -409,31 +431,126 @@ export class PostJobDetailsComponent {
       if (this.isRemoteJob()) {
         this.formData.jobOpeningLocations = [];
         this.formData.cityId = null;
-        if (!this.selectedCountryItems || this.selectedCountryItems.length === 0) {
-          this.selectedCountryItems = [{ id: 1, name: 'USA', description: 'USA' }];
-          this.formData.country = 'USA';
-        }
-      } else {
-        this.selectedCountryItems = [];
-        this.formData.country = '';
       }
     } else {
       this.formData.jobOpeningEmploymentTypes = [];
       this.formData.employmentTypeId = null;
-      this.selectedCountryItems = [];
-      this.formData.country = '';
     }
 
   }
 
-  onCountryChange(event: any) {
-    this.selectedCountryItems = event || [];
-    if (!_.isEmpty(event)) {
-      const names = event.map((item: any) => item.name || item.description).filter(Boolean);
-      this.formData.country = names.join(', ');
-    } else {
-      this.formData.country = '';
-    }
+  onCountrySelectionChange(newCountry: string) {
+    const prevCountry = this.formData.country;
+    this.formData.country = newCountry || 'USA';
+
+    // Clear previously selected locations when changing country
+    this.formData.jobOpeningLocations = [];
+    this.formData.cityId = null;
+    this.selectLocationList = [];
+
+    // Switch default currency
+    this.formData.salaryCurrency = this.formData.country === 'Canada' ? 'CAD' : 'USD';
+
+    // Reload Position Types and Visas dynamically for Canada / USA
+    this.loadCountrySpecificOptions(this.formData.country, false);
+  }
+
+  loadCountrySpecificOptions(country: string, preserveSelections: boolean = false) {
+    const c = country || 'USA';
+
+    this.commonService.apiCommonJobTypeGet(c).subscribe({
+      next: (res: any) => {
+        let allTypes = res.value || [];
+        if (this.isDirectCompany) {
+          // Direct companies only have option "W2 Full time" (or Permanent Full-Time)
+          allTypes = allTypes.filter((item: any) => {
+            const desc = (item.description || item.name || '').toLowerCase();
+            return desc.includes('full time') || desc.includes('full-time') || (item.id || item.jobTypeId) === 11 || (item.id || item.jobTypeId) === 23;
+          });
+        }
+        this.selectJobPositionTypeList = allTypes;
+
+        if (this.isDirectCompany) {
+          // Force select only the Full Time option
+          if (this.selectJobPositionTypeList.length > 0) {
+            const fullTimeItem = this.selectJobPositionTypeList[0];
+            const id = fullTimeItem.id || fullTimeItem.jobTypeId;
+            this.formData.jobOpeningJobTypes = [{
+              ...fullTimeItem,
+              id: id,
+              jobTypeId: id,
+              description: fullTimeItem.description,
+              active: true
+            }];
+            this.formData.jobTypeId = id;
+          }
+        } else if (!preserveSelections && !this.isEdit) {
+          if (c === 'Canada' || c === 'CA') {
+            const defaultNames = ['incorporated', 'independent', 'agency payroll', 't4'];
+            const defaultSelected = (res.value || []).filter((item: any) => {
+              const desc = (item.description || item.name || '').trim().toLowerCase();
+              return defaultNames.some(d => desc.includes(d));
+            });
+            this.formData.jobOpeningJobTypes = defaultSelected.length > 0 ? defaultSelected.map((item: any) => ({
+              ...item,
+              id: item.id || item.jobTypeId,
+              jobTypeId: item.jobTypeId || item.id,
+              active: true
+            })) : [...defaultCanadaPostJobPositionTypes];
+            this.formData.jobTypeId = this.formData.jobOpeningJobTypes[0]?.id || 16;
+          } else {
+            const defaultNames = ['c2c', 'w2 - contract', 'w2 - full time'];
+            const defaultSelected = (res.value || []).filter((item: any) => {
+              const desc = (item.description || item.name || '').trim().toLowerCase();
+              return defaultNames.some(d => desc.includes(d));
+            });
+            this.formData.jobOpeningJobTypes = defaultSelected.length > 0 ? defaultSelected.map((item: any) => ({
+              ...item,
+              id: item.id || item.jobTypeId,
+              jobTypeId: item.jobTypeId || item.id,
+              active: true
+            })) : [...defaultPostJobPositionTypes];
+            this.formData.jobTypeId = this.formData.jobOpeningJobTypes[0]?.id || 7;
+          }
+        }
+      },
+      error: (error: any) => { }
+    });
+
+    this.commonService.apiCommonVisaGet(c).subscribe({
+      next: (res: any) => {
+        const activeVisas = (res.value || []).filter((v: any) => v.name?.trim().toUpperCase() !== 'ANY');
+        this.selectVisaMapsList = activeVisas;
+        if (!preserveSelections && !this.isEdit) {
+          if (c === 'Canada' || c === 'CA') {
+            const defaultSelected = activeVisas.filter((v: any) => {
+              const name = (v.name || '').trim().toLowerCase();
+              return name.includes('citizen') || name.includes('resident') || name.includes('pr');
+            }).map((v: any) => ({
+              ...v,
+              id: v.id || v.visaId,
+              visaId: v.visaId || v.id,
+              active: true
+            }));
+            this.formData.jobOpeningVisaMaps = defaultSelected.length > 0 ? defaultSelected : [...defaultCanadaPostJobVisas];
+            this.formData.visaId = this.formData.jobOpeningVisaMaps[0]?.visaId || this.formData.jobOpeningVisaMaps[0]?.id || 14;
+          } else {
+            const defaultSelected = activeVisas.filter((v: any) => {
+              const name = v.name?.trim().toUpperCase();
+              return name === 'GC' || name === 'USC';
+            }).map((v: any) => ({
+              ...v,
+              id: v.id || v.visaId,
+              visaId: v.visaId || v.id,
+              active: true
+            }));
+            this.formData.jobOpeningVisaMaps = defaultSelected.length > 0 ? defaultSelected : [...defaultPostJobVisas];
+            this.formData.visaId = this.formData.jobOpeningVisaMaps[0]?.visaId || this.formData.jobOpeningVisaMaps[0]?.id || 4;
+          }
+        }
+      },
+      error: (error: any) => { }
+    });
   }
 
   toggleVisa(item: any) {
@@ -495,9 +612,16 @@ export class PostJobDetailsComponent {
   }
 
   onLocationQuery(event:any) {
-    this.commonService.apiCommonCityGet(event,undefined,false).subscribe({
+    const currentCountry = this.formData.country || 'USA';
+    this.commonService.apiCommonCityGet(event, undefined, false, currentCountry).subscribe({
       next: (res : any) => {
-        this.selectLocationList = res.value
+        let cities = res.value || [];
+        if (currentCountry === 'Canada') {
+          cities = cities.filter((c: any) => !c.countryName || c.countryName.toLowerCase() === 'canada' || c.countryName.toUpperCase() === 'CA');
+        } else if (currentCountry === 'USA') {
+          cities = cities.filter((c: any) => !c.countryName || c.countryName.toUpperCase() === 'USA' || c.countryName.toUpperCase() === 'US');
+        }
+        this.selectLocationList = cities;
       },
       error: (error:any) => { }
     })
@@ -664,9 +788,7 @@ export class PostJobDetailsComponent {
 
       const parsedTotalExp = (this.formData.totalExp != null && this.formData.totalExp !== '') ? parseInt(this.formData.totalExp, 10) : 0;
       const parsedDuration = (this.formData.projectDurationmonths != null && this.formData.projectDurationmonths !== '') ? parseInt(this.formData.projectDurationmonths, 10) : null;
-      const candidateCountry = this.isRemoteJob()
-        ? (this.formData.country || 'USA')
-        : (this.formData.jobOpeningLocations?.[0]?.countryName || this.formData.country || 'USA');
+      const selectedJobCountry = this.formData.country || 'USA';
 
       const formattedVisaMaps = (this.formData.jobOpeningVisaMaps || []).map((v: any) => ({
         id: v.id || v.visaId,
@@ -700,7 +822,7 @@ export class PostJobDetailsComponent {
 
         this.job = {
           name: this.formData.name,
-          country: candidateCountry,
+          country: selectedJobCountry,
           joiningdays: 0,
           description: this.formData.description,
           totalExp: parsedTotalExp,
@@ -714,14 +836,14 @@ export class PostJobDetailsComponent {
           categoryId: 1, //hard coded
           jobLocation: "string",
           postalcode: "string",
-          projectStartId: 8, //USA
+          projectStartId: selectedJobCountry === 'Canada' ? 9 : 8,
           directClient: this.isW2FullTimeOnlySelected() ? null : (this.selectDirectClient == 'null' ? null : this.selectDirectClient),
           isReviewed: true,
           fromAmt: this.isW2FullTimeOnlySelected() ? 0 : this.formData.fromAmt,
           toAmt: this.isW2FullTimeOnlySelected() ? 0 : this.formData.toAmt,
           salaryFrom: this.isW2FullTimeOnlySelected() && this.formData.salaryFrom != null && this.formData.salaryFrom !== '' ? Number(this.formData.salaryFrom) : null,
           salaryTo: this.isW2FullTimeOnlySelected() && this.formData.salaryTo != null && this.formData.salaryTo !== '' ? Number(this.formData.salaryTo) : null,
-          salaryCurrency: this.isW2FullTimeOnlySelected() ? (this.formData.salaryCurrency || 'USD') : null,
+          salaryCurrency: this.isW2FullTimeOnlySelected() ? (this.formData.salaryCurrency || (selectedJobCountry === 'Canada' ? 'CAD' : 'USD')) : null,
           notifyOnCandidateProfileMap: this.formData.notifyOnCandidateProfileMap,
           notifyWithResume: this.formData.notifyWithResume,
           localCandidatePref: this.formData.localCandidatePref,
@@ -740,7 +862,7 @@ export class PostJobDetailsComponent {
         this.job = {
           id: this.formData.id,
           name: this.formData.name,
-          country: candidateCountry,
+          country: selectedJobCountry,
           joiningdays: this.formData.joiningdays,
           description: this.formData.description,
           totalExp: parsedTotalExp,
@@ -761,7 +883,7 @@ export class PostJobDetailsComponent {
           toAmt: this.isW2FullTimeOnlySelected() ? 0 : this.formData.toAmt,
           salaryFrom: this.isW2FullTimeOnlySelected() && this.formData.salaryFrom != null && this.formData.salaryFrom !== '' ? Number(this.formData.salaryFrom) : null,
           salaryTo: this.isW2FullTimeOnlySelected() && this.formData.salaryTo != null && this.formData.salaryTo !== '' ? Number(this.formData.salaryTo) : null,
-          salaryCurrency: this.isW2FullTimeOnlySelected() ? (this.formData.salaryCurrency || 'USD') : null,
+          salaryCurrency: this.isW2FullTimeOnlySelected() ? (this.formData.salaryCurrency || (selectedJobCountry === 'Canada' ? 'CAD' : 'USD')) : null,
           notifyOnCandidateProfileMap: this.formData.notifyOnCandidateProfileMap,
           notifyWithResume: this.formData.notifyWithResume,
           localCandidatePref: this.formData.localCandidatePref,
@@ -904,58 +1026,37 @@ export class PostJobDetailsComponent {
 
     this.checkAndAutoSubmitPendingJob();
 
+    this.formData.country = this.formData.country || 'USA';
     this.formData.jobOpeningVisaMaps = [...defaultPostJobVisas];
     this.formData.jobOpeningJobTypes = [...defaultPostJobPositionTypes];
 
-    this.commonService.apiCommonJobTypeGet().subscribe({
-      next: (res:any) => {
-        this.selectJobPositionTypeList = res.value;
-        if (!this.isEdit) {
-          const defaultNames = ['c2c - contract', 'w2 - contract', 'w2 - full time'];
-          const defaultSelected = (res.value || []).filter((item: any) => {
-            const desc = (item.description || item.name || '').trim().toLowerCase();
-            return defaultNames.includes(desc);
-          });
-          this.formData.jobOpeningJobTypes = defaultSelected.length > 0 ? defaultSelected.map((item: any) => ({
-            ...item,
-            id: item.id || item.jobTypeId,
-            jobTypeId: item.jobTypeId || item.id,
-            active: true
-          })) : [...defaultPostJobPositionTypes];
-          this.formData.jobTypeId = this.formData.jobOpeningJobTypes[0]?.id || 7;
+    const cid = this.sessionService.consultancyId;
+    if (cid && Number(cid) > 0) {
+      this.consultancyService.apiConsultancyConsultancyByIdGet(Number(cid)).subscribe({
+        next: (cRes: any) => {
+          const comp = cRes?.value || cRes?.data || cRes;
+          if (comp && (comp.isDirectCompany === true || comp.isDirectCompany === 1)) {
+            this.isDirectCompany = true;
+          }
+          if (!this.isEdit) {
+            this.loadCountrySpecificOptions(this.formData.country, false);
+          }
+        },
+        error: () => {
+          if (!this.isEdit) {
+            this.loadCountrySpecificOptions(this.formData.country, false);
+          }
         }
-      },
-      error: (error:any) => {
-        
+      });
+    } else {
+      if (!this.isEdit) {
+        this.loadCountrySpecificOptions(this.formData.country, false);
       }
-    })
+    }
 
     this.commonService.apiCommonEmploymentTypeGet().subscribe({
       next: (res:any) => {
         this.selectEmploymentTypeList = res.value
-      },
-      error: (error:any) => {
-        
-      }
-    })
-
-    this.commonService.apiCommonVisaGet().subscribe({
-      next: (res:any) => {
-        const activeVisas = (res.value || []).filter((v: any) => v.name?.trim().toUpperCase() !== 'ANY');
-        this.selectVisaMapsList = activeVisas;
-        if (!this.isEdit) {
-          const defaultSelected = activeVisas.filter((v: any) => {
-            const name = v.name?.trim().toUpperCase();
-            return name === 'GC' || name === 'USC';
-          }).map((v: any) => ({
-            ...v,
-            id: v.id || v.visaId,
-            visaId: v.visaId || v.id,
-            active: true
-          }));
-          this.formData.jobOpeningVisaMaps = defaultSelected.length > 0 ? defaultSelected : [...defaultPostJobVisas];
-          this.formData.visaId = this.formData.jobOpeningVisaMaps[0]?.visaId || this.formData.jobOpeningVisaMaps[0]?.id || 4;
-        }
       },
       error: (error:any) => {
         

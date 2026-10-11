@@ -33,4 +33,12 @@ export class FileDownloadService {
     });
   }
 
+  checkDownloadResume(fileName: string, userId?: number) {
+    let url = `${environment.rootUrl}/api/Subscription/CheckDownloadResume?fileName=${encodeURIComponent(fileName)}`;
+    if (userId) {
+      url += `&userId=${userId}`;
+    }
+    return this.httpClient.get<any>(url);
+  }
+
 }

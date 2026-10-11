@@ -74,19 +74,13 @@
                 <a class="nav-link" routerLink="/search-hotlist" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">Find Talent</a>
               </li>
               <li class="nav-item">
-                <a class="nav-link" routerLink="/home" fragment="how-it-works">How It Works</a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link referral-header-btn" routerLink="/refer-for-rewards" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
-                  <span class="material-symbols-outlined fs-5 me-1 text-warning">featured_seasonal_and_gifts</span>
-                  <span>Refer</span>
-                </a>
+                <a class="nav-link" routerLink="/how-it-works" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">How It Works</a>
               </li>
               <li class="nav-item special ms-lg-2">
-                <a class="nav-link btn btn-primary px-4 py-2 text-white fw-bold shadow-sm" style="line-height: 24px; border-radius: 6px;" routerLink="/postjobs" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">Post a Job — <span class="text-uppercase" style="background:transparent; border:none; padding:0; font-size:inherit;">free</span></a>
+                <a class="nav-link btn btn-primary px-4 py-2 text-white fw-bold shadow-sm" style="line-height: 24px; border-radius: 6px;" routerLink="/postjobs" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">Post a Job — Free</a>
               </li>
               <li class="nav-item ms-lg-2">
-                <a class="nav-link" routerLink="/login" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">Log In</a>
+                <a class="nav-link" routerLink="/login" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">Sign In</a>
               </li>
               <li class="nav-item">
                 <a class="nav-link fw-bold" style="color: #39756F !important;" routerLink="/signup" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">Sign Up</a>
@@ -124,6 +118,21 @@
                   ><span class="material-symbols-outlined fs-6 me-1 align-text-bottom">person</span>My Profile & CV</a
                 >
               </li>
+
+              <!-- Refer Button for Logged-in Candidate -->
+              <li class="nav-item ms-lg-1 me-lg-1">
+                <a
+                  class="nav-link referral-header-btn"
+                  routerLink="/refer-for-rewards"
+                  routerLinkActive="active"
+                  [routerLinkActiveOptions]="{ exact: true }"
+                  title="Refer & Earn Rewards"
+                >
+                  <span class="material-symbols-outlined fs-5 me-1 text-warning">featured_seasonal_and_gifts</span>
+                  <span>Refer</span>
+                </a>
+              </li>
+
               <!-- Chat Icon Button -->
               <li class="nav-item ms-lg-2 me-lg-2">
                 <a

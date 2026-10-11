@@ -145,11 +145,17 @@
         </div>
 
         <!-- Resume Attachments -->
-        <div class="row mt-2" *ngIf="item?.candidateDocuments && item?.candidateDocuments.length > 0">
+        <div class="row mt-2" *ngIf="(item?.candidateDocuments && item?.candidateDocuments.length > 0) || item?.hideResume">
           <div class="col-sm-12">
-            <div class="bottom-box pt-2 d-flex gap-2">
-              <view-resume [doc]="item?.candidateDocuments[0]?.doc"></view-resume>
-              <download-resume [doc]="item?.candidateDocuments[0]?.doc"></download-resume>
+            <div class="bottom-box pt-2 d-flex align-items-center gap-2 flex-wrap">
+              <ng-container *ngIf="item?.candidateDocuments && item?.candidateDocuments.length > 0">
+                <view-resume [doc]="item?.candidateDocuments[0]?.doc"></view-resume>
+                <download-resume [doc]="item?.candidateDocuments[0]?.doc"></download-resume>
+              </ng-container>
+              <span *ngIf="item?.hideResume" class="badge bg-warning bg-opacity-10 text-warning border border-warning d-inline-flex align-items-center px-2 py-1 text-xs">
+                <span class="material-symbols-outlined fs-6 me-1">visibility_off</span>
+                Resume Hidden from Recruiters
+              </span>
             </div>
           </div>
         </div>

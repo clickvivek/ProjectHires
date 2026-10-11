@@ -18,6 +18,7 @@ export const authRoutes = [
 
 export const publicRoutes = [ 
     '/home', 
+    '/how-it-works',
     '/login', 
     '/signup'
 ];

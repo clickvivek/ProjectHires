@@ -69,7 +69,7 @@ namespace BusinessLayer.Manager
             
             // Map to DTOs and populate user details if available
             var userIds = entities.Where(e => e.UserId.HasValue).Select(e => e.UserId!.Value).Distinct().ToList();
-            var usersMap = new Dictionary<long, (string Email, string Name)>();
+            var usersMap = new Dictionary<long, (string Email, string Name, string Location)>();
 
             if (userIds.Any() && context != null)
             {
@@ -78,12 +78,12 @@ namespace BusinessLayer.Manager
                     var users = await context.Users
                         .AsNoTracking()
                         .Where(u => userIds.Contains(u.Id))
-                        .Select(u => new { u.Id, u.Email, Name = (u.Fname + " " + (u.Lname ?? "")).Trim() })
+                        .Select(u => new { u.Id, u.Email, Name = (u.Fname + " " + (u.Lname ?? "")).Trim(), u.Location })
                         .ToListAsync();
 
                     foreach (var u in users)
                     {
-                        usersMap[u.Id] = (u.Email ?? "", u.Name);
+                        usersMap[u.Id] = (u.Email ?? "", u.Name, u.Location ?? "");
                     }
                 }
                 catch { }
@@ -109,6 +109,10 @@ namespace BusinessLayer.Manager
                 {
                     dto.UserEmail = uInfo.Email;
                     dto.UserName = uInfo.Name;
+                    if (string.IsNullOrWhiteSpace(dto.Location) && !string.IsNullOrWhiteSpace(uInfo.Location))
+                    {
+                        dto.Location = uInfo.Location;
+                    }
                 }
 
                 return dto;

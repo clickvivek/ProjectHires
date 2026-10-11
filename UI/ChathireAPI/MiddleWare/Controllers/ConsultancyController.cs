@@ -62,6 +62,7 @@ namespace MiddleWare.Controllers
 
         [HttpPost]
         [Route("ScrapeAndAddLinkedInCompanies")]
+        [AdminAuthorize]
         public Task<Result<List<LinkedInCompanyScrapedDto>>> ScrapeAndAddLinkedInCompanies([FromBody] LinkedInScrapeRequestDto request)
         {
             return ExecuteAsync<List<LinkedInCompanyScrapedDto>>(async () =>
@@ -89,6 +90,7 @@ namespace MiddleWare.Controllers
 
         [HttpPost]
         [Route("ReviewAndUpdateLinkedInWebsites")]
+        [AdminAuthorize]
         public Task<Result<LinkedInBatchUpdateResultDto>> ReviewAndUpdateLinkedInWebsites([FromBody] LinkedInBatchUpdateRequestDto? request)
         {
             return ExecuteAsync<LinkedInBatchUpdateResultDto>(async () =>
@@ -110,6 +112,7 @@ namespace MiddleWare.Controllers
 
         [HttpPost]
         [Route("ScrapeAndAddCompanyUrls")]
+        [AdminAuthorize]
         public Task<Result<List<CompanyUrlScrapedDto>>> ScrapeAndAddCompanyUrls([FromBody] CompanyUrlScrapeRequestDto request)
         {
             return ExecuteAsync<List<CompanyUrlScrapedDto>>(async () =>
@@ -137,6 +140,7 @@ namespace MiddleWare.Controllers
 
         [HttpPost]
         [Route("UploadCompanyLogo")]
+        [AdminAuthorize]
         public Task<Result<string>> UploadCompanyLogo([FromForm] FileModel model, [FromQuery] string? websiteUrl = null)
         {
             return ExecuteAsync<string>(async () =>
@@ -161,6 +165,7 @@ namespace MiddleWare.Controllers
 
         [HttpPost]
         [Route("CheckAndUpdateLogo")]
+        [AdminAuthorize]
         public Task<Result<ConsultancyDto>> CheckAndUpdateLogo([FromQuery] long consultancyId, [FromQuery] string? linkedinUrl = null)
         {
             return ExecuteAsync<ConsultancyDto>(async () =>

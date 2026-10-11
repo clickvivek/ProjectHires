@@ -397,10 +397,28 @@
                   </button>
                 </div>
 
+                <!-- Hide Resume Option -->
+                <div class="form-check hide-resume-check-group mt-3 mb-2 p-3 bg-light rounded-3 border">
+                  <input
+                    type="checkbox"
+                    class="form-check-input"
+                    id="hideResumeCheckbox"
+                    name="hideResume"
+                    [(ngModel)]="formData.hideResume"
+                  />
+                  <label class="form-check-label fw-semibold text-dark ms-2 cursor-pointer" for="hideResumeCheckbox">
+                    Hide resume from recruiters
+                  </label>
+                  <div class="form-text text-muted small mt-1 ms-4">
+                    Bench sales can decide whether to keep this resume hidden. When enabled, recruiters cannot view or download the candidate's resume.
+                  </div>
+                </div>
+
                 <!-- Submit Button -->
                 <div class="submit-box mt-4 pt-3 border-top d-flex justify-content-end">
                   <submit-btn
                     [isSubmit]="isFormSubmitted"
+                    [isEdit]="isEdit"
                     defaultText="Add Candidate"
                     defaultActionText="Submitting..."
                     editText="Update Candidate"

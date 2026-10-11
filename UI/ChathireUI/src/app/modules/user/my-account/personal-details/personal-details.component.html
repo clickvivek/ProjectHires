@@ -21,10 +21,10 @@
         <button
           *ngIf="!isEdit"
           type="button"
-          class="btn btn-outline-teal d-inline-flex align-items-center gap-2 px-3 py-2 shadow-sm rounded-3"
+          class="btn btn-teal text-white d-inline-flex align-items-center gap-2 px-3 py-2 shadow-sm rounded-3 fw-semibold"
           (click)="isEdit = true"
         >
-          <span class="material-symbols-outlined fs-5">edit</span>
+          <span class="material-symbols-outlined fs-5 text-white">edit</span>
           <span>Edit Profile</span>
         </button>
 
@@ -145,7 +145,7 @@
                   placeholder="name@company.com"
                   [(ngModel)]="formData.email"
                   name="email"
-                  pattern="[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,4}$"
+                  pattern="^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,6}$"
                   required
                   [disabled]="!isEdit"
                 />
@@ -178,7 +178,7 @@
                   placeholder="alt.email@domain.com"
                   [(ngModel)]="formData.alternateEmail"
                   name="alternateEmail"
-                  pattern="[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,4}$"
+                  pattern="^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,6}$"
                   [disabled]="!isEdit"
                 />
               </div>
@@ -330,8 +330,8 @@
         </div>
       </div>
 
-      <!-- Section 3: Job Role Specialization -->
-      <div class="form-section-card p-3 p-md-4 rounded-3 border bg-white mb-4">
+      <!-- Section 3: Job Role Specialization (Not shown for Admins or Candidates) -->
+      <div class="form-section-card p-3 p-md-4 rounded-3 border bg-white mb-4" *ngIf="formData?.userTypeId != 7 && userTypeId != '7' && formData?.userTypeId != 5 && userTypeId != '5'">
         <div class="d-flex align-items-center gap-2 mb-3 pb-2 border-bottom">
           <span class="material-symbols-outlined text-teal fs-5">work</span>
           <div>

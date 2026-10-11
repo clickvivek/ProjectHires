@@ -89,13 +89,13 @@ namespace MiddleWare.Controllers
 
         [HttpGet]
         [Route("JobType")]
-        public Task<Result<List<JobTypeDto>>> GetJobType()
+        public Task<Result<List<JobTypeDto>>> GetJobType(string? country = null)
         {
             return ExecuteAsync<List<JobTypeDto>>(async () =>
             {
                 var mgr = managerFactory.Get<ICommonManager>();
 
-                return await mgr.GetJobType(GetDummyUserContext());
+                return await mgr.GetJobType(GetDummyUserContext(), country);
             });
         }
 
@@ -125,13 +125,13 @@ namespace MiddleWare.Controllers
 
         [HttpGet]
         [Route("Visa")]
-        public Task<Result<List<VisaDto>>> GetVisa()
+        public Task<Result<List<VisaDto>>> GetVisa(string? country = null)
         {
             return ExecuteAsync<List<VisaDto>>(async () =>
             {
                 var mgr = managerFactory.Get<ICommonManager>();
 
-                return await mgr.GetVisa(GetDummyUserContext());
+                return await mgr.GetVisa(GetDummyUserContext(), country);
             });
         }
 
@@ -233,7 +233,7 @@ namespace MiddleWare.Controllers
 
         [HttpGet]
         [Route("City")]
-        public Task<Result<List<CityDto>>> GetCity(String? cityOrZip, int? state, bool isState)
+        public Task<Result<List<CityDto>>> GetCity(String? cityOrZip, int? state, bool isState, string? country = null)
         {
             return ExecuteAsync<List<CityDto>>(async () =>
             {
@@ -244,7 +244,7 @@ namespace MiddleWare.Controllers
                 //}
                 var mgr = managerFactory.Get<ICommonManager>();
 
-                return await mgr.GetCity(cityOrZip, state, isState, GetDummyUserContext());
+                return await mgr.GetCity(cityOrZip, state, isState, country, GetDummyUserContext());
             });
         }
 

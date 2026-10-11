@@ -98,7 +98,7 @@ form {
 
       @include placeholder {
         color: pick-color(dark, 400);
-        font-style: italic;
+        font-style: normal;
         @include ft-calc($font-regular);
       }
 
@@ -300,6 +300,13 @@ form {
 
       .form-check-input[type="radio"] {
         border: solid pick-color(dark, 500);
+
+        &:disabled {
+          background-color: #CBD5E1 !important;
+          border-color: #94A3B8 !important;
+          opacity: 1 !important;
+          cursor: not-allowed;
+        }
       }
 
       .form-check-input[type="checkbox"] {
@@ -375,7 +382,7 @@ form {
       @include placeholder {
         color: pick-color(dark, 500);
         @include ft-calc($font-small);
-        font-style: italic;
+        font-style: normal;
       }
 
       &:focus {
@@ -675,5 +682,29 @@ form {
     border-top: none !important;
     @include ft-calc($font-small);
     height: 200px;
+  }
+}
+
+// Ensure all input and textarea placeholders use normal font style globally
+input, textarea, .form-control {
+  &::placeholder {
+    font-style: normal !important;
+    font-family: inherit !important;
+  }
+  &::-webkit-input-placeholder {
+    font-style: normal !important;
+    font-family: inherit !important;
+  }
+  &:-moz-placeholder {
+    font-style: normal !important;
+    font-family: inherit !important;
+  }
+  &::-moz-placeholder {
+    font-style: normal !important;
+    font-family: inherit !important;
+  }
+  &:-ms-input-placeholder {
+    font-style: normal !important;
+    font-family: inherit !important;
   }
 }

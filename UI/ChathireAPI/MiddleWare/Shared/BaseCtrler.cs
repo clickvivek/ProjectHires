@@ -320,5 +320,54 @@ namespace Middleware.Shared
                 SessionGuid = Guid.NewGuid().ToString(),
             };
         }
+
+        protected string GetClientIpAddress()
+        {
+            try
+            {
+                if (HttpContext?.Request?.Headers != null)
+                {
+                    if (HttpContext.Request.Headers.TryGetValue("CF-Connecting-IP", out var cfIp) && !string.IsNullOrWhiteSpace(cfIp))
+                    {
+                        return cfIp.ToString().Split(',')[0].Trim();
+                    }
+                    if (HttpContext.Request.Headers.TryGetValue("X-Forwarded-For", out var forwardedHeader) && !string.IsNullOrWhiteSpace(forwardedHeader))
+                    {
+                        return forwardedHeader.ToString().Split(',')[0].Trim();
+                    }
+                    if (HttpContext.Request.Headers.TryGetValue("X-Real-IP", out var realIp) && !string.IsNullOrWhiteSpace(realIp))
+                    {
+                        return realIp.ToString().Split(',')[0].Trim();
+                    }
+                }
+                var remoteIp = HttpContext?.Connection?.RemoteIpAddress?.ToString();
+                return remoteIp ?? "::1";
+            }
+            catch
+            {
+                return "::1";
+            }
+        }
+
+        protected string? GetClientLocationHeader()
+        {
+            try
+            {
+                if (HttpContext?.Request?.Headers != null)
+                {
+                    if (HttpContext.Request.Headers.TryGetValue("X-Client-Location", out var loc) && !string.IsNullOrWhiteSpace(loc))
+                    {
+                        return loc.ToString().Trim();
+                    }
+                    if (HttpContext.Request.Headers.TryGetValue("CF-IPCity", out var cfCity) && !string.IsNullOrWhiteSpace(cfCity))
+                    {
+                        string region = HttpContext.Request.Headers.TryGetValue("CF-IPCountry", out var cfCountry) ? cfCountry.ToString() : "";
+                        return $"{cfCity}, {region}".TrimEnd(',', ' ');
+                    }
+                }
+            }
+            catch { }
+            return null;
+        }
     }
 }

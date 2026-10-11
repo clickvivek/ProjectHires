@@ -105,8 +105,8 @@ export class JobDetailSheetComponent implements OnInit {
     if(this.authService.isLoggedIn()) {
       const applyJobDialogRef = this.dialog.open(ConfirmApplyJobComponent, {
         panelClass: ['material', 'confirm-apply-modal-panel'],
-        position: { top: '30px' },
-        maxHeight: '90vh',
+        position: { top: '15px' },
+        maxHeight: '95vh',
         disableClose: true,
         data: this.selectedJob
       });
@@ -122,8 +122,8 @@ export class JobDetailSheetComponent implements OnInit {
         if (res && res.success) {
           const applyJobDialogRef = this.dialog.open(ConfirmApplyJobComponent, {
             panelClass: ['material', 'confirm-apply-modal-panel'],
-            position: { top: '30px' },
-            maxHeight: '90vh',
+            position: { top: '15px' },
+            maxHeight: '95vh',
             disableClose: true,
             data: this.selectedJob
           });

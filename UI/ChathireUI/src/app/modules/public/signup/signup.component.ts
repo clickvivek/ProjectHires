@@ -278,6 +278,9 @@ export class SignupComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.route.queryParams.subscribe(params => {
+      if (params['role'] && (params['role'] === 'recruiter' || params['role'] === 'candidate')) {
+        this.selectedRole = params['role'];
+      }
       if (params['ref']) {
         this.referralCode = params['ref'];
         sessionStorage.setItem('ch_referral_code', this.referralCode);

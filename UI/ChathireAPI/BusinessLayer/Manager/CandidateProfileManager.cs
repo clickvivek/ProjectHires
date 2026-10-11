@@ -218,7 +218,7 @@ namespace BusinessLayer.Manager
                 var addCandidateProfileSkills = await AddCandidateProfileSkills(_profileUpdate.CandidateProfileSkills.ToList(), userContext);
                 var _candidateProfileSkill = mapper.Map<List<CandidateProfileSkillForUpdateDto>>(addCandidateProfileSkills);
 
-                _profileUpdate.CandidateProfileEmploymentTypes.ToList().ForEach(o => { o.Updated = date; o.UpdatedBy = userContext.UserId; });
+                _profileUpdate.CandidateProfileEmploymentTypes.ToList().ForEach(o => { o.Updated = date; o.UpdatedBy = userContext.UserId; o.CandidateProfileId = profileId; });
                 await DeleteCandidateProfileEmploymentTypesByProfileId(profileId,userContext);
                 var _candidateProfileEmploymentTypes = mapper.Map<List<CandidateProfileEmploymentTypeDtoForUpdate>>(await AddCandidateProfileEmploymentTypes(_profileUpdate.CandidateProfileEmploymentTypes.ToList(), userContext));
 
@@ -226,7 +226,7 @@ namespace BusinessLayer.Manager
                 await DeleteCandidateProfileDomainsByProfileId(profileId, userContext);
                 var _candidateProfileDomains = mapper.Map<List<CandidateProfileDomainDtoForUpdate>>(await AddCandidateProfileDomains(_profileUpdate.CandidateProfileDomains.ToList(), userContext));
 
-                _profileUpdate.CandidatePrefLocations.ToList().ForEach(o => { o.Updated = date; o.UpdatedBy = userContext.UserId; });
+                _profileUpdate.CandidatePrefLocations.ToList().ForEach(o => { o.Updated = date; o.UpdatedBy = userContext.UserId; o.CandidateId = profileId; });
                 await DeleteCandidatePrefLocationsByProfileId(profileId, userContext);
                 var _candidatePrefLocations = mapper.Map<List<CandidatePrefLocationDtoForUpdate>>(await AddCandidatePrefLocations(_profileUpdate.CandidatePrefLocations.ToList(), userContext));
 
