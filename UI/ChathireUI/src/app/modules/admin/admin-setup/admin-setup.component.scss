@@ -1318,6 +1318,54 @@
 }
 
 
+.job-postings-filter-row {
+  .input-group {
+    .form-control {
+      height: 24px !important;
+      font-size: 0.74rem !important;
+      padding-top: 1px !important;
+      padding-bottom: 1px !important;
+    }
+    .input-group-text {
+      height: 24px !important;
+      padding: 0 6px !important;
+      .material-symbols-outlined {
+        font-size: 14px !important;
+      }
+    }
+    .btn {
+      height: 24px !important;
+      padding: 0 12px !important;
+      font-size: 0.72rem !important;
+      font-weight: 600 !important;
+      line-height: 22px !important;
+      min-width: auto !important;
+      display: inline-flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+    }
+  }
+
+  .btn-group {
+    .btn {
+      height: 22px !important;
+      padding: 0 9px !important;
+      font-size: 0.72rem !important;
+      font-weight: 600 !important;
+      line-height: 20px !important;
+      min-width: auto !important;
+      display: inline-flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+
+      .material-symbols-outlined {
+        font-size: 12px !important;
+        vertical-align: middle;
+      }
+    }
+  }
+}
+
 .btn-outline-purple {
   color: #7c3aed;
   border-color: #7c3aed;

@@ -53,6 +53,25 @@ export class InboxResumeTypesComponent {
     return moment(date).format('MMMM D, YYYY')
   }
 
+  getCandidateLocation(job: any): string {
+    if (!job) return '';
+    if (job.currentLocationCity) {
+      const city = job.currentLocationCity.city1 || '';
+      const state = job.currentLocationCity.stateCode || job.currentLocationCity.idStateNavigation?.stateCode || '';
+      if (city && state) return `${city}, ${state}`;
+      if (city) return city;
+      if (state) return state;
+    }
+    if (job.candidateProfile && job.candidateProfile.city) {
+      const city = job.candidateProfile.city.city1 || '';
+      const state = job.candidateProfile.city.stateCode || job.candidateProfile.city.idStateNavigation?.stateCode || '';
+      if (city && state) return `${city}, ${state}`;
+      if (city) return city;
+      if (state) return state;
+    }
+    return '';
+  }
+
   showAll() {
     this.isExpanded = !this.isExpanded
     if(this.isExpanded) {

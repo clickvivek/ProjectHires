@@ -75,7 +75,9 @@ namespace Middleware.Shared
             //CandidateProfileMappingStatusDto
             CreateMap<CandidateProfileMappingStatus, CandidateProfileMappingStatusDto>();
             CreateMap<JobOpeningCandidateProfileMap, JobOpeningCandidateProfileDetailMapDto>()
-                .ForMember(c=> c.CandidateProfileMappingStatusName,c=>c.MapFrom(d=>d.CandidateProfileMappingStatus != null ? d.CandidateProfileMappingStatus.Name : string.Empty));
+                .ForMember(c => c.CandidateProfileMappingStatusName, c => c.MapFrom(d => d.CandidateProfileMappingStatus != null ? d.CandidateProfileMappingStatus.Name : string.Empty))
+                .ForMember(c => c.TotalYearsOfExp, c => c.MapFrom(d => d.TotalYearsOfExp ?? (d.CandidateProfile != null ? d.CandidateProfile.TotalExp : null)))
+                .ForMember(c => c.CurrentLocationCity, c => c.MapFrom(d => d.CurrentLocationCity ?? (d.CandidateProfile != null ? d.CandidateProfile.City : null)));
 
             CreateMap<ConsultancyForInsertDto, Consultancy>().ForMember(c => c.Id, c => c.Ignore());
 

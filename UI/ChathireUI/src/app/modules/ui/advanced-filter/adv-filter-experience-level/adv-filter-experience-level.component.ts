@@ -47,6 +47,7 @@ export class AdvFilterExperienceLevelComponent {
   }
 
   applySearch() {
+    this.isFilterExists = (this.selectedExpArr && this.selectedExpArr.length > 0);
     this.inputChange.emit(this.selectedExpArr)
   }
 

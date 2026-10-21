@@ -1,22 +1,94 @@
-<div class="search-job-wrapper adv-filter-wrapper pb-4 pt-2">
-  <div class="container">
-    <div class="row justify-content-center">
+<div class="search-job-wrapper adv-filter-wrapper pb-4" [class.has-searched-mode]="hasSearched">
 
-      <div class="col-12 col-lg-10 col-xl-8 text-center pt-2 pb-3">
-        <h2 class="fw-bold mb-3" style="color: #11111D; letter-spacing: -0.5px; font-size: 1.35rem;">Search from thousands of tech Jobs posted everyday</h2>
-        <div class="mb-4">
-          <search-skill-location
-            [skill]="skill"
-            [location]="location"
-            [cityId]="cityId"
-            [stateId]="stateId"
-            [(isRemoteOnly)]="isRemoteOnly"
-            [(radiusMiles)]="radiusMiles"
-            type="jobs"
-          ></search-skill-location>
+  <!-- ========================================================= -->
+  <!-- 1. DEDICATED SEARCH HOME VIEW (when no query is submitted) -->
+  <!-- ========================================================= -->
+  <div class="search-home-hero py-5 text-center" *ngIf="!hasSearched">
+    <div class="container">
+      <div class="row justify-content-center">
+        <div class="col-12 col-lg-10 col-xl-8">
+          <h1 class="fw-bold mb-2 text-dark" style="letter-spacing: -0.4px; font-size: 1.45rem;">
+            Search from thousands of tech Jobs posted everyday
+          </h1>
+          <p class="text-muted mb-4 lead" style="font-size: 0.95rem;">
+            Find high-paying C2C, W2, Fulltime, and Remote tech roles matched to your exact skillset
+          </p>
+          <div class="search-home-card p-4 bg-white rounded-4 shadow-sm border">
+            <search-skill-location
+              [skill]="skill"
+              [location]="location"
+              [cityId]="cityId"
+              [stateId]="stateId"
+              [(isRemoteOnly)]="isRemoteOnly"
+              [(radiusMiles)]="radiusMiles"
+              type="jobs"
+            ></search-skill-location>
+          </div>
         </div>
       </div>
+    </div>
+  </div>
 
+  <!-- ==================================================================== -->
+  <!-- 2. COMPACT SINGLE-LINE TOP BAR VIEW (LinkedIn / Google style on results) -->
+  <!-- ==================================================================== -->
+  <div class="results-top-bar bg-white border-bottom shadow-xs py-3 sticky-top" *ngIf="hasSearched" style="top: 0; z-index: 100;">
+    <div class="container-fluid px-3 px-lg-4">
+      <div class="search-top-bar-inner" style="max-width: 1200px;">
+        <!-- Row 1: The input boxes (Skill, Location, Radius, Search button) -->
+        <search-skill-location
+          [skill]="skill"
+          [location]="location"
+          [cityId]="cityId"
+          [stateId]="stateId"
+          [(isRemoteOnly)]="isRemoteOnly"
+          [(radiusMiles)]="radiusMiles"
+          type="jobs"
+          page="compact"
+        ></search-skill-location>
+
+        <!-- Row 2: Clean Filter Ribbon directly below inputs -->
+        <div class="filter-ribbon d-flex align-items-center flex-wrap gap-3 mt-2 pt-2 border-top">
+          <!-- Remote Checkbox -->
+          <div class="form-check d-inline-flex align-items-center gap-2 m-0 cursor-pointer flex-shrink-0">
+            <input
+              class="form-check-input cursor-pointer"
+              type="checkbox"
+              id="topBarRemoteCheck"
+              name="isRemoteOnly"
+              [(ngModel)]="isRemoteOnly"
+              (change)="onRemoteToggle()"
+            />
+            <label class="form-check-label fw-semibold text-dark-700 cursor-pointer select-none" for="topBarRemoteCheck" style="font-size: 13px;">
+              Remote jobs only
+            </label>
+          </div>
+
+          <div class="vr d-none d-md-block" style="height: 20px; opacity: 0.25;"></div>
+
+          <!-- Filter Pills wrapped inside .filter-content for SCSS rules -->
+          <div class="filter-content d-flex align-items-center flex-wrap gap-2">
+            <adv-filter-date-posted
+              (inputChange)="onDateFilter($event)"
+            ></adv-filter-date-posted>
+            <adv-filter-visa
+              (inputChange)="onVisaFilter($event)"
+            ></adv-filter-visa>
+            <adv-filter-experience-level
+              (inputChange)="onExpFilter($event)"
+            ></adv-filter-experience-level>
+            <adv-filter-work-model
+              (inputChange)="onWorkModeFilter($event)"
+            ></adv-filter-work-model>
+            <adv-filter-reset></adv-filter-reset>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="container pt-3" *ngIf="hasSearched">
+    <div class="row justify-content-center">
       <div class="col-md-12">
 
         <loader *ngIf="!isLoaded"></loader>
@@ -30,28 +102,14 @@
 
           <ng-container *ngIf="isDataAvailable">
             
-            <div class="options-box">
-              <h6>{{ skill }} - {{ totalItems }} jobs found</h6>
+            <div class="options-box d-flex align-items-center justify-content-between flex-wrap gap-2 mt-2 mb-3">
+              <h6 class="mb-0 fw-semibold text-dark">
+                <span class="text-primary">{{ skill || 'All Jobs' }}</span> &ndash; {{ totalItems }} jobs found
+              </h6>
             </div>
             
 
             <div class="list-container">
-
-              <adv-filter-card>
-                <adv-filter-date-posted
-                  (inputChange)="onDateFilter($event)"
-                ></adv-filter-date-posted>
-                <adv-filter-visa
-                  (inputChange)="onVisaFilter($event)"
-                ></adv-filter-visa>
-                <adv-filter-experience-level
-                  (inputChange)="onExpFilter($event)"
-                ></adv-filter-experience-level>
-                <adv-filter-work-model
-                  (inputChange)="onWorkModeFilter($event)"
-                ></adv-filter-work-model>
-                <adv-filter-reset></adv-filter-reset>
-              </adv-filter-card>
 
               <div class="content" *ngIf="jobData.length > 0">
 

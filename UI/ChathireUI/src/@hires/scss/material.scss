@@ -104,9 +104,13 @@
   background: transparent !important;
   .mat-drawer-backdrop {
     position: fixed;
+    top: 66px !important;
+    height: calc(100vh - 66px) !important;
   }
   .mat-drawer {
     position: fixed;
+    top: 66px !important;
+    height: calc(100vh - 66px) !important;
     min-width: 800px;
     max-width: 800px;
     z-index: 4;

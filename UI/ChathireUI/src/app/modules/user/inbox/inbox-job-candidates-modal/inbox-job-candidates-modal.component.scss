@@ -1,0 +1,199 @@
+.inbox-job-candidates-modal {
+  min-height: 360px;
+  max-height: 88vh;
+  border-radius: 14px;
+  overflow: hidden;
+  background-color: #ffffff;
+}
+
+.job-icon-circle {
+  width: 44px;
+  height: 44px;
+  background: linear-gradient(135deg, #70246D 0%, #4D124B 100%);
+  box-shadow: 0 3px 8px rgba(112, 36, 109, 0.25);
+  flex-shrink: 0;
+}
+
+.modal-title {
+  font-size: 1.15rem;
+  letter-spacing: -0.01em;
+  max-width: 600px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.count-badge {
+  background-color: #F5EDF5;
+  color: #70246D;
+  font-weight: 600;
+  font-size: 0.75rem;
+  padding: 4px 10px;
+}
+
+.btn-close-custom {
+  cursor: pointer;
+  padding: 6px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background-color: #F3F4F6;
+    color: #111827;
+  }
+}
+
+.status-tabs-bar {
+  background-color: #FAFAFA;
+  white-space: nowrap;
+
+  .tab-chip {
+    border: 1px solid #E5E7EB;
+    background-color: #FFFFFF;
+    color: #4B5563;
+    font-size: 12px;
+    font-weight: 500;
+    padding: 4px 12px;
+    border-radius: 9999px;
+    cursor: pointer;
+    transition: all 0.15s ease-in-out;
+
+    &:hover {
+      border-color: #D1D5DB;
+      background-color: #F9FAFB;
+      color: #111827;
+    }
+
+    &.active {
+      background-color: #70246D;
+      color: #FFFFFF;
+      border-color: #70246D;
+      font-weight: 600;
+    }
+  }
+}
+
+.modal-body-section {
+  max-height: calc(88vh - 160px);
+}
+
+.candidate-row-card {
+  transition: all 0.15s ease-in-out;
+  border-color: #E5E7EB !important;
+
+  &:hover {
+    border-color: #D1D5DB !important;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.04);
+  }
+}
+
+.candidate-avatar {
+  width: 38px;
+  height: 38px;
+  background: linear-gradient(135deg, #6366F1 0%, #4F46E5 100%);
+  font-size: 14px;
+}
+
+.badge-exp {
+  background: #EFF6FF;
+  color: #1D4ED8;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 2px 7px;
+  border-radius: 4px;
+  border: 1px solid #DBEAFE;
+}
+
+.status-badge {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 12px;
+
+  &.badge-new {
+    background-color: #EFF6FF;
+    color: #2563EB;
+    border: 1px solid #BFDBFE;
+  }
+  &.badge-hold {
+    background-color: #FFFBEB;
+    color: #D97706;
+    border: 1px solid #FDE68A;
+  }
+  &.badge-shortlisted {
+    background-color: #ECFDF5;
+    color: #059669;
+    border: 1px solid #A7F3D0;
+  }
+  &.badge-interview {
+    background-color: #FAF5FF;
+    color: #7E22CE;
+    border: 1px solid #E9D5FF;
+  }
+  &.badge-rejected {
+    background-color: #FEF2F2;
+    color: #DC2626;
+    border: 1px solid #FECACA;
+  }
+  &.badge-submitted {
+    background-color: #F0FDF4;
+    color: #16A34A;
+    border: 1px solid #BBF7D0;
+  }
+  &.badge-noresponse {
+    background-color: #F3F4F6;
+    color: #6B7280;
+    border: 1px solid #E5E7EB;
+  }
+  &.badge-default {
+    background-color: #F3F4F6;
+    color: #4B5563;
+    border: 1px solid #E5E7EB;
+  }
+}
+
+.empty-icon-box {
+  width: 56px;
+  height: 56px;
+}
+
+.status-dropdown-wrap {
+  ::ng-deep .dropdown-classic-wrapper {
+    .dropdown-btn {
+      padding: 4px 10px !important;
+      border-radius: 6px !important;
+      background-color: #ECFDF5 !important;
+      border: 1px solid #A7F3D0 !important;
+      color: #047857 !important;
+      transition: all 0.15s ease-in-out;
+
+      span {
+        color: #047857 !important;
+        font-weight: 600 !important;
+      }
+
+      &:hover {
+        background-color: #D1FAE5 !important;
+        border-color: #6EE7B7 !important;
+      }
+
+      &.is-open {
+        background-color: #EFF6FF !important;
+        border-color: #3B82F6 !important;
+        color: #1D4ED8 !important;
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2) !important;
+
+        span {
+          color: #1D4ED8 !important;
+        }
+      }
+    }
+  }
+}
+
+.text-purple {
+  color: #70246D !important;
+}

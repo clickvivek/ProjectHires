@@ -36,6 +36,7 @@ export class AdvFilterDatePostedComponent {
   }
 
   applySearch() {
+    this.isFilterExists = !!(this.selectedDateParam && this.selectedDateParam.trim().length > 0);
     this.inputChange.emit(this.selectedDateParam)
   }
 

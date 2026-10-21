@@ -8,6 +8,7 @@ import { InboxJobDetailsComponent } from './inbox-job-details/inbox-job-details.
 import { InboxResumeTypesComponent } from './inbox-resume-types/inbox-resume-types.component';
 import { InboxResumeCommentsComponent } from './inbox-resume-comments/inbox-resume-comments.component';
 import { InboxResumeContactComponent } from './inbox-resume-contact/inbox-resume-contact.component';
+import { InboxJobCandidatesModalComponent } from './inbox-job-candidates-modal/inbox-job-candidates-modal.component';
 
 
 @NgModule({
@@ -16,7 +17,8 @@ import { InboxResumeContactComponent } from './inbox-resume-contact/inbox-resume
     InboxJobDetailsComponent,
     InboxResumeTypesComponent,
     InboxResumeCommentsComponent,
-    InboxResumeContactComponent
+    InboxResumeContactComponent,
+    InboxJobCandidatesModalComponent
   ],
   imports: [
     CommonModule,

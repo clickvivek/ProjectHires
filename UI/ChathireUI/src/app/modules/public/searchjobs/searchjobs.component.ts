@@ -37,6 +37,7 @@ export class SearchjobsComponent implements OnInit, OnDestroy {
   disabled: boolean = false;
   
   isJobsLoaded:boolean = false;
+  hasSearched: boolean = false;
 
   skill: string = "";
   location: string = "";
@@ -139,12 +140,15 @@ export class SearchjobsComponent implements OnInit, OnDestroy {
       }
 
       if (this.skill || this.location || this.cityId || this.stateId || this.isRemoteOnly || this.visasId.length || this.wmIds.length || this.expIds.length || this.dateString) {
+        this.hasSearched = true;
         window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
         this.handleJobOpenings(this.skill, this.cityId, this.stateId, this.location, this.visasId, this.wmIds, this.expIds, this.dateString, this.radiusMiles);
       } else {
+        this.hasSearched = false;
         this.isDataAvailable = false;
       }
     } else {
+      this.hasSearched = false;
       this.isDataAvailable = false;
       this.skill = '';
       this.location = '';
@@ -229,7 +233,7 @@ export class SearchjobsComponent implements OnInit, OnDestroy {
     return futureDate.format('MM/DD/YYYY');
  }
 
-  handleJobOpenings(skill, cityIdArr, stateIdInput, locationInput, visasArr, employmentTypesArr, expArr, dateString, radiusMilesInput?: number) {
+  handleJobOpenings(skill, cityIdArr, stateIdInput, locationInput, visasArr, jobTypesArr, expArr, dateString, radiusMilesInput?: number) {
 
     const searchStrings = skill && skill.trim().length > 0 ? [skill.trim()] : (this.isRemoteOnly ? ['Remote'] : undefined);
     const cityIds = cityIdArr ? [cityIdArr] : undefined;
@@ -279,8 +283,8 @@ export class SearchjobsComponent implements OnInit, OnDestroy {
       cityIds,
       undefined,
       visasArr,
-      employmentTypesArr,
       undefined,
+      jobTypesArr,
       startYearsOfExpInput,
       endYearsOfExpInput,
       undefined,
@@ -409,6 +413,24 @@ export class SearchjobsComponent implements OnInit, OnDestroy {
     onResize(event:any){
       if(event.target.innerWidth >= 768)
       this.isJobSheet = true;
+  }
+
+  onRemoteToggle() {
+    const currentParams = { ...this.route.snapshot.queryParams };
+    if (this.isRemoteOnly) {
+      currentParams['remote'] = 'true';
+      delete currentParams['location'];
+      delete currentParams['cid'];
+      delete currentParams['sid'];
+      delete currentParams['radius'];
+      this.location = '';
+      this.cityId = null;
+      this.stateId = null;
+    } else {
+      delete currentParams['remote'];
+    }
+    currentParams['_t'] = new Date().getTime();
+    this.router.navigate(['/search-jobs'], { queryParams: currentParams });
   }
 
   onVisaFilter(event) {

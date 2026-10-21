@@ -10,9 +10,9 @@ import _ from 'underscore';
 })
 export class AdvFilterWorkModelComponent {
 
-  workModelList: any;
-  selectedWorkModeArr:Array<number> = [];
-  workModeParamIds: Array<number> = [];
+  jobTypeList: any[] = [];
+  selectedJobTypeArr: Array<number> = [];
+  jobTypeParamIds: Array<string> = [];
 
   isFilterExists: boolean = false;
   @Output() inputChange = new EventEmitter();
@@ -20,80 +20,75 @@ export class AdvFilterWorkModelComponent {
   constructor(
     private commonService: CommonService,
     private route: ActivatedRoute
-  ) {
-    
-  }
+  ) {}
 
-  onInputChange(id, status) {
+  onInputChange(id: number, status: boolean) {
     if (status) {
-      this.selectedWorkModeArr.push(id)
-    }
-    else {
-      this.selectedWorkModeArr = this.selectedWorkModeArr.filter((item) => {
-        return item != id
-      })
+      if (!this.selectedJobTypeArr.includes(id)) {
+        this.selectedJobTypeArr.push(id);
+      }
+    } else {
+      this.selectedJobTypeArr = this.selectedJobTypeArr.filter((item) => item !== id);
     }
   }
 
   getFilterCount() {
-    return this.workModelList.filter(item => item.checked).length; 
+    return this.jobTypeList ? this.jobTypeList.filter(item => item.checked).length : 0; 
   }
 
   reset() {
-    this.selectedWorkModeArr = [];
-    this.workModelList.map(item => {
-      item.checked = false
-      return item
-    })
+    this.selectedJobTypeArr = [];
+    if (this.jobTypeList) {
+      this.jobTypeList.forEach(item => {
+        item.checked = false;
+      });
+    }
     this.isFilterExists = false;
-    this.inputChange.emit(this.selectedWorkModeArr)
+    this.inputChange.emit(this.selectedJobTypeArr);
   }
 
   applySearch() {
-    this.inputChange.emit(this.selectedWorkModeArr)
+    this.isFilterExists = (this.selectedJobTypeArr && this.selectedJobTypeArr.length > 0);
+    this.inputChange.emit(this.selectedJobTypeArr);
   }
 
   ngOnInit() {
-    
-    this.commonService.apiCommonEmploymentTypeGet().subscribe({
-      next: (res : any) => {
-        
-        this.workModelList = res.value
+    // Fetch JobType list filtered for US by default to match possible values:
+    // C2C (Corp to Corp), W2 Contract, W2 Full-Time, 1099 Contract, Part-time W2/C2C/1099, Internship, Contract to Hire
+    this.commonService.apiCommonJobTypeGet('US').subscribe({
+      next: (res: any) => {
+        this.jobTypeList = res.value || [];
 
-        this.workModelList.map(item => {
-          item.checked = false
-          return item
-        })
+        this.jobTypeList.forEach(item => {
+          item.checked = false;
+        });
 
         const params = this.route.snapshot.queryParams;
 
-        if (!_.isUndefined(params['wm'])) {
-          this.workModeParamIds = params['wm']?.split(',');
+        // Support 'jt' (or legacy 'wm') query parameter
+        const paramVal = params['jt'] || params['jobTypes'] || params['wm'];
+        if (!_.isUndefined(paramVal) && paramVal) {
+          this.jobTypeParamIds = paramVal.toString().split(',');
           
-          this.workModelList.map((item, index) => {
-            if (this.workModeParamIds.includes(item.id.toString())) {
-              item.checked = true
+          this.jobTypeList.forEach(item => {
+            if (this.jobTypeParamIds.includes(item.id.toString())) {
+              item.checked = true;
             }
-            return item
           });
           
-          this.workModelList.sort((a, b) => (a.checked === b.checked ? 0 : a.checked ? -1 : 1));
+          this.jobTypeList.sort((a, b) => (a.checked === b.checked ? 0 : a.checked ? -1 : 1));
 
-          this.selectedWorkModeArr = []
-          this.workModelList.forEach(item => {
+          this.selectedJobTypeArr = [];
+          this.jobTypeList.forEach(item => {
             if (item.checked) {
-              this.selectedWorkModeArr.push(item.id)
+              this.selectedJobTypeArr.push(item.id);
             }
           });
 
-
-          this.isFilterExists = true
+          this.isFilterExists = this.selectedJobTypeArr.length > 0;
         }
-
       },
-      error: (error:any) => { }
-    })
-
+      error: (error: any) => {}
+    });
   }
-
 }

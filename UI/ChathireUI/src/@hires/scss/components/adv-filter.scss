@@ -1,5 +1,126 @@
 @import "../utilities/all";
 
+// Base rules for adv-filter dropdowns and pills wherever rendered
+.filter-item {
+  position: relative;
+  display: inline-block;
+
+  .filter-area {
+    display: inline-flex;
+    align-items: center;
+    padding: 6px 14px;
+    background-color: #F9FAFB;
+    border: 1px solid #D1D5DB;
+    border-radius: 9999px;
+    color: #374151;
+    font-size: 13px;
+    font-weight: 500;
+    transition: all 0.15s ease-in-out;
+    cursor: pointer;
+    white-space: nowrap;
+
+    p {
+      margin: 0;
+      line-height: 1.2;
+      color: inherit;
+    }
+    .arrow {
+      margin-left: 6px;
+      font-size: 11px;
+      color: #6B7280;
+    }
+
+    &:hover {
+      background-color: #F3F4F6;
+      border-color: #9CA3AF;
+      color: #111827;
+    }
+
+    &.is-filter {
+      background-color: $secondary;
+      border-color: $secondary;
+      color: #ffffff;
+      .arrow {
+        color: #ffffff;
+      }
+      .filter-count {
+        @include circles(18px);
+        background-color: #ffffff;
+        color: $secondary;
+        font-size: 11px;
+        font-weight: bold;
+        margin-left: 6px;
+      }
+    }
+  }
+
+  &.reset-item {
+    color: pick-color(danger, 600);
+    .filter-area {
+      background-color: transparent !important;
+      border: none !important;
+      padding: 6px 10px;
+      color: pick-color(danger, 600);
+      .arrow {
+        margin: 0 6px 0 0;
+      }
+      &:hover {
+        text-decoration: underline;
+        background-color: #FEF2F2 !important;
+      }
+    }
+  }
+
+  .dropdown-wrapper {
+    display: none;
+    position: absolute;
+    z-index: 1050;
+    margin: 8px 0 0 0;
+    width: 300px;
+    top: calc(100% + 4px);
+    left: 0;
+    background-color: white;
+    @include border-radius(8px);
+    @include box-shadow(0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.04));
+    border: 1px solid #E5E7EB;
+
+    &.show {
+      display: block;
+    }
+
+    .dropdown {
+      padding: 12px 4px 0 4px;
+      height: 200px;
+      .list-group-item {
+        border: 0;
+        @extend .text-sm;
+        @extend .fw-medium;
+      }
+    }
+
+    .results-box {
+      margin: 10px 0 0 0;
+      border-top: 1px solid pick-color(dark, 300);
+      padding: 12px 18px;
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      gap: 12px;
+      .filter-cancel {
+        color: pick-color(dark, 500);
+        font-size: 13px;
+        text-decoration: none;
+      }
+      .result {
+        color: $secondary;
+        font-size: 13px;
+        font-weight: 600;
+        text-decoration: none;
+      }
+    }
+  }
+}
+
 .adv-filter-container {
   margin: 20px 0 0 0;
   .container {

@@ -2,11 +2,14 @@
 @import "src/@hires/scss/helpers/typography";
 
 header {
+  position: relative;
+  z-index: 1050;
+
   .navbar {
     position: fixed;
     top: 0;
     width: 100%;
-    z-index: 1000;
+    z-index: 1050;
     height: 66px;
     background-color: #ffffff;
     border-bottom: 1px solid #EAECF0;

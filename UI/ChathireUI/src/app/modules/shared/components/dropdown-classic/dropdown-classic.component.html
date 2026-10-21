@@ -1,5 +1,5 @@
 <div class="dropdown-classic-wrapper">
-    <div class="dropdown-btn fw-medium" (click)="isExpanded=!isExpanded">
+    <div class="dropdown-btn fw-medium" [class.is-open]="isExpanded" (click)="isExpanded=!isExpanded">
         <span class="text-sm">{{selectedItem[fieldType]}}</span>
         <span class="material-symbols-outlined text-h6 ms-1">{{isExpanded ? 'expand_less' : 'expand_more'}}</span>
     </div>

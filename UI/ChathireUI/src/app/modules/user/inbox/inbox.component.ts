@@ -4,6 +4,7 @@ import * as moment from 'moment';
 import _ from 'underscore';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
+import { MatDialog } from '@angular/material/dialog';
 
 import { profileInitialCountSummary } from 'src/app/data/various';
 import { JobOpeningService } from 'src/app/api';
@@ -11,6 +12,7 @@ import { SessionService } from 'src/app/core/session/session.service';
 import { ToastrService } from 'ngx-toastr';
 import { SharedService } from '../../shared/services/shared.service';
 import { getMeaningfulErrorMessage } from 'src/app/modules/shared/utils/error-handler.util';
+import { InboxJobCandidatesModalComponent } from './inbox-job-candidates-modal/inbox-job-candidates-modal.component';
 
 @Component({
   selector: 'app-inbox',
@@ -54,7 +56,8 @@ export class InboxComponent implements OnInit, OnDestroy {
     private sessionService: SessionService,
     private sharedService: SharedService,
     private toastr: ToastrService,
-    private jobOpeningService: JobOpeningService
+    private jobOpeningService: JobOpeningService,
+    private dialog: MatDialog
   ) {
   }
 
@@ -121,6 +124,20 @@ export class InboxComponent implements OnInit, OnDestroy {
   handleJob(item) {
     this.sharedService.setSideNavData(item)
     this.router.navigate(['jobdetails', item.jobOpeningId], { relativeTo: this.route });
+  }
+
+  openCandidatesModal(item: any, event?: Event): void {
+    if (event) {
+      event.stopPropagation();
+      event.preventDefault();
+    }
+
+    this.dialog.open(InboxJobCandidatesModalComponent, {
+      data: { job: item },
+      width: '840px',
+      maxWidth: '95vw',
+      panelClass: 'material'
+    });
   }
 
   isDataAvailable() {

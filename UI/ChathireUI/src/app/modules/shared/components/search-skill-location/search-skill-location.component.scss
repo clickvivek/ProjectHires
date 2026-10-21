@@ -206,5 +206,61 @@
         justify-content: center;
       }
     }
+    &.compact-bar {
+      margin-bottom: 0;
+      .search-area {
+        align-items: center;
+        margin-bottom: 0;
+        gap: 8px;
+        .item {
+          &:not(:last-child) {
+            margin-right: 0;
+          }
+          input, select {
+            height: 38px;
+            font-size: 13.5px;
+            border-radius: 6px;
+            border: 1px solid #D1D5DB;
+            background-color: #F9FAFB;
+            &:focus {
+              background-color: #ffffff;
+              border-color: #5B365A;
+            }
+          }
+          &.radius {
+            flex: 0 0 125px;
+            max-width: 125px;
+          }
+          &.go-btn {
+            height: 38px;
+            padding: 0 20px;
+            border-radius: 6px;
+            font-size: 13px;
+            letter-spacing: 0.5px;
+          }
+          .icon {
+            top: 9px;
+            font-size: 18px;
+          }
+        }
+      }
+      .remote-checkbox-bar {
+        margin-top: 6px !important;
+        justify-content: flex-start !important;
+        flex-wrap: wrap;
+        gap: 12px;
+        align-items: center;
+        .form-check {
+          .form-check-label {
+            font-size: 12.5px !important;
+            color: #4B5563;
+          }
+          .form-check-input {
+            width: 16px;
+            height: 16px;
+          }
+        }
+      }
+    }
   }
 }

@@ -1,0 +1,163 @@
+<div class="inbox-job-candidates-modal position-relative d-flex flex-column">
+
+  <!-- Modal Header -->
+  <div class="modal-header-section d-flex align-items-center justify-content-between p-3 px-4 border-bottom bg-white">
+    <div class="d-flex align-items-center gap-3">
+      <div class="job-icon-circle rounded-3 d-flex align-items-center justify-content-center text-white">
+        <span class="material-symbols-outlined fs-4">work</span>
+      </div>
+      <div>
+        <div class="d-flex align-items-center gap-2 flex-wrap">
+          <h4 class="modal-title mb-0 fw-bold text-dark">{{ job?.name }}</h4>
+          <span class="badge count-badge rounded-pill" *ngIf="!isLoading">
+            {{ candidates.length }} {{ candidates.length === 1 ? 'Candidate' : 'Candidates' }}
+          </span>
+        </div>
+        <div class="modal-sub-meta text-muted small d-flex align-items-center gap-2 mt-1">
+          <span *ngIf="job?.jobOpeningLocation">
+            <span class="material-symbols-outlined align-middle fs-6 text-secondary">location_on</span>
+            {{ job?.jobOpeningLocation | jobLocation }}
+          </span>
+        </div>
+      </div>
+    </div>
+    <button type="button" class="btn-close-custom border-0 bg-transparent text-muted" (click)="close()" aria-label="Close">
+      <span class="material-symbols-outlined fs-5">close</span>
+    </button>
+  </div>
+
+  <!-- Status Filter Tabs / Chips -->
+  <div class="status-tabs-bar px-4 py-2 bg-white border-bottom d-flex align-items-center gap-2 overflow-auto" *ngIf="!isLoading && candidates.length > 0">
+    <button 
+      type="button" 
+      class="tab-chip" 
+      [class.active]="selectedStatusFilter === null"
+      (click)="setStatusFilter(null)">
+      All ({{ candidates.length }})
+    </button>
+    <ng-container *ngFor="let s of statusTypeDataList">
+      <button 
+        type="button" 
+        class="tab-chip" 
+        *ngIf="getCandidateCountByStatus(s.candidateProfileMappingStatusId) > 0"
+        [class.active]="selectedStatusFilter === s.candidateProfileMappingStatusId"
+        (click)="setStatusFilter(s.candidateProfileMappingStatusId)">
+        {{ s.candidateProfileMappingStatusName }} ({{ getCandidateCountByStatus(s.candidateProfileMappingStatusId) }})
+      </button>
+    </ng-container>
+  </div>
+
+  <!-- Modal Body -->
+  <div class="modal-body-section p-3 p-md-4 flex-grow-1 overflow-auto bg-light">
+
+    <!-- Loading State -->
+    <div *ngIf="isLoading" class="text-center py-5">
+      <div class="spinner-border text-purple mb-3" role="status" style="width: 2.2rem; height: 2.2rem; border-width: 3px;">
+        <span class="visually-hidden">Loading candidates...</span>
+      </div>
+      <p class="text-muted small mb-0">Loading applicants for this job...</p>
+    </div>
+
+    <!-- Error State -->
+    <div *ngIf="!isLoading && errorMessage" class="alert alert-danger d-flex align-items-center gap-2 my-3 rounded-3" role="alert">
+      <span class="material-symbols-outlined fs-5">error</span>
+      <div class="flex-grow-1">{{ errorMessage }}</div>
+      <button type="button" class="btn btn-sm btn-outline-danger" (click)="loadCandidates()">Retry</button>
+    </div>
+
+    <!-- Empty State: No Candidates at all -->
+    <div *ngIf="!isLoading && !errorMessage && candidates.length === 0" class="empty-state text-center py-5 bg-white rounded-3 border">
+      <div class="empty-icon-box mx-auto mb-3 d-flex align-items-center justify-content-center rounded-circle bg-light text-muted">
+        <span class="material-symbols-outlined fs-2">person_off</span>
+      </div>
+      <h5 class="fw-bold text-dark mb-1">No Candidates Found</h5>
+      <p class="text-muted small mb-0 max-w-sm mx-auto">
+        There are currently no candidates received for this job posting.
+      </p>
+    </div>
+
+    <!-- Empty State: Filter yielded no results -->
+    <div *ngIf="!isLoading && !errorMessage && candidates.length > 0 && filteredCandidates.length === 0" class="empty-state text-center py-4 bg-white rounded-3 border">
+      <p class="text-muted mb-2">No candidates found matching this status.</p>
+      <button type="button" class="btn btn-sm btn-outline-secondary" (click)="setStatusFilter(null)">
+        View All Candidates
+      </button>
+    </div>
+
+    <!-- Candidates List -->
+    <div class="candidates-list d-flex flex-column gap-2" *ngIf="!isLoading && !errorMessage && filteredCandidates.length > 0">
+      <div class="candidate-row-card bg-white rounded-3 border p-3" *ngFor="let c of filteredCandidates">
+        
+        <div class="candidate-row-inner d-flex align-items-center justify-content-between gap-3">
+          
+          <!-- Candidate Identity & Details -->
+          <div class="candidate-main d-flex align-items-center gap-3 flex-grow-1 min-w-0">
+            <div class="candidate-avatar rounded-circle d-flex align-items-center justify-content-center fw-bold text-white flex-shrink-0">
+              {{ ((c?.candidateProfile?.candidateName || c?.candidateName) || 'C').charAt(0).toUpperCase() }}
+            </div>
+            
+            <div class="candidate-info min-w-0">
+              <div class="d-flex align-items-center gap-2 flex-wrap mb-1">
+                <span class="candidate-name fw-bold text-dark fs-6">{{ c?.candidateProfile?.candidateName || c?.candidateName }}</span>
+                
+                <span class="badge-exp" *ngIf="c?.totalYearsOfExp || c?.candidateProfile?.totalExp">
+                  {{ c?.totalYearsOfExp || c?.candidateProfile?.totalExp }} yrs exp
+                </span>
+              </div>
+
+              <!-- Job Title & Location -->
+              <div class="candidate-sub-details d-flex align-items-center gap-2 flex-wrap text-muted small">
+                <span class="candidate-title text-dark-emphasis fw-medium" *ngIf="c?.candidateProfile?.title">
+                  <span class="material-symbols-outlined align-middle fs-6 text-muted me-1">badge</span>
+                  {{ c?.candidateProfile?.title }}
+                </span>
+
+                <span class="candidate-loc" *ngIf="getCandidateLocation(c)">
+                  <span class="material-symbols-outlined align-middle fs-6 text-danger me-1">location_on</span>
+                  {{ getCandidateLocation(c) }}
+                </span>
+
+                <span class="candidate-vendor" *ngIf="c?.consultancyUser?.consultancy?.name">
+                  • {{ c?.consultancyUser?.consultancy?.name }}
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Status Dropdown & Action Buttons -->
+          <div class="candidate-controls d-flex align-items-center gap-2 ms-auto flex-shrink-0">
+            <div class="status-dropdown-wrap">
+              <dropdown-classic 
+                fieldName="candidateProfileMappingStatusId"
+                [fieldList]="statusTypeDataList" 
+                fieldType="candidateProfileMappingStatusName"
+                [fieldRefId]="c.id"
+                [editValue]="c.candidateProfileMappingStatusId" 
+                [profileMapColor]="c.candidateProfileMappingStatusId"
+                (changeData)="handleChangeStatus($event, c)"
+              ></dropdown-classic>
+            </div>
+
+            <div class="action-btn-wrap" *ngIf="c?.doc">
+              <download-resume [doc]="c?.doc"></download-resume>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Modal Footer -->
+  <div class="modal-footer-section p-3 px-4 border-top bg-white d-flex align-items-center justify-content-between">
+    <div class="text-muted small">
+      Showing <strong>{{ filteredCandidates.length }}</strong> of <strong>{{ candidates.length }}</strong> candidate{{ candidates.length === 1 ? '' : 's' }}
+    </div>
+    <button type="button" class="btn btn-secondary btn-sm px-3" (click)="close()">
+      Close
+    </button>
+  </div>
+
+</div>

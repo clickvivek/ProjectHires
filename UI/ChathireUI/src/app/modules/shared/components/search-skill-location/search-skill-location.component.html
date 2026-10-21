@@ -4,7 +4,7 @@
     (ngSubmit)="submitSkillLocationForm()"
     novalidate
   >
-    <div class="search-box {{page == 'home' ? 'home' : '' }}">
+    <div class="search-box {{page == 'home' ? 'home' : '' }} {{page == 'compact' ? 'compact-bar' : '' }}">
 
       <div class="search-area">
         
@@ -118,16 +118,16 @@
           </div>
         </div>
 
-        <button type="submit" class="item go-btn submit-btn fw-bold px-4 text-white text-uppercase d-inline-flex align-items-center justify-content-center gap-2" *ngIf="page == 'home'" style="border-radius: 6px;" [disabled]="isSearching">
+        <button type="submit" class="item go-btn submit-btn fw-bold px-4 text-white text-uppercase d-inline-flex align-items-center justify-content-center gap-2" *ngIf="page == 'home' || page == 'compact'" style="border-radius: 6px;" [disabled]="isSearching">
           <span *ngIf="isSearching" class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
-          <span class="d-md-none text-base">{{ isSearching ? 'Searching...' : ('Search ' + (type == 'jobs' ? 'Jobs' : 'Talent')) }}</span>
-          <span class="d-none d-md-block">{{ isSearching ? 'SEARCHING...' : ('SEARCH ' + (type == 'jobs' ? 'JOBS' : 'TALENT')) }}</span>
+          <span class="d-md-none text-base">{{ isSearching ? 'Searching...' : (page == 'compact' ? 'Search' : ('Search ' + (type == 'jobs' ? 'Jobs' : 'Talent'))) }}</span>
+          <span class="d-none d-md-block">{{ isSearching ? 'SEARCHING...' : (page == 'compact' ? 'SEARCH' : ('SEARCH ' + (type == 'jobs' ? 'JOBS' : 'TALENT'))) }}</span>
         </button>
 
       </div>
 
-      <!-- Remote only checkbox (applicable for jobs search) -->
-      <div class="remote-checkbox-bar mt-2 d-flex align-items-center justify-content-center" *ngIf="type === 'jobs'">
+      <!-- Remote only checkbox (applicable for jobs search, hidden on compact page since it is rendered in filter ribbon) -->
+      <div class="remote-checkbox-bar mt-2 d-flex align-items-center justify-content-center" *ngIf="type === 'jobs' && page !== 'compact'">
         <div class="form-check d-inline-flex align-items-center gap-2 m-0 cursor-pointer">
           <input
             class="form-check-input cursor-pointer"
@@ -138,12 +138,12 @@
             (change)="onRemoteChange()"
           />
           <label class="form-check-label fw-semibold text-dark-700 cursor-pointer select-none" for="searchRemoteOnlyCheck" style="font-size: 13.5px;">
-            Search only Remote jobs
+            Remote jobs only
           </label>
         </div>
       </div>
 
-      <div class="search-btn-box" *ngIf="page != 'home'">
+      <div class="search-btn-box" *ngIf="page != 'home' && page != 'compact'">
         <button type="submit" class="btn btn-primary submit-btn d-inline-flex align-items-center justify-content-center gap-2" [disabled]="isSearching">
           <span *ngIf="isSearching" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
           <span>{{ isSearching ? 'Searching...' : ('Search ' + (type == 'jobs' ? 'Jobs' : 'Resumes / Hotlist')) }}</span>

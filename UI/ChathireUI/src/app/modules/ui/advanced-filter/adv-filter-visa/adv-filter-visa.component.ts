@@ -50,6 +50,7 @@ export class AdvFilterVisaComponent {
   }
 
   applySearch() {
+    this.isFilterExists = (this.selectedVisaArr && this.selectedVisaArr.length > 0);
     this.inputChange.emit(this.selectedVisaArr)
   }
 

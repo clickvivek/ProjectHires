@@ -140,7 +140,7 @@
               <div class="title-meta-wrap">
                 <div class="d-flex align-items-center flex-wrap gap-2 mb-1">
                   <h3 class="job-title mb-0" (click)="handleJob(item)">{{ item.name }}</h3>
-                  <span class="candidate-count-pill" (click)="handleJob(item)">
+                  <span class="candidate-count-pill" (click)="openCandidatesModal(item, $event)" title="Click to view all candidates and status">
                     <strong>{{ getTotalCandidates(item) }}</strong> Candidates
                   </span>
                 </div>

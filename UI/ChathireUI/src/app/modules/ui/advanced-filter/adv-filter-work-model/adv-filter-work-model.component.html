@@ -1,6 +1,6 @@
 <div class="filter-item">
   <div class="filter-area" [ngClass]="isFilterExists ? 'is-filter' : ''">
-    <p class="text-regular fw-medium">Onsite/Remote</p>
+    <p class="text-regular fw-medium">Job Type</p>
     <div class="filter-count text-smr" *ngIf="isFilterExists">
       {{ getFilterCount() }}
     </div>
@@ -16,19 +16,19 @@
       <form>
         <div class="form-group">
           <div class="list-group dropdown">
-            <ng-container *ngFor="let item of workModelList">
+            <ng-container *ngFor="let item of jobTypeList">
               <li class="list-group-item">
                 <div class="form-check">
                   <input
                     class="form-check-input filled"
                     type="checkbox"
-                    [id]="item.name"
-                    [name]="item.name"
+                    [id]="'jobtype_' + item.id"
+                    [name]="'jobtype_' + item.id"
                     [(ngModel)]="item.checked"
                     (change)="onInputChange(item.id, item.checked)"
                   />
-                  <label class="form-check-label" [for]="item.name">
-                    {{ item.name }}
+                  <label class="form-check-label" [for]="'jobtype_' + item.id">
+                    {{ item.description }}
                   </label>
                 </div>
               </li>
