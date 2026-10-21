@@ -14,6 +14,54 @@
                 <p class="fw-medium">{{resume?.candidateProfile?.candidateName}}</p>
                 <p class="text-sm fw-medium text-primary-600" [profileMapColor]="resume.candidateProfileMappingStatusId" >{{resume?.candidateProfileMappingStatusName}}</p>
             </div>
+
+            <!-- Recruiter / Bench Sales Profile Chat Card (matches search-hotlist & attached design) -->
+            <div class="recruiter-box mt-3 mb-3" *ngIf="contact">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="avatar-wrap flex-shrink-0">
+                        <img
+                            *ngIf="chatUser?.profilePic"
+                            [src]="getProfilePic(chatUser.profilePic)"
+                            class="avatar-img"
+                            alt="Contact Avatar"
+                            (error)="$any($event.target).style.display='none'; contactAvatarFallback.style.display='flex'"
+                        />
+                        <div
+                            #contactAvatarFallback
+                            class="avatar-fallback"
+                            [style.display]="chatUser?.profilePic ? 'none' : 'flex'"
+                        >
+                            <span>{{ getUserInitial(contact.user?.fname, contact.user?.lname) }}</span>
+                        </div>
+                        <span class="status-indicator" [ngClass]="isUserOnline ? 'active' : ''" [title]="isUserOnline ? 'Online' : 'Offline'"></span>
+                    </div>
+
+                    <div class="recruiter-details flex-grow-1 min-w-0">
+                        <h6 class="recruiter-name mb-0 text-truncate">
+                            <a *ngIf="contact.publicProfileUserName" [routerLink]="['/profile', contact.publicProfileUserName]" class="profile-link">
+                                {{ contact.user?.fname }} {{ contact.user?.lname }}
+                            </a>
+                            <span *ngIf="!contact.publicProfileUserName">
+                                {{ contact.user?.fname }} {{ contact.user?.lname }}
+                            </span>
+                        </h6>
+                        <p class="recruiter-company mb-2 text-truncate">
+                            {{ contact.consultancy?.name }}
+                        </p>
+                        <button
+                            type="button"
+                            class="btn chat-btn"
+                            [ngClass]="isChatDisabled() ? 'disabled' : ''"
+                            [chatUser]="chatUser"
+                            [disabled]="isChatDisabled()"
+                        >
+                            <span class="material-symbols-outlined chat-icon">chat</span>
+                            <span>Message Me</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
             <div class="contact-box">
                 <div class="item">
                     <span class="fw-medium text-dark-500">Bench Sales Contact:</span>
@@ -29,16 +77,8 @@
                 </div>
                 <div class="item">
                     <span class="fw-medium text-dark-500">Phone Number:</span>
-                    <span class="ms-2 fw-regular">{{contact.user?.phone}}</span>
+                    <span class="ms-2 fw-regular">{{contact.user?.phone || 'Not provided'}}</span>
                 </div>
-            </div>
-            <div class="mt-2 text-center">
-                <div class="btn btn-primary d-inline-flex align-items-center">
-                    <span class="material-symbols-outlined text-base mt-1 me-2"
-                      >chat</span
-                    >
-                    Chat
-                  </div>
             </div>
         </div>
 
