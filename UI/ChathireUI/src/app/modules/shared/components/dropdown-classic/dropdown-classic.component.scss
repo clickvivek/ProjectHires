@@ -16,11 +16,13 @@
     .dropdown-list {
         position: absolute;
         top: 30px;
+        right: 0;
         min-width: 180px;
         @include border-radius(4px);
         background-color: white;
         padding: 10px 0;
-        z-index: 1;
+        z-index: 10;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12) !important;
         .list-group-item {
             padding: 6px 10px;
             color: pick-color(dark, 700);
