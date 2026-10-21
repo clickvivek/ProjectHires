@@ -106,8 +106,8 @@
             </ng-container>
 
             <!-- Drawers for comments and contact -->
-            <inbox-resume-comments *ngIf="resume && isComment" [resume]="resume" (closeDrawer)="onCloseDrawer($event)"></inbox-resume-comments>
-            <inbox-resume-contact *ngIf="resume && isContact" [resume]="resume" (closeDrawer)="onCloseDrawer($event)"></inbox-resume-contact>
+            <inbox-resume-comments *ngIf="resume && isComment" [resume]="resume" (hideComment)="onCloseDrawer($event)" (closeDrawer)="onCloseDrawer($event)"></inbox-resume-comments>
+            <inbox-resume-contact *ngIf="resume && isContact" [resume]="resume" (hideContact)="onCloseDrawer($event)" (closeDrawer)="onCloseDrawer($event)"></inbox-resume-contact>
 
         </div>
     </mat-sidenav>
