@@ -1,3 +1,4 @@
+using Utility.Common;
 using BusinessEntityAndDTO.Common;
 using BusinessEntityAndDTO.DTO;
 using BusinessEntityAndDTO.Models;
@@ -32,6 +33,7 @@ namespace DataAccessLayer.Repository
         Task<int> ExpireOldJobOpeningsAsync(int daysThreshold = 30);
         Task<List<JobOpening>> GetExpiredJobsToProcessAsync(int daysThreshold = 30);
         Task<RecruiterStatsDto> GetRecruiterStats(long consultancyUserId, UserContext userContext);
+        Task<JobOpeningAdminResponseDto> GetJobOpeningsForAdminAsync(string? search, string? status, string? source, int page, int pageSize);
 
     }
 
@@ -54,9 +56,17 @@ namespace DataAccessLayer.Repository
 
             List<SqlParameter> parameters = new List<SqlParameter>();
 
+                        // Parse boolean search expression (supports AND, OR, NOT, quotes, etc.)
+            BooleanSearchExpression booleanExpr = BooleanSearchExpression.Parse(job.searchStrings);
+
             if (job.searchStrings != null)
             {
-                var cleanSearchStrings = job.searchStrings
+                // When boolean logic is present, query database for candidate matching terms
+                var termsToQuery = (booleanExpr != null && booleanExpr.HasBooleanLogic && booleanExpr.CandidateDbTerms.Any())
+                    ? booleanExpr.CandidateDbTerms
+                    : job.searchStrings.Where(s => !string.IsNullOrWhiteSpace(s)).Select(s => s.Trim()).ToList();
+
+                var cleanSearchStrings = termsToQuery
                     .Where(s => !string.IsNullOrWhiteSpace(s))
                     .Select(s => s.Trim())
                     .Cast<object>()
@@ -73,12 +83,60 @@ namespace DataAccessLayer.Repository
                 }
             }
 
-            if (job.cityIds != null)
+            // Determine if a StateId was passed explicitly or if cityIds contains a state-level City record (IsState = 1)
+            int? effectiveStateId = job.StateId;
+
+            if (job.cityIds != null && job.cityIds.Any())
             {
-                SqlParameter param = new SqlParameter("@CityId", SqlDbType.Structured)
+                // Check if any of the passed cityIds is a state-level record in the Cities table (IsState = 1)
+                var stateCity = _context.Cities.AsNoTracking().FirstOrDefault(c => job.cityIds.Contains(c.Id) && c.IsState == true);
+                if (stateCity != null)
                 {
-                    TypeName = "[dbo].[UDT_IntType]",
-                    Value = Util.PopulateDataTable(job.cityIds.Cast<object>().ToList(), typeof(int))
+                    effectiveStateId = stateCity.IdState;
+                }
+                else
+                {
+                    SqlParameter param = new SqlParameter("@CityId", SqlDbType.Structured)
+                    {
+                        TypeName = "[dbo].[UDT_IntType]",
+                        Value = Util.PopulateDataTable(job.cityIds.Cast<object>().ToList(), typeof(int))
+                    };
+                    parameters.Add(param);
+                }
+            }
+            else if (!string.IsNullOrWhiteSpace(job.LocationString))
+            {
+                // Solution B fallback: User typed a location (e.g. "new jersey" or "georgia") without picking from dropdown
+                var locTrimmed = job.LocationString.Trim().ToLower();
+                var matchedState = _context.States.AsNoTracking().FirstOrDefault(s =>
+                    s.StateName.ToLower() == locTrimmed ||
+                    s.StateCode.ToLower() == locTrimmed);
+
+                if (matchedState != null)
+                {
+                    effectiveStateId = matchedState.Id;
+                }
+            }
+
+            // Only enforce strict StateId filter if CityId was NOT selected.
+            // When a city is selected, we perform radius-based matching (e.g. 50/100/150/200 miles)
+            // which should naturally include nearby jobs across state borders (e.g. NYC / Philly / NJ).
+            bool hasCitySearch = job.cityIds != null && job.cityIds.Any();
+            if (!hasCitySearch && effectiveStateId.HasValue && effectiveStateId.Value > 0)
+            {
+                SqlParameter param = new SqlParameter("@StateId", SqlDbType.Int)
+                {
+                    Value = effectiveStateId.Value
+                };
+                parameters.Add(param);
+            }
+
+            // Radius in miles (defaults to 50 in SP if omitted or <= 0)
+            if (job.RadiusMiles.HasValue && job.RadiusMiles.Value > 0)
+            {
+                SqlParameter param = new SqlParameter("@RadiusMiles", SqlDbType.Decimal)
+                {
+                    Value = job.RadiusMiles.Value
                 };
                 parameters.Add(param);
             }
@@ -206,16 +264,22 @@ namespace DataAccessLayer.Repository
                 cnn.Open();
                 var reader = cmm.ExecuteReader();
 
+                var colNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+                for (int i = 0; i < reader.FieldCount; i++)
+                {
+                    colNames.Add(reader.GetName(i));
+                }
+
                 while (reader.Read())
                 {
                     // Check IsExpired column if present
-                    if (HasColumn(reader, "IsExpired") && reader["IsExpired"] != DBNull.Value && Convert.ToBoolean(reader["IsExpired"]))
+                    if (colNames.Contains("IsExpired") && reader["IsExpired"] != DBNull.Value && Convert.ToBoolean(reader["IsExpired"]))
                     {
                         continue;
                     }
 
                     // Check Active column if present
-                    if (HasColumn(reader, "Active") && reader["Active"] != DBNull.Value && !Convert.ToBoolean(reader["Active"]))
+                    if (colNames.Contains("Active") && reader["Active"] != DBNull.Value && !Convert.ToBoolean(reader["Active"]))
                     {
                         continue;
                     }
@@ -261,11 +325,11 @@ namespace DataAccessLayer.Repository
                     result.UserLName = reader["UserLName"].ToString();
                     result.UserName = reader["UserName"].ToString();
                     result.ProfilePic = reader["ProfilePic"].ToString();
-                    result.CompanyLogo = HasColumn(reader, "CompanyLogo") && reader["CompanyLogo"] != DBNull.Value ? reader["CompanyLogo"].ToString() : null;
-                    result.ProjectDurationmonths = HasColumn(reader, "ProjectDurationmonths") && reader["ProjectDurationmonths"] != DBNull.Value ? reader["ProjectDurationmonths"].ToString() : null;
-                    result.AboutCompany = HasColumn(reader, "AboutCompany") && reader["AboutCompany"] != DBNull.Value ? reader["AboutCompany"].ToString() : null;
-                    result.CompanyWebsite = HasColumn(reader, "CompanyWebsite") && reader["CompanyWebsite"] != DBNull.Value ? reader["CompanyWebsite"].ToString() : null;
-                    result.CompanyLinkedin = HasColumn(reader, "CompanyLinkedin") && reader["CompanyLinkedin"] != DBNull.Value ? reader["CompanyLinkedin"].ToString() : null;
+                    result.CompanyLogo = colNames.Contains("CompanyLogo") && reader["CompanyLogo"] != DBNull.Value ? reader["CompanyLogo"].ToString() : null;
+                    result.ProjectDurationmonths = colNames.Contains("ProjectDurationmonths") && reader["ProjectDurationmonths"] != DBNull.Value ? reader["ProjectDurationmonths"].ToString() : null;
+                    result.AboutCompany = colNames.Contains("AboutCompany") && reader["AboutCompany"] != DBNull.Value ? reader["AboutCompany"].ToString() : null;
+                    result.CompanyWebsite = colNames.Contains("CompanyWebsite") && reader["CompanyWebsite"] != DBNull.Value ? reader["CompanyWebsite"].ToString() : null;
+                    result.CompanyLinkedin = colNames.Contains("CompanyLinkedin") && reader["CompanyLinkedin"] != DBNull.Value ? reader["CompanyLinkedin"].ToString() : null;
                     result.Skills = reader["Skills"].ToString().Split('|').ToList();
                     result.Locations = reader["Locations"].ToString().Split('|').ToList();
                     result.Visas = reader["Visas"].ToString().Split('|').ToList();
@@ -274,6 +338,24 @@ namespace DataAccessLayer.Repository
 
                     rtn.Add(result);
                 }
+
+                // If Boolean logic (AND, NOT, OR) was used in the search, filter results strictly
+                if (booleanExpr != null && booleanExpr.HasBooleanLogic && !booleanExpr.IsEmpty)
+                {
+                    rtn = rtn.Where(r =>
+                    {
+                        var fullText = string.Join(" ", new[]
+                        {
+                            r.JobOpeningName,
+                            r.JobDescription,
+                            r.CompanyName,
+                            r.Skills != null ? string.Join(" ", r.Skills) : "",
+                            r.Locations != null ? string.Join(" ", r.Locations) : ""
+                        });
+                        return booleanExpr.IsMatch(fullText);
+                    }).ToList();
+                }
+
                 return rtn;
             }
 
@@ -498,6 +580,112 @@ namespace DataAccessLayer.Repository
                 ResumesReceived = resumesReceivedCount
             };
         }
-    }
+    
+        public async Task<JobOpeningAdminResponseDto> GetJobOpeningsForAdminAsync(string? search, string? status, string? source, int page, int pageSize)
+        {
+            if (page <= 0) page = 1;
+            if (pageSize <= 0) pageSize = 500;
 
+            var query = _context.JobOpenings
+                .AsNoTracking()
+                .Include(j => j.ConsultancyUser)
+                    .ThenInclude(cu => cu.User)
+                .Include(j => j.ConsultancyUser)
+                    .ThenInclude(cu => cu.Consultancy)
+                .Include(j => j.JobOpeningSkills)
+                    .ThenInclude(jos => jos.Skill)
+                .Include(j => j.JobOpeningCandidateProfileMaps)
+                .AsQueryable();
+
+            if (!string.IsNullOrWhiteSpace(search))
+            {
+                var s = search.Trim();
+                query = query.Where(j =>
+                    (j.Name != null && EF.Functions.Like(j.Name, "%" + s + "%")) ||
+                    (j.ConsultancyUser != null && j.ConsultancyUser.Consultancy != null && j.ConsultancyUser.Consultancy.Name != null && EF.Functions.Like(j.ConsultancyUser.Consultancy.Name, "%" + s + "%")) ||
+                    (j.ConsultancyUser != null && j.ConsultancyUser.User != null && j.ConsultancyUser.User.UserName != null && EF.Functions.Like(j.ConsultancyUser.User.UserName, "%" + s + "%")) ||
+                    (j.ConsultancyUser != null && j.ConsultancyUser.User != null && j.ConsultancyUser.User.Fname != null && EF.Functions.Like(j.ConsultancyUser.User.Fname, "%" + s + "%")) ||
+                    (j.ConsultancyUser != null && j.ConsultancyUser.User != null && j.ConsultancyUser.User.Lname != null && EF.Functions.Like(j.ConsultancyUser.User.Lname, "%" + s + "%")) ||
+                    (j.JobLocation != null && EF.Functions.Like(j.JobLocation, "%" + s + "%"))
+                );
+            }
+
+            if (!string.IsNullOrWhiteSpace(status))
+            {
+                var st = status.Trim().ToLowerInvariant();
+                if (st == "active")
+                {
+                    query = query.Where(j => (j.Active == null || j.Active == true) && (j.IsExpired == null || j.IsExpired == false));
+                }
+                else if (st == "inactive")
+                {
+                    query = query.Where(j => j.Active == false && (j.IsExpired == null || j.IsExpired == false));
+                }
+                else if (st == "expired")
+                {
+                    query = query.Where(j => j.IsExpired == true);
+                }
+            }
+
+            if (!string.IsNullOrWhiteSpace(source) && !source.Equals("all", StringComparison.OrdinalIgnoreCase))
+            {
+                var src = source.Trim();
+                if (src.Equals("email", StringComparison.OrdinalIgnoreCase))
+                {
+                    query = query.Where(j => j.Source != null && (j.Source == "Email" || j.Source == "EMAIL"));
+                }
+                else if (src.Equals("portal", StringComparison.OrdinalIgnoreCase))
+                {
+                    query = query.Where(j => j.Source == null || j.Source == "PORTAL" || j.Source == "Portal");
+                }
+                else
+                {
+                    query = query.Where(j => j.Source != null && j.Source == src);
+                }
+            }
+
+            var totalCount = await query.CountAsync();
+
+            var items = await query
+                .OrderByDescending(j => j.PostedDate)
+                .ThenByDescending(j => j.Id)
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .Select(j => new JobOpeningAdminItemDto
+                {
+                    Id = j.Id,
+                    JobTitle = j.Name,
+                    CompanyName = j.ConsultancyUser != null && j.ConsultancyUser.Consultancy != null ? j.ConsultancyUser.Consultancy.Name : null,
+                    CompanyId = j.ConsultancyUser != null ? j.ConsultancyUser.ConsultancyId : null,
+                    CompanyLogo = j.ConsultancyUser != null && j.ConsultancyUser.Consultancy != null ? j.ConsultancyUser.Consultancy.Logo : null,
+                    PostedByUserName = j.ConsultancyUser != null && j.ConsultancyUser.User != null ? j.ConsultancyUser.User.UserName : null,
+                    PostedByFullName = j.ConsultancyUser != null && j.ConsultancyUser.User != null ? (j.ConsultancyUser.User.Fname + " " + (j.ConsultancyUser.User.Lname ?? "")).Trim() : null,
+                    PostedByEmail = j.ConsultancyUser != null && j.ConsultancyUser.User != null ? j.ConsultancyUser.User.Email : null,
+                    PostedByUserId = j.ConsultancyUser != null ? (long?)j.ConsultancyUser.UserId : null,
+                    ConsultancyUserId = j.ConsultancyUserId,
+                    PostedDate = j.PostedDate,
+                    LastDate = j.LastDate,
+                    Updated = j.Updated,
+                    Active = j.Active,
+                    IsExpired = j.IsExpired,
+                    JobLocation = j.JobLocation,
+                    Country = j.Country,
+                    TotalExp = j.TotalExp,
+                    NumberOfOpening = j.NumberOfOpening,
+                    SalaryDisplay = (j.FromAmt != null && j.ToAmt != null) ? (j.FromAmt + " - " + j.ToAmt) : null,
+                    ApplicationCount = j.JobOpeningCandidateProfileMaps.Count,
+                    Source = j.Source ?? "PORTAL",
+                    Skills = j.JobOpeningSkills.Select(s => s.Skill.Name).ToList()
+                })
+                .ToListAsync();
+
+            return new JobOpeningAdminResponseDto
+            {
+                TotalCount = totalCount,
+                Page = page,
+                PageSize = pageSize,
+                Items = items
+            };
+        }
+    }
 }

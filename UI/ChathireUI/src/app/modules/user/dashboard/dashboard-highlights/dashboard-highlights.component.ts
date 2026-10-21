@@ -35,6 +35,7 @@ export class DashboardHighlightsComponent implements OnInit {
   filteredInboxJobs: any[] = [];
   inboxSearchTerm: string = '';
   isLoadingInbox: boolean = true;
+  isReferralBannerDismissed: boolean = false;
 
   constructor(
     private router: Router,
@@ -47,6 +48,11 @@ export class DashboardHighlightsComponent implements OnInit {
   ) { }
 
   ngOnInit() {
+    const isDismissed = localStorage.getItem('chathire_referral_banner_dismissed');
+    if (isDismissed === 'true') {
+      this.isReferralBannerDismissed = true;
+    }
+
     this.sharedService.refreshinboxcast.subscribe(() => {
       if (this.showRecruitmentSection()) {
         this.fetchRecruiterStats();
@@ -57,7 +63,19 @@ export class DashboardHighlightsComponent implements OnInit {
       }
     });
 
+    // Immediate fetch if session credentials exist (eliminates waiting for userdetailscast round-trip)
+    if (this.sessionService.userId || this.sessionService.consultancyUserId) {
+      if (this.showBenchSalesSection()) {
+        this.fetchBenchSalesStats();
+      }
+      if (this.showRecruitmentSection()) {
+        this.fetchRecruiterStats();
+        this.fetchInboxResumes();
+      }
+    }
+
     this.sessionService.userdetailscast.subscribe((res: any) => {
+      const prevUserId = this.user?.id;
       this.user = res;
       if (this.user) {
         if (this.user.consultancyUsers && this.user.consultancyUsers.length > 0 && this.user.consultancyUsers[0].consultancy) {
@@ -66,10 +84,13 @@ export class DashboardHighlightsComponent implements OnInit {
           this.fetchCompanyDetails(this.sessionService.consultancyId);
         }
 
-        if (this.showBenchSalesSection()) {
-          this.fetchBenchSalesStats();
+        // Only re-fetch if not already loaded or if the user identity changed
+        if (!this.candidateList || this.candidateList.length === 0 || (prevUserId && prevUserId !== this.user.id)) {
+          if (this.showBenchSalesSection()) {
+            this.fetchBenchSalesStats();
+          }
         }
-        if (this.showRecruitmentSection()) {
+        if (this.showRecruitmentSection() && (!prevUserId || prevUserId !== this.user.id)) {
           this.fetchRecruiterStats();
           this.fetchInboxResumes();
         }
@@ -359,6 +380,15 @@ export class DashboardHighlightsComponent implements OnInit {
       maxWidth: '95vw',
       panelClass: 'referral-modal-panel'
     });
+  }
+
+  dismissReferralBanner(event?: Event): void {
+    if (event) {
+      event.preventDefault();
+      event.stopPropagation();
+    }
+    this.isReferralBannerDismissed = true;
+    localStorage.setItem('chathire_referral_banner_dismissed', 'true');
   }
 
   openAppliedJobsModal(candidate: any, event?: Event): void {

@@ -25,8 +25,8 @@
         <span class="meta-text">{{ job.city?.city1 ? job.city?.city1 + ', ' : '' }}{{ job.city?.stateCode || 'USA' }}</span>
       </div>
       <div class="meta-item d-flex align-items-center gap-1" *ngIf="job.fromAmt || job.toAmt">
-        <span class="material-symbols-outlined meta-icon text-success">payments</span>
-        <span class="meta-text fw-semibold text-success">${{ job.fromAmt }} - {{ job.toAmt }}</span>
+        <span class="material-symbols-outlined meta-icon">payments</span>
+        <span class="meta-text">${{ job.fromAmt }} - {{ job.toAmt }}</span>
       </div>
     </div>
 

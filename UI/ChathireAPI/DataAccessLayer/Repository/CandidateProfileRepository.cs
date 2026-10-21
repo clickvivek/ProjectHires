@@ -30,6 +30,7 @@ namespace DataAccessLayer.Repository
         Task<int> GetCountResumesSubmittedLast30Days(long userId, long? consultancyUserId, UserContext userContext);
         Task<List<BenchSalesCandidateSummaryDto>> GetRecentBenchSalesCandidates(long userId, long? consultancyUserId, int count, UserContext userContext);
         Task<List<CandidateProfileAppliedJobDto>> GetCandidateAppliedJobs(long candidateProfileId, UserContext userContext);
+        Task<bool> ToggleHideResume(long candidateProfileId, bool hideResume, UserContext userContext);
     }
 
     public class CandidateProfileRepository : BaseRepository<CandidateProfile, long>, ICandidateProfileRepository
@@ -114,7 +115,7 @@ namespace DataAccessLayer.Repository
 
         public async Task<int> GetActiveCountHotListByUser(long userId, long? consultancyUserId, UserContext userContext)
         {
-            var query = _context.CandidateProfiles.Where(o => o.Active == true);
+            var query = _context.CandidateProfiles.AsNoTracking().Where(o => o.Active == true);
             if (consultancyUserId.HasValue && consultancyUserId.Value > 0)
             {
                 query = query.Where(o => o.ConsultancyUserId == consultancyUserId.Value || o.UserId == userId);
@@ -131,7 +132,7 @@ namespace DataAccessLayer.Repository
             var fromDate = DateTime.UtcNow.AddDays(-30);
 
             var query = _context.JobOpeningCandidateProfileMaps
-                .Include(m => m.CandidateProfile)
+                .AsNoTracking()
                 .Where(m => (m.AppliedDate.HasValue && m.AppliedDate.Value >= fromDate) || (m.Updated.HasValue && m.Updated.Value >= fromDate));
 
             if (consultancyUserId.HasValue && consultancyUserId.Value > 0)
@@ -149,8 +150,7 @@ namespace DataAccessLayer.Repository
         public async Task<List<BenchSalesCandidateSummaryDto>> GetRecentBenchSalesCandidates(long userId, long? consultancyUserId, int count, UserContext userContext)
         {
             var query = _context.CandidateProfiles
-                .Include(c => c.CandidateProfileSkills)
-                .ThenInclude(s => s.Skill)
+                .AsNoTracking()
                 .Where(c => c.Active == true);
 
             if (consultancyUserId.HasValue && consultancyUserId.Value > 0)
@@ -165,10 +165,25 @@ namespace DataAccessLayer.Repository
             var candidates = await query
                 .OrderByDescending(c => c.Id)
                 .Take(count)
+                .Select(c => new
+                {
+                    c.Id,
+                    Name = c.CandidateName ?? string.Empty,
+                    Title = c.Title ?? string.Empty,
+                    PrimarySkill = c.CandidateProfileSkills
+                        .Select(s => s.Skill != null ? s.Skill.Name : null)
+                        .FirstOrDefault(n => !string.IsNullOrEmpty(n)) ?? c.Title ?? string.Empty
+                })
                 .ToListAsync();
+
+            if (!candidates.Any())
+            {
+                return new List<BenchSalesCandidateSummaryDto>();
+            }
 
             var candidateIds = candidates.Select(c => c.Id).ToList();
             var appliedJobCounts = await _context.JobOpeningCandidateProfileMaps
+                .AsNoTracking()
                 .Where(m => m.CandidateProfileId.HasValue && candidateIds.Contains(m.CandidateProfileId.Value))
                 .GroupBy(m => m.CandidateProfileId.Value)
                 .Select(g => new { CandidateProfileId = g.Key, Count = g.Count() })
@@ -177,10 +192,9 @@ namespace DataAccessLayer.Repository
             return candidates.Select(c => new BenchSalesCandidateSummaryDto
             {
                 Id = c.Id,
-                Name = c.CandidateName ?? string.Empty,
-                Title = c.Title ?? string.Empty,
-                PrimarySkill = c.CandidateProfileSkills?.Select(s => s.Skill?.Name).FirstOrDefault(n => !string.IsNullOrEmpty(n))
-                               ?? c.Title ?? string.Empty,
+                Name = c.Name,
+                Title = c.Title,
+                PrimarySkill = c.PrimarySkill,
                 AppliedJobs = appliedJobCounts.ContainsKey(c.Id) ? appliedJobCounts[c.Id] : 0,
                 NewMatchingJobs = 0
             }).ToList();
@@ -496,6 +510,22 @@ namespace DataAccessLayer.Repository
                 profile.UserId = userContext.UserId;
                 if (StatusId != null)
                     profile.StatusId = (short)StatusId;
+                await this.Put(profile.Id, profile, true);
+                return true;
+            }
+            return false;
+        }
+
+        public async Task<bool> ToggleHideResume(long candidateProfileId, bool hideResume, UserContext userContext)
+        {
+            var profile = await _context.CandidateProfiles.Where(o => o.Id == candidateProfileId).FirstOrDefaultAsync();
+            if (profile != null)
+            {
+                profile.HideResume = hideResume;
+                if (userContext != null && userContext.UserId > 0)
+                {
+                    profile.UserId = userContext.UserId;
+                }
                 await this.Put(profile.Id, profile, true);
                 return true;
             }

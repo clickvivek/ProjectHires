@@ -2,7 +2,7 @@
 @import "src/@hires/scss/helpers/typography";
 
 :host {
-  --bg-page: #F7F8FA;
+  --bg-page: #F8FAFC;
   --bg-card: #FFFFFF;
   --color-heading: #101828;
   --color-label: #344054;
@@ -21,7 +21,7 @@
 
 .add-candidate-wrapper {
   background-color: var(--bg-page);
-  padding: 8px 0 60px 0;
+  padding: 24px 0 60px 0;
   min-height: calc(100vh - 70px);
 
   .card {
@@ -43,6 +43,20 @@
       .subtitle-text {
         color: var(--color-body);
         font-size: 0.95rem;
+      }
+
+      .view-hotlist-link {
+        color: var(--primary-purple);
+        font-size: 0.95rem;
+        font-weight: 600;
+        text-decoration: underline;
+        transition: color 0.15s ease-in-out;
+        cursor: pointer;
+
+        &:hover {
+          color: var(--primary-hover);
+          text-decoration: underline;
+        }
       }
     }
 

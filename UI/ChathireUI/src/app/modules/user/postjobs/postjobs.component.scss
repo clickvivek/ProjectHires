@@ -19,9 +19,32 @@
   min-height: calc(100vh - 70px);
 }
 
+:host-context(body.postjobs) {
+  .main-container {
+    background: #F8FAFC !important;
+  }
+  .content-wrapper {
+    padding-top: 0 !important;
+    background: #F8FAFC !important;
+  }
+}
+
+::ng-deep body.postjobs {
+  background-color: #F8FAFC !important;
+
+  .main-container {
+    background: #F8FAFC !important;
+
+    .content-wrapper {
+      padding-top: 0 !important;
+      background: #F8FAFC !important;
+    }
+  }
+}
+
 ::ng-deep .postjobs-wrapper {
   background-color: var(--bg-page) !important;
-  padding: 16px 0 60px 0;
+  padding: 32px 0 60px 0;
   min-height: calc(100vh - 70px);
 
   /* Main Card styling */

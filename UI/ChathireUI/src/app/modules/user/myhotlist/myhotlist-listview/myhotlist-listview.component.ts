@@ -1,9 +1,12 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
 import { Router, ActivatedRoute, NavigationEnd } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
+import { ToastrService } from 'ngx-toastr';
 import _ from 'underscore';
 import { CandidateAppliedJobsModalComponent } from '../../../shared/components/candidate-applied-jobs-modal/candidate-applied-jobs-modal.component';
 import { formatRelocation } from 'src/app/data/various';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'myhotlist-listview',
@@ -21,7 +24,9 @@ export class MyhotlistListviewComponent {
 
   constructor(
     private router: Router,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private http: HttpClient,
+    private toastr: ToastrService
   ) {
 
   }
@@ -91,6 +96,48 @@ export class MyhotlistListviewComponent {
 
   deleteCandidate(item) {
     this.handleDeleteCandidate.emit(item)
+  }
+
+  getResumeDoc(item: any): string {
+    if (item?.candidateDocuments && item.candidateDocuments.length > 0) {
+      return item.candidateDocuments[0]?.doc || '';
+    }
+    return item?.resume || '';
+  }
+
+  toggleHideResume(item: any, event: Event) {
+    const input = event.target as HTMLInputElement;
+    const previousState = !!item.hideResume;
+    // Checkbox is "Show resume to recruiters":
+    // When checked => show resume => hideResume = false
+    // When unchecked => hide resume => hideResume = true
+    const newHideResume = !input.checked;
+    item.hideResume = newHideResume;
+
+    const apiUrl = `${environment.rootUrl}/api/CandidateProfile/ToggleHideResume?candidateProfileId=${item.id}&hideResume=${newHideResume}`;
+    this.http.put(apiUrl, {}).subscribe({
+      next: (res: any) => {
+        if (newHideResume) {
+          this.toastr.info('Resume is now hidden from recruiters.', '', {
+            timeOut: 4000,
+            positionClass: 'toast-top-center'
+          });
+        } else {
+          this.toastr.success('Resume is now visible to recruiters.', '', {
+            timeOut: 4000,
+            positionClass: 'toast-top-center'
+          });
+        }
+      },
+      error: (err: any) => {
+        item.hideResume = previousState;
+        input.checked = !previousState;
+        this.toastr.error('Failed to update resume visibility. Please try again.', '', {
+          timeOut: 5000,
+          positionClass: 'toast-top-center'
+        });
+      }
+    });
   }
 
   ngOnInit() {

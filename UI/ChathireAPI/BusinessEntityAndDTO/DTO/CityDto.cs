@@ -23,6 +23,7 @@ namespace BusinessEntityAndDTO.DTO
         //public string? CountryCode { get; set; }
 
         public string? CountryName { get; set; }
+        public bool? IsState { get; set; }
         public StateDto? IdStateNavigation { get; set; }
     }
 }

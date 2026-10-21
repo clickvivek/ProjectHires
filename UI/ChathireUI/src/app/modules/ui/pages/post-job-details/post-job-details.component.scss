@@ -258,6 +258,65 @@
     font-size: 12.5px;
   }
 
+  .quota-refer-link {
+    background: linear-gradient(135deg, #FAF5FA 0%, #F5EDF5 100%);
+    border: 1px solid #E4CCE3;
+    color: #70246D !important;
+    border-radius: 9999px;
+    padding: 3px 10px;
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 1.4;
+    transition: all 0.2s ease-in-out;
+    box-shadow: 0 1px 3px rgba(112, 36, 109, 0.08);
+
+    .refer-gift-icon {
+      color: #D97706 !important;
+      font-size: 16px;
+      line-height: 1;
+      transition: transform 0.2s ease-in-out;
+    }
+
+    .refer-link-text {
+      color: #70246D;
+      font-weight: 600;
+      letter-spacing: 0.1px;
+    }
+
+    .refer-arrow-icon {
+      color: #9333EA !important;
+      font-size: 14px;
+      line-height: 1;
+      transition: transform 0.2s ease-in-out;
+    }
+
+    &:hover {
+      background: #70246D;
+      border-color: #70246D;
+      color: #FFFFFF !important;
+      box-shadow: 0 2px 8px rgba(112, 36, 109, 0.25);
+      transform: translateY(-1px);
+
+      .refer-gift-icon {
+        color: #FDE047 !important;
+        transform: scale(1.15) rotate(-6deg);
+      }
+
+      .refer-link-text {
+        color: #FFFFFF !important;
+      }
+
+      .refer-arrow-icon {
+        color: #FDE047 !important;
+        transform: translateX(2px);
+      }
+    }
+
+    &:active {
+      transform: translateY(0);
+    }
+  }
+
   .quota-progress-bar {
     background-color: #E2E8F0;
     overflow: hidden;

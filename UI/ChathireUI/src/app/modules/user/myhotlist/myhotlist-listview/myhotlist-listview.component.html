@@ -31,8 +31,8 @@
                   <span class="meta-text">{{ item.city?.city1 }}, {{ item.city?.stateCode }}</span>
                 </div>
                 <div class="meta-item d-flex align-items-center gap-1" *ngIf="item.fromAmt || item.toAmt">
-                  <span class="material-symbols-outlined meta-icon text-success">payments</span>
-                  <span class="meta-text fw-semibold text-success">${{ item.fromAmt }} - {{ item.toAmt }}</span>
+                  <span class="material-symbols-outlined meta-icon">payments</span>
+                  <span class="meta-text">${{ item.fromAmt }} - {{ item.toAmt }}</span>
                 </div>
               </div>
 
@@ -50,15 +50,20 @@
 
           <!-- Right Column: Marketing Status Switch -->
           <div class="col-4 col-md-3 d-flex flex-column align-items-end justify-content-start">
-            <label class="switch flex-shrink-0" title="Toggle Marketing Status">
-              <input
-                type="checkbox"
-                [(ngModel)]="item.status"
-                value="{{ item.statusId }}"
-                (click)="onStatusChange($event, item)"
-              />
-              <span class="slider round"></span>
-            </label>
+            <div class="d-inline-flex align-items-center gap-2 profile-status-toggle">
+              <label class="switch flex-shrink-0" title="Toggle Marketing Status">
+                <input
+                  type="checkbox"
+                  [(ngModel)]="item.status"
+                  value="{{ item.statusId }}"
+                  (click)="onStatusChange($event, item)"
+                />
+                <span class="slider round"></span>
+              </label>
+              <span class="profile-status-text">
+                {{ item.status ? 'Profile active' : 'Profile inactive' }}
+              </span>
+            </div>
             <div class="d-flex d-md-none options mt-2 gap-2">
               <div
                 class="pointer p-1 text-teal"
@@ -86,7 +91,7 @@
         </div>
 
         <!-- Bottom Row: Skills on left, Update Button on right -->
-        <div class="row align-items-center mt-2 pt-2 border-top">
+        <div class="row align-items-center mt-3 pt-0">
           <div class="col-8 col-md-9">
             <div class="skills-wrap d-flex flex-wrap gap-2" *ngIf="isSkills(item.candidateProfileSkills)">
               <span class="skill-tag" *ngFor="let skillItem of item.candidateProfileSkills">
@@ -144,18 +149,69 @@
           </div>
         </div>
 
-        <!-- Resume Attachments -->
-        <div class="row mt-2" *ngIf="(item?.candidateDocuments && item?.candidateDocuments.length > 0) || item?.hideResume">
-          <div class="col-sm-12">
-            <div class="bottom-box pt-2 d-flex align-items-center gap-2 flex-wrap">
-              <ng-container *ngIf="item?.candidateDocuments && item?.candidateDocuments.length > 0">
-                <view-resume [doc]="item?.candidateDocuments[0]?.doc"></view-resume>
-                <download-resume [doc]="item?.candidateDocuments[0]?.doc"></download-resume>
-              </ng-container>
-              <span *ngIf="item?.hideResume" class="badge bg-warning bg-opacity-10 text-warning border border-warning d-inline-flex align-items-center px-2 py-1 text-xs">
-                <span class="material-symbols-outlined fs-6 me-1">visibility_off</span>
-                Resume Hidden from Recruiters
+        <!-- Dedicated Resume Bottom Bar matching mockup -->
+        <div class="resume-footer-bar mt-3 pt-3 border-top d-flex align-items-center justify-content-between flex-wrap gap-3">
+          <!-- Left side: Document icon + Resume label + Segmented View/Download buttons -->
+          <div class="d-flex align-items-center gap-3">
+            <div class="resume-title-wrap d-flex align-items-center gap-2">
+              <span class="material-symbols-outlined resume-file-icon">description</span>
+              <span class="resume-title-text">Resume</span>
+            </div>
+
+            <!-- Segmented button group if resume is attached -->
+            <div *ngIf="getResumeDoc(item); else noResumeTpl" class="resume-segmented-group d-inline-flex align-items-center">
+              <button
+                type="button"
+                class="segmented-btn btn-view d-inline-flex align-items-center gap-1"
+                (click)="vr.handleResume()"
+                title="View candidate resume"
+              >
+                <span class="material-symbols-outlined btn-icon">visibility</span>
+                <span>View</span>
+              </button>
+              <button
+                type="button"
+                class="segmented-btn btn-download d-inline-flex align-items-center gap-1"
+                (click)="dr.handleDownload(anchor)"
+                title="Download candidate resume"
+              >
+                <span class="material-symbols-outlined btn-icon">download</span>
+                <span>Download</span>
+              </button>
+            </div>
+
+            <!-- Fallback text if no resume is attached -->
+            <ng-template #noResumeTpl>
+              <span class="no-resume-text text-muted fst-italic">No resume attached</span>
+            </ng-template>
+
+            <!-- Hidden components to power the interactive drawer & download logic -->
+            <view-resume #vr class="d-none" [doc]="getResumeDoc(item)"></view-resume>
+            <download-resume #dr class="d-none" [doc]="getResumeDoc(item)"></download-resume>
+            <a #anchor class="d-none"></a>
+          </div>
+
+          <!-- Right side: Checkbox + Visibility pill badge -->
+          <div class="d-flex align-items-center gap-3">
+            <label class="form-check-label d-inline-flex align-items-center gap-2 cursor-pointer mb-0 show-resume-checkbox-label">
+              <input
+                type="checkbox"
+                class="form-check-input show-resume-checkbox mt-0"
+                [checked]="!item.hideResume"
+                (change)="toggleHideResume(item, $event)"
+              />
+              <span class="checkbox-text">Show resume to recruiters</span>
+            </label>
+
+            <!-- Status Pill: Hidden vs Visible -->
+            <div
+              class="resume-status-pill d-inline-flex align-items-center gap-1"
+              [ngClass]="item.hideResume ? 'pill-hidden' : 'pill-visible'"
+            >
+              <span class="material-symbols-outlined pill-icon">
+                {{ item.hideResume ? 'visibility_off' : 'visibility' }}
               </span>
+              <span class="pill-text">{{ item.hideResume ? 'Hidden' : 'Visible' }}</span>
             </div>
           </div>
         </div>

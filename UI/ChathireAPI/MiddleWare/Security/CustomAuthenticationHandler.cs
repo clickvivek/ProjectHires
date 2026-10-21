@@ -53,10 +53,14 @@ namespace Middleware.Security
         protected override async Task<AuthenticateResult> HandleAuthenticateAsync()
         {
             var path = Request.Path.Value ?? string.Empty;
-            if ((path.Equals("/api/Token", StringComparison.OrdinalIgnoreCase) && Request.Method.Equals("POST", StringComparison.OrdinalIgnoreCase)) ||
-                path.StartsWith("/api/Common", StringComparison.OrdinalIgnoreCase) ||
+            bool isPublicPath = (path.Equals("/api/Token", StringComparison.OrdinalIgnoreCase) && Request.Method.Equals("POST", StringComparison.OrdinalIgnoreCase)) ||
                 path.StartsWith("/api/talkjs", StringComparison.OrdinalIgnoreCase) ||
-                path.StartsWith("/api/JobOpening/ProcessExpirations", StringComparison.OrdinalIgnoreCase))
+                path.StartsWith("/api/JobOpening/ProcessExpirations", StringComparison.OrdinalIgnoreCase) ||
+                path.StartsWith("/api/CandidateProfile/ToggleHideResume", StringComparison.OrdinalIgnoreCase);
+
+            bool hasAuthHeader = Request.Headers.ContainsKey("Authorization") && !string.IsNullOrWhiteSpace(Request.Headers["Authorization"].ToString());
+
+            if (isPublicPath && !hasAuthHeader)
             {
                 var claims = new List<Claim>();
                 var identity = new ClaimsIdentity(claims, Scheme.Name);
@@ -65,6 +69,18 @@ namespace Middleware.Security
                 
                 return AuthenticateResult.Success(ticket);
             }
+
+            // For /api/Common routes: if user provided no token, allow anonymous access; if provided, validate token
+            if (path.StartsWith("/api/Common", StringComparison.OrdinalIgnoreCase) && !hasAuthHeader)
+            {
+                var claims = new List<Claim>();
+                var identity = new ClaimsIdentity(claims, Scheme.Name);
+                var principal = new System.Security.Principal.GenericPrincipal(identity, null);
+                var ticket = new AuthenticationTicket(principal, Scheme.Name);
+                
+                return AuthenticateResult.Success(ticket);
+            }
+
             // validation comes in here
             if (!Request.Headers.ContainsKey("Authorization"))
             {

@@ -1,8 +1,12 @@
 import { Component, OnInit, ViewEncapsulation } from '@angular/core';
+import { Router } from '@angular/router';
+import { HttpClient } from '@angular/common/http';
 import { SessionService } from 'src/app/core/session/session.service';
+import { AuthService } from 'src/app/core/auth/auth.service';
 import { ToastrService } from 'ngx-toastr';
 import { picUrl, defaultProfilePic } from 'src/app/data/various';
 import { PromocodeService, RedeemPromocodeResponseDto } from 'src/app/core/services/promocode.service';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-my-account',
@@ -13,7 +17,7 @@ import { PromocodeService, RedeemPromocodeResponseDto } from 'src/app/core/servi
 export class MyAccountComponent implements OnInit {
 
   user: any;
-  activeTab: 'profile-details' | 'profile-pic' | 'profile-password' | 'redeem-promo' = 'profile-details';
+  activeTab: 'profile-details' | 'profile-pic' | 'profile-password' | 'redeem-promo' | 'delete-account' = 'profile-details';
   defaultPic = defaultProfilePic;
   picBase = picUrl;
 
@@ -21,9 +25,15 @@ export class MyAccountComponent implements OnInit {
   isRedeeming = false;
   redemptionResult: RedeemPromocodeResponseDto | null = null;
 
+  deleteConfirmInput = '';
+  isDeletingAccount = false;
+
   constructor(
     private sessionService: SessionService,
+    private authService: AuthService,
     private promocodeService: PromocodeService,
+    private http: HttpClient,
+    private router: Router,
     private toastr: ToastrService
   ) {}
 
@@ -48,8 +58,9 @@ export class MyAccountComponent implements OnInit {
     event.target.src = this.defaultPic;
   }
 
-  setTab(tab: 'profile-details' | 'profile-pic' | 'profile-password' | 'redeem-promo') {
+  setTab(tab: 'profile-details' | 'profile-pic' | 'profile-password' | 'redeem-promo' | 'delete-account') {
     this.activeTab = tab;
+    this.deleteConfirmInput = '';
   }
 
   redeemPromoCode() {
@@ -82,6 +93,31 @@ export class MyAccountComponent implements OnInit {
       error: (err: any) => {
         this.isRedeeming = false;
         const msg = err?.error?.message || err?.message || 'Error occurred while redeeming promo code.';
+        this.toastr.error(msg, 'Error');
+      }
+    });
+  }
+
+  confirmDeleteAccount() {
+    if (this.deleteConfirmInput.trim().toUpperCase() !== 'DELETE') {
+      this.toastr.warning('Please type DELETE to confirm.', 'Confirmation Required');
+      return;
+    }
+
+    this.isDeletingAccount = true;
+    const url = `${environment.rootUrl}/api/User/DeactivateAccount`;
+
+    this.http.post<any>(url, {}).subscribe({
+      next: () => {
+        this.isDeletingAccount = false;
+        this.toastr.success('Your account has been deleted and deactivated.', 'Account Closed');
+        this.authService.logout().subscribe(() => {
+          this.router.navigate(['/login']);
+        });
+      },
+      error: (err: any) => {
+        this.isDeletingAccount = false;
+        const msg = err?.error?.errors?.[0]?.message || err?.error?.message || err?.message || 'Failed to deactivate account.';
         this.toastr.error(msg, 'Error');
       }
     });

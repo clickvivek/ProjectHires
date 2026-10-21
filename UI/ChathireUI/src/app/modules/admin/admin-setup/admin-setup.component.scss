@@ -1236,3 +1236,97 @@
 }
 
 
+
+
+// ==========================================
+// JOBPOSTINGS ADMIN TAB STYLING
+// ==========================================
+.job-postings-admin-area {
+  .job-thin-card {
+    transition: all 0.2s ease-in-out;
+    background: #ffffff;
+    border: 1px solid rgba(0, 0, 0, 0.06) !important;
+    border-left-width: 4px !important;
+
+    &:hover {
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08) !important;
+      transform: translateY(-1px);
+    }
+
+    &.border-start-active {
+      border-left-color: #198754 !important;
+    }
+
+    &.border-start-expired {
+      border-left-color: #dc3545 !important;
+      background-color: #fafbfc;
+    }
+
+    &.border-start-inactive {
+      border-left-color: #6c757d !important;
+      background-color: #f8f9fa;
+    }
+
+    padding-top: 0.4rem !important;
+    padding-bottom: 0.4rem !important;
+
+    .job-title-text {
+      font-size: 0.82rem;
+      line-height: 1.25;
+      &:hover {
+        color: #7952b3 !important;
+      }
+    }
+
+    .badge-compact {
+      font-size: 0.65rem !important;
+      padding: 0.12rem 0.35rem !important;
+      font-weight: 500;
+      line-height: 1.1;
+    }
+
+    .company-title-text {
+      font-size: 0.82rem;
+      line-height: 1.25;
+    }
+
+    .company-location-text {
+      font-size: 0.75rem;
+      color: #6c757d;
+    }
+
+    .user-name-text {
+      font-size: 0.82rem;
+      line-height: 1.25;
+    }
+
+    .user-email-text {
+      font-size: 0.75rem;
+      color: #6c757d;
+    }
+
+    .date-text {
+      font-size: 0.82rem;
+      line-height: 1.25;
+    }
+
+    .time-text {
+      font-size: 0.75rem;
+      color: #6c757d;
+    }
+  }
+}
+
+
+.btn-outline-purple {
+  color: #7c3aed;
+  border-color: #7c3aed;
+
+  &:hover,
+  &.active,
+  &:active {
+    color: #fff !important;
+    background-color: #7c3aed !important;
+    border-color: #7c3aed !important;
+  }
+}

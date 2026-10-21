@@ -19,12 +19,12 @@
 				<li class="list-group-item pointer" (click)="handleSelectedItem(item)">{{getItemData(item)}}</li>
 			</ng-container>
       <li
-        class="list-group-item add-custom-item pointer text-primary-700 fw-semibold d-flex align-items-center gap-2 border-top"
+        class="list-group-item add-custom-item pointer text-primary-700 fw-semibold d-flex align-items-center justify-content-start gap-2 border-top"
         *ngIf="allowCustom && fieldModel && fieldModel.trim() && !hasExactMatch(fieldModel)"
         (mousedown)="createCustomItem($event, fieldModel)"
       >
-        <span class="material-symbols-outlined fs-6 text-primary-600">add_circle</span>
-        <span>Add "<strong>{{ fieldModel.trim() }}</strong>"</span>
+        <span class="material-symbols-outlined fs-6 text-primary-600 flex-shrink-0">add_circle</span>
+        <span class="add-custom-text">Add "<strong>{{ fieldModel.trim() }}</strong>"</span>
       </li>
 		</div>
 	</div>

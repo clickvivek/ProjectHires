@@ -63,18 +63,24 @@
   &.confirm-apply-modal-panel {
     border-radius: 12px !important;
     overflow: hidden !important;
-    align-self: flex-start !important;
-    margin-top: 15px !important;
-    margin-bottom: 15px !important;
+    position: relative !important;
+    top: 0 !important;
+    margin: 0 auto !important;
     box-shadow: 0 16px 36px rgba(0, 0, 0, 0.22) !important;
+    .close-icon {
+      display: none !important;
+    }
     .mat-dialog-container {
-      max-height: calc(100vh - 30px) !important;
+      max-height: calc(100vh - 88px) !important;
       overflow: hidden !important;
       display: flex !important;
       flex-direction: column !important;
       padding: 0 !important;
       border-radius: 12px !important;
       background: #ffffff !important;
+      .close-icon {
+        display: none !important;
+      }
       @include hires-breakpoint("gt-sm") {
         width: 640px;
       }
@@ -263,4 +269,21 @@
   to {
     transform: translateX(0);
   }
+}
+
+.cdk-global-overlay-wrapper:has(.confirm-apply-modal-panel),
+.cdk-global-overlay-wrapper:has(.confirm-apply-dialog-panel) {
+  justify-content: center !important;
+  align-items: flex-start !important;
+  padding-top: 70px !important;
+  top: 0 !important;
+}
+
+.cdk-overlay-pane.confirm-apply-modal-panel,
+.cdk-overlay-pane.confirm-apply-dialog-panel {
+  position: relative !important;
+  top: 0 !important;
+  margin-top: 0 !important;
+  margin-bottom: 24px !important;
+  align-self: flex-start !important;
 }

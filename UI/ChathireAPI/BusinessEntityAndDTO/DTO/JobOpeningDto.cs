@@ -60,6 +60,8 @@ namespace BusinessEntityAndDTO.DTO
 
         public int? ProjectDurationmonths { get; set; }
 
+        public string? Source { get; set; } = "PORTAL";
+
         public List<JobOpeningSkillDto> JobOpeningSkills { get; set; } = new List<JobOpeningSkillDto>();
         public List<JobOpeningVisaMapDto> JobOpeningVisaMaps { get; set; } = new List<JobOpeningVisaMapDto>();
         public List<JobOpeningLocationDto> JobOpeningLocations { get; set; } = new List<JobOpeningLocationDto>();
@@ -240,6 +242,9 @@ namespace BusinessEntityAndDTO.DTO
         
         public List<string> searchStrings { get; set; } = new List<string>();
         public List<int>? cityIds { get; set; } = new List<int>();
+        public int? StateId { get; set; }
+        public string? LocationString { get; set; }
+        public decimal? RadiusMiles { get; set; }
         public List<int>? skills { get; set; } = new List<int>();
         public List<int>? visas { get; set; } = new List<int>();
         public List<int>? employmentTypes { get; set; } = new List<int>();

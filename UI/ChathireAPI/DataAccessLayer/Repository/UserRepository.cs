@@ -42,6 +42,10 @@ namespace DataAccessLayer.Repository
                                     )).FirstOrDefaultAsync();
                 if (result != null)
                 {
+                    if (result.Active == false)
+                    {
+                        throw new ArgumentException("User is not active");
+                    }
 
                     if (SecurePasswordHasher.IsHashSupported(result.Password))
                     {
@@ -131,6 +135,10 @@ namespace DataAccessLayer.Repository
                     await ProcessSignupReferral(result.Email, null, result.Id);
                 }
                 catch { }
+            }
+            else if (result.Active == false)
+            {
+                throw new ArgumentException("User is not active");
             }
 
             string userTypeName = result.UserType != null ? result.UserType.Name : "Candidate";

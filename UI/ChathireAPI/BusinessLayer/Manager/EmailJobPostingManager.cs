@@ -620,6 +620,7 @@ namespace BusinessLayer.Manager
             {
                 Name = cleanName,
                 Description = parsed.Description,
+                Source = "Email",
                 ConsultancyUserId = consultancyUser.Id,
                 JobLocation = cleanLocation,
                 Postalcode = cleanPostal,

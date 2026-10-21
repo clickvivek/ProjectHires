@@ -2,6 +2,7 @@ using AutoMapper;
 using BusinessEntityAndDTO.Common;
 using BusinessEntityAndDTO.DTO;
 using BusinessEntityAndDTO.Models;
+using BusinessLayer.Common;
 using BusinessLayer.Manager;
 using DataAccessLayer.Models;
 using Microsoft.AspNetCore.Authorization;
@@ -270,7 +271,6 @@ namespace MiddleWare.Controllers
 
                 string ipAddress = GetClientIpAddress();
                 string? clientLocation = GetClientLocationHeader();
-                var searchedMgr = managerFactory.Get<ISearchedManager>();
                 string? extraFilters = null;
                 var filterParts = new List<string>();
                 if (job.visas != null && job.visas.Any()) filterParts.Add($"Visas: {string.Join(",", job.visas)}");
@@ -279,14 +279,24 @@ namespace MiddleWare.Controllers
                 if (job.startYearsOfExp.HasValue || job.endYearsOfExp.HasValue) filterParts.Add($"Exp: {job.startYearsOfExp}-{job.endYearsOfExp} yrs");
                 if (filterParts.Any()) extraFilters = string.Join("; ", filterParts);
 
-                _ = Task.Run(async () =>
+                var scopeFactory = HttpContext?.RequestServices?.GetService<IServiceScopeFactory>();
+                if (scopeFactory != null)
                 {
-                    try
+                    _ = Task.Run(async () =>
                     {
-                        await searchedMgr.LogSearchAsync("JobSearch", job.searchStrings, clientLocation, job.cityIds, results?.Count ?? 0, userId, ipAddress, extraFilters);
-                    }
-                    catch { }
-                });
+                        try
+                        {
+                            using var scope = scopeFactory.CreateScope();
+                            var scopedMgrFactory = scope.ServiceProvider.GetService<IManagerFactory>();
+                            var searchedMgr = scopedMgrFactory?.Get<ISearchedManager>();
+                            if (searchedMgr != null)
+                            {
+                                await searchedMgr.LogSearchAsync("JobSearch", job.searchStrings, clientLocation, job.cityIds, results?.Count ?? 0, userId, ipAddress, extraFilters);
+                            }
+                        }
+                        catch { }
+                    });
+                }
             }
             catch { }
 
@@ -485,6 +495,18 @@ namespace MiddleWare.Controllers
             });
         }
 
+    
+        [HttpGet]
+        [Route("AdminJobOpenings")]
+        public Task<Result<JobOpeningAdminResponseDto>> GetJobOpeningsForAdmin([FromQuery] string? search, [FromQuery] string? status, [FromQuery] string? source, [FromQuery] int page = 1, [FromQuery] int pageSize = 500)
+        {
+            return ExecuteAsync<JobOpeningAdminResponseDto>(async () =>
+            {
+                var mgr = managerFactory.Get<IJobOpeningManager>();
+                UserContext context = null;
+                try { context = GetUserContext(); } catch { }
+                return await mgr.GetJobOpeningsForAdminAsync(search, status, source, page, pageSize, context ?? GetDummyUserContext());
+            });
+        }
     }
-
 }

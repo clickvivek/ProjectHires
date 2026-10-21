@@ -6,4 +6,51 @@
   <div class="footer-wrapper mt-auto">
     <app-footer></app-footer>
   </div>
+
+  <!-- Floating Chat Container & Action Button -->
+  <div *ngIf="isLoggedIn() && !isChatRoute()" class="floating-chat-container">
+    <!-- Floating Chat Action Button -->
+    <a routerLink="/chat"
+       class="floating-chat-btn"
+       [class.has-new-alert]="showNewMessageAlert"
+       aria-label="Open chat messages"
+       title="Open Messages">
+      <span class="material-symbols-outlined chat-icon">forum</span>
+      <span *ngIf="unreadCount > 0" class="floating-chat-badge">
+        {{ unreadCount > 99 ? '99+' : unreadCount }}
+      </span>
+    </a>
+
+    <!-- New Message Alert Popup Bubble (appears to the right of the button) -->
+    <a routerLink="/chat" *ngIf="showNewMessageAlert" class="floating-chat-alert" title="Click to view message">
+      <span class="pulse-indicator"></span>
+      <span class="material-symbols-outlined alert-icon">mark_chat_unread</span>
+      <span class="alert-text">
+        New message received<ng-container *ngIf="latestSenderName"> from <strong class="sender-name">{{ latestSenderName }}</strong></ng-container>
+      </span>
+      <button type="button" class="alert-close-btn" (click)="$event.stopPropagation(); $event.preventDefault(); showNewMessageAlert = false;" aria-label="Close alert">
+        <span class="material-symbols-outlined fs-6">close</span>
+      </button>
+    </a>
+  </div>
+
+  <!-- Cookie Consent Banner -->
+  <aside *ngIf="showCookieConsent" 
+         class="cookie-consent-bar" 
+         role="region" 
+         aria-label="Cookie consent notification">
+    <div class="container d-flex flex-column flex-sm-row align-items-center justify-content-center justify-content-md-between gap-3 text-center text-sm-start">
+      <div class="cookie-text">
+        <span>This website uses cookies. By using our website, you agree to our use of cookies and also acknowledge that you have read and agree to comply with our </span>
+        <a routerLink="/terms" class="cookie-link">Terms of Use</a>
+        <span> Agreement and updated </span>
+        <a routerLink="/privacy" class="cookie-link">Privacy Policy</a>.
+      </div>
+      <div class="cookie-actions flex-shrink-0">
+        <button type="button" class="btn btn-cookie-accept" (click)="acceptCookieConsent()">
+          Got it!
+        </button>
+      </div>
+    </div>
+  </aside>
 </div>

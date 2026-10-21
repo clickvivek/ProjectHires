@@ -8,12 +8,25 @@ using BusinessLayer.Manager;
 using Microsoft.AspNetCore.Identity;
 
 var builder = WebApplication.CreateBuilder(args);
+
+var allowedOrigins = builder.Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>() ?? new[]
+{
+    "https://www.chathire.com",
+    "https://chathire.com",
+    "https://app.chathire.com",
+    "http://localhost:4200",
+    "https://localhost:4200"
+};
+
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("CorsPolicy",
-        builder => builder.AllowAnyOrigin()
-        .AllowAnyMethod()
-        .AllowAnyHeader());
+        corsBuilder => corsBuilder
+            .WithOrigins(allowedOrigins)
+            .SetIsOriginAllowedToAllowWildcardSubdomains()
+            .AllowAnyMethod()
+            .AllowAnyHeader()
+            .AllowCredentials());
 });
 string CustomAuthenticationScheme = "CustomScheme";
 

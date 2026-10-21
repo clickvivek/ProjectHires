@@ -55,5 +55,6 @@ namespace BusinessEntityAndDTO.DTO
         public DateTime? EndDate { get; set; }
         public bool IsFree { get; set; } = true;
         public string? PlanName { get; set; }
+        public bool? Active { get; set; }
     }
 }

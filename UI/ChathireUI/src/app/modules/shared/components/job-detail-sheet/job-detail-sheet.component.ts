@@ -16,6 +16,7 @@ import { AuthService } from 'src/app/core/auth/auth.service';
 import { TalkService } from 'src/app/modules/talk/talk.service';
 import { SharedService } from 'src/app/modules/shared/services/shared.service';
 import { SessionService } from 'src/app/core/session/session.service';
+import { generateObfuscatedJobId } from 'src/app/modules/shared/utils/job-url.util';
 
 @Component({
   selector: 'app-job-detail-sheet',
@@ -105,8 +106,7 @@ export class JobDetailSheetComponent implements OnInit {
     if(this.authService.isLoggedIn()) {
       const applyJobDialogRef = this.dialog.open(ConfirmApplyJobComponent, {
         panelClass: ['material', 'confirm-apply-modal-panel'],
-        position: { top: '15px' },
-        maxHeight: '95vh',
+        maxHeight: 'calc(100vh - 96px)',
         disableClose: true,
         data: this.selectedJob
       });
@@ -122,8 +122,7 @@ export class JobDetailSheetComponent implements OnInit {
         if (res && res.success) {
           const applyJobDialogRef = this.dialog.open(ConfirmApplyJobComponent, {
             panelClass: ['material', 'confirm-apply-modal-panel'],
-            position: { top: '15px' },
-            maxHeight: '95vh',
+            maxHeight: 'calc(100vh - 96px)',
             disableClose: true,
             data: this.selectedJob
           });
@@ -218,40 +217,7 @@ export class JobDetailSheetComponent implements OnInit {
   private cachedJobShareIds: { [key: string]: string } = {};
 
   generateJobId(userSpecificNumber: any): string {
-    if (!userSpecificNumber) return '';
-    const key = String(userSpecificNumber);
-    if (this.cachedJobShareIds[key]) {
-      return this.cachedJobShareIds[key];
-    }
-    
-    const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-    const numLetters = 6; 
-
-    let result = '';
-
-    for (let i = 0; i < 3; i++) {
-        for (let j = 0; j < 4; j++) {
-            result += characters.charAt(Math.floor(Math.random() * characters.length));
-        }
-        result += '-';
-    }
-
-    result += characters.charAt(Math.floor(Math.random() * characters.length))+userSpecificNumber+characters.charAt(Math.floor(Math.random() * characters.length)) + '-';
-
-    for (let i = 0; i < numLetters; i++) {
-        result += characters.charAt(Math.floor(Math.random() * characters.length));
-    }
-
-    for (let i = 0; i < 4; i++) {
-        for (let j = 0; j < 4; j++) {
-            result += characters.charAt(Math.floor(Math.random() * characters.length));
-        }
-        if (i !== 3) result += '-';
-    }
-
-    this.cachedJobShareIds[key] = result;
-    return result;
-
+    return generateObfuscatedJobId(userSpecificNumber);
   }
 
   @HostListener('window:resize', ['$event'])

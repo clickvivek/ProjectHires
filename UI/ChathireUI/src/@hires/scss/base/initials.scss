@@ -140,7 +140,7 @@ body {
   width: 100%;
   background: pick-color(dark, 100);
   min-height: calc(100vh - 66px);
-  overflow: auto;
+  overflow: visible;
   display: flex;
   flex-direction: column;
   @include hires-breakpoint("lt-lg") {
@@ -179,6 +179,28 @@ body.login, body.signup {
   }
 }
 
+body.postjobs,
+body.dashboard,
+body.profile,
+body.myaccount,
+body.addcandidate,
+body.editcandidate,
+body.myhotlist,
+body.search-jobs,
+body.search-hotlist,
+body.jobs,
+body.my-profile,
+body.refer-for-rewards,
+body.referrals {
+  .main-container {
+    background: #F8FAFC !important;
+    .content-wrapper {
+      padding: 0;
+      background: #F8FAFC !important;
+    }
+  }
+}
+
 body.chat {
   height: 100vh;
   max-height: 100vh;
@@ -210,13 +232,24 @@ body.chat {
   @extend .ft-head;
   letter-spacing: 0.4px;
   min-width: 120px;
-  &:not([class*="btn-outline"]):not(:disabled):not([disabled]):not(.disabled) {
-    color: white;
-  }
-  &:focus:not(:disabled):not([disabled]):not(.disabled),
-  &:hover:not(:disabled):not([disabled]):not(.disabled),
-  &:active:not(:disabled):not([disabled]):not(.disabled) {
-    color: white !important;
+  // Only enforce white text on solid colored buttons (primary, secondary, danger, success, dark, purple, info, etc.)
+  // Never force white text on uncolored, white-background, light, link, or outline buttons
+  &.btn-primary,
+  &.btn-secondary,
+  &.btn-success,
+  &.btn-danger,
+  &.btn-warning,
+  &.btn-info,
+  &.btn-dark,
+  &.btn-purple {
+    &:not(:disabled):not([disabled]):not(.disabled) {
+      color: white;
+    }
+    &:focus:not(:disabled):not([disabled]):not(.disabled),
+    &:hover:not(:disabled):not([disabled]):not(.disabled),
+    &:active:not(:disabled):not([disabled]):not(.disabled) {
+      color: white !important;
+    }
   }
   &:disabled,
   &[disabled],
@@ -659,6 +692,11 @@ body.chat {
   .cdk-global-overlay-wrapper {
     align-items: flex-start !important;
     top: 122px !important;
+
+    &:has(.confirm-apply-modal-panel) {
+      top: 0 !important;
+      padding-top: 70px !important;
+    }
 
     @include hires-breakpoint("lt-lg") {
       top: 60px !important;

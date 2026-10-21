@@ -1,5 +1,6 @@
-import { Component, OnInit, HostListener } from '@angular/core';
+import { Component, OnInit, OnDestroy, HostListener } from '@angular/core';
 import { Router, NavigationEnd, ActivatedRoute, Params } from '@angular/router';
+import { Subscription } from 'rxjs';
 import { filter } from 'rxjs/operators';
 
 import { MatDialog } from '@angular/material/dialog';
@@ -23,7 +24,9 @@ import { getMeaningfulErrorMessage } from 'src/app/modules/shared/utils/error-ha
     { provide: MatDialogRef, useValue: {} },
   ]
 })
-export class SearchjobsComponent implements OnInit {
+export class SearchjobsComponent implements OnInit, OnDestroy {
+
+  private searchSub?: Subscription;
 
   isLoaded:boolean = true;
   isDataAvailable:boolean = false;
@@ -38,6 +41,7 @@ export class SearchjobsComponent implements OnInit {
   skill: string = "";
   location: string = "";
   cityId: any = null;
+  stateId: any = null;
   visasId: any = [];
   wmIds: any = [];
   expIds: any = [];
@@ -79,6 +83,7 @@ export class SearchjobsComponent implements OnInit {
   }
 
   isRemoteOnly: boolean = false;
+  radiusMiles: number = 50;
 
   executeSearchFromParams(params: Params) {
     if (!_.isEmpty(params)) {
@@ -88,12 +93,24 @@ export class SearchjobsComponent implements OnInit {
       if (this.isRemoteOnly) {
         this.location = '';
         this.cityId = null;
+        this.stateId = null;
       } else {
         this.location = params['location'] || '';
         if (!_.isUndefined(params['cid']) && params['cid']) {
           this.cityId = params['cid'];
         } else {
           this.cityId = null;
+        }
+        if (!_.isUndefined(params['sid']) && params['sid']) {
+          this.stateId = params['sid'];
+        } else {
+          this.stateId = null;
+        }
+        if (!_.isUndefined(params['radius']) && params['radius']) {
+          const parsed = parseInt(params['radius'], 10);
+          this.radiusMiles = !isNaN(parsed) && [50, 100, 150, 200].includes(parsed) ? parsed : 50;
+        } else {
+          this.radiusMiles = 50;
         }
       }
 
@@ -121,8 +138,9 @@ export class SearchjobsComponent implements OnInit {
         this.dateString = '';
       }
 
-      if (this.skill || this.location || this.cityId || this.isRemoteOnly || this.visasId.length || this.wmIds.length || this.expIds.length || this.dateString) {
-        this.handleJobOpenings(this.skill, this.cityId, this.visasId, this.wmIds, this.expIds, this.dateString);
+      if (this.skill || this.location || this.cityId || this.stateId || this.isRemoteOnly || this.visasId.length || this.wmIds.length || this.expIds.length || this.dateString) {
+        window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
+        this.handleJobOpenings(this.skill, this.cityId, this.stateId, this.location, this.visasId, this.wmIds, this.expIds, this.dateString, this.radiusMiles);
       } else {
         this.isDataAvailable = false;
       }
@@ -211,10 +229,13 @@ export class SearchjobsComponent implements OnInit {
     return futureDate.format('MM/DD/YYYY');
  }
 
-  handleJobOpenings(skill, cityIdArr, visasArr, employmentTypesArr, expArr, dateString) {
+  handleJobOpenings(skill, cityIdArr, stateIdInput, locationInput, visasArr, employmentTypesArr, expArr, dateString, radiusMilesInput?: number) {
 
     const searchStrings = skill && skill.trim().length > 0 ? [skill.trim()] : (this.isRemoteOnly ? ['Remote'] : undefined);
     const cityIds = cityIdArr ? [cityIdArr] : undefined;
+    const parsedStateId = stateIdInput ? parseInt(stateIdInput, 10) : undefined;
+    const locationString = (!cityIds && !parsedStateId && locationInput && locationInput.trim().length > 0) ? locationInput.trim() : undefined;
+    const radiusMiles = (cityIds && radiusMilesInput) ? radiusMilesInput : 50;
 
     let startYearsOfExpInput:any = undefined;
     let endYearsOfExpInput: any = undefined;
@@ -249,8 +270,29 @@ export class SearchjobsComponent implements OnInit {
       endDate = this.getDateInMMDDYYYYFormat(this.dateString)
     }
 
+    if (this.searchSub) {
+      this.searchSub.unsubscribe();
+    }
     this.isLoaded = false;
-    this.jobOpeningService.apiJobOpeningSearchJobOpeningsGet(searchStrings, cityIds, undefined, visasArr, employmentTypesArr, undefined, startYearsOfExpInput, endYearsOfExpInput, undefined, undefined, startDate, endDate).subscribe({
+    this.searchSub = this.jobOpeningService.apiJobOpeningSearchJobOpeningsGet(
+      searchStrings,
+      cityIds,
+      undefined,
+      visasArr,
+      employmentTypesArr,
+      undefined,
+      startYearsOfExpInput,
+      endYearsOfExpInput,
+      undefined,
+      undefined,
+      startDate,
+      endDate,
+      undefined,
+      undefined,
+      parsedStateId,
+      locationString,
+      radiusMiles
+    ).subscribe({
       next: (res: any) => {
                 
         this.isLoaded = true
@@ -308,6 +350,10 @@ export class SearchjobsComponent implements OnInit {
           else {
             this.ItemEndIndex = this.totalItems;
           }
+
+          setTimeout(() => {
+            window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
+          }, 50);
         }
         else {
           this.isDataAvailable = false
@@ -416,6 +462,12 @@ export class SearchjobsComponent implements OnInit {
     else
       this.isMobile = false;
 
+  }
+
+  ngOnDestroy() {
+    if (this.searchSub) {
+      this.searchSub.unsubscribe();
+    }
   }
 
   getCompanyLogoUrl(logo: string | null | undefined): string {

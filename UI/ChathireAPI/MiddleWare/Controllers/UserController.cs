@@ -296,36 +296,54 @@ namespace MiddleWare.Controllers
 
         [HttpGet]
         [Route("DauStats")]
+        [AdminAuthorize]
         public Task<Result<DauDashboardDto>> GetDauStats([FromQuery] string timeframe = "day", [FromQuery] DateTime? startDate = null, [FromQuery] DateTime? endDate = null)
         {
             return ExecuteAsync<DauDashboardDto>(async () =>
             {
                 var userManager = managerFactory.Get<IUserManager>();
-                return await userManager.GetDauDashboard(timeframe, startDate, endDate, GetDummyUserContext());
+                return await userManager.GetDauDashboard(timeframe, startDate, endDate, GetUserContext());
             });
         }
 
         [HttpPost]
         [Route("CreateAdminUser")]
+        [AdminAuthorize]
         public Task<Result<UserDto>> CreateAdminUser([FromBody] CreateAdminUserModel model)
         {
             return ExecuteAsync<UserDto>(async () =>
             {
                 var mgr = managerFactory.Get<IUserManager>();
-                UserContext context = null;
-                try { context = GetUserContext(); } catch { }
-                return await mgr.CreateAdminUser(model, context ?? GetDummyUserContext());
+                return await mgr.CreateAdminUser(model, GetUserContext());
             });
         }
 
         [HttpGet]
         [Route("GetAdminUsers")]
+        [AdminAuthorize]
         public Task<Result<List<UserDto>>> GetAdminUsers()
         {
             return ExecuteAsync<List<UserDto>>(async () =>
             {
                 var mgr = managerFactory.Get<IUserManager>();
-                return await mgr.GetUsersByUserType(7, GetDummyUserContext());
+                return await mgr.GetUsersByUserType(7, GetUserContext());
+            });
+        }
+
+        [HttpPost]
+        [Route("DeactivateAccount")]
+        public Task<Result<bool>> DeactivateAccount()
+        {
+            return ExecuteAsync<bool>(async () =>
+            {
+                var context = GetUserContext();
+                if (context == null || context.UserId <= 0)
+                {
+                    throw new ArgumentException("User not authenticated.");
+                }
+
+                var mgr = managerFactory.Get<IUserManager>();
+                return await mgr.DeactivateAccount(context.UserId, context);
             });
         }
     }

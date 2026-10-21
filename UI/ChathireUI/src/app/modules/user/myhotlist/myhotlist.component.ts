@@ -232,6 +232,10 @@ export class MyhotlistComponent implements OnInit {
 
   }
 
+  scrollToTop(): void {
+    window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
+  }
+
   isSelected(id){
     return this.selectedCandidateId == id ? 'selected' : '';
   }

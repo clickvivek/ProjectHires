@@ -60,7 +60,8 @@
     <div class="card-body px-3 px-md-4 pb-4 pt-0 border-top">
       
       <!-- REFERRAL PROMO BANNER (COMPACT THIN STRIP) -->
-      <div class="referral-dashboard-banner my-3 px-3 py-2 px-md-3 py-md-2 rounded-3 d-flex align-items-center justify-content-between gap-3 cursor-pointer"
+      <div *ngIf="!isReferralBannerDismissed"
+           class="referral-dashboard-banner my-3 px-3 py-2 px-md-3 py-md-2 rounded-3 d-flex align-items-center justify-content-between gap-3 cursor-pointer"
            (click)="openReferralModal($event)">
         <div class="d-flex align-items-center gap-2.5 min-w-0 flex-grow-1">
           <div class="referral-icon-pill rounded-circle d-flex align-items-center justify-content-center flex-shrink-0">
@@ -72,10 +73,17 @@
             <span class="referral-supporting-text text-xs d-none d-lg-inline">• Plus free job postings when colleagues join</span>
           </div>
         </div>
-        <div class="flex-shrink-0">
+        <div class="d-flex align-items-center gap-2 flex-shrink-0">
           <button type="button" class="btn btn-warning btn-sm fw-bold px-3 py-1 rounded-pill d-inline-flex align-items-center gap-1 shadow-sm text-dark referral-cta-btn" (click)="openReferralModal($event)">
             <span>Refer & Claim Award</span>
             <span class="material-symbols-outlined fs-6">arrow_forward</span>
+          </button>
+          <button type="button" 
+                  class="referral-dismiss-btn" 
+                  (click)="dismissReferralBanner($event)"
+                  title="Close banner"
+                  aria-label="Close referral banner">
+            <span class="material-symbols-outlined close-icon">close</span>
           </button>
         </div>
       </div>
@@ -386,10 +394,7 @@
             </div>
           </div>
 
-          <!-- Structured Table -->
-          <loader *ngIf="isLoadingStats"></loader>
-
-          <div class="table-responsive" *ngIf="!isLoadingStats">
+          <div class="table-responsive">
             <table class="table table-hover align-middle mb-0 candidate-table">
               <thead>
                 <tr>
@@ -400,7 +405,29 @@
                   <th scope="col" class="text-end pe-4" style="width: 11%;">Actions</th>
                 </tr>
               </thead>
-              <tbody>
+              <tbody *ngIf="isLoadingStats">
+                <tr *ngFor="let s of [1, 2, 3, 4, 5]" class="placeholder-glow">
+                  <td>
+                    <div class="d-flex align-items-center gap-2">
+                      <div class="placeholder rounded-circle" style="width: 34px; height: 34px;"></div>
+                      <span class="placeholder col-7 rounded py-2"></span>
+                    </div>
+                  </td>
+                  <td>
+                    <span class="placeholder col-6 rounded py-2"></span>
+                  </td>
+                  <td class="text-center">
+                    <span class="placeholder col-4 rounded-pill py-2"></span>
+                  </td>
+                  <td class="text-center">
+                    <span class="placeholder col-4 rounded-pill py-2"></span>
+                  </td>
+                  <td class="text-end pe-4">
+                    <span class="placeholder col-5 rounded py-2"></span>
+                  </td>
+                </tr>
+              </tbody>
+              <tbody *ngIf="!isLoadingStats">
                 <tr *ngFor="let candidate of filteredCandidateList">
                   <td>
                     <div class="d-flex align-items-center gap-2">

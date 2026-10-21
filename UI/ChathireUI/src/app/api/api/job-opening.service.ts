@@ -1638,10 +1638,10 @@ export class JobOpeningService {
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public apiJobOpeningSearchJobOpeningsGet(searchStrings?: Array<string>, cityIds?: Array<number>, skills?: Array<number>, visas?: Array<number>, employmentTypes?: Array<number>, jobTypes?: Array<number>, startYearsOfExp?: number, endYearsOfExp?: number, rowsOfPage?: number, pageNumber?: number, postedStartDate?: string, postedEndDate?: string, consultancyUserId?: number, publicProfileUserName?: string, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext}): Observable<Array<JobOpeningForSearchResultsDto>>;
-    public apiJobOpeningSearchJobOpeningsGet(searchStrings?: Array<string>, cityIds?: Array<number>, skills?: Array<number>, visas?: Array<number>, employmentTypes?: Array<number>, jobTypes?: Array<number>, startYearsOfExp?: number, endYearsOfExp?: number, rowsOfPage?: number, pageNumber?: number, postedStartDate?: string, postedEndDate?: string, consultancyUserId?: number, publicProfileUserName?: string, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext}): Observable<HttpResponse<Array<JobOpeningForSearchResultsDto>>>;
-    public apiJobOpeningSearchJobOpeningsGet(searchStrings?: Array<string>, cityIds?: Array<number>, skills?: Array<number>, visas?: Array<number>, employmentTypes?: Array<number>, jobTypes?: Array<number>, startYearsOfExp?: number, endYearsOfExp?: number, rowsOfPage?: number, pageNumber?: number, postedStartDate?: string, postedEndDate?: string, consultancyUserId?: number, publicProfileUserName?: string, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext}): Observable<HttpEvent<Array<JobOpeningForSearchResultsDto>>>;
-    public apiJobOpeningSearchJobOpeningsGet(searchStrings?: Array<string>, cityIds?: Array<number>, skills?: Array<number>, visas?: Array<number>, employmentTypes?: Array<number>, jobTypes?: Array<number>, startYearsOfExp?: number, endYearsOfExp?: number, rowsOfPage?: number, pageNumber?: number, postedStartDate?: string, postedEndDate?: string, consultancyUserId?: number, publicProfileUserName?: string, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext}): Observable<any> {
+    public apiJobOpeningSearchJobOpeningsGet(searchStrings?: Array<string>, cityIds?: Array<number>, skills?: Array<number>, visas?: Array<number>, employmentTypes?: Array<number>, jobTypes?: Array<number>, startYearsOfExp?: number, endYearsOfExp?: number, rowsOfPage?: number, pageNumber?: number, postedStartDate?: string, postedEndDate?: string, consultancyUserId?: number, publicProfileUserName?: string, stateId?: number, locationString?: string, radiusMiles?: number, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext}): Observable<Array<JobOpeningForSearchResultsDto>>;
+    public apiJobOpeningSearchJobOpeningsGet(searchStrings?: Array<string>, cityIds?: Array<number>, skills?: Array<number>, visas?: Array<number>, employmentTypes?: Array<number>, jobTypes?: Array<number>, startYearsOfExp?: number, endYearsOfExp?: number, rowsOfPage?: number, pageNumber?: number, postedStartDate?: string, postedEndDate?: string, consultancyUserId?: number, publicProfileUserName?: string, stateId?: number, locationString?: string, radiusMiles?: number, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext}): Observable<HttpResponse<Array<JobOpeningForSearchResultsDto>>>;
+    public apiJobOpeningSearchJobOpeningsGet(searchStrings?: Array<string>, cityIds?: Array<number>, skills?: Array<number>, visas?: Array<number>, employmentTypes?: Array<number>, jobTypes?: Array<number>, startYearsOfExp?: number, endYearsOfExp?: number, rowsOfPage?: number, pageNumber?: number, postedStartDate?: string, postedEndDate?: string, consultancyUserId?: number, publicProfileUserName?: string, stateId?: number, locationString?: string, radiusMiles?: number, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext}): Observable<HttpEvent<Array<JobOpeningForSearchResultsDto>>>;
+    public apiJobOpeningSearchJobOpeningsGet(searchStrings?: Array<string>, cityIds?: Array<number>, skills?: Array<number>, visas?: Array<number>, employmentTypes?: Array<number>, jobTypes?: Array<number>, startYearsOfExp?: number, endYearsOfExp?: number, rowsOfPage?: number, pageNumber?: number, postedStartDate?: string, postedEndDate?: string, consultancyUserId?: number, publicProfileUserName?: string, stateId?: number, locationString?: string, radiusMiles?: number, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext}): Observable<any> {
 
         let localVarQueryParameters = new HttpParams({encoder: this.encoder});
         if (searchStrings) {
@@ -1711,6 +1711,18 @@ export class JobOpeningService {
         if (publicProfileUserName !== undefined && publicProfileUserName !== null) {
           localVarQueryParameters = this.addToHttpParams(localVarQueryParameters,
             <any>publicProfileUserName, 'PublicProfileUserName');
+        }
+        if (stateId !== undefined && stateId !== null) {
+          localVarQueryParameters = this.addToHttpParams(localVarQueryParameters,
+            <any>stateId, 'StateId');
+        }
+        if (locationString !== undefined && locationString !== null && String(locationString).trim().length > 0) {
+          localVarQueryParameters = this.addToHttpParams(localVarQueryParameters,
+            <any>locationString, 'LocationString');
+        }
+        if (radiusMiles !== undefined && radiusMiles !== null) {
+          localVarQueryParameters = this.addToHttpParams(localVarQueryParameters,
+            <any>radiusMiles, 'RadiusMiles');
         }
 
         let localVarHeaders = this.defaultHeaders;

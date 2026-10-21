@@ -27,6 +27,7 @@ const routes: Routes = [
   { path: 'inbox', canActivate: [ AuthGuard ], loadChildren: () => import('./modules/user/inbox/inbox.module').then(m => m.InboxModule) },
   { path: 'chat', canActivate: [ AuthGuard ], loadChildren: () => import('./modules/user/messages/messages.module').then(m => m.MessagesModule) },
   { path: 'jobs', canActivate: [ AuthGuard ], loadChildren: () => import('./modules/public/job-details-page/job-details-page.module').then(m => m.JobDetailsPageModule) },
+  { path: 'job-details', canActivate: [ AuthGuard ], loadChildren: () => import('./modules/public/job-details-page/job-details-page.module').then(m => m.JobDetailsPageModule) },
   { path: 'my-profile', canActivate: [ AuthGuard ], loadChildren: () => import('./modules/user/candidate-profile/candidate-profile.module').then(m => m.CandidateProfileModule) },
   { path: 'refer-for-rewards', canActivate: [ AuthGuard ], loadChildren: () => import('./modules/user/referral/referral.module').then(m => m.ReferralModule) },
   { path: 'referrals', canActivate: [ AuthGuard ], loadChildren: () => import('./modules/user/referral/referral.module').then(m => m.ReferralModule) },
@@ -36,7 +37,7 @@ const routes: Routes = [
 ];
 
 @NgModule({
-  imports: [RouterModule.forRoot(routes, { useHash: true })],
+  imports: [RouterModule.forRoot(routes, { useHash: true, scrollPositionRestoration: 'top' })],
   exports: [RouterModule]
 })
 export class AppRoutingModule { }

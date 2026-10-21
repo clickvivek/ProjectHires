@@ -101,6 +101,8 @@ export class AddCandidateComponent implements OnInit, OnDestroy {
 
     router.events.subscribe((event: any) => {
       if (event instanceof NavigationEnd) {
+        window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
+        setTimeout(() => window.scrollTo({ top: 0, left: 0, behavior: 'auto' }), 50);
         this.route.params.subscribe((params) => {
           if(params['id']) {
             this.candidateId = params['id']
@@ -545,6 +547,8 @@ export class AddCandidateComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+    window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
+    setTimeout(() => window.scrollTo({ top: 0, left: 0, behavior: 'auto' }), 50);
 
     this.route.params.subscribe((params) => {
       if (params['id']) {

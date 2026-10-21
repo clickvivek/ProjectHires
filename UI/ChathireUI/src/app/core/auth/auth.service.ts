@@ -39,6 +39,7 @@ export class AuthService {
     this._authenticated = true;
 
     this.token = user.token
+    localStorage.removeItem('chathire_referral_banner_dismissed');
     this.sessionService.user(user, skipRedirect)
 
     this.destroyChatPopup()
@@ -74,6 +75,7 @@ export class AuthService {
       localStorage.removeItem('ch_useremail');
       localStorage.removeItem('ch_consultancy_id');
       localStorage.removeItem('ch_consultancyuser_id');
+      localStorage.removeItem('chathire_referral_banner_dismissed');
 
       this.destroyChatPopup()
 

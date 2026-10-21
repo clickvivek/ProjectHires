@@ -26,6 +26,45 @@ namespace DataAccessLayer.Repository
                     .ThenInclude(c => c.CountryCodeNavigation)
                     .AsQueryable();
 
+            // When searching general locations, if searchString matches a US State name or abbreviation,
+            // prioritize the State-level record (IsState = 1) at the top of suggestions
+            if (!IsState && !string.IsNullOrWhiteSpace(searchString))
+            {
+                var trimmed = searchString.Trim();
+                // Check if searchString matches a state name or code
+                var stateCities = await _context.Cities
+                    .AsNoTracking()
+                    .Include(c => c.IdStateNavigation)
+                    .ThenInclude(c => c.CountryCodeNavigation)
+                    .Where(c => c.IsState == true && (
+                        (c.City1 != null && c.City1.StartsWith(trimmed)) ||
+                        (c.IdStateNavigation != null && (
+                            (c.IdStateNavigation.StateName != null && c.IdStateNavigation.StateName.StartsWith(trimmed)) ||
+                            (c.IdStateNavigation.StateCode != null && c.IdStateNavigation.StateCode.StartsWith(trimmed))
+                        ))
+                    ))
+                    .OrderBy(c => c.City1)
+                    .Take(5)
+                    .ToListAsync();
+
+                if (stateCities.Any())
+                {
+                    // Also get city matches excluding duplicate state records
+                    var regularCities = await query
+                        .Where(s => s.IsState == null || s.IsState == false)
+                        .Where(s => (s.City1 != null && s.City1.StartsWith(trimmed)) ||
+                                    (s.IdStateNavigation != null && s.IdStateNavigation.StateName != null && s.IdStateNavigation.StateName.StartsWith(trimmed)))
+                        .OrderBy(s => s.City1)
+                        .Take(20)
+                        .ToListAsync();
+
+                    var combined = new List<City>();
+                    combined.AddRange(stateCities);
+                    combined.AddRange(regularCities);
+                    return combined;
+                }
+            }
+
             if (!string.IsNullOrWhiteSpace(country))
             {
                 var cNorm = country.Trim().ToUpper();

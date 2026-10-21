@@ -68,8 +68,8 @@
   }
 
   .candidate-cards-scroll-container {
-    max-height: 240px;
-    min-height: 140px;
+    max-height: 220px;
+    min-height: 100px;
     overflow-y: auto;
     padding-right: 4px;
 
@@ -274,18 +274,20 @@
     }
 
     .btn-modal-back {
-      background-color: #FFFFFF;
-      color: #475569;
-      border: 1px solid #94A3B8;
+      background-color: #FFFFFF !important;
+      color: #334155 !important;
+      border: 1.5px solid #94A3B8 !important;
       border-radius: 6px;
       font-size: 13px;
       padding: 5px 14px;
       transition: all 0.15s ease-in-out;
 
-      &:hover:not(:disabled) {
-        background-color: #F8FAFC;
-        color: #1F2937;
-        border-color: #64748B;
+      &:hover:not(:disabled),
+      &:focus:not(:disabled),
+      &:active:not(:disabled) {
+        background-color: #F1F5F9 !important;
+        color: #0F172A !important;
+        border-color: #64748B !important;
       }
 
       &:focus-visible {
@@ -296,6 +298,9 @@
       &:disabled {
         opacity: 0.6;
         cursor: not-allowed;
+        color: #94A3B8 !important;
+        background-color: #F8FAFC !important;
+        border-color: #E2E8F0 !important;
       }
     }
 

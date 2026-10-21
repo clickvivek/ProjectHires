@@ -91,7 +91,11 @@ export class LoginModalComponent implements OnInit {
         error: (err: any) => {
           console.error('Google Login Error:', err);
           this.isFormSubmitted = false;
-          this.error = 'Google Sign-In failed. Please try again.';
+          if (err.status === 422 && err.error?.errors?.[0]?.message) {
+            this.error = err.error.errors[0].message;
+          } else {
+            this.error = 'Google Sign-In failed. Please try again.';
+          }
         }
       });
     }

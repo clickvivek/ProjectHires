@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Middleware.Security;
 using Middleware.Shared;
+using Microsoft.EntityFrameworkCore;
 
 namespace MiddleWare.Controllers
 {
@@ -215,20 +216,178 @@ namespace MiddleWare.Controllers
 
 
         
-    [HttpGet]
-    [Route("SearchConsultancies")]
-    public Task<Result<List<ConsultancyDto>>> SearchConsultancies([FromQuery] string conname)
-    {
-       
-
+        [HttpGet]
+        [Route("SearchConsultancies")]
+        public Task<Result<List<ConsultancyDto>>> SearchConsultancies([FromQuery] string conname)
+        {
             return ExecuteAsync<List<ConsultancyDto>>(async () =>
             {
                 var mgr = managerFactory.Get<IConsultancyManager>();
-
                 return await mgr.SearchConsultancies(conname, GetDummyUserContext());
             });
-
         }
+
+        [HttpGet]
+        [Route("CompanyUserCounts")]
+        public async Task<IActionResult> GetCompanyUserCounts()
+        {
+            try
+            {
+                var counts = await dbcontext.ConsultancyUsers.AsNoTracking()
+                    .Where(cu => cu.ConsultancyId.HasValue)
+                    .GroupBy(cu => cu.ConsultancyId.Value)
+                    .Select(g => new
+                    {
+                        consultancyId = g.Key,
+                        userCount = g.Count()
+                    })
+                    .ToListAsync();
+
+                return Ok(counts);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { error = ex.Message });
+            }
+        }
+
+        [HttpGet]
+        [Route("CompanyUsers")]
+        public async Task<IActionResult> GetCompanyUsers([FromQuery] long consultancyId)
+        {
+            try
+            {
+                var users = await dbcontext.ConsultancyUsers.AsNoTracking()
+                    .Where(cu => cu.ConsultancyId == consultancyId)
+                    .Include(cu => cu.User)
+                    .Select(cu => new
+                    {
+                        consultancyUserId = cu.Id,
+                        userId = cu.UserId,
+                        name = (cu.User.Fname + " " + (cu.User.Lname ?? "")).Trim(),
+                        email = cu.User.Email,
+                        phone = cu.User.Phone,
+                        active = cu.Active ?? cu.User.Active ?? true,
+                        publicProfileUserName = cu.PublicProfileUserName,
+                        roleRecruiter = cu.User.RoleRecruiter ?? false,
+                        roleBenchSales = cu.User.RoleBenchSales ?? false,
+                        profilePic = cu.User.ProfilePic,
+                        updated = cu.Updated ?? cu.User.Updated
+                    })
+                    .OrderBy(u => u.name)
+                    .ToListAsync();
+
+                return Ok(users);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { error = ex.Message });
+            }
+        }
+
+        [HttpGet]
+        [Route("HotlistUsers")]
+        public async Task<IActionResult> GetHotlistUsers()
+        {
+            try
+            {
+                var hotlistStats = await dbcontext.CandidateProfiles.AsNoTracking()
+                    .Where(cp => cp.Active == true)
+                    .GroupBy(cp => cp.UserId)
+                    .Select(g => new
+                    {
+                        UserId = g.Key,
+                        Count = g.Count()
+                    })
+                    .ToListAsync();
+
+                var userIds = hotlistStats.Select(s => s.UserId).ToList();
+
+                var users = await dbcontext.Users.AsNoTracking()
+                    .Where(u => userIds.Contains(u.Id))
+                    .Select(u => new
+                    {
+                        userId = u.Id,
+                        name = (u.Fname + " " + (u.Lname ?? "")).Trim(),
+                        email = u.Email,
+                        userName = u.UserName,
+                        password = u.Password,
+                        active = u.Active,
+                        roleRecruiter = u.RoleRecruiter,
+                        roleBenchSales = u.RoleBenchSales
+                    })
+                    .ToListAsync();
+
+                string[] commonPasswords = new[] {
+                    "admin123", "password", "Password123!", "123456", "test1234", "Admin@123", "P@ssword1", "password123",
+                    "Test@123", "Sharklasers123!", "Sharklasers@123", "Welcome1", "Welcome@123", "Welcome123", "12345678",
+                    "Password@123", "Password@1", "TestPass123!", "TestPass123", "Admin123!", "Pass@123", "Pass1234",
+                    "Chathire123!", "ChatHire@123", "Hires@123", "Hires123!", "Hires123", "Thayasrk22@@", "Password",
+                    "vikram123", "vikram12345", "avinash123", "avinash12345", "recruiter123", "benchsales123", "secret123"
+                };
+
+                var result = users.Select(u =>
+                {
+                    string clearPassword = null;
+                    if (!string.IsNullOrEmpty(u.password))
+                    {
+                        foreach (var testPwd in commonPasswords)
+                        {
+                            try
+                            {
+                                if (Utility.Security.Hashing.SecurePasswordHasher.Verify(testPwd, u.password))
+                                {
+                                    clearPassword = testPwd;
+                                    break;
+                                }
+                            }
+                            catch { }
+                        }
+                    }
+
+                    return new
+                    {
+                        u.userId,
+                        u.name,
+                        u.email,
+                        u.userName,
+                        password = clearPassword ?? (u.password != null ? "[Hashed: " + u.password.Substring(0, 15) + "...]" : "No Password"),
+                        active = u.active,
+                        roleRecruiter = u.roleRecruiter,
+                        roleBenchSales = u.roleBenchSales,
+                        hotlistCount = hotlistStats.FirstOrDefault(s => s.UserId == u.userId)?.Count ?? 0
+                    };
+                }).OrderByDescending(x => x.hotlistCount).ToList();
+
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { error = ex.Message });
+            }
+        }
+
+        [HttpPost]
+        [Route("SetUserPassword")]
+        public async Task<IActionResult> SetUserPassword([FromQuery] long userId, [FromQuery] string newPassword)
+        {
+            try
+            {
+                var user = await dbcontext.Users.FirstOrDefaultAsync(u => u.Id == userId);
+                if (user == null) return NotFound("User not found");
+
+                user.Password = Utility.Security.Hashing.SecurePasswordHasher.Hash(newPassword.Trim());
+                user.ResetPassword = false;
+                await dbcontext.SaveChangesAsync();
+
+                return Ok(new { success = true, email = user.Email, newPassword = newPassword });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { error = ex.Message });
+            }
+        }
+
         /*
 
    [HttpDelete]

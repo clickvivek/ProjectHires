@@ -4,6 +4,7 @@ import { ToastrService } from 'ngx-toastr';
 import { ConsultancyService } from 'src/app/api/api/consultancy.service';
 import { picUrl, defaultProfilePic } from 'src/app/data/various';
 import { environment } from 'src/environments/environment';
+import { JobPostingAdminService, JobOpeningAdminItemDto, JobOpeningAdminResponseDto } from 'src/app/core/services/job-posting-admin.service';
 import { PromocodeService, PromocodeDto, CreatePromocodeDto } from 'src/app/core/services/promocode.service';
 import {
   EmailJobPostingService,
@@ -19,6 +20,7 @@ import {
   BulkAddSkillsResultDto
 } from 'src/app/core/services/skill-admin.service';
 import { ReferralService } from 'src/app/core/services/referral.service';
+import { generateObfuscatedJobId } from 'src/app/modules/shared/utils/job-url.util';
 
 export interface CsvCompanyRow {
   name: string;
@@ -44,7 +46,19 @@ export class AdminSetupComponent implements OnInit {
   @ViewChild('fileInput') fileInput!: ElementRef;
   @ViewChild('logoInput') logoInput!: ElementRef;
 
-  activeTab: 'dau-dashboard' | 'bulk-upload' | 'view-edit' | 'review-companies' | 'user-quotas' | 'admin-users' | 'company-url-scraper' | 'linkedin-scraper' | 'promo-codes' | 'jobposting-by-email' | 'skills-maintenance' | 'searched-analytics' = 'dau-dashboard';
+  activeTab: 'dau-dashboard' | 'bulk-upload' | 'view-edit' | 'review-companies' | 'user-quotas' | 'admin-users' | 'company-url-scraper' | 'linkedin-scraper' | 'promo-codes' | 'jobposting-by-email' | 'job-postings' | 'skills-maintenance' | 'searched-analytics' = 'dau-dashboard';
+
+  // --- Tab: Job Postings (Admin Setup) ---
+  isLoadingJobPostings = false;
+  adminJobPostingsList: JobOpeningAdminItemDto[] = [];
+  adminJobPostingsTotalCount = 0;
+  adminJobPostingsSearch = '';
+  adminJobPostingsStatusFilter: 'all' | 'active' | 'inactive' | 'expired' = 'all';
+  adminJobPostingsSourceFilter: 'all' | 'portal' | 'email' = 'all';
+  adminJobPostingsCurrentPage = 1;
+  adminJobPostingsPageSize = 500;
+  adminJobPostingsTotalPages = 1;
+
 
   // --- Tab: Skills Maintenance State ---
   isLoadingSkills = false;
@@ -134,6 +148,7 @@ export class AdminSetupComponent implements OnInit {
     startDate: string;
     endDate: string;
     isFree: boolean;
+    active: boolean;
   } = {
     userId: 0,
     actualJobPosting: 15,
@@ -141,7 +156,8 @@ export class AdminSetupComponent implements OnInit {
     dailyChatLimit: 20,
     startDate: '',
     endDate: '',
-    isFree: true
+    isFree: true,
+    active: true
   };
 
   // Referral Modal State (Send on behalf of user)
@@ -215,6 +231,7 @@ export class AdminSetupComponent implements OnInit {
     private consultancyService: ConsultancyService,
     private promocodeService: PromocodeService,
     private emailJobPostingService: EmailJobPostingService,
+    private jobPostingAdminService: JobPostingAdminService,
     private skillAdminService: SkillAdminService,
     private referralService: ReferralService,
     private http: HttpClient,
@@ -227,7 +244,7 @@ export class AdminSetupComponent implements OnInit {
     this.loadSkills();
   }
 
-  setTab(tab: 'dau-dashboard' | 'bulk-upload' | 'view-edit' | 'review-companies' | 'user-quotas' | 'admin-users' | 'company-url-scraper' | 'linkedin-scraper' | 'promo-codes' | 'jobposting-by-email' | 'skills-maintenance' | 'searched-analytics') {
+  setTab(tab: 'dau-dashboard' | 'bulk-upload' | 'view-edit' | 'review-companies' | 'user-quotas' | 'admin-users' | 'company-url-scraper' | 'linkedin-scraper' | 'promo-codes' | 'jobposting-by-email' | 'job-postings' | 'skills-maintenance' | 'searched-analytics') {
     this.activeTab = tab;
     if (tab === 'dau-dashboard' && !this.dauSummary.totalRegisteredUsers) {
       this.loadDauStats();
@@ -242,6 +259,8 @@ export class AdminSetupComponent implements OnInit {
     } else if (tab === 'jobposting-by-email') {
       this.loadEmailJobPostings();
       this.loadEmailJobStats();
+    } else if (tab === 'job-postings') {
+      this.loadAdminJobPostings();
     } else if (tab === 'skills-maintenance') {
       this.loadSkills();
     } else if (tab === 'searched-analytics') {
@@ -1497,7 +1516,8 @@ export class AdminSetupComponent implements OnInit {
       dailyChatLimit: user.dailyChatLimit ?? (user.isFree ? 20 : 500),
       startDate: startD,
       endDate: endD,
-      isFree: user.isFree !== false
+      isFree: user.isFree !== false,
+      active: user.active !== false
     };
     this.isEditQuotaModalOpen = true;
   }
@@ -1518,7 +1538,8 @@ export class AdminSetupComponent implements OnInit {
       dailyChatLimit: Number(this.editQuotaForm.dailyChatLimit),
       startDate: this.editQuotaForm.startDate ? new Date(this.editQuotaForm.startDate).toISOString() : null,
       endDate: this.editQuotaForm.endDate ? new Date(this.editQuotaForm.endDate).toISOString() : null,
-      isFree: this.editQuotaForm.isFree
+      isFree: this.editQuotaForm.isFree,
+      active: this.editQuotaForm.active
     };
 
     const url = `${environment.rootUrl}/api/Subscription/UpdateUserQuota`;
@@ -3183,6 +3204,111 @@ export class AdminSetupComponent implements OnInit {
     document.body.removeChild(link);
     this.toastr.success(`Exported ${this.filteredSearchedList.length} search records to CSV.`);
   }
+
+  // ====================================================
+  // TAB: JOB POSTINGS (ADMIN SETUP) METHODS
+  // ====================================================
+  loadAdminJobPostings(resetPage: boolean = false) {
+    if (resetPage) {
+      this.adminJobPostingsCurrentPage = 1;
+    }
+    this.isLoadingJobPostings = true;
+    const statusParam = this.adminJobPostingsStatusFilter === 'all' ? undefined : this.adminJobPostingsStatusFilter;
+    const sourceParam = this.adminJobPostingsSourceFilter === 'all' ? undefined : this.adminJobPostingsSourceFilter;
+    const searchParam = this.adminJobPostingsSearch.trim() || undefined;
+
+    this.jobPostingAdminService.getAdminJobOpenings(
+      searchParam,
+      statusParam,
+      sourceParam,
+      this.adminJobPostingsCurrentPage,
+      this.adminJobPostingsPageSize
+    ).subscribe({
+      next: (res) => {
+        this.isLoadingJobPostings = false;
+        if (res && res.value) {
+          this.adminJobPostingsList = res.value.items || [];
+          this.adminJobPostingsTotalCount = res.value.totalCount || 0;
+          this.adminJobPostingsTotalPages = Math.ceil(this.adminJobPostingsTotalCount / this.adminJobPostingsPageSize) || 1;
+        } else {
+          this.adminJobPostingsList = [];
+          this.adminJobPostingsTotalCount = 0;
+          this.adminJobPostingsTotalPages = 1;
+        }
+      },
+      error: (err) => {
+        this.isLoadingJobPostings = false;
+        const msg = err?.error?.message || err?.message || 'Failed to load job postings';
+        this.toastr.error(msg, 'Error');
+      }
+    });
+  }
+
+  onAdminJobPostingsSearchChange() {
+    this.adminJobPostingsCurrentPage = 1;
+    this.loadAdminJobPostings();
+  }
+
+  onAdminJobPostingsStatusChange(status: 'all' | 'active' | 'inactive' | 'expired') {
+    this.adminJobPostingsStatusFilter = status;
+    this.adminJobPostingsCurrentPage = 1;
+    this.loadAdminJobPostings();
+  }
+
+  onAdminJobPostingsSourceChange(source: 'all' | 'portal' | 'email') {
+    this.adminJobPostingsSourceFilter = source;
+    this.adminJobPostingsCurrentPage = 1;
+    this.loadAdminJobPostings();
+  }
+
+  goToAdminJobPostingsPage(page: number) {
+    if (page < 1 || page > this.adminJobPostingsTotalPages || page === this.adminJobPostingsCurrentPage) {
+      return;
+    }
+    this.adminJobPostingsCurrentPage = page;
+    this.loadAdminJobPostings();
+  }
+
+  exportAdminJobPostingsCsv() {
+    if (!this.adminJobPostingsList || this.adminJobPostingsList.length === 0) {
+      this.toastr.warning('No job postings to export', 'Export');
+      return;
+    }
+
+    const headers = ['Job ID', 'Job Title', 'Source', 'Company Name', 'Posted By User', 'Posted By Full Name', 'Posted By Email', 'Posted Date & Time', 'Application Deadline (Last Date)', 'Status', 'Location', 'Experience', 'Openings', 'Salary', 'Applications', 'Skills'];
+
+    const rows = this.adminJobPostingsList.map(j => [
+      j.id,
+      '"' + (j.jobTitle || '').replace(/"/g, '""') + '"',
+      '"' + (j.source || 'PORTAL') + '"',
+      '"' + (j.companyName || '').replace(/"/g, '""') + '"',
+      '"' + (j.postedByUserName || '').replace(/"/g, '""') + '"',
+      '"' + (j.postedByFullName || '').replace(/"/g, '""') + '"',
+      '"' + (j.postedByEmail || '').replace(/"/g, '""') + '"',
+      j.postedDate ? new Date(j.postedDate).toLocaleString() : '',
+      j.lastDate ? new Date(j.lastDate).toLocaleDateString() : '',
+      j.isExpired ? 'Expired' : (j.active ? 'Active' : 'Inactive'),
+      '"' + (j.jobLocation || j.country || '').replace(/"/g, '""') + '"',
+      j.totalExp != null ? j.totalExp + ' yrs' : '',
+      j.numberOfOpening ?? '',
+      '"' + (j.salaryDisplay || '').replace(/"/g, '""') + '"',
+      j.applicationCount || 0,
+      '"' + (j.skills ? j.skills.join(', ') : '').replace(/"/g, '""') + '"'
+    ]);
+
+    const csvContent = 'data:text/csv;charset=utf-8,' + [headers.join(','), ...rows.map(e => e.join(','))].join('\n');
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement('a');
+    link.setAttribute('href', encodedUri);
+    link.setAttribute('download', `job_postings_${new Date().toISOString().slice(0, 10)}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    this.toastr.success('Exported job postings to CSV', 'Success');
+  }
+
+  getJobShareUrl(jobId: number | string): string {
+    return '/#/jobs?id=' + generateObfuscatedJobId(jobId);
+  }
+
 }
-
-

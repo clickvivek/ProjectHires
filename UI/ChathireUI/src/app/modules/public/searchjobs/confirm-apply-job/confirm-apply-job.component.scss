@@ -9,7 +9,7 @@
 .confirm-apply-wrapper {
   display: flex;
   flex-direction: column;
-  max-height: calc(100vh - 30px);
+  max-height: calc(100vh - 96px);
   width: 100%;
   background: #ffffff;
   border-radius: 12px;
@@ -78,7 +78,7 @@
   .content {
     flex: 1 1 auto;
     overflow-y: auto;
-    max-height: calc(100vh - 85px);
+    min-height: 0;
     padding: 0;
 
     // Custom scrollbar
@@ -108,9 +108,35 @@
         .company-badge-circle {
           width: 38px;
           height: 38px;
+          min-width: 38px;
+          min-height: 38px;
           border-radius: 8px;
-          background-color: #F1F5F9;
-          color: #64748B;
+          background-color: #FFFFFF;
+          border: 1px solid #E2E8F0;
+          overflow: hidden;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+
+          .company-logo-img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            padding: 3px;
+          }
+
+          .company-logo-fallback {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #F6EFF5;
+            color: #7E2284;
+            font-weight: 700;
+            font-size: 15px;
+          }
         }
 
         .job-title-highlight {

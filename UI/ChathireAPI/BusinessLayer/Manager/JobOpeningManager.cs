@@ -56,6 +56,7 @@ namespace BusinessLayer.Manager
 
         Task<List<JobOpeningCandidateProfileDetailMapDto>> GetAllResumeReceivedByJobId(long JobOpeningId, UserContext userContext);
         Task<RecruiterStatsDto> GetRecruiterStats(long consultancyUserId, UserContext userContext);
+        Task<JobOpeningAdminResponseDto> GetJobOpeningsForAdminAsync(string? search, string? status, string? source, int page, int pageSize, UserContext userContext);
         Task<List<JobOpeningProfileMapSummary1>> GetJobOpeningProfileMapSummary(long ConsultancyUserId, UserContext userContext);
         Task<JobOpeningDto> ActivateDeactivateJob(long Id, bool ActiveDeactive, UserContext userContext);
         Task<int> ProcessExpiredJobOpeningsAsync(int daysThreshold = 30, UserContext? userContext = null);
@@ -924,6 +925,15 @@ namespace BusinessLayer.Manager
                 </div>";
 
             await emailService.SendEmailWithAttachmentAsync(recruiterEmail, subject, htmlContent, attachmentName ?? "", resumeBytes);
+        }
+    
+        public async Task<JobOpeningAdminResponseDto> GetJobOpeningsForAdminAsync(string? search, string? status, string? source, int page, int pageSize, UserContext userContext)
+        {
+            return await ExecuteAsync<JobOpeningAdminResponseDto>(async () =>
+            {
+                var repo = repositoryFactory.Get<IJobOpeningRepository>();
+                return await repo.GetJobOpeningsForAdminAsync(search, status, source, page, pageSize);
+            }, "GetJobOpeningsForAdminAsync", userContext);
         }
     }
 }

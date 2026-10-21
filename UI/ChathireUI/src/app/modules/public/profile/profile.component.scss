@@ -20,7 +20,7 @@ $secondary-text: #667085;
 $muted-text: #98A2B3;
 $title-text: #344054;
 
-$page-bg: #F7F7F8;
+$page-bg: #F8FAFC;
 $card-bg: #FFFFFF;
 $neutral-border: #E4E7EC;
 
@@ -35,7 +35,7 @@ $verified-blue: #1677FF;
 .profile-wrapper {
   background-color: $page-bg;
   min-height: calc(100vh - 66px);
-  padding-top: 8px;
+  padding-top: 24px;
   padding-bottom: 48px;
 
   .max-width-lg {

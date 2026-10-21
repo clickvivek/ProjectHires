@@ -24,53 +24,49 @@ namespace MiddleWare.Controllers
 
         [HttpGet]
         [Route("All")]
+        [AdminAuthorize]
         public Task<Result<List<PromocodeDto>>> GetAllPromocodes()
         {
             return ExecuteAsync<List<PromocodeDto>>(async () =>
             {
                 var mgr = managerFactory.Get<IPromocodeManager>();
-                UserContext context = null;
-                try { context = GetUserContext(); } catch { }
-                return await mgr.GetAllPromocodes(context ?? GetDummyUserContext());
+                return await mgr.GetAllPromocodes(GetUserContext());
             });
         }
 
         [HttpPost]
         [Route("Create")]
+        [AdminAuthorize]
         public Task<Result<PromocodeDto>> CreatePromocode([FromBody] CreatePromocodeDto dto)
         {
             return ExecuteAsync<PromocodeDto>(async () =>
             {
                 var mgr = managerFactory.Get<IPromocodeManager>();
-                UserContext context = null;
-                try { context = GetUserContext(); } catch { }
-                return await mgr.CreatePromocode(dto, context ?? GetDummyUserContext());
+                return await mgr.CreatePromocode(dto, GetUserContext());
             });
         }
 
         [HttpDelete]
         [Route("{id}")]
+        [AdminAuthorize]
         public Task<Result<bool>> DeletePromocode(long id)
         {
             return ExecuteAsync<bool>(async () =>
             {
                 var mgr = managerFactory.Get<IPromocodeManager>();
-                UserContext context = null;
-                try { context = GetUserContext(); } catch { }
-                return await mgr.DeletePromocode(id, context ?? GetDummyUserContext());
+                return await mgr.DeletePromocode(id, GetUserContext());
             });
         }
 
         [HttpPut]
         [Route("{id}/toggle-status")]
+        [AdminAuthorize]
         public Task<Result<bool>> ToggleActive(long id)
         {
             return ExecuteAsync<bool>(async () =>
             {
                 var mgr = managerFactory.Get<IPromocodeManager>();
-                UserContext context = null;
-                try { context = GetUserContext(); } catch { }
-                return await mgr.ToggleActive(id, context ?? GetDummyUserContext());
+                return await mgr.ToggleActive(id, GetUserContext());
             });
         }
 

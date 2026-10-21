@@ -41,6 +41,7 @@ namespace BusinessLayer.Manager
         Task<DauDashboardDto> GetDauDashboard(string timeframe, DateTime? startDate, DateTime? endDate, UserContext userContext);
         Task<UserDto> CreateAdminUser(CreateAdminUserModel model, UserContext userContext);
         Task<List<UserDto>> GetUsersByUserType(long userTypeId, UserContext userContext);
+        Task<bool> DeactivateAccount(long userId, UserContext userContext);
     }
     public class UserManager : BaseManager<UserManager>, IUserManager
     {
@@ -744,6 +745,26 @@ namespace BusinessLayer.Manager
                 var users = await repo.GetUsersByUserTypeId(userTypeId);
                 return mapper.Map<List<UserDto>>(users);
             }, "GetUsersByUserType", userContext);
+        }
+
+        public async Task<bool> DeactivateAccount(long userId, UserContext userContext)
+        {
+            return await ExecuteAsync<bool>(async () =>
+            {
+                var repo = repositoryFactory.Get<IUserRepository>();
+                var user = await repo.Get(userId);
+                if (user == null)
+                {
+                    throw new ArgumentException("User not found.");
+                }
+
+                user.Active = false;
+                user.Updated = DateTime.UtcNow;
+                user.UpdatedBy = userContext.UserId != 0 ? userContext.UserId : userId;
+
+                await repo.Put(user.Id, user, true);
+                return true;
+            }, "DeactivateAccount", userContext);
         }
     }
 }

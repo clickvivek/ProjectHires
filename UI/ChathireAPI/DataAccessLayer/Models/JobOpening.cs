@@ -69,6 +69,8 @@ public partial class JobOpening
 
     public int? ProjectDurationmonths { get; set; }
 
+    public string? Source { get; set; }
+
     public virtual Category? Category { get; set; }
 
     public virtual ConsultancyUser? ConsultancyUser { get; set; }

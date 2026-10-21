@@ -280,6 +280,17 @@ namespace MiddleWare.Controllers
             });
         }
 
+        [HttpPut]
+        [Route("ToggleHideResume")]
+        public Task<Result<Boolean>> ToggleHideResume(long candidateProfileId, bool hideResume)
+        {
+            return ExecuteAsync(async () =>
+            {
+                var candidateProfileManager = managerFactory.Get<ICandidateProfileManager>();
+                return await candidateProfileManager.ToggleHideResume(candidateProfileId, hideResume, GetDummyUserContext());
+            });
+        }
+
         [HttpGet]
         [Route("SearchCandidateProfiles")]
         public List<CandidateProfileForSearchResultsDto> SearchCandidateProfile([FromQuery] CandidateProfileForSearchDto? candidateProfile)

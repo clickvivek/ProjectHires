@@ -33,8 +33,22 @@
       <div class="job-snapshot-card p-2 px-3 rounded-2 mb-2">
         <div class="d-flex align-items-start justify-content-between gap-2">
           <div class="d-flex align-items-center gap-2">
+            <!-- Company Logo Badge -->
             <div class="company-badge-circle d-flex align-items-center justify-content-center flex-shrink-0">
-              <span class="material-symbols-outlined fs-6">business_center</span>
+              <img
+                *ngIf="job?.companyLogo"
+                [src]="getCompanyLogoUrl(job?.companyLogo)"
+                [alt]="job?.companyName || 'Company Logo'"
+                class="company-logo-img"
+                (error)="$any($event.target).style.display='none'; snapshotFallback.style.display='flex'"
+              />
+              <div
+                #snapshotFallback
+                class="company-logo-fallback"
+                [style.display]="job?.companyLogo ? 'none' : 'flex'"
+              >
+                <span>{{ getCompanyInitial(job?.companyName) }}</span>
+              </div>
             </div>
             <div>
               <h6 class="job-title-highlight mb-0">

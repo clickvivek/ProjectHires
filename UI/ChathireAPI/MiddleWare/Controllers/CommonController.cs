@@ -197,37 +197,37 @@ namespace MiddleWare.Controllers
 
         [HttpPost]
         [Route("ToggleSkillStatus")]
+        [AdminAuthorize]
         public Task<Result<bool>> ToggleSkillStatus([FromBody] ToggleSkillStatusDto request)
         {
             return ExecuteAsync<bool>(async () =>
             {
                 var mgr = managerFactory.Get<ICommonManager>();
-                var context = TryGetUserId != null ? GetUserContext() : GetDummyUserContext();
-                return await mgr.ToggleSkillStatus(request.Id, request.Active, context);
+                return await mgr.ToggleSkillStatus(request.Id, request.Active, GetUserContext());
             });
         }
 
         [HttpPost]
         [Route("ConvertSkillUserDefined")]
+        [AdminAuthorize]
         public Task<Result<bool>> ConvertSkillUserDefined([FromBody] ConvertSkillUserDefinedDto request)
         {
             return ExecuteAsync<bool>(async () =>
             {
                 var mgr = managerFactory.Get<ICommonManager>();
-                var context = TryGetUserId != null ? GetUserContext() : GetDummyUserContext();
-                return await mgr.ConvertSkillUserDefined(request.Id, request.IsUserDefined, context);
+                return await mgr.ConvertSkillUserDefined(request.Id, request.IsUserDefined, GetUserContext());
             });
         }
 
         [HttpDelete]
         [Route("DeleteSkill/{id}")]
+        [AdminAuthorize]
         public Task<Result<DeleteSkillResultDto>> DeleteSkill(int id)
         {
             return ExecuteAsync<DeleteSkillResultDto>(async () =>
             {
                 var mgr = managerFactory.Get<ICommonManager>();
-                var context = TryGetUserId != null ? GetUserContext() : GetDummyUserContext();
-                return await mgr.DeleteSkill(id, context);
+                return await mgr.DeleteSkill(id, GetUserContext());
             });
         }
 

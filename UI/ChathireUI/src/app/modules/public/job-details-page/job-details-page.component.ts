@@ -15,6 +15,7 @@ import { AuthService } from 'src/app/core/auth/auth.service';
 import { SharedService } from 'src/app/modules/shared/services/shared.service';
 import { SessionService } from 'src/app/core/session/session.service';
 import { TalkService } from 'src/app/modules/talk/talk.service';
+import { parseObfuscatedJobId } from 'src/app/modules/shared/utils/job-url.util';
 
 @Component({
   selector: 'app-job-details-page',
@@ -60,56 +61,7 @@ export class JobDetailsPageComponent implements OnInit {
   }
 
   parseJobId(rawId: any): string | null {
-    if (!rawId) return null;
-    let strId = String(rawId).trim();
-
-    try {
-      strId = decodeURIComponent(strId);
-    } catch (e) {}
-
-    // 1. Plain numeric ID
-    if (/^\d+$/.test(strId)) {
-      return strId;
-    }
-
-    // 2. Direct 'chathire_1040'
-    if (strId.startsWith('chathire_')) {
-      const extracted = strId.replace('chathire_', '');
-      if (/^\d+$/.test(extracted)) return extracted;
-    }
-
-    // 3. Base64 decoded (e.g. 'Y2hhdGhpcmVfMTA0MA==' -> 'chathire_1040')
-    try {
-      const decoded = atob(strId);
-      if (decoded.startsWith('chathire_')) {
-        const extracted = decoded.replace('chathire_', '');
-        if (/^\d+$/.test(extracted)) return extracted;
-      }
-      if (/^\d+$/.test(decoded)) {
-        return decoded;
-      }
-    } catch (e) {
-      // not valid base64
-    }
-
-    // 4. Legacy hyphenated format (e.g. 3OTb-JZOA-6wrN-W1042z-OZKnemklKt-T1sk-UOE2-tx7N)
-    if (strId.includes('-')) {
-      const parts = strId.split('-');
-      if (parts.length >= 4 && parts[3].length > 2) {
-        const inner = parts[3].substring(1, parts[3].length - 1);
-        if (/^\d+$/.test(inner)) {
-          return inner;
-        }
-      }
-      for (const part of parts) {
-        const match = part.match(/\d+/);
-        if (match && match[0].length >= 1) {
-          return match[0];
-        }
-      }
-    }
-
-    return null;
+    return parseObfuscatedJobId(rawId);
   }
 
   loadJobDetails(params: Params): void {
@@ -127,7 +79,7 @@ export class JobDetailsPageComponent implements OnInit {
     this.expIds = !_.isUndefined(params['exp']) ? params['exp']?.split(',') : [];
     this.dateString = !_.isUndefined(params['date']) ? params['date'] : "";
 
-    const rawId = params['id'];
+    const rawId = params['id'] || params['jobId'] || params['jobOpeningId'];
     this.jobId = this.parseJobId(rawId);
 
     this.handleJobOpenings(this.skill, this.cityId, this.visasId, this.wmIds, this.expIds, this.dateString);
@@ -328,8 +280,7 @@ export class JobDetailsPageComponent implements OnInit {
     if (this.authService.isLoggedIn()) {
       this.dialog.open(ConfirmApplyJobComponent, {
         panelClass: ['material', 'confirm-apply-modal-panel'],
-        position: { top: '15px' },
-        maxHeight: '95vh',
+        maxHeight: 'calc(100vh - 80px)',
         disableClose: true,
         data: this.selectedJob
       });
@@ -344,8 +295,7 @@ export class JobDetailsPageComponent implements OnInit {
         if (res && res.success) {
           this.dialog.open(ConfirmApplyJobComponent, {
             panelClass: ['material', 'confirm-apply-modal-panel'],
-            position: { top: '15px' },
-            maxHeight: '95vh',
+            maxHeight: 'calc(100vh - 80px)',
             disableClose: true,
             data: this.selectedJob
           });

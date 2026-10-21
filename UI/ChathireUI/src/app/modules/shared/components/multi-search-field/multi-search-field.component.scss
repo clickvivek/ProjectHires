@@ -119,7 +119,16 @@
     background-color: #F0F9FF;
     color: #0369A1;
     font-size: 13px;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+    gap: 8px !important;
     transition: background-color 0.15s ease;
+
+    .add-custom-text {
+      text-align: left !important;
+      margin-left: 0 !important;
+    }
 
     &:hover {
       background-color: #E0F2FE !important;

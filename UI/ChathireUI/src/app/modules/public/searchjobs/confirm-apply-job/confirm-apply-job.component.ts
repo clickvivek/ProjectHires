@@ -3,6 +3,7 @@ import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { SessionService } from 'src/app/core/session/session.service';
 import { CandidateDirectService, CandidateFullProfile, DirectCandidateResume } from 'src/app/core/services/candidate-direct.service';
 import { ConsultancyService } from 'src/app/api';
+import { picUrl } from 'src/app/data/various';
 
 @Component({
   selector: 'app-confirm-apply-job',
@@ -190,5 +191,16 @@ export class ConfirmApplyJobComponent implements OnInit {
         .join(', ');
     }
     return String(this.job.locations);
+  }
+
+  getCompanyLogoUrl(logo: string | null | undefined): string {
+    if (!logo) return '';
+    if (logo.startsWith('http://') || logo.startsWith('https://') || logo.startsWith('data:image')) return logo;
+    return `${picUrl}${logo}`;
+  }
+
+  getCompanyInitial(name: string | null | undefined): string {
+    if (!name) return 'C';
+    return name.trim().charAt(0).toUpperCase();
   }
 }

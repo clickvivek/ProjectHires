@@ -5,20 +5,6 @@
     <div class="card border-0 shadow-sm rounded-4 p-4 mb-4 bg-white profile-hero-card">
       <div class="d-flex flex-column flex-lg-row align-items-start align-items-lg-center justify-content-between gap-3">
         <div class="d-flex align-items-center gap-3">
-          <!-- Avatar Wrap with quick edit badge -->
-          <div class="position-relative profile-avatar-wrap pointer" (click)="setTab('profile-pic')" title="Change profile picture">
-            <img
-              [src]="getProfilePicUrl()"
-              (error)="onImageError($event)"
-              class="rounded-circle border border-3 border-white shadow-sm object-fit-cover"
-              style="width: 64px; height: 64px;"
-              alt="Avatar"
-            />
-            <span class="avatar-edit-badge">
-              <span class="material-symbols-outlined" style="font-size: 13px;">photo_camera</span>
-            </span>
-          </div>
-
           <div>
             <div class="d-flex align-items-center gap-2 flex-wrap">
               <h3 class="mb-0 fw-bold text-dark fs-4">
@@ -83,6 +69,15 @@
           >
             <span class="material-symbols-outlined fs-5">loyalty</span>
             <span>Redeem Promo Code</span>
+          </button>
+          <button
+            class="nav-link delete-account-pill d-flex align-items-center gap-2"
+            [class.active]="activeTab === 'delete-account'"
+            (click)="setTab('delete-account')"
+            type="button"
+          >
+            <span class="material-symbols-outlined fs-5">delete_forever</span>
+            <span>Delete Account</span>
           </button>
         </div>
       </div>
@@ -178,6 +173,70 @@
                     ${{ redemptionResult.discountAmount }} Discount
                   </span>
                 </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Delete Account Tab Content -->
+      <div *ngIf="activeTab === 'delete-account'" class="py-3">
+        <div class="mx-auto" style="max-width: 620px;">
+          <div class="d-flex align-items-center gap-3 mb-4 p-3 rounded-3 bg-danger-subtle border border-danger-subtle text-danger-emphasis">
+            <div class="icon-circle bg-danger text-white flex-shrink-0" style="width: 44px; height: 44px;">
+              <span class="material-symbols-outlined fs-4">warning</span>
+            </div>
+            <div>
+              <h5 class="fw-bold mb-1 text-danger">Delete / Deactivate Account</h5>
+              <div class="small">
+                This action is irreversible. Once deactivated, you will be permanently logged out and unable to log in to this account.
+              </div>
+            </div>
+          </div>
+
+          <div class="card border-danger-subtle shadow-sm rounded-3 p-4 mb-4">
+            <h6 class="fw-bold text-dark mb-2">What happens when you delete your account:</h6>
+            <ul class="text-secondary small mb-4 ps-3">
+              <li class="mb-2">Your account status will be changed to deactivated immediately.</li>
+              <li class="mb-2">You will no longer be able to log in using your email/password or linked Google account.</li>
+              <li class="mb-2">Your active sessions will be terminated and you will be signed out.</li>
+              <li class="mb-0">Your profile, transactions, and associated records will be processed and cleaned up by our scheduled background cleanup process.</li>
+            </ul>
+
+            <div class="border-top pt-3">
+              <label class="form-label small fw-semibold text-dark mb-1">
+                To confirm deletion, please type <span class="badge bg-danger-subtle text-danger border border-danger-subtle fw-bold">DELETE</span> in the box below:
+              </label>
+              <div class="input-group mb-3">
+                <input
+                  type="text"
+                  class="form-control"
+                  placeholder="Type DELETE to confirm"
+                  [(ngModel)]="deleteConfirmInput"
+                  [disabled]="isDeletingAccount"
+                  autocomplete="off"
+                />
+              </div>
+
+              <div class="d-flex justify-content-end gap-2">
+                <button
+                  type="button"
+                  class="btn btn-light px-3"
+                  (click)="setTab('profile-details')"
+                  [disabled]="isDeletingAccount"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  class="btn btn-danger px-4 d-flex align-items-center gap-2"
+                  [disabled]="deleteConfirmInput.trim().toUpperCase() !== 'DELETE' || isDeletingAccount"
+                  (click)="confirmDeleteAccount()"
+                >
+                  <span *ngIf="isDeletingAccount" class="spinner-border spinner-border-sm"></span>
+                  <span *ngIf="!isDeletingAccount" class="material-symbols-outlined fs-5">delete_forever</span>
+                  <span>{{ isDeletingAccount ? 'Deactivating...' : 'Delete My Account' }}</span>
+                </button>
               </div>
             </div>
           </div>

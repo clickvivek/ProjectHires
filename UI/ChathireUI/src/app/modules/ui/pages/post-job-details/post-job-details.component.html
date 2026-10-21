@@ -45,9 +45,22 @@
               <strong>{{ quotaStatus.usedJobPostings }} / {{ quotaStatus.maxJobPostings }}</strong> used ({{ quotaStatus.remainingJobPostings }} left)
             </span>
           </div>
-          <div class="d-flex align-items-center gap-2">
+          <div class="d-flex align-items-center flex-wrap gap-2">
             <!-- Loading indicator when refreshing -->
             <span *ngIf="isLoadingQuota" class="spinner-border spinner-border-sm text-purple me-1" style="width: 0.9rem; height: 0.9rem;" role="status" title="Updating quota..."></span>
+
+            <!-- Refer Colleagues & Friends Link -->
+            <a
+              href="#/refer-for-rewards"
+              routerLink="/refer-for-rewards"
+              (click)="navigateToReferral($event)"
+              class="quota-refer-link d-inline-flex align-items-center gap-1 text-decoration-none"
+              title="Refer colleagues and friends and get free job postings"
+            >
+              <span class="material-symbols-outlined fs-6 refer-gift-icon">featured_seasonal_and_gifts</span>
+              <span class="refer-link-text">Refer colleagues &amp; friends and get free job postings</span>
+              <span class="material-symbols-outlined fs-6 refer-arrow-icon">arrow_forward</span>
+            </a>
 
             <div class="quota-reset-countdown d-flex align-items-center text-muted small">
               <span class="material-symbols-outlined fs-6 me-1 text-secondary">schedule</span>
@@ -527,6 +540,33 @@
               </div>
             </div>
           </div>
+
+          <!-- Keep this job active for dropdown -->
+          <div class="col-md-6">
+            <div class="input-box">
+              <div class="form-group mb-4">
+                <label for="activeDurationWeeks"
+                  >Keep this job active for
+                  <span class="req">*</span></label
+                >
+                <div class="input-field">
+                  <select
+                    class="form-control"
+                    id="activeDurationWeeks"
+                    name="activeDurationWeeks"
+                    [(ngModel)]="activeDurationWeeks"
+                  >
+                    <option
+                      *ngFor="let opt of activeDurationOptions"
+                      [ngValue]="opt.value"
+                    >
+                      {{ opt.label }}
+                    </option>
+                  </select>
+                </div>
+              </div>
+            </div>
+          </div>
         </ng-container>
 
         <!-- If W2 Full-Time ONLY: Hide Billing Rate, Project Duration, Direct Client; Show Salary Range + Total Exp -->
@@ -624,6 +664,32 @@
                   >
                     Experience cannot exceed 50 years
                   </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-12 col-sm-6 col-md-4">
+            <div class="input-box">
+              <div class="form-group mb-4">
+                <label for="activeDurationWeeksW2"
+                  >Keep this job active for
+                  <span class="req">*</span></label
+                >
+                <div class="input-field">
+                  <select
+                    class="form-control"
+                    id="activeDurationWeeksW2"
+                    name="activeDurationWeeksW2"
+                    [(ngModel)]="activeDurationWeeks"
+                  >
+                    <option
+                      *ngFor="let opt of activeDurationOptions"
+                      [ngValue]="opt.value"
+                    >
+                      {{ opt.label }}
+                    </option>
+                  </select>
                 </div>
               </div>
             </div>

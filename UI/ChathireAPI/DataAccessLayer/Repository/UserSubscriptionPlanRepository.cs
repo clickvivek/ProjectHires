@@ -367,6 +367,21 @@ namespace DataAccessLayer.Repository
             var existingPlan = await _context.UserSubscriptionPlans
                 .FirstOrDefaultAsync(p => p.UserId == dto.UserId && p.Active == true);
 
+            if (dto.Active.HasValue)
+            {
+                user.Active = dto.Active.Value;
+                user.Updated = now;
+
+                var linkedConsultancyUsers = await _context.ConsultancyUsers
+                    .Where(cu => cu.UserId == dto.UserId)
+                    .ToListAsync();
+                foreach (var cu in linkedConsultancyUsers)
+                {
+                    cu.Active = dto.Active.Value;
+                    cu.Updated = now;
+                }
+            }
+
             if (existingPlan == null)
             {
                 var newPlan = new UserSubscriptionPlan

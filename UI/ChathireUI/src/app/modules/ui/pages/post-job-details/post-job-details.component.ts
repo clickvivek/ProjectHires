@@ -122,6 +122,15 @@ export class PostJobDetailsComponent {
 
   selectDirectClient: any = "null";
 
+  activeDurationWeeks: number = 4;
+  activeDurationOptions = [
+    { label: '1 week', value: 1 },
+    { label: '2 weeks', value: 2 },
+    { label: '3 weeks', value: 3 },
+    { label: '4 weeks', value: 4 }
+  ];
+
+
   editorPlacehorder:string = 'Text here...';
 
   postedDate = new Date();
@@ -190,6 +199,18 @@ export class PostJobDetailsComponent {
         let newData = res.value
 
         this.formData = newData;
+        if (newData.lastDate) {
+          const baseDate = newData.postedDate ? new Date(newData.postedDate) : new Date();
+          const endDate = new Date(newData.lastDate);
+          const diffDays = Math.round((endDate.getTime() - baseDate.getTime()) / (1000 * 60 * 60 * 24));
+          const weeks = Math.round(diffDays / 7);
+          if (weeks <= 1) this.activeDurationWeeks = 1;
+          else if (weeks === 2) this.activeDurationWeeks = 2;
+          else if (weeks === 3) this.activeDurationWeeks = 3;
+          else this.activeDurationWeeks = 4;
+        } else {
+          this.activeDurationWeeks = 4;
+        }
         const countryVal = (newData.country || '').trim();
         const isCanada = countryVal.toLowerCase() === 'canada' || countryVal.toLowerCase() === 'ca';
         this.formData.country = isCanada ? 'Canada' : 'USA';
@@ -828,7 +849,7 @@ export class PostJobDetailsComponent {
           totalExp: parsedTotalExp,
           projectDurationmonths: this.isW2FullTimeOnlySelected() ? null : parsedDuration,
           postedDate: new Date().toISOString(),
-          lastDate: new Date().toISOString(),
+          lastDate: new Date(Date.now() + (this.activeDurationWeeks || 4) * 7 * 24 * 60 * 60 * 1000).toISOString(),
           numberOfOpening: 0,
           active: true,
           consultancyUserId: this.sessionService.consultancyUserId,
@@ -867,8 +888,8 @@ export class PostJobDetailsComponent {
           description: this.formData.description,
           totalExp: parsedTotalExp,
           projectDurationmonths: this.isW2FullTimeOnlySelected() ? null : parsedDuration,
-          postedDate: new Date().toISOString(),
-          lastDate: new Date().toISOString(),
+          postedDate: this.formData.postedDate || new Date().toISOString(),
+          lastDate: new Date(Date.now() + (this.activeDurationWeeks || 4) * 7 * 24 * 60 * 60 * 1000).toISOString(),
           numberOfOpening: this.formData.numberOfOpening,
           active: this.formData.active,
           consultancyUserId: this.sessionService.consultancyUserId,
@@ -1089,6 +1110,14 @@ export class PostJobDetailsComponent {
 
   toggleQuotaCollapse() {
     this.isQuotaCollapsed = !this.isQuotaCollapsed;
+  }
+
+  navigateToReferral(event?: MouseEvent) {
+    if (event) {
+      event.preventDefault();
+      event.stopPropagation();
+    }
+    this.router.navigate(['/refer-for-rewards']);
   }
 
 }

@@ -2,6 +2,7 @@ import { Component, Input } from '@angular/core';
 import { picUrl, defaultProfilePic } from 'src/app/data/various';
 import { TalkService } from 'src/app/modules/talk/talk.service';
 import { SessionService } from 'src/app/core/session/session.service';
+import { UserService } from 'src/app/api';
 
 @Component({
   selector: 'search-hotlist-chat',
@@ -18,7 +19,8 @@ export class SearchHotlistChatComponent {
 
   constructor(
     private talkService: TalkService,
-    private sessionService: SessionService
+    private sessionService: SessionService,
+    private userService: UserService
   ) {
 
   }
@@ -47,20 +49,38 @@ export class SearchHotlistChatComponent {
       this.chatUser.profilePic = this.item.profilePic
       this.chatUser.profileUserName = this.item.publicProfileUserName
 
-      //console.log(this.item)
+      // Resolve the actual Recruiter/BenchSales User ID from their public profile if available
+      if (this.item.publicProfileUserName) {
+        this.userService.apiUserGetUserByPublicProfileIdGet(this.item.publicProfileUserName).subscribe({
+          next: (res: any) => {
+            if (res?.value && res.value.length > 0) {
+              const recruiterUser = res.value[0];
+              if (recruiterUser?.id) {
+                this.chatUser.userId = recruiterUser.id;
+                this.updatePresence();
+              }
+            }
+          },
+          error: () => {}
+        });
+      }
 
-      this.talkService.fetchTalkUserPresence(this.chatUser.userId).subscribe((res:any) => {
-        let newData = res.data
-        //console.log(newData)
-        let userData = newData[this.chatUser.userId]
-        if(userData?.status === 'online') {
-          this.isUserOnline = true
-        }
-        else {
-          this.isUserOnline = false
-        }
-      })
+      this.updatePresence();
 
+  }
+
+  private updatePresence() {
+    if (!this.chatUser?.userId) return;
+    this.talkService.fetchTalkUserPresence(this.chatUser.userId).subscribe({
+      next: (res: any) => {
+        let newData = res?.data;
+        let userData = newData ? newData[this.chatUser.userId] : null;
+        this.isUserOnline = (userData?.status === 'online');
+      },
+      error: () => {
+        this.isUserOnline = false;
+      }
+    });
   }
 
   getUserInitial(fName?: string, lName?: string): string {

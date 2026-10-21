@@ -7,9 +7,20 @@
             
             <ng-container *ngIf="!isCandidatePosted">
               
-              <div class="form-header mb-4 pb-2">
-                <h4 class="page-main-title mb-1">{{ isEdit ? 'Edit Hotlist' : 'Add Hotlist' }}</h4>
-                <p class="subtitle-text mb-0">Please fill in your candidate information</p>
+              <div class="form-header mb-4 pb-2 d-flex align-items-center justify-content-between flex-wrap gap-2">
+                <div>
+                  <h4 class="page-main-title mb-1">{{ isEdit ? 'Edit Hotlist' : 'Add Hotlist' }}</h4>
+                  <p class="subtitle-text mb-0">Please fill in your candidate information</p>
+                </div>
+                <div>
+                  <a
+                    routerLink="/myhotlist"
+                    class="view-hotlist-link d-inline-flex align-items-center gap-1"
+                    title="View my Hotlist"
+                  >
+                    <span>View my Hotlist</span>
+                  </a>
+                </div>
               </div>
               
               <form

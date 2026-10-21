@@ -84,8 +84,8 @@ $border-card: #E5E7EB;
       }
 
       .info-value {
-        color: $text-dark;
-        font-weight: 600;
+        color: $text-body;
+        font-weight: 500;
       }
     }
 
@@ -103,11 +103,21 @@ $border-card: #E5E7EB;
       }
     }
 
+    .profile-status-toggle {
+      .profile-status-text {
+        font-size: 0.8125rem;
+        font-weight: 500;
+        color: #475467;
+        user-select: none;
+        white-space: nowrap;
+      }
+    }
+
     .switch {
       position: relative;
       display: inline-block;
-      width: 58px;
-      height: 28px;
+      width: 48px;
+      height: 26px;
       margin: 0;
 
       input {
@@ -120,30 +130,12 @@ $border-card: #E5E7EB;
           background-color: #16A34A !important;
 
           &:before {
-            transform: translateY(-50%) translateX(30px) !important;
+            transform: translateY(-50%) translateX(22px) !important;
             background-color: #FFFFFF !important;
           }
 
           &:after {
-            content: "ON" !important;
-            left: 9px !important;
-            right: auto !important;
-            top: 50% !important;
-            transform: translateY(-50%) !important;
-            color: #FFFFFF !important;
-            font-size: 10px !important;
-            font-weight: 800 !important;
-            letter-spacing: 0.5px !important;
-            line-height: 1 !important;
-            padding: 0 !important;
-            margin: 0 !important;
-            text-indent: 0 !important;
-            background: transparent !important;
-            width: auto !important;
-            height: auto !important;
-            border-radius: 0 !important;
-            z-index: 1 !important;
-            display: block !important;
+            display: none !important;
           }
         }
       }
@@ -158,14 +150,14 @@ $border-card: #E5E7EB;
         background-color: #CBD5E1 !important;
         transition: 0.2s ease-in-out;
         border-radius: 30px !important;
-        overflow: visible !important;
+        overflow: hidden !important;
 
         &:before {
           position: absolute;
           content: "" !important;
           height: 20px;
           width: 20px;
-          left: 4px;
+          left: 3px;
           top: 50%;
           transform: translateY(-50%) !important;
           background-color: #FFFFFF !important;
@@ -177,26 +169,159 @@ $border-card: #E5E7EB;
         }
 
         &:after {
-          position: absolute;
-          content: "OFF" !important;
-          right: 8px !important;
-          left: auto !important;
-          top: 50%;
-          transform: translateY(-50%) !important;
-          color: #475467 !important;
-          font-size: 10px !important;
-          font-weight: 800 !important;
-          letter-spacing: 0.5px !important;
-          line-height: 1 !important;
-          z-index: 1;
-          text-indent: 0 !important;
-          padding: 0 !important;
-          margin: 0 !important;
-          background: transparent !important;
-          width: auto !important;
-          height: auto !important;
-          border-radius: 0 !important;
-          display: block !important;
+          display: none !important;
+        }
+      }
+    }
+
+    /* Dedicated Resume Bottom Bar matching mockup */
+    .resume-footer-bar {
+      border-top: 1px solid #F2F4F7 !important;
+
+      .resume-title-wrap {
+        .resume-file-icon {
+          font-size: 20px;
+          color: #6B7280;
+          line-height: 1;
+        }
+
+        .resume-title-text {
+          font-size: 0.9375rem;
+          font-weight: 600;
+          color: #1F2937;
+        }
+      }
+
+      .no-resume-text {
+        font-size: 0.8125rem;
+        color: #98A2B3;
+      }
+
+      .resume-segmented-group {
+        border: 1px solid #D0D5DD;
+        border-radius: 8px;
+        overflow: hidden;
+        background-color: #FFFFFF;
+        box-shadow: 0 1px 2px rgba(16, 24, 40, 0.05);
+
+        .segmented-btn {
+          height: 32px;
+          padding: 0 14px;
+          border: none;
+          outline: none;
+          font-size: 0.8125rem;
+          font-weight: 600;
+          cursor: pointer;
+          transition: all 0.15s ease-in-out;
+          line-height: 1;
+
+          .btn-icon {
+            font-size: 16px;
+            line-height: 1;
+          }
+
+          &:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+          }
+
+          &.btn-view {
+            background-color: #F6EFF5;
+            color: #673260;
+
+            .btn-icon {
+              color: #673260;
+            }
+
+            &:hover:not(:disabled) {
+              background-color: #EEDEEB;
+            }
+          }
+
+          &.btn-download {
+            background-color: #FFFFFF;
+            color: #475467;
+            border-left: 1px solid #D0D5DD;
+
+            .btn-icon {
+              color: #475467;
+            }
+
+            &:hover:not(:disabled) {
+              background-color: #F9FAFB;
+              color: #1D2939;
+
+              .btn-icon {
+                color: #1D2939;
+              }
+            }
+          }
+        }
+      }
+
+      .show-resume-checkbox-label {
+        user-select: none;
+
+        .show-resume-checkbox {
+          width: 16px;
+          height: 16px;
+          border-color: #D0D5DD;
+          border-radius: 4px;
+          cursor: pointer;
+
+          &:checked {
+            background-color: #16A34A;
+            border-color: #16A34A;
+          }
+
+          &:focus {
+            box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.15);
+            border-color: #16A34A;
+          }
+        }
+
+        .checkbox-text {
+          font-size: 0.8125rem;
+          font-weight: 500;
+          color: #475467;
+        }
+      }
+
+      .resume-status-pill {
+        padding: 4px 10px;
+        border-radius: 16px;
+        font-size: 0.75rem;
+        font-weight: 500;
+        line-height: 1;
+        user-select: none;
+
+        .pill-icon {
+          font-size: 14px;
+          line-height: 1;
+        }
+
+        .pill-text {
+          line-height: 1;
+        }
+
+        &.pill-hidden {
+          background-color: #F2F4F7;
+          border: 1px solid #EAECF0;
+          color: #667085;
+
+          .pill-icon {
+            color: #667085;
+          }
+        }
+
+        &.pill-visible {
+          background-color: #ECFDF3;
+          border: 1px solid #D1FADF;
+          color: #027A48;
+
+          .pill-icon {
+            color: #027A48;
+          }
         }
       }
     }
@@ -204,48 +329,52 @@ $border-card: #E5E7EB;
 }
 
 .btn-update-action {
-  background-color: #F8EFF7;
-  color: #70246D !important;
-  border: 1px solid #E7D5E6;
-  font-weight: 600;
-  font-size: 13px;
+  background-color: #F8F9FA;
+  color: #374151 !important;
+  border: 1px solid #E5E7EB;
+  font-weight: 500;
+  font-size: 12.5px;
+  line-height: 1;
   min-width: auto;
-  padding: 6px 14px;
-  border-radius: 8px;
-  transition: all 0.2s ease-in-out;
-  box-shadow: 0 1px 2px rgba(112, 36, 109, 0.06);
+  height: 28px;
+  padding: 3px 10px;
+  border-radius: 6px;
+  transition: all 0.15s ease-in-out;
+  box-shadow: 0 1px 2px rgba(16, 24, 40, 0.04);
   cursor: pointer;
 
   span {
-    color: #70246D !important;
+    color: #374151 !important;
+    line-height: 1;
   }
 
   .action-lead-icon {
-    font-size: 17px;
-    color: #70246D !important;
+    font-size: 15px;
+    color: #6B7280 !important;
+    line-height: 1;
     transition: color 0.15s ease;
   }
 
   .chevron-icon {
-    font-size: 17px;
-    color: #70246D !important;
+    font-size: 15px;
+    color: #6B7280 !important;
+    line-height: 1;
     transition: transform 0.2s ease, color 0.15s ease;
   }
 
   &:hover, &:focus, &[aria-expanded="true"] {
-    background-color: #70246D;
-    color: #ffffff !important;
-    border-color: #70246D;
-    box-shadow: 0 4px 12px rgba(112, 36, 109, 0.25);
-    transform: translateY(-1px);
+    background-color: #F3F4F6;
+    color: #111827 !important;
+    border-color: #D1D5DB;
+    box-shadow: 0 2px 4px rgba(16, 24, 40, 0.08);
 
     span {
-      color: #ffffff !important;
+      color: #111827 !important;
     }
 
     .action-lead-icon,
     .chevron-icon {
-      color: #ffffff !important;
+      color: #374151 !important;
     }
   }
 

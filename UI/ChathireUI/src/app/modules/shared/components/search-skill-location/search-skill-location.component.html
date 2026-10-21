@@ -24,7 +24,7 @@
             <span class="material-symbols-outlined icon"> search </span>
           
 
-            <div class="dropdown-wrapper" #skillDropdown>
+            <div class="dropdown-wrapper" #skillDropdown [class.show]="isSkillExpanded && skillList.length > 0">
                 <ng-scrollbar
               #scrollable
               track="all"
@@ -34,7 +34,7 @@
                 <div class="list-group dropdown">
                   <ng-container
                     class="list-group"
-                    *ngFor="let item of skillList | simpleSearch : skill : 'name'"
+                    *ngFor="let item of skillList"
                   >
                     <li
                       class="list-group-item"
@@ -69,7 +69,7 @@
               autocomplete="off"
             />
             <span class="material-symbols-outlined icon" [class.text-muted]="isRemoteOnly"> location_on </span>
-            <div class="dropdown-wrapper" #locationDropdown [class.d-none]="isRemoteOnly">
+            <div class="dropdown-wrapper" #locationDropdown [class.show]="isLocationExpanded && locationList.length > 0" [class.d-none]="isRemoteOnly">
               
               <ng-scrollbar
               #scrollable
@@ -82,7 +82,7 @@
                   <ng-container
                     class="list-group"
                     *ngFor="
-                      let item of locationList | simpleSearch : location : 'city1,zip'
+                      let item of locationList
                     "
                   >
                     <li
@@ -97,6 +97,24 @@
               </ng-scrollbar>
 
             </div>
+          </div>
+        </div>
+
+        <!-- Radius dropdown (for Job search with location) -->
+        <div class="item radius" *ngIf="type === 'jobs'" [class.location-disabled]="isRemoteOnly">
+          <div class="form-group rel">
+            <select
+              class="form-select radius-select"
+              name="radiusMilesSelect"
+              [(ngModel)]="radiusMiles"
+              [disabled]="isRemoteOnly"
+              (ngModelChange)="radiusMilesChange.emit(radiusMiles)"
+            >
+              <option [ngValue]="50">50 miles</option>
+              <option [ngValue]="100">100 miles</option>
+              <option [ngValue]="150">150 miles</option>
+              <option [ngValue]="200">200 miles</option>
+            </select>
           </div>
         </div>
 

@@ -43,6 +43,7 @@ namespace BusinessLayer.Manager
         Task<int> GetActiveCountHotListByConsultancyUserID(long ConsultancyUserId, UserContext userContext);
         Task<BenchSalesStatsDto> GetBenchSalesStats(long userId, long? consultancyUserId, UserContext userContext);
         Task<List<CandidateProfileAppliedJobDto>> GetCandidateAppliedJobs(long candidateProfileId, UserContext userContext);
+        Task<bool> ToggleHideResume(long candidateProfileId, bool hideResume, UserContext userContext);
     }
     public class CandidateProfileManager : BaseManager<CandidateProfileManager>, ICandidateProfileManager
     {
@@ -451,6 +452,19 @@ namespace BusinessLayer.Manager
                 var skillRepo = repositoryFactory.Get<ICandidateProfileRepository>();
                 rtn = await skillRepo.ActivateOrDeActivateCandidateProfile(CandidateProfileId,Active, StatusId, userContext);
             }, "ActivateOrDeActivateCandidateProfile", userContext);
+
+            return rtn;
+        }
+
+        public async Task<bool> ToggleHideResume(long candidateProfileId, bool hideResume, UserContext userContext)
+        {
+            bool rtn = false;
+
+            await ExecuteAsync(async () =>
+            {
+                var repo = repositoryFactory.Get<ICandidateProfileRepository>();
+                rtn = await repo.ToggleHideResume(candidateProfileId, hideResume, userContext);
+            }, "ToggleHideResume", userContext);
 
             return rtn;
         }

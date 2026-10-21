@@ -17,6 +17,15 @@
         &.location {
           flex: 1.2;
         }
+        &.radius {
+          flex: 0 0 140px;
+          max-width: 140px;
+          @include hires-breakpoint("lt-md") {
+            flex: 1 1 100%;
+            max-width: 100%;
+            width: 100%;
+          }
+        }
         @include hires-breakpoint("lt-md") {
           width: 100%;
           min-width: auto;
@@ -45,7 +54,7 @@
             }
           }
         }
-        input {
+        input, select {
           padding: 0 16px 0 32px;
           height: 40px;
           font-size: 14px;
@@ -60,6 +69,13 @@
             cursor: not-allowed;
             border-color: #E5E7EB !important;
           }
+        }
+        select.radius-select {
+          padding: 0 12px;
+          background-color: #ffffff;
+          font-weight: 500;
+          color: #374151;
+          cursor: pointer;
         }
         &.location-disabled {
           opacity: 0.85;
