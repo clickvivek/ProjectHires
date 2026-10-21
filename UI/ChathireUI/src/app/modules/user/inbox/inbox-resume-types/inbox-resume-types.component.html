@@ -41,6 +41,9 @@
                                             <span class="badge-exp" *ngIf="job?.totalYearsOfExp || job?.candidateProfile?.totalExp">
                                                 {{ job?.totalYearsOfExp || job?.candidateProfile?.totalExp }} yrs exp
                                             </span>
+                                            <span class="candidate-consultancy text-dark-emphasis fw-medium text-xs ms-1" *ngIf="job?.consultancyUser?.consultancy?.name">
+                                                • {{ job?.consultancyUser?.consultancy?.name }}
+                                            </span>
                                         </div>
 
                                         <!-- Job Title & Location in sleek secondary row -->
@@ -53,10 +56,6 @@
                                             <span class="candidate-loc" *ngIf="getCandidateLocation(job)">
                                                 <span class="material-symbols-outlined icon-sub text-danger">location_on</span>
                                                 {{ getCandidateLocation(job) }}
-                                            </span>
-
-                                            <span class="candidate-consultancy text-muted text-xs" *ngIf="job?.consultancyUser?.consultancy?.name">
-                                                • {{ job?.consultancyUser?.consultancy?.name }}
                                             </span>
                                         </div>
                                     </div>
@@ -77,7 +76,7 @@
                                 <!-- Action Buttons Row (Thin, compact height) -->
                                 <div class="candidate-actions">
                                     <div class="action-item" *ngIf="job?.doc">
-                                        <download-resume [doc]="job?.doc"></download-resume>
+                                        <download-resume [doc]="job?.doc" label="Resume"></download-resume>
                                     </div>
                                     <div class="action-item">
                                         <button type="button" class="btn-action comments-btn" (click)="handleCommentDrawer(job)">

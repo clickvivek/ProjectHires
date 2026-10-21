@@ -78,6 +78,23 @@
 
 .modal-body-section {
   max-height: calc(88vh - 160px);
+  overflow-y: scroll !important;
+  scrollbar-gutter: stable;
+
+  &::-webkit-scrollbar {
+    width: 8px;
+  }
+  &::-webkit-scrollbar-track {
+    background: #F3F4F6;
+    border-radius: 4px;
+  }
+  &::-webkit-scrollbar-thumb {
+    background: #CBD5E1;
+    border-radius: 4px;
+    &:hover {
+      background: #94A3B8;
+    }
+  }
 }
 
 .candidate-row-card {

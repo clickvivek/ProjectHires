@@ -15,6 +15,7 @@ import { LoginModalComponent } from '../login-modal/login-modal.component';
 export class DownloadResumeComponent {
 
   @Input() doc: any;
+  @Input() label: string = 'download resume';
   fileUrl: any;
 
   constructor(

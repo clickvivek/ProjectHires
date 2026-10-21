@@ -103,6 +103,10 @@
                 <span class="badge-exp" *ngIf="c?.totalYearsOfExp || c?.candidateProfile?.totalExp">
                   {{ c?.totalYearsOfExp || c?.candidateProfile?.totalExp }} yrs exp
                 </span>
+
+                <span class="candidate-vendor fw-medium text-dark-emphasis small" *ngIf="c?.consultancyUser?.consultancy?.name">
+                  • {{ c?.consultancyUser?.consultancy?.name }}
+                </span>
               </div>
 
               <!-- Job Title & Location -->
@@ -115,10 +119,6 @@
                 <span class="candidate-loc" *ngIf="getCandidateLocation(c)">
                   <span class="material-symbols-outlined align-middle fs-6 text-danger me-1">location_on</span>
                   {{ getCandidateLocation(c) }}
-                </span>
-
-                <span class="candidate-vendor" *ngIf="c?.consultancyUser?.consultancy?.name">
-                  • {{ c?.consultancyUser?.consultancy?.name }}
                 </span>
               </div>
             </div>
@@ -139,7 +139,7 @@
             </div>
 
             <div class="action-btn-wrap" *ngIf="c?.doc">
-              <download-resume [doc]="c?.doc"></download-resume>
+              <download-resume [doc]="c?.doc" label="Resume"></download-resume>
             </div>
           </div>
 
