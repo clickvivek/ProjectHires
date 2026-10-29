@@ -124,9 +124,33 @@
               <div class="tick d-inline-flex align-items-center justify-content-center mx-auto mb-3">
                 <span class="material-symbols-outlined text-h3 text-white">done</span>
               </div>
-              <h4 class="title mb-4" style="border: none !important;">Your job has been posted successfully!</h4>
+              <h4 class="title mb-2" style="border: none !important;">Your job has been posted successfully!</h4>
+              
+              <!-- Direct Link to View the Posted Job -->
+              <div class="posted-job-view-link my-3">
+                <a 
+                  *ngIf="postedJobId"
+                  [routerLink]="['/jobs']" 
+                  [queryParams]="{ id: postedJobId }"
+                  target="_blank"
+                  class="text-primary fw-semibold d-inline-flex align-items-center gap-1 fs-6 text-decoration-none hover-underline"
+                >
+                  <span class="material-symbols-outlined fs-5">visibility</span>
+                  <span>View your job posting</span>
+                  <span class="material-symbols-outlined fs-6 text-muted">open_in_new</span>
+                </a>
+                <a 
+                  *ngIf="!postedJobId"
+                  routerLink="/posting-history"
+                  class="text-primary fw-semibold d-inline-flex align-items-center gap-1 fs-6 text-decoration-none hover-underline"
+                >
+                  <span class="material-symbols-outlined fs-5">visibility</span>
+                  <span>View your job posting</span>
+                </a>
+              </div>
+
               <div class="actions d-flex flex-wrap align-items-center justify-content-center gap-3 mt-4">
-                <a href="javascript:void(0)" class="btn btn-outline-primary px-4 py-2 text-decoration-none" (click)="isJobPosted=!isJobPosted">Post another job</a>
+                <a href="javascript:void(0)" class="btn btn-outline-primary px-4 py-2 text-decoration-none" (click)="resetJobPost()">Post another job</a>
                 <a routerLink="/search-hotlist" class="btn btn-primary px-4 py-2 text-white text-decoration-none">Search Candidates</a>
                 <a routerLink="/posting-history" class="btn btn-outline-secondary px-4 py-2 text-decoration-none">View posted jobs</a>
               </div>

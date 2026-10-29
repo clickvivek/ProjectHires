@@ -1,6 +1,7 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { SharedModule } from 'src/app/modules/shared/shared.module';
+import { ViewResumeModule } from 'src/app/modules/ui/view-resume/view-resume.module';
 
 import { InboxRoutingModule } from './inbox-routing.module';
 import { InboxComponent } from './inbox.component';
@@ -23,6 +24,7 @@ import { InboxJobCandidatesModalComponent } from './inbox-job-candidates-modal/i
   imports: [
     CommonModule,
     SharedModule.forRoot(),
+    ViewResumeModule,
     InboxRoutingModule
   ]
 })

@@ -76,6 +76,9 @@
                                 <!-- Action Buttons Row (Thin, compact height) -->
                                 <div class="candidate-actions">
                                     <div class="action-item" *ngIf="job?.doc">
+                                        <view-resume [doc]="job?.doc"></view-resume>
+                                    </div>
+                                    <div class="action-item" *ngIf="job?.doc">
                                         <download-resume [doc]="job?.doc" label="Resume"></download-resume>
                                     </div>
                                     <div class="action-item">

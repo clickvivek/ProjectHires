@@ -39,6 +39,12 @@ export class HowitworksComponent implements OnInit {
   // Active persona: 'benchsales' | 'recruiter'
   activePersona: 'benchsales' | 'recruiter' = 'benchsales';
 
+  // Bench sales media view: 'video' | 'interactive'
+  benchViewMode: 'video' | 'interactive' = 'video';
+
+  // Recruiter media view: 'video' | 'interactive'
+  recruiterViewMode: 'video' | 'interactive' = 'video';
+
   // Stepper state
   benchStep: number = 1; // 1: Hotlist, 2: LinkedIn Image Export, 3: Inbound Calls & Resume Submit
   recruiterStep: number = 1; // 1: Post Job & Share LinkedIn, 2: Receive & Review Resumes

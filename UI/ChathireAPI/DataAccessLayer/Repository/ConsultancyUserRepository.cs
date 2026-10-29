@@ -13,7 +13,7 @@ namespace DataAccessLayer.Repository
     public interface IConsultancyUserRepository : IRepository<ConsultancyUser, long>
     {
         List<ConsultancyUser> CheckConsultancyUser(long? ConsultancyId, long? Userid);
-        //List<ConsultancyUser> CheckConsultancyUser(long? ConsultancyId, long? Userid);
+        Task<bool> IsPublicProfileUserNameExists(string publicProfileUserName);
     }
     public class ConsultancyUserRepository : BaseRepository<ConsultancyUser, long>, IConsultancyUserRepository
     {
@@ -27,6 +27,12 @@ namespace DataAccessLayer.Repository
                 return list;
             }
             return null;
+        }
+
+        public async Task<bool> IsPublicProfileUserNameExists(string publicProfileUserName)
+        {
+            return await _context.ConsultancyUsers.AsNoTracking()
+                .AnyAsync(s => s.PublicProfileUserName == publicProfileUserName);
         }
     }
 

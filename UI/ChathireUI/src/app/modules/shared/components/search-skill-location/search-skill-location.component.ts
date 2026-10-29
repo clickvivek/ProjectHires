@@ -91,7 +91,7 @@ export class SearchSkillLocationComponent implements OnInit, OnChanges, OnDestro
   @Input() isRemoteOnly: boolean = false;
   @Output() isRemoteOnlyChange = new EventEmitter<boolean>();
 
-  @Input() radiusMiles: number = 50;
+  @Input() radiusMiles: number = 100;
   @Output() radiusMilesChange = new EventEmitter<number>();
 
   formData = {

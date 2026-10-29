@@ -137,7 +137,58 @@ BEGIN
             (7, 'Submitted', 'Submitted', GETUTCDATE(), 1);
         SET IDENTITY_INSERT [dbo].[CandidateProfileMappingStatus] OFF;
     END
-END");
+END
+
+-- Auto-generate publicProfileUserName for existing ConsultancyUsers where missing
+DECLARE @cuId BIGINT, @uFname NVARCHAR(100), @uLname NVARCHAR(100), @baseHandle NVARCHAR(100), @finalHandle NVARCHAR(100), @suffix INT;
+
+DECLARE cu_cursor CURSOR FOR
+    SELECT cu.Id, u.Fname, u.Lname
+    FROM [dbo].[ConsultancyUser] cu
+    INNER JOIN [dbo].[User] u ON cu.UserId = u.Id
+    WHERE (cu.PublicProfileUserName IS NULL OR LTRIM(RTRIM(cu.PublicProfileUserName)) = '')
+      AND u.Fname IS NOT NULL AND LTRIM(RTRIM(u.Fname)) <> '';
+
+OPEN cu_cursor;
+FETCH NEXT FROM cu_cursor INTO @cuId, @uFname, @uLname;
+
+WHILE @@FETCH_STATUS = 0
+BEGIN
+    SET @baseHandle = LOWER(LTRIM(RTRIM(ISNULL(@uFname, ''))) + LTRIM(RTRIM(ISNULL(@uLname, ''))));
+    DECLARE @cleanHandle NVARCHAR(100) = '';
+    DECLARE @p INT = 1;
+    WHILE @p <= LEN(@baseHandle)
+    BEGIN
+        DECLARE @c NCHAR(1) = SUBSTRING(@baseHandle, @p, 1);
+        IF @c LIKE '[a-z0-9]'
+            SET @cleanHandle = @cleanHandle + @c;
+        SET @p = @p + 1;
+    END
+
+    IF LEN(@cleanHandle) > 0
+    BEGIN
+        SET @finalHandle = @cleanHandle;
+        IF EXISTS (SELECT 1 FROM [dbo].[ConsultancyUser] WHERE PublicProfileUserName = @finalHandle AND Id <> @cuId)
+        BEGIN
+            SET @suffix = CAST(FLOOR(RAND() * 90 + 10) AS INT);
+            SET @finalHandle = @cleanHandle + CAST(@suffix AS NVARCHAR(10));
+            WHILE EXISTS (SELECT 1 FROM [dbo].[ConsultancyUser] WHERE PublicProfileUserName = @finalHandle AND Id <> @cuId)
+            BEGIN
+                SET @suffix = CAST(FLOOR(RAND() * 90 + 10) AS INT);
+                SET @finalHandle = @cleanHandle + CAST(@suffix AS NVARCHAR(10));
+            END
+        END
+
+        UPDATE [dbo].[ConsultancyUser]
+        SET PublicProfileUserName = @finalHandle
+        WHERE Id = @cuId;
+    END
+
+    FETCH NEXT FROM cu_cursor INTO @cuId, @uFname, @uLname;
+END
+
+CLOSE cu_cursor;
+DEALLOCATE cu_cursor;");
     }
     catch (Exception ex)
     {

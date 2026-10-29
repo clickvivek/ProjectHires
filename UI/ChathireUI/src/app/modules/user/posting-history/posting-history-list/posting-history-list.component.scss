@@ -122,6 +122,39 @@
       }
     }
 
+    .btn-action-linkedin {
+      background-color: #0A66C2 !important;
+      border: 1px solid #0A66C2 !important;
+      color: #ffffff !important;
+      font-weight: 600 !important;
+      font-size: 13.5px !important;
+      border-radius: 8px !important;
+      padding: 6px 14px !important;
+      display: inline-flex !important;
+      align-items: center !important;
+      gap: 6px !important;
+      box-shadow: 0 1px 3px rgba(10, 102, 194, 0.25) !important;
+      transition: all 0.15s ease-in-out !important;
+
+      svg {
+        fill: #ffffff !important;
+      }
+
+      span {
+        color: #ffffff !important;
+        font-size: 13.5px !important;
+        line-height: 1 !important;
+      }
+
+      &:hover {
+        background-color: #084e96 !important;
+        border-color: #084e96 !important;
+        color: #ffffff !important;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 8px rgba(10, 102, 194, 0.3) !important;
+      }
+    }
+
     .btn-action-repost {
       background: linear-gradient(135deg, #72246C 0%, #9B3893 100%) !important;
       border: 1px solid #72246C !important;

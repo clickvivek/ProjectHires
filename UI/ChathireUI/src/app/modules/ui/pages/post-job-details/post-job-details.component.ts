@@ -953,7 +953,7 @@ export class PostJobDetailsComponent {
             this.outputparams.emit(true)
            }
            else {
-            this.postparams.emit(true)
+            this.postparams.emit(res?.value || true)
            }
 
            this.isFormSubmitted = false
@@ -1028,7 +1028,7 @@ export class PostJobDetailsComponent {
               positionClass: 'toast-top-center'
             });
             this.scrollToTop();
-            this.postparams.emit(true);
+            this.postparams.emit(res?.value || true);
             this.isFormSubmitted = false;
           },
           error: (err: any) => {

@@ -362,6 +362,28 @@ namespace BusinessLayer.Manager
 
                 var repo = repositoryFactory.Get<IConsultancyUserRepository>();
 
+                if (string.IsNullOrWhiteSpace(_conUser.PublicProfileUserName))
+                {
+                    var baseHandle = (string.Concat(user?.Fname ?? "", user?.Lname ?? "")).ToLower();
+                    baseHandle = System.Text.RegularExpressions.Regex.Replace(baseHandle, @"[^a-z0-9]", "");
+                    if (!string.IsNullOrEmpty(baseHandle))
+                    {
+                        var candidateHandle = baseHandle;
+                        if (await repo.IsPublicProfileUserNameExists(candidateHandle))
+                        {
+                            var rnd = new Random();
+                            var suffix = rnd.Next(10, 100);
+                            candidateHandle = $"{baseHandle}{suffix}";
+                            while (await repo.IsPublicProfileUserNameExists(candidateHandle))
+                            {
+                                suffix = rnd.Next(10, 100);
+                                candidateHandle = $"{baseHandle}{suffix}";
+                            }
+                        }
+                        _conUser.PublicProfileUserName = candidateHandle;
+                    }
+                }
+
                 _conUser.Updated = date;
                 _conUser.UpdatedBy = userContext.UserId;
                 _conUser.UserId = userDto.Id;

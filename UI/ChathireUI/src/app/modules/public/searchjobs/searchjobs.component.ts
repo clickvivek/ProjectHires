@@ -84,7 +84,7 @@ export class SearchjobsComponent implements OnInit, OnDestroy {
   }
 
   isRemoteOnly: boolean = false;
-  radiusMiles: number = 50;
+  radiusMiles: number = 100;
 
   executeSearchFromParams(params: Params) {
     if (!_.isEmpty(params)) {
@@ -109,9 +109,9 @@ export class SearchjobsComponent implements OnInit, OnDestroy {
         }
         if (!_.isUndefined(params['radius']) && params['radius']) {
           const parsed = parseInt(params['radius'], 10);
-          this.radiusMiles = !isNaN(parsed) && [50, 100, 150, 200].includes(parsed) ? parsed : 50;
+          this.radiusMiles = !isNaN(parsed) && [50, 100, 150, 200].includes(parsed) ? parsed : 100;
         } else {
-          this.radiusMiles = 50;
+          this.radiusMiles = 100;
         }
       }
 
@@ -239,7 +239,7 @@ export class SearchjobsComponent implements OnInit, OnDestroy {
     const cityIds = cityIdArr ? [cityIdArr] : undefined;
     const parsedStateId = stateIdInput ? parseInt(stateIdInput, 10) : undefined;
     const locationString = (!cityIds && !parsedStateId && locationInput && locationInput.trim().length > 0) ? locationInput.trim() : undefined;
-    const radiusMiles = (cityIds && radiusMilesInput) ? radiusMilesInput : 50;
+    const radiusMiles = (cityIds && radiusMilesInput) ? radiusMilesInput : 100;
 
     let startYearsOfExpInput:any = undefined;
     let endYearsOfExpInput: any = undefined;

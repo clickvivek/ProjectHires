@@ -164,9 +164,13 @@ export class HeaderComponent implements OnInit {
       } else {
         this.profilePicUrl = defaultProfilePic;
       }
-      this.profileId = this.user?.consultancyUsers && this.user?.consultancyUsers[0] 
+      let handle = this.user?.consultancyUsers && this.user?.consultancyUsers[0] 
         ? this.user?.consultancyUsers[0].publicProfileUserName 
         : (this.user?.directCandidateDetail?.publicProfileSlug || '');
+      if (!handle && this.user?.fname && this.user?.lname) {
+        handle = (this.user.fname + this.user.lname).toLowerCase().replace(/[^a-z0-9]/g, '');
+      }
+      this.profileId = handle || '';
 
       if (this.user && (this.user.id || this.sessionService.userId)) {
         this.talkService.getOrCreateSession(this.user);
@@ -185,10 +189,6 @@ export class HeaderComponent implements OnInit {
 
     if (this.isLoggedIn()) {
       this.sessionService.refreshUser();
-      const existingUser = this.sessionService.getUserDetails();
-      if (existingUser || this.sessionService.userId) {
-        this.talkService.getOrCreateSession(existingUser);
-      }
     }
 
   }

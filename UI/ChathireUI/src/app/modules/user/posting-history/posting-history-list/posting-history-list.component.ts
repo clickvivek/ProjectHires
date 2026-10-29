@@ -138,6 +138,15 @@ export class PostingHistoryListComponent {
     return false;
   }
 
+  shareInLinkedIn(item: any): void {
+    if (!item?.id) return;
+    const jobId = this.generateJobId(item.id);
+    const origin = window.location.origin;
+    const shareUrl = `${origin}/#/jobs?id=${encodeURIComponent(jobId)}`;
+    const linkedinShareUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(shareUrl)}`;
+    window.open(linkedinShareUrl, '_blank', 'noopener,noreferrer,width=650,height=600');
+  }
+
   getRemainingDays(): number {
     if (!this.item?.postedDate) return 30;
     const daysPassed = moment().diff(moment(this.item.postedDate), 'days');

@@ -52,11 +52,11 @@ export class ViewResumeComponent {
     this.loadDoc = true;
 
     this.dialogRef = this.dialog.open(this.resumeViewerTemplate, {
-      position: { right: '0px', top: '0px' },
-      height: '100vh',
-      width: '850px',
-      maxWidth: '95vw',
-      panelClass: 'resume-slide-drawer-panel',
+      width: '900px',
+      maxWidth: '94vw',
+      height: '88vh',
+      maxHeight: '92vh',
+      panelClass: 'resume-modal-panel',
       hasBackdrop: true,
       autoFocus: false,
       restoreFocus: false

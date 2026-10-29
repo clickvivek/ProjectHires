@@ -139,6 +139,10 @@
             </div>
 
             <div class="action-btn-wrap" *ngIf="c?.doc">
+              <view-resume [doc]="c?.doc"></view-resume>
+            </div>
+
+            <div class="action-btn-wrap" *ngIf="c?.doc">
               <download-resume [doc]="c?.doc" label="Resume"></download-resume>
             </div>
           </div>

@@ -8,6 +8,7 @@ import { AuthService } from 'src/app/core/auth/auth.service';
 import { SharedService } from 'src/app/modules/shared/services/shared.service';
 import { ConsultancyService } from 'src/app/api';
 import { ToastrService } from 'ngx-toastr';
+import { TalkService } from 'src/app/modules/talk/talk.service';
 import { publicProfileUrlPrefix } from 'src/app/data/various';
 import { getMeaningfulErrorMessage } from 'src/app/modules/shared/utils/error-handler.util';
 import _ from 'underscore';
@@ -55,7 +56,8 @@ isFormSubmitted:boolean = false;
     private authService: AuthService,
     private sessionService: SessionService,
     private sharedService: SharedService,
-    private toastr: ToastrService
+    private toastr: ToastrService,
+    private talkService: TalkService
   ) {
 
   }
@@ -380,6 +382,16 @@ isFormSubmitted:boolean = false;
           this.refreshUser();
           this.reFetchData();
           this.isFormSubmitted = false;
+
+          // Propagate updated name and company to TalkJS directory
+          this.talkService.syncUserWithTalkJs({
+            id: this.sessionService.userId || this.formData?.id,
+            fname: this.formData?.fname,
+            lname: this.formData?.lname,
+            email: this.formData?.email,
+            companyName: this.companyData?.name,
+            profilePic: this.formData?.profilePic
+          }).catch(() => {});
 
           setTimeout(() => {
             this.successMessage = '';

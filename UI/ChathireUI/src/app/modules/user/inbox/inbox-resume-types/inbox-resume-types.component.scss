@@ -141,6 +141,35 @@
           display: inline-flex;
           align-items: center;
 
+          ::ng-deep .resume-box {
+            padding: 3px 8px !important;
+            border-radius: 5px !important;
+            font-size: 11.5px !important;
+            line-height: 16px !important;
+            background-color: #EFF6FF !important;
+            border: 1px solid #BFDBFE !important;
+            color: #1D4ED8 !important;
+            font-weight: 600;
+            margin-right: 0 !important;
+            transition: all 0.15s ease-in-out;
+
+            &:hover {
+              background-color: #DBEAFE !important;
+              border-color: #93C5FD !important;
+            }
+
+            .icon {
+              font-size: 14px !important;
+              margin-right: 3px !important;
+              color: #1D4ED8 !important;
+            }
+
+            .text-sm {
+              font-size: 11.5px !important;
+              font-weight: 600 !important;
+            }
+          }
+
           ::ng-deep .download-box {
             padding: 3px 8px !important;
             border-radius: 5px !important;

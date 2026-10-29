@@ -37,14 +37,82 @@ export class TalkService {
     });
   }
 
+  syncUserWithTalkJs(user: any): Promise<boolean> {
+    const uid = user?.id || user?.userId || this.sessionService.userId;
+    if (!uid) return Promise.resolve(false);
+
+    const fname = (user?.fname || user?.userFName || '').trim();
+    const lname = (user?.lname || user?.userLName || '').trim();
+    const email = (user?.email || user?.userName || this.sessionService.userEmail || '').trim();
+
+    let name = '';
+    if (fname || lname) {
+      name = `${fname} ${lname}`.trim();
+    } else if (email && email.includes('@')) {
+      const prefix = email.split('@')[0];
+      name = prefix.charAt(0).toUpperCase() + prefix.slice(1);
+    } else {
+      name = 'ChatHire User';
+    }
+
+    let photoUrl = defaultProfilePic;
+    const rawPic = user?.profilePic;
+    if (rawPic) {
+      photoUrl = (rawPic.startsWith('http://') || rawPic.startsWith('https://'))
+        ? rawPic
+        : `${picUrl}${rawPic}`;
+    }
+
+    let userCompanyName = user?.companyName || '';
+    let userProfileUrl = '';
+    if (user?.consultancyUsers && user.consultancyUsers.length > 0) {
+      userCompanyName = userCompanyName || user.consultancyUsers[0]?.consultancy?.name || '';
+      if (user.consultancyUsers[0]?.publicProfileUserName) {
+        userProfileUrl = getFullPublicProfileUrl(user.consultancyUsers[0].publicProfileUserName);
+      }
+    } else if (user?.directCandidateDetail?.publicProfileSlug) {
+      userProfileUrl = getFullPublicProfileUrl(user.directCandidateDetail.publicProfileSlug);
+    }
+
+    const payload = {
+      name: name,
+      role: 'PremiumRecruiters',
+      photoUrl: photoUrl,
+      custom: {
+        companyName: userCompanyName,
+        profileUrl: userProfileUrl
+      }
+    };
+
+    const secretKey = (environment as any).talkJsSecretKey || 'sk_test_R1ul8bBmiFIAsBG9C0CYsIDzK2R8ka2V';
+
+    return fetch(`https://api.talkjs.com/v1/${this.APP_ID}/users/${uid}`, {
+      method: 'PUT',
+      headers: {
+        'Authorization': `Bearer ${secretKey}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(payload)
+    }).then(res => res.ok).catch(() => false);
+  }
+
   buildMeUser(user?: any): any {
     const cachedDetails = user || this.sessionService.getUserDetails();
     const uid = cachedDetails?.id || this.sessionService.userId;
     if (!uid) return null;
-    const fname = cachedDetails?.fname || '';
-    const lname = cachedDetails?.lname || '';
-    const email = cachedDetails?.email || this.sessionService.userEmail || '';
-    const name = (fname || lname) ? `${fname} ${lname}`.trim() : (email ? email.split('@')[0] : 'User');
+    const fname = (cachedDetails?.fname || '').trim();
+    const lname = (cachedDetails?.lname || '').trim();
+    const email = (cachedDetails?.email || this.sessionService.userEmail || '').trim();
+    
+    let name = '';
+    if (fname || lname) {
+      name = `${fname} ${lname}`.trim();
+    } else if (email && email.includes('@')) {
+      const prefix = email.split('@')[0];
+      name = prefix.charAt(0).toUpperCase() + prefix.slice(1);
+    } else {
+      name = 'ChatHire User';
+    }
 
     let photoUrl = defaultProfilePic;
     if (cachedDetails?.profilePic) {
@@ -194,6 +262,9 @@ export class TalkService {
       await Talk.ready;
       const me = this.buildMeUser(cachedDetails);
       if (!me) return null;
+
+      // Always asynchronously ensure TalkJS cloud user store matches current DB details
+      this.syncUserWithTalkJs(cachedDetails).catch(() => {});
 
       // Always obtain a valid signature & token
       const auth = await this.getAuthToken(uid);

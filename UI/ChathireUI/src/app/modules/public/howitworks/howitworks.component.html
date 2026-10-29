@@ -1,137 +1,143 @@
   
-  <!-- 1. How It Works - Interactive Application Demo -->
-  <section class="how-it-works-block py-5" id="how-it-works" style="background-color: var(--page-bg);">
-    <div class="container py-2 py-lg-4">
+  <!-- How It Works Interactive Experience -->
+<div class="howitworks-page">
+
+  <!-- 1. Hero Section -->
+  <section class="hiw-hero">
+    <div class="container text-center">
       
-      <!-- Section Heading -->
-      <div class="text-center mb-4 mb-lg-5">
-        <div class="d-inline-flex align-items-center gap-2 px-3 py-1 rounded-pill mb-3 demo-badge-pill">
-          <span class="material-symbols-outlined fs-6 text-primary">play_circle</span>
-          <span class="small fw-bold text-primary text-uppercase tracking-wider">Interactive Product Demo</span>
-        </div>
-        <h2 class="display-6 fw-bold mb-3 text-dark">
-          How ChatHire Works
-        </h2>
-        <p class="text-muted lead mb-0 max-w-2xl mx-auto" style="font-size: 1.15rem;">
-          The modern C2C recruitment marketplace engineered for speed, transparency, and zero middlemen.
-        </p>
+      <!-- Top Pill -->
+      <div class="d-inline-flex align-items-center gap-2 px-3 py-1 rounded-pill mb-3 hiw-badge-pill shadow-xs">
+        <span class="material-symbols-outlined fs-6 text-primary">play_circle</span>
+        <span class="small fw-bold text-uppercase tracking-wider">Interactive Product Tour</span>
       </div>
 
-      <!-- Persona Switcher -->
+      <h1 class="hiw-title mb-3">
+        See How <span class="hiw-highlight">ChatHire</span> Works
+      </h1>
+
+      <p class="hiw-subtitle mb-4">
+        The modern C2C recruitment platform connecting verified bench sales teams directly with recruiters & hiring clients. Zero middlemen. Direct chats. Instant results.
+      </p>
+
+      <!-- Persona Selector Cards -->
       <div class="row justify-content-center mb-4">
         <div class="col-12 col-md-10 col-lg-8">
-          <div class="persona-switch-wrapper p-1 rounded-4 shadow-sm bg-white border d-flex gap-2">
+          <div class="persona-cards-container shadow-sm">
+            
+            <!-- Bench Sales Manager Card -->
             <button 
               type="button" 
-              class="btn flex-fill persona-tab-btn d-flex align-items-center justify-content-center gap-2 py-3 px-3 rounded-3 transition border-0"
+              class="persona-card"
               [class.active]="activePersona === 'benchsales'"
-              (click)="setPersona('benchsales')">
-              <span class="material-symbols-outlined fs-5">assignment_ind</span>
-              <div class="text-start">
-                <div class="fw-bold persona-title">Bench Sales Manager</div>
-                <div class="small persona-sub">Hotlist &bull; LinkedIn &bull; Inbound Submissions</div>
+              (click)="setPersona('benchsales')"
+            >
+              <div class="persona-icon-circle">
+                <span class="material-symbols-outlined fs-4">assignment_ind</span>
               </div>
+              <div>
+                <div class="persona-name">Bench Sales Manager</div>
+                <div class="persona-desc">Publish hotlists &bull; Export to LinkedIn &bull; Inbound submissions</div>
+              </div>
+              <span class="material-symbols-outlined fs-5 persona-check">check_circle</span>
             </button>
+
+            <!-- Recruiter / Client Card -->
             <button 
               type="button" 
-              class="btn flex-fill persona-tab-btn d-flex align-items-center justify-content-center gap-2 py-3 px-3 rounded-3 transition border-0"
+              class="persona-card"
               [class.active]="activePersona === 'recruiter'"
-              (click)="setPersona('recruiter')">
-              <span class="material-symbols-outlined fs-5">work_history</span>
-              <div class="text-start">
-                <div class="fw-bold persona-title">Recruiter / Client</div>
-                <div class="small persona-sub">Post Jobs &bull; Share &bull; Receive Resumes</div>
+              (click)="setPersona('recruiter')"
+            >
+              <div class="persona-icon-circle">
+                <span class="material-symbols-outlined fs-4">work_history</span>
               </div>
+              <div>
+                <div class="persona-name">Recruiter / Client</div>
+                <div class="persona-desc">Post requirements &bull; Broadcast jobs &bull; Receive resumes</div>
+              </div>
+              <span class="material-symbols-outlined fs-5 persona-check">check_circle</span>
             </button>
+
           </div>
         </div>
       </div>
 
-      <!-- Stepper Progress Timeline -->
-      <div class="row justify-content-center mb-4">
+      <!-- Stepper Indicator Row (When in interactive mode) -->
+      <div class="row justify-content-center mb-4" *ngIf="(activePersona === 'recruiter' && recruiterViewMode === 'interactive') || (activePersona === 'benchsales' && benchViewMode === 'interactive')">
         <div class="col-12 col-lg-10">
           
-          <!-- Bench Sales Steps Timeline -->
-          <div *ngIf="activePersona === 'benchsales'" class="stepper-timeline d-flex justify-content-between position-relative">
+          <!-- Bench Steps Stepper -->
+          <div *ngIf="activePersona === 'benchsales'" class="stepper-nav">
             <button 
               type="button" 
-              class="stepper-node text-start btn p-0 border-0 bg-transparent"
+              class="step-node-btn"
               [class.active]="benchStep === 1"
               [class.completed]="benchStep > 1"
               (click)="setBenchStep(1)">
-              <div class="d-flex align-items-center gap-2">
-                <span class="step-circle">1</span>
-                <div>
-                  <div class="step-label fw-bold">Build Hotlist</div>
-                  <div class="step-desc small text-muted d-none d-sm-block">Add candidate profiles</div>
-                </div>
+              <span class="step-badge">1</span>
+              <div>
+                <div class="step-text-title">Build Hotlist</div>
+                <div class="step-text-sub d-none d-sm-block">Add candidate profiles</div>
               </div>
             </button>
 
-            <div class="stepper-line flex-grow-1 mx-2 align-self-center"></div>
+            <div class="step-connector-line" [class.active]="benchStep > 1"></div>
 
             <button 
               type="button" 
-              class="stepper-node text-start btn p-0 border-0 bg-transparent"
+              class="step-node-btn"
               [class.active]="benchStep === 2"
               [class.completed]="benchStep > 2"
               (click)="setBenchStep(2)">
-              <div class="d-flex align-items-center gap-2">
-                <span class="step-circle">2</span>
-                <div>
-                  <div class="step-label fw-bold">LinkedIn Image Export</div>
-                  <div class="step-desc small text-muted d-none d-sm-block">Save table as image & share</div>
-                </div>
+              <span class="step-badge">2</span>
+              <div>
+                <div class="step-text-title">Export for LinkedIn</div>
+                <div class="step-text-sub d-none d-sm-block">One-click social table</div>
               </div>
             </button>
 
-            <div class="stepper-line flex-grow-1 mx-2 align-self-center"></div>
+            <div class="step-connector-line" [class.active]="benchStep > 2"></div>
 
             <button 
               type="button" 
-              class="stepper-node text-start btn p-0 border-0 bg-transparent"
+              class="step-node-btn"
               [class.active]="benchStep === 3"
               (click)="setBenchStep(3)">
-              <div class="d-flex align-items-center gap-2">
-                <span class="step-circle">3</span>
-                <div>
-                  <div class="step-label fw-bold">Inbound Calls & Submissions</div>
-                  <div class="step-desc small text-muted d-none d-sm-block">Direct calls & 1-click submit</div>
-                </div>
+              <span class="step-badge">3</span>
+              <div>
+                <div class="step-text-title">Inbound Calls & Submissions</div>
+                <div class="step-text-sub d-none d-sm-block">Direct calls & 1-click submit</div>
               </div>
             </button>
           </div>
 
-          <!-- Recruiter Steps Timeline -->
-          <div *ngIf="activePersona === 'recruiter'" class="stepper-timeline d-flex justify-content-between position-relative">
+          <!-- Recruiter Steps Stepper -->
+          <div *ngIf="activePersona === 'recruiter'" class="stepper-nav">
             <button 
               type="button" 
-              class="stepper-node text-start btn p-0 border-0 bg-transparent"
+              class="step-node-btn"
               [class.active]="recruiterStep === 1"
               [class.completed]="recruiterStep > 1"
               (click)="setRecruiterStep(1)">
-              <div class="d-flex align-items-center gap-2">
-                <span class="step-circle">1</span>
-                <div>
-                  <div class="step-label fw-bold">Post Job & Share</div>
-                  <div class="step-desc small text-muted d-none d-sm-block">Create requirement & LinkedIn post</div>
-                </div>
+              <span class="step-badge">1</span>
+              <div>
+                <div class="step-text-title">Post Job & Broadcast</div>
+                <div class="step-text-sub d-none d-sm-block">Create requirement & share</div>
               </div>
             </button>
 
-            <div class="stepper-line flex-grow-1 mx-3 align-self-center"></div>
+            <div class="step-connector-line" [class.active]="recruiterStep > 1"></div>
 
             <button 
               type="button" 
-              class="stepper-node text-start btn p-0 border-0 bg-transparent"
+              class="step-node-btn"
               [class.active]="recruiterStep === 2"
               (click)="setRecruiterStep(2)">
-              <div class="d-flex align-items-center gap-2">
-                <span class="step-circle">2</span>
-                <div>
-                  <div class="step-label fw-bold">Receive Matched Resumes</div>
-                  <div class="step-desc small text-muted d-none d-sm-block">Review submissions from bench managers</div>
-                </div>
+              <span class="step-badge">2</span>
+              <div>
+                <div class="step-text-title">Review Submissions</div>
+                <div class="step-text-sub d-none d-sm-block">Direct submissions from bench managers</div>
               </div>
             </button>
           </div>
@@ -139,31 +145,38 @@
         </div>
       </div>
 
-      <!-- Application Mockup Frame -->
+    </div>
+  </section>
+
+  <!-- 2. Interactive Mockup Showcase -->
+  <section class="pb-5">
+    <div class="container">
       <div class="row justify-content-center">
         <div class="col-12 col-lg-11 col-xl-10">
-          <div class="app-browser-frame bg-white rounded-4 shadow-lg border overflow-hidden">
+          
+          <div class="mockup-shell">
             
-            <!-- Browser Header Bar -->
-            <div class="browser-header px-4 py-3 border-bottom d-flex align-items-center justify-content-between">
+            <!-- Browser Top Bar -->
+            <div class="mockup-top-bar">
               <div class="d-flex align-items-center gap-2">
-                <span class="window-dot dot-red"></span>
-                <span class="window-dot dot-yellow"></span>
-                <span class="window-dot dot-green"></span>
-                <div class="browser-url-pill ms-3 px-3 py-1 rounded-pill bg-light text-muted small d-flex align-items-center gap-2">
+                <div class="traffic-dots">
+                  <span class="dot-red"></span>
+                  <span class="dot-yellow"></span>
+                  <span class="dot-green"></span>
+                </div>
+                <div class="address-pill ms-2">
                   <span class="material-symbols-outlined fs-6 text-success">lock</span>
-                  <span class="fw-mono">chathire.com/app/{{ activePersona === 'benchsales' ? 'bench-manager-hub' : 'recruiter-portal' }}</span>
+                  <span>chathire.com/app/{{ activePersona === 'benchsales' ? 'bench-manager-hub' : 'recruiter-portal' }}</span>
                 </div>
               </div>
-              <div class="d-flex align-items-center gap-2">
-                <span class="badge bg-success-subtle text-success border border-success-subtle px-3 py-1 rounded-pill small fw-medium">
-                  ● Live Interactive Demo
-                </span>
+
+              <!-- Persona Badge -->
+              <div class="d-flex align-items-center gap-3">
               </div>
             </div>
 
             <!-- Frame Body Content -->
-            <div class="browser-canvas p-3 p-md-4 p-lg-5">
+            <div class="mockup-content">
 
               <!-- ==================================================== -->
               <!-- 1. BENCH SALES MANAGER FLOWS                         -->
@@ -171,6 +184,24 @@
 
               <div *ngIf="activePersona === 'benchsales'">
                 
+                <!-- VIDEO PLAYER CARD (BENCH SALES DEMO) -->
+                <div *ngIf="benchViewMode === 'video'" class="video-showcase-container text-center my-2">
+                  <div class="video-frame-box">
+                    <video 
+                      controls 
+                      autoplay 
+                      muted 
+                      loop 
+                      playsinline 
+                      preload="auto"
+                    >
+                      <source src="assets/videos/BenchSales.mp4" type="video/mp4">
+                      Your browser does not support HTML5 video.
+                    </video>
+                  </div>
+                </div>
+
+                <div *ngIf="benchViewMode === 'interactive'">
                 <!-- BENCH STEP 1: HOTLIST CREATION -->
                 <div *ngIf="benchStep === 1" class="demo-step-pane">
                   <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
@@ -573,8 +604,9 @@
                     </div>
                   </div>
                 </div>
+                </div> <!-- Closing benchViewMode === 'interactive' -->
 
-              </div>
+              </div> <!-- Closing activePersona === 'benchsales' -->
 
               <!-- ==================================================== -->
               <!-- 2. RECRUITERS / HIRING MANAGERS FLOWS                -->
@@ -582,6 +614,24 @@
 
               <div *ngIf="activePersona === 'recruiter'">
                 
+                <!-- VIDEO PLAYER CARD (RECRUITER DEMO) -->
+                <div *ngIf="recruiterViewMode === 'video'" class="video-showcase-container text-center my-2">
+                  <div class="video-frame-box">
+                    <video 
+                      controls 
+                      autoplay 
+                      muted 
+                      loop 
+                      playsinline 
+                      preload="auto"
+                    >
+                      <source src="assets/videos/RecruiterExplainer.mp4" type="video/mp4">
+                      Your browser does not support HTML5 video.
+                    </video>
+                  </div>
+                </div>
+
+                <div *ngIf="recruiterViewMode === 'interactive'">
                 <!-- RECRUITER STEP 1: CREATE JOB POSTING & SHARE IN LINKEDIN -->
                 <div *ngIf="recruiterStep === 1" class="demo-step-pane">
                   <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
@@ -830,16 +880,17 @@
                   </div>
 
                 </div>
+                </div> <!-- Closing recruiterViewMode === 'interactive' -->
 
               </div>
 
             </div>
 
-            <!-- Frame Footer Bar / Controls -->
-            <div class="browser-footer px-4 py-3 bg-light border-top d-flex flex-column flex-md-row justify-content-between align-items-center gap-3">
+                        <!-- Mockup Shell Footer Controls -->
+            <div class="mockup-footer-nav" *ngIf="(activePersona === 'recruiter' && recruiterViewMode === 'interactive') || (activePersona === 'benchsales' && benchViewMode === 'interactive')">
               <div class="d-flex align-items-center gap-3">
                 <span class="small text-muted fw-medium">
-                  {{ activePersona === 'benchsales' ? 'Bench Sales Flow' : 'Recruiter Flow' }} &bull; 
+                  {{ activePersona === 'benchsales' ? 'Bench Sales Workflow' : 'Recruiter Workflow' }} &bull; 
                   Step {{ activePersona === 'benchsales' ? benchStep + ' of 3' : recruiterStep + ' of 2' }}
                 </span>
               </div>
@@ -850,7 +901,7 @@
                     class="btn btn-sm btn-outline-secondary px-3 py-2 rounded-3" 
                     [disabled]="benchStep === 1"
                     (click)="setBenchStep(benchStep - 1)">
-                    Previous Step
+                    &larr; Previous Step
                   </button>
                   <button 
                     class="btn btn-sm btn-primary px-3 py-2 rounded-3 shadow-xs" 
@@ -872,7 +923,7 @@
                     class="btn btn-sm btn-outline-secondary px-3 py-2 rounded-3" 
                     [disabled]="recruiterStep === 1"
                     (click)="setRecruiterStep(recruiterStep - 1)">
-                    Previous Step
+                    &larr; Previous Step
                   </button>
                   <button 
                     class="btn btn-sm btn-primary px-3 py-2 rounded-3 shadow-xs" 
@@ -893,10 +944,58 @@
           </div>
         </div>
       </div>
-
     </div>
   </section>
 
+  <!-- 3. Key Benefits Highlights Grid -->
+  <section class="hiw-benefits-section">
+    <div class="container">
+      <div class="text-center mb-5">
+        <h3 class="fw-bold text-dark mb-2">Why Top Staffing Teams Choose ChatHire</h3>
+        <p class="text-muted">Built from the ground up for speed, verified consultant availability, and zero commission cuts.</p>
+      </div>
+
+      <div class="row g-4">
+        
+        <div class="col-md-4">
+          <div class="benefit-card shadow-xs">
+            <div class="benefit-icon-box">
+              <span class="material-symbols-outlined fs-3">bolt</span>
+            </div>
+            <h5 class="benefit-title">Submissions in Minutes</h5>
+            <p class="benefit-text">
+              Direct recruiter-to-recruiter chat enables instant candidate submissions without endless email ping-pong.
+            </p>
+          </div>
+        </div>
+
+        <div class="col-md-4">
+          <div class="benefit-card shadow-xs">
+            <div class="benefit-icon-box">
+              <span class="material-symbols-outlined fs-3">verified</span>
+            </div>
+            <h5 class="benefit-title">Verified Hotlists</h5>
+            <p class="benefit-text">
+              Real-time consultant status, validated visas, rate expectations, and primary skills curated by authorized employers.
+            </p>
+          </div>
+        </div>
+
+        <div class="col-md-4">
+          <div class="benefit-card shadow-xs">
+            <div class="benefit-icon-box">
+              <span class="material-symbols-outlined fs-3">share</span>
+            </div>
+            <h5 class="benefit-title">LinkedIn 1-Click Export</h5>
+            <p class="benefit-text">
+              Turn your entire bench table into a ready-to-post, branded LinkedIn visual graphic in just one click.
+            </p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
 
   <!-- 4. Final CTA -->
   <section class="cta-section">
@@ -917,3 +1016,5 @@
       </div>
     </div>
   </section>
+
+</div>
